@@ -46,6 +46,7 @@
 #include "error.h"
 #include "file_descriptor.h"
 #include "graph.h"
+#include "scope.h"
 #include "type_normalisation.h"
 
 namespace stg {
@@ -163,6 +164,8 @@ std::optional<ElfSymbol::SymbolType> Parse<ElfSymbol::SymbolType>(
     return {ElfSymbol::SymbolType::COMMON};
   } else if (value == "tls-type") {
     return {ElfSymbol::SymbolType::TLS};
+  } else if (value == "gnu-ifunc-type") {
+    return {ElfSymbol::SymbolType::GNU_IFUNC};
   }
   return {};
 }
@@ -678,24 +681,6 @@ std::optional<PointerReference::Kind> ParseReferenceKind(
   return {};
 }
 
-class PushScopeName {
- public:
-  PushScopeName(std::string& scope_name, const std::string& name)
-      : scope_name_(scope_name), old_size_(scope_name.size()) {
-    scope_name_ += name;
-    scope_name_ += "::";
-  }
-  PushScopeName(const PushScopeName& other) = delete;
-  PushScopeName& operator=(const PushScopeName& other) = delete;
-  ~PushScopeName() {
-    scope_name_.resize(old_size_);
-  }
-
- private:
-  std::string& scope_name_;
-  const size_t old_size_;
-};
-
 }  // namespace
 
 Abigail::Abigail(Graph& graph) : graph_(graph) {}
@@ -753,6 +738,11 @@ Id Abigail::ProcessRoot(xmlNodePtr root) {
     ProcessCorpus(root);
   } else {
     Die() << "unrecognised root element '" << name << "'";
+  }
+  for (const auto& [type_id, id] : type_ids_) {
+    if (!graph_.Is(id)) {
+      Warn() << "no definition found for type '" << type_id << "'";
+    }
   }
   const Id id = BuildSymbols();
   RemoveUselessQualifiers(graph_, id);
@@ -884,7 +874,7 @@ void Abigail::ProcessInstr(xmlNodePtr instr) {
 
 void Abigail::ProcessNamespace(xmlNodePtr scope) {
   const auto name = GetAttributeOrDie(scope, "name");
-  PushScopeName push_scope_name(scope_name_, name);
+  const PushScopeName push_scope_name(scope_name_, "namespace", name);
   ProcessScope(scope);
 }
 
@@ -1009,17 +999,13 @@ void Abigail::ProcessStructUnion(Id id, bool is_struct,
   const auto kind = is_struct
                     ? StructUnion::Kind::STRUCT
                     : StructUnion::Kind::UNION;
-  const auto name = ReadAttribute<bool>(struct_union, "is-anonymous", false)
-                    ? std::string()
-                    : GetAttributeOrDie(struct_union, "name");
-  const auto full_name = name.empty() ? std::string() : scope_name_ + name;
-  std::ostringstream scope_name_os;
-  if (name.empty()) {
-    scope_name_os << "<unnamed " << kind << ">";
-  } else {
-    scope_name_os << name;
-  }
-  PushScopeName push_scope_name(scope_name_, scope_name_os.str());
+  const bool is_anonymous =
+      ReadAttribute<bool>(struct_union, "is-anonymous", false);
+  const auto name =
+      is_anonymous ? std::string() : GetAttributeOrDie(struct_union, "name");
+  const auto full_name =
+      is_anonymous ? std::string() : scope_name_ + name;
+  const PushScopeName push_scope_name(scope_name_, kind, name);
   if (forward) {
     graph_.Set<StructUnion>(id, kind, full_name);
     return;

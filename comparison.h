@@ -51,6 +51,8 @@ struct Ignore {
     MEMBER_SIZE = 1<<3,
     ENUM_UNDERLYING_TYPE = 1<<4,
     QUALIFIER = 1<<5,
+    INTERFACE_ADDITION = 1<<6,
+    SYMBOL_CRC = 1<<7,
   };
 
   using Bitset = std::underlying_type_t<Value>;
