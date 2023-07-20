@@ -21,7 +21,6 @@
 
 #include <cstring>
 #include <fstream>
-#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -40,11 +39,10 @@
 #include "reader_options.h"
 #include "symbol_filter.h"
 #include "type_resolution.h"
+#include "unification.h"
 
 namespace stg {
 namespace {
-
-Metrics metrics;
 
 struct GetInterface {
   Interface& operator()(Interface& x) {
@@ -88,7 +86,7 @@ void Filter(Graph& graph, Id root, const SymbolFilter& filter) {
   std::swap(interface.symbols, symbols);
 }
 
-void Write(const Graph& graph, Id root, const char* output) {
+void Write(const Graph& graph, Id root, const char* output, Metrics& metrics) {
   std::ofstream os(output);
   {
     Time x(metrics, "write");
@@ -198,26 +196,31 @@ int main(int argc, char* argv[]) {
 
   try {
     stg::Graph graph;
+    stg::Metrics metrics;
     std::vector<stg::Id> roots;
     roots.reserve(inputs.size());
     for (auto input : inputs) {
       roots.push_back(stg::Read(graph, opt_input_format, input,
-                                opt_read_options, stg::metrics));
+                                opt_read_options, metrics));
     }
     stg::Id root = roots.size() == 1 ? roots[0] : stg::Merge(graph, roots);
     if (opt_symbols) {
       stg::Filter(graph, root, *opt_symbols);
     }
     if (!opt_keep_duplicates) {
-      stg::ResolveTypes(graph, {std::ref(root)}, stg::metrics);
-      const auto hashes = stg::Fingerprint(graph, root, stg::metrics);
-      root = stg::Deduplicate(graph, root, hashes, stg::metrics);
+      {
+        stg::Unification unification(graph, metrics);
+        stg::ResolveTypes(graph, unification, {root}, metrics);
+        unification.Update(root);
+      }
+      const auto hashes = stg::Fingerprint(graph, root, metrics);
+      root = stg::Deduplicate(graph, root, hashes, metrics);
     }
     for (auto output : outputs) {
-      stg::Write(graph, root, output);
+      stg::Write(graph, root, output, metrics);
     }
     if (opt_metrics) {
-      stg::Report(stg::metrics, std::cerr);
+      stg::Report(metrics, std::cerr);
     }
     return 0;
   } catch (const stg::Exception& e) {
