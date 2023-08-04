@@ -211,8 +211,9 @@ std::optional<uint64_t> Entry::MaybeGetUnsignedConstant(uint32_t attribute) {
   }
 
   uint64_t value;
-  Check(dwarf_formudata(&dwarf_attribute.value(), &value) == kReturnOk)
-      << "dwarf_formudata returned error";
+  if (dwarf_formudata(&dwarf_attribute.value(), &value) != kReturnOk) {
+    Die() << "dwarf_formudata returned error";
+  }
   return value;
 }
 
@@ -267,6 +268,11 @@ std::optional<uint64_t> GetAddressFromLocation(Dwarf_Attribute& attribute) {
     // manually extract the address from expression.
     return expr->number;
   }
+  if (expr_len == 2 && (expr[1].atom == DW_OP_GNU_push_tls_address ||
+                        expr[1].atom == DW_OP_form_tls_address)) {
+    // We don't handle TLS location expressions.
+    return {};
+  }
 
   Die() << "Unsupported data location expression";
 }
@@ -302,6 +308,24 @@ std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
 
   // TODO: support location expressions
   Die() << "dwarf_formudata returned error, " << std::hex << GetOffset();
+}
+
+std::optional<uint64_t> Entry::MaybeGetCount() {
+  auto dwarf_attribute = GetAttribute(&die, DW_AT_count);
+  if (!dwarf_attribute) {
+    return {};
+  }
+
+  uint64_t value;
+  if (dwarf_formudata(&dwarf_attribute.value(), &value) != kReturnOk) {
+    // All errors are interpreted as "value of DW_AT_count is not a constant"
+    // and ignored. There is no stable API in libdw for checking the exact error
+    // reason.
+    // TODO: implement clean solution for separating "not a
+    // constant" errors from other errors.
+    return {};
+  }
+  return value;
 }
 
 }  // namespace dwarf
