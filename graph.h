@@ -121,7 +121,7 @@ struct Typedef {
   Id referred_type_id;
 };
 
-enum class Qualifier { CONST, VOLATILE, RESTRICT };
+enum class Qualifier { CONST, VOLATILE, RESTRICT, ATOMIC };
 
 std::ostream& operator<<(std::ostream& os, Qualifier qualifier);
 
@@ -221,6 +221,7 @@ struct StructUnion {
 };
 
 std::ostream& operator<<(std::ostream& os, StructUnion::Kind kind);
+std::string& operator+=(std::string& os, StructUnion::Kind kind);
 
 struct Enumeration {
   using Enumerators = std::vector<std::pair<std::string, int64_t>>;
@@ -326,67 +327,8 @@ std::ostream& operator<<(std::ostream& os, Primitive::Encoding encoding);
 // Concrete graph type.
 class Graph {
  public:
-  // Roughly equivalent to std::set<Id> but with constant time operations and
-  // key set limited to allocated Ids.
-  class DenseIdSet {
-   public:
-    explicit DenseIdSet(size_t size) : ids_(size, false) {}
-    bool Insert(Id id) {
-      const auto ix = id.ix_;
-      if (ix >= ids_.size()) {
-        ids_.resize(ix + 1);
-      }
-      if (ids_[ix]) {
-        return false;
-      }
-      ids_[ix] = true;
-      return true;
-    }
-    template <typename Function>
-    void ForEach(Function&& function) const {
-      for (size_t ix = 0; ix < ids_.size(); ++ix) {
-        if (ids_[ix]) {
-          function(Id(ix));
-        }
-      }
-    }
-
-   private:
-    std::vector<bool> ids_;
-  };
-
-  // Roughly equivalent to std::map<Id, Id>, defaulted to the identity mapping,
-  // but with constant time operations and key set limited to allocated Ids.
-  class DenseIdMapping {
-   public:
-    explicit DenseIdMapping(size_t size) {
-      ids_.reserve(size);
-      for (size_t ix = 0; ix < size; ++ix) {
-        ids_.emplace_back(ix);
-      }
-    }
-    Id& operator[](Id id) {
-      const auto ix = id.ix_;
-      const auto limit = ids_.size();
-      if (ix >= limit) {
-        ids_.reserve(ix + 1);
-        for (size_t iy = limit; iy <= ix; ++iy) {
-          ids_.emplace_back(iy);
-        }
-      }
-      return ids_[ix];
-    }
-
-   private:
-    std::vector<Id> ids_;
-  };
-
-  DenseIdSet MakeDenseIdSet() const {
-    return DenseIdSet(indirection_.size());
-  }
-
-  DenseIdMapping MakeDenseIdMapping() const {
-    return DenseIdMapping(indirection_.size());
+  Id Limit() const {
+    return Id(indirection_.size());
   }
 
   bool Is(Id id) const {
@@ -394,15 +336,17 @@ class Graph {
   }
 
   Id Allocate() {
-    const auto ix = indirection_.size();
+    const auto id = Limit();
     indirection_.emplace_back(Which::ABSENT, 0);
-    return Id(ix);
+    return id;
   }
 
   template <typename Node, typename... Args>
   void Set(Id id, Args&&... args) {
     auto& reference = indirection_[id.ix_];
-    Check(reference.first == Which::ABSENT) << "node value already set";
+    if (reference.first != Which::ABSENT) {
+      Die() << "node value already set: " << id;
+    }
     if constexpr (std::is_same_v<Node, Void>) {
       reference = {Which::VOID, void_.size()};
       void_.emplace_back(std::forward<Args>(args)...);
@@ -470,7 +414,9 @@ class Graph {
 
   void Unset(Id id) {
     auto& reference = indirection_[id.ix_];
-    Check(reference.first != Which::ABSENT) << "node value already unset";
+    if (reference.first == Which::ABSENT) {
+      Die() << "node value already unset: " << id;
+    }
     reference = {Which::ABSENT, 0};
   }
 
@@ -487,6 +433,17 @@ class Graph {
 
   template <typename Result, typename FunctionObject, typename... Args>
   Result Apply(FunctionObject& function, Id id, Args&&... args);
+
+  template <typename Function>
+  void ForEach(Function&& function) const {
+    const size_t limit = Limit().ix_;
+    for (size_t ix = 0; ix < limit; ++ix) {
+      const Id id(ix);
+      if (Is(id)) {
+        function(id);
+      }
+    }
+  }
 
  private:
   enum class Which {
@@ -534,7 +491,7 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
   const auto& [which, ix] = indirection_[id.ix_];
   switch (which) {
     case Which::ABSENT:
-      Die() << "undefined node";
+      Die() << "undefined node: " << id;
     case Which::VOID:
       return function(void_[ix], std::forward<Args>(args)...);
     case Which::VARIADIC:
@@ -580,7 +537,7 @@ Result Graph::Apply2(
   }
   switch (which1) {
     case Which::ABSENT:
-      Die() << "undefined node";
+      Die() << "undefined nodes: " << id1 << ", " << id2;
     case Which::VOID:
       return function(void_[ix1], void_[ix2],
                       std::forward<Args>(args)...);
@@ -686,6 +643,52 @@ struct InterfaceKey {
   }
 
   const Graph& graph;
+};
+
+// Roughly equivalent to std::set<Id> but with constant time operations and
+// key set limited to allocated Ids.
+class DenseIdSet {
+ public:
+  explicit DenseIdSet(Id limit) : ids_(limit.ix_, false) {}
+  bool Insert(Id id) {
+    const auto ix = id.ix_;
+    if (ix >= ids_.size()) {
+      ids_.resize(ix + 1);
+    }
+    if (ids_[ix]) {
+      return false;
+    }
+    ids_[ix] = true;
+    return true;
+  }
+
+ private:
+  std::vector<bool> ids_;
+};
+
+// Roughly equivalent to std::map<Id, Id>, defaulted to the identity mapping,
+// but with constant time operations and key set limited to allocated Ids.
+class DenseIdMapping {
+ public:
+  explicit DenseIdMapping(Id limit) {
+    ids_.reserve(limit.ix_);
+    Populate(limit.ix_);
+  }
+  Id& operator[](Id id) {
+    const auto ix = id.ix_;
+    Populate(ix + 1);
+    return ids_[ix];
+  }
+
+ private:
+  void Populate(size_t size) {
+    const auto limit = ids_.size();
+    for (size_t ix = limit; ix < size; ++ix) {
+      ids_.emplace_back(ix);
+    }
+  }
+
+  std::vector<Id> ids_;
 };
 
 }  // namespace stg
