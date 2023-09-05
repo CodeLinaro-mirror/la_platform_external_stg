@@ -19,15 +19,14 @@
 
 #include "type_resolution.h"
 
-#include <functional>
+#include <cstddef>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "error.h"
 #include "graph.h"
-#include "substitution.h"
+#include "metrics.h"
 #include "unification.h"
 
 namespace stg {
@@ -38,7 +37,7 @@ namespace {
 struct NamedTypes {
   NamedTypes(const Graph& graph, Metrics& metrics)
       : graph(graph),
-        seen(graph.MakeDenseIdSet()),
+        seen(graph.Limit()),
         nodes(metrics, "named_types.nodes"),
         types(metrics, "named_types.types"),
         definitions(metrics, "named_types.definitions"),
@@ -136,8 +135,7 @@ struct NamedTypes {
       (*this)(definition.base_classes);
       (*this)(definition.methods);
       (*this)(definition.members);
-    } else {
-      Check(named) << "anonymous forward declaration";
+    } else if (named) {
       info.declarations.push_back(id);
       ++declarations;
     }
@@ -152,8 +150,7 @@ struct NamedTypes {
         info.definitions.push_back(id);
         ++definitions;
       }
-    } else {
-      Check(named) << "anonymous forward declaration";
+    } else if (named) {
       info.declarations.push_back(id);
       ++declarations;
     }
@@ -178,7 +175,7 @@ struct NamedTypes {
   const Graph& graph;
   // ordered map for consistency and sequential processing of related types
   std::map<Type, Info> type_info;
-  Graph::DenseIdSet seen;
+  DenseIdSet seen;
   Counter nodes;
   Counter types;
   Counter definitions;
@@ -187,9 +184,8 @@ struct NamedTypes {
 
 }  // namespace
 
-void ResolveTypes(Graph& graph,
-                  const std::vector<std::reference_wrapper<Id>>& roots,
-                  Metrics& metrics) {
+void ResolveTypes(Graph& graph, Unification& unification,
+                  const std::vector<Id>& roots, Metrics& metrics) {
   const Time total(metrics, "resolve.total");
 
   // collect named types
@@ -201,7 +197,6 @@ void ResolveTypes(Graph& graph,
     }
   }
 
-  Unification unification(graph, metrics);
   {
     const Time time(metrics, "resolve.unification");
     Counter definition_unified(metrics, "resolve.definition.unified");
@@ -216,7 +211,7 @@ void ResolveTypes(Graph& graph,
         std::vector<Id> todo;
         distinct_definitions.push_back(candidate);
         for (size_t i = 1; i < definitions.size(); ++i) {
-          if (Unify(graph, unification, definitions[i], candidate)) {
+          if (unification.Unify(definitions[i], candidate)) {
             // unification succeeded
             ++definition_unified;
           } else {
@@ -235,31 +230,6 @@ void ResolveTypes(Graph& graph,
           ++declaration_unified;
         }
       }
-    }
-  }
-
-  {
-    const Time time(metrics, "resolve.rewrite");
-    Counter removed(metrics, "resolve.removed");
-    Counter retained(metrics, "resolve.retained");
-    auto remap = [&unification](Id& id) {
-      unification.Update(id);
-    };
-    Substitute<decltype(remap)> substitute(graph, remap);
-    named_types.seen.ForEach([&](Id id) {
-      const Id fid = unification.Find(id);
-      if (fid != id) {
-        graph.Remove(id);
-        ++removed;
-      } else {
-        substitute(id);
-        ++retained;
-      }
-    });
-
-    // Update roots
-    for (Id& root : roots) {
-      substitute.Update(root);
     }
   }
 }

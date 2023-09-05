@@ -321,6 +321,10 @@ class Processor {
       case DW_TAG_restrict_type:
         ProcessReference<Qualified>(entry, Qualifier::RESTRICT);
         break;
+      case DW_TAG_atomic_type:
+        // TODO: test pending BTF / test suite support
+        ProcessReference<Qualified>(entry, Qualifier::ATOMIC);
+        break;
       case DW_TAG_variable:
         ProcessVariable(entry);
         break;
@@ -433,10 +437,7 @@ class Processor {
       // However, it is not guaranteed and we should do something if we find an
       // example.
       CheckNoChildren(entry);
-      const Id id = AddProcessedNode<StructUnion>(entry, kind, full_name);
-      if (!full_name.empty()) {
-        AddNamedTypeNode(id);
-      }
+      AddProcessedNode<StructUnion>(entry, kind, full_name);
       return;
     }
 
@@ -466,6 +467,11 @@ class Processor {
         case DW_TAG_typedef:
         case DW_TAG_variable:
           Process(child);
+          break;
+        case DW_TAG_template_type_parameter:
+        case DW_TAG_template_value_parameter:
+          // We just skip these as neither GCC nor Clang seem to use them
+          // properly (resulting in no references to such DIEs).
           break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: 0x"
@@ -562,10 +568,7 @@ class Processor {
       // However, it is not guaranteed and we should do something if we find an
       // example.
       CheckNoChildren(entry);
-      const Id id = AddProcessedNode<Enumeration>(entry, name);
-      if (!name.empty()) {
-        AddNamedTypeNode(id);
-      }
+      AddProcessedNode<Enumeration>(entry, name);
       return;
     }
     auto underlying_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
@@ -748,6 +751,10 @@ class Processor {
                  child_tag == DW_TAG_call_site ||
                  child_tag == DW_TAG_GNU_call_site) {
         Process(child);
+      } else if (child_tag == DW_TAG_template_type_parameter ||
+                 child_tag == DW_TAG_template_value_parameter) {
+        // We just skip these as neither GCC nor Clang seem to use them properly
+        // (resulting in no references to such DIEs).
       } else {
         Die() << "Unexpected tag for child of function: " << child_tag << ", "
               << EntryToString(child);
