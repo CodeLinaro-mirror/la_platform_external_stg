@@ -24,17 +24,19 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <ios>
-#include <iostream>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "dwarf_wrappers.h"
 #include "error.h"
+#include "filter.h"
 #include "graph.h"
 #include "scope.h"
 
@@ -140,8 +142,9 @@ size_t GetNumberOfElements(Entry& entry) {
       << "Non-zero DW_AT_lower_bound is not supported";
   std::optional<size_t> upper_bound_optional =
       entry.MaybeGetUnsignedConstant(DW_AT_upper_bound);
-  std::optional<size_t> number_of_elements_optional =
-      entry.MaybeGetUnsignedConstant(DW_AT_count);
+  // Don't fail if DW_AT_count is not a constant and treat this as no count
+  // provided. This can happen if array has variable length.
+  std::optional<size_t> number_of_elements_optional = entry.MaybeGetCount();
   if (upper_bound_optional && number_of_elements_optional) {
     Die() << "Both DW_AT_upper_bound and DW_AT_count given";
   } else if (upper_bound_optional) {
@@ -259,11 +262,13 @@ size_t GetDataBitOffset(Entry& entry, size_t bit_size,
 class Processor {
  public:
   Processor(Graph& graph, Id void_id, Id variadic_id,
-            bool is_little_endian_binary, Types& result)
+            bool is_little_endian_binary,
+            const std::unique_ptr<Filter>& file_filter, Types& result)
       : graph_(graph),
         void_id_(void_id),
         variadic_id_(variadic_id),
         is_little_endian_binary_(is_little_endian_binary),
+        file_filter_(file_filter),
         result_(result) {}
 
   void Process(Entry& entry) {
@@ -303,6 +308,9 @@ class Processor {
       case DW_TAG_ptr_to_member_type:
         ProcessPointerToMember(entry);
         break;
+      case DW_TAG_unspecified_type:
+        ProcessUnspecifiedType(entry);
+        break;
       case DW_TAG_compile_unit:
         ProcessCompileUnit(entry);
         break;
@@ -326,7 +334,10 @@ class Processor {
         ProcessReference<Qualified>(entry, Qualifier::ATOMIC);
         break;
       case DW_TAG_variable:
-        ProcessVariable(entry);
+        // Process only variables visible externally
+        if (entry.GetFlag(DW_AT_external)) {
+          ProcessVariable(entry);
+        }
         break;
       case DW_TAG_subroutine_type:
         // Standalone function type, for example, used in function pointers.
@@ -337,8 +348,7 @@ class Processor {
         ProcessFunction(entry);
         break;
       case DW_TAG_namespace:
-        // TODO: handle scopes
-        ProcessAllChildren(entry);
+        ProcessNamespace(entry);
         break;
 
       default:
@@ -390,6 +400,15 @@ class Processor {
   }
 
   void ProcessCompileUnit(Entry& entry) {
+    if (file_filter_ != nullptr) {
+      files_ = dwarf::Files(entry);
+    }
+    ProcessAllChildren(entry);
+  }
+
+  void ProcessNamespace(Entry& entry) {
+    auto name = GetNameOrEmpty(entry);
+    const PushScopeName push_scope_name(scope_, "namespace", name);
     ProcessAllChildren(entry);
   }
 
@@ -427,21 +446,37 @@ class Processor {
                                       pointee_type_id);
   }
 
+  void ProcessUnspecifiedType(Entry& entry) {
+    const std::string type_name =  GetName(entry);
+    Check(type_name == "decltype(nullptr)")
+        << "Unsupported DW_TAG_unspecified_type: " << type_name;
+    AddProcessedNode<Special>(entry, Special::Kind::NULLPTR);
+  }
+
+  bool ShouldKeepDefinition(Entry& entry, const std::string& name) const {
+    if (file_filter_ == nullptr) {
+      return true;
+    }
+    const auto file = files_.MaybeGetFile(entry, DW_AT_decl_file);
+    if (!file) {
+      // Built in types that do not have DW_AT_decl_file should be preserved.
+      static constexpr std::string_view kBuiltinPrefix = "__";
+      // TODO: use std::string_view::starts_with
+      if (name.substr(0, kBuiltinPrefix.size()) == kBuiltinPrefix) {
+        return true;
+      }
+      Die() << "File filter is provided, but DWARF entry << "
+            << EntryToString(entry) << " << doesn't have DW_AT_decl_file";
+    }
+    return (*file_filter_)(*file);
+  }
+
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
     std::string name = GetNameOrEmpty(entry);
     const std::string full_name = name.empty() ? std::string() : scope_ + name;
     const PushScopeName push_scope_name(scope_, kind, name);
 
-    if (entry.GetFlag(DW_AT_declaration)) {
-      // It is expected to have only name and no children in declaration.
-      // However, it is not guaranteed and we should do something if we find an
-      // example.
-      CheckNoChildren(entry);
-      AddProcessedNode<StructUnion>(entry, kind, full_name);
-      return;
-    }
-
-    auto byte_size = GetByteSize(entry);
+    std::vector<Id> base_classes;
     std::vector<Id> members;
     std::vector<Id> methods;
 
@@ -450,15 +485,21 @@ class Processor {
       // All possible children of struct/class/union
       switch (child_tag) {
         case DW_TAG_member:
-          members.push_back(GetIdForEntry(child));
-          ProcessMember(child);
+          if (child.GetFlag(DW_AT_external)) {
+            // static members are interpreted as variables and not included in
+            // members.
+            ProcessVariable(child);
+          } else {
+            members.push_back(GetIdForEntry(child));
+            ProcessMember(child);
+          }
           break;
         case DW_TAG_subprogram:
-          methods.push_back(GetIdForEntry(child));
-          ProcessMethod(child);
+          ProcessMethod(methods, child);
           break;
         case DW_TAG_inheritance:
-          // TODO: process base classes
+          base_classes.push_back(GetIdForEntry(child));
+          ProcessBaseClass(child);
           break;
         case DW_TAG_structure_type:
         case DW_TAG_class_type:
@@ -470,19 +511,30 @@ class Processor {
           break;
         case DW_TAG_template_type_parameter:
         case DW_TAG_template_value_parameter:
+        case DW_TAG_GNU_template_template_param:
+        case DW_TAG_GNU_template_parameter_pack:
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
           break;
         default:
-          Die() << "Unexpected tag for child of struct/class/union: 0x"
-                << std::hex << child_tag;
+          Die() << "Unexpected tag for child of struct/class/union: "
+                << Hex(child_tag);
       }
     }
 
-    // TODO: support base classes
+    if (entry.GetFlag(DW_AT_declaration) ||
+        !ShouldKeepDefinition(entry, name)) {
+      // Declaration may have partial information about members or method.
+      // We only need to parse children for information that will be needed in
+      // complete definition, but don't need to store them in incomplete node.
+      AddProcessedNode<StructUnion>(entry, kind, full_name);
+      return;
+    }
+
+    const auto byte_size = GetByteSize(entry);
+
     const Id id = AddProcessedNode<StructUnion>(
-        entry, kind, full_name, byte_size,
-        /* base_classes = */ std::vector<Id>{},
+        entry, kind, full_name, byte_size, std::move(base_classes),
         std::move(methods), std::move(members));
     if (!full_name.empty()) {
       AddNamedTypeNode(id);
@@ -504,7 +556,7 @@ class Processor {
         GetDataBitOffset(entry, bit_size, is_little_endian_binary_), bit_size);
   }
 
-  void ProcessMethod(Entry& entry) {
+  void ProcessMethod(std::vector<Id>& methods, Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     auto id = graph_.Add<Function>(std::move(subprogram.node));
     if (subprogram.external && subprogram.address) {
@@ -518,22 +570,47 @@ class Processor {
           .address = *subprogram.address,
           .id = id});
     }
+    const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
+                                 .value_or(DW_VIRTUALITY_none);
+    if (virtuality == DW_VIRTUALITY_virtual ||
+        virtuality == DW_VIRTUALITY_pure_virtual) {
+      if (!subprogram.name_with_context.unscoped_name) {
+        Die() << "Method " << EntryToString(entry) << " should have name";
+      }
+      if (subprogram.name_with_context.specification) {
+        Die() << "Method " << EntryToString(entry)
+              << " shouldn't have specification";
+      }
+      const auto vtable_offset = entry.MaybeGetVtableOffset();
+      if (!vtable_offset) {
+        Die() << "Virtual method " << EntryToString(entry)
+              << " should have offset";
+      }
+      // TODO: proper handling of missing linkage name
+      methods.push_back(AddProcessedNode<Method>(
+          entry, subprogram.linkage_name.value_or("{missing}"),
+          *subprogram.name_with_context.unscoped_name, *vtable_offset, id));
+    }
+  }
 
-    // TODO: support kind
-    const Method::Kind kind = Method::Kind::NON_VIRTUAL;
-    // TODO: support vtable_offset
-    if (!subprogram.name_with_context.unscoped_name) {
-      Die() << "Method " << EntryToString(entry) << " should have name";
+  void ProcessBaseClass(Entry& entry) {
+    const auto type_id = GetIdForReferredType(GetReferredType(entry));
+    const auto byte_offset = entry.MaybeGetMemberByteOffset();
+    if (!byte_offset) {
+      Die() << "No offset found for base class " << EntryToString(entry);
     }
-    if (subprogram.name_with_context.specification) {
-      Die() << "Method " << EntryToString(entry)
-            << " shouldn't have specification";
+    const auto bit_offset = *byte_offset * 8;
+    const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
+                                 .value_or(DW_VIRTUALITY_none);
+    BaseClass::Inheritance inheritance;
+    if (virtuality == DW_VIRTUALITY_none) {
+      inheritance = BaseClass::Inheritance::NON_VIRTUAL;
+    } else if (virtuality == DW_VIRTUALITY_virtual) {
+      inheritance = BaseClass::Inheritance::VIRTUAL;
+    } else {
+      Die() << "Unexpected base class virtuality: " << virtuality;
     }
-    // TODO: proper handling of missing linkage name
-    AddProcessedNode<Method>(entry,
-                             subprogram.linkage_name.value_or("{missing}"),
-                             *subprogram.name_with_context.unscoped_name, kind,
-                             /* vtable_offset = */ std::nullopt, id);
+    AddProcessedNode<BaseClass>(entry, type_id, bit_offset, inheritance);
   }
 
   void ProcessArray(Entry& entry) {
@@ -562,7 +639,10 @@ class Processor {
   }
 
   void ProcessEnum(Entry& entry) {
-    std::string name = GetNameOrEmpty(entry);
+    const std::optional<std::string> name_optional = MaybeGetName(entry);
+    const std::string name =
+        name_optional.has_value() ? scope_ + *name_optional : "";
+
     if (entry.GetFlag(DW_AT_declaration)) {
       // It is expected to have only name and no children in declaration.
       // However, it is not guaranteed and we should do something if we find an
@@ -588,6 +668,10 @@ class Processor {
       // signedness of underlying type.
       enumerators.emplace_back(enumerator_name,
                                static_cast<int64_t>(*value_optional));
+    }
+    if (!ShouldKeepDefinition(entry, name)) {
+      AddProcessedNode<Enumeration>(entry, name);
+      return;
     }
     const Id id = AddProcessedNode<Enumeration>(entry, name, underlying_type_id,
                                                 std::move(enumerators));
@@ -676,24 +760,16 @@ class Processor {
   }
 
   void ProcessVariable(Entry& entry) {
-    // Skip:
-    //  * anonymous variables (for example, anonymous union)
-    //  * variables not visible outside of its enclosing compilation unit
-    if (!entry.GetFlag(DW_AT_external)) {
-      return;
-    }
-    std::optional<std::string> name_optional = MaybeGetName(entry);
-    if (!name_optional) {
-      return;
-    }
+    auto name_with_context = GetNameWithContext(entry);
 
     auto referred_type = GetReferredType(entry);
     auto referred_type_id = GetIdForEntry(referred_type);
 
     if (auto address = entry.MaybeGetAddress(DW_AT_location)) {
       // Only external variables with address are useful for ABI monitoring
+      const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = *name_optional,
+          .name = GetScopedNameForSymbol(new_symbol_idx, name_with_context),
           .linkage_name = entry.MaybeGetString(DW_AT_linkage_name),
           .address = *address,
           .id = referred_type_id});
@@ -719,7 +795,7 @@ class Processor {
     Function node;
     NameWithContext name_with_context;
     std::optional<std::string> linkage_name;
-    std::optional<size_t> address;
+    std::optional<Address> address;
     bool external;
   };
 
@@ -729,35 +805,51 @@ class Processor {
     std::vector<Id> parameters;
     for (auto& child : entry.GetChildren()) {
       auto child_tag = child.GetTag();
-      if (child_tag == DW_TAG_formal_parameter) {
-        auto child_type = GetReferredType(child);
-        auto child_type_id = GetIdForEntry(child_type);
-        parameters.push_back(child_type_id);
-      } else if (child_tag == DW_TAG_unspecified_parameters) {
-        // Note: C++ allows a single ... argument specification but C does not.
-        // However, "extern int foo();" (note lack of "void" in parameters) in C
-        // will produce the same DWARF as "extern int foo(...);" in C++.
-        CheckNoChildren(child);
-        parameters.push_back(variadic_id_);
-      } else if (child_tag == DW_TAG_enumeration_type ||
-                 child_tag == DW_TAG_label ||
-                 child_tag == DW_TAG_lexical_block ||
-                 child_tag == DW_TAG_structure_type ||
-                 child_tag == DW_TAG_class_type ||
-                 child_tag == DW_TAG_union_type ||
-                 child_tag == DW_TAG_typedef ||
-                 child_tag == DW_TAG_inlined_subroutine ||
-                 child_tag == DW_TAG_variable ||
-                 child_tag == DW_TAG_call_site ||
-                 child_tag == DW_TAG_GNU_call_site) {
-        Process(child);
-      } else if (child_tag == DW_TAG_template_type_parameter ||
-                 child_tag == DW_TAG_template_value_parameter) {
-        // We just skip these as neither GCC nor Clang seem to use them properly
-        // (resulting in no references to such DIEs).
-      } else {
-        Die() << "Unexpected tag for child of function: " << child_tag << ", "
-              << EntryToString(child);
+      switch (child_tag) {
+        case DW_TAG_formal_parameter:
+          parameters.push_back(GetIdForReferredType(GetReferredType(child)));
+          break;
+        case DW_TAG_unspecified_parameters:
+          // Note: C++ allows a single ... argument specification but C does
+          // not. However, "extern int foo();" (note lack of "void" in
+          // parameters) in C will produce the same DWARF as "extern int
+          // foo(...);" in C++.
+          CheckNoChildren(child);
+          parameters.push_back(variadic_id_);
+          break;
+        case DW_TAG_enumeration_type:
+        case DW_TAG_label:
+        case DW_TAG_lexical_block:
+        case DW_TAG_structure_type:
+        case DW_TAG_class_type:
+        case DW_TAG_union_type:
+        case DW_TAG_typedef:
+        case DW_TAG_inlined_subroutine:
+        case DW_TAG_variable:
+        case DW_TAG_call_site:
+        case DW_TAG_GNU_call_site:
+          // TODO: Do not leak local types outside this scope.
+          // TODO: It would be better to not process any
+          // information that is function local but there is a dangling
+          // reference Clang bug.
+          Process(child);
+          break;
+        case DW_TAG_imported_declaration:
+        case DW_TAG_imported_module:
+          // For now information there is useless for ABI monitoring, but we
+          // need to check that there is no missing information in descendants.
+          CheckNoChildren(child);
+          break;
+        case DW_TAG_template_type_parameter:
+        case DW_TAG_template_value_parameter:
+        case DW_TAG_GNU_template_template_param:
+        case DW_TAG_GNU_template_parameter_pack:
+          // We just skip these as neither GCC nor Clang seem to use them
+          // properly (resulting in no references to such DIEs).
+          break;
+        default:
+          Die() << "Unexpected tag for child of function: " << child_tag << ", "
+                << EntryToString(child);
       }
     }
 
@@ -784,6 +876,11 @@ class Processor {
     return referred_type ? GetIdForEntry(*referred_type) : void_id_;
   }
 
+  // Wrapper for GetIdForEntry to allow lvalues.
+  Id GetIdForReferredType(Entry referred_type) {
+    return GetIdForEntry(referred_type);
+  }
+
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
@@ -800,21 +897,23 @@ class Processor {
   Id void_id_;
   Id variadic_id_;
   bool is_little_endian_binary_;
+  const std::unique_ptr<Filter>& file_filter_;
   Types& result_;
   std::unordered_map<Dwarf_Off, Id> id_map_;
   // Current scope.
   Scope scope_;
   std::vector<std::pair<Dwarf_Off, std::string>> scoped_names_;
   std::vector<std::pair<Dwarf_Off, size_t>> unresolved_symbol_specifications_;
+  dwarf::Files files_;
 };
 
 Types ProcessEntries(std::vector<Entry> entries, bool is_little_endian_binary,
-                     Graph& graph) {
+                     const std::unique_ptr<Filter>& file_filter, Graph& graph) {
   Types result;
-  Id void_id = graph.Add<Void>();
-  Id variadic_id = graph.Add<Variadic>();
+  const Id void_id = graph.Add<Special>(Special::Kind::VOID);
+  const Id variadic_id = graph.Add<Special>(Special::Kind::VARIADIC);
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
-                      result);
+                      file_filter, result);
   for (auto& entry : entries) {
     processor.Process(entry);
   }
@@ -824,9 +923,10 @@ Types ProcessEntries(std::vector<Entry> entries, bool is_little_endian_binary,
   return result;
 }
 
-Types Process(Handler& dwarf, bool is_little_endian_binary, Graph& graph) {
+Types Process(Handler& dwarf, bool is_little_endian_binary,
+              const std::unique_ptr<Filter>& file_filter, Graph& graph) {
   return ProcessEntries(dwarf.GetCompilationUnits(), is_little_endian_binary,
-                        graph);
+                        file_filter, graph);
 }
 
 }  // namespace dwarf

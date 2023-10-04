@@ -55,6 +55,7 @@ struct Transformer {
   void AddNodes(const google::protobuf::RepeatedPtrField<ProtoType>&);
   void AddNode(const Void&);
   void AddNode(const Variadic&);
+  void AddNode(const Special&);
   void AddNode(const PointerReference&);
   void AddNode(const PointerToMember&);
   void AddNode(const Typedef&);
@@ -77,11 +78,11 @@ struct Transformer {
   template <typename GetKey>
   std::map<std::string, Id> Transform(GetKey,
                                       const google::protobuf::RepeatedField<uint32_t>&);
+  stg::Special::Kind Transform(Special::Kind);
   stg::PointerReference::Kind Transform(PointerReference::Kind);
   stg::Qualifier Transform(Qualified::Qualifier);
   stg::Primitive::Encoding Transform(Primitive::Encoding);
   stg::BaseClass::Inheritance Transform(BaseClass::Inheritance);
-  stg::Method::Kind Transform(Method::Kind);
   stg::StructUnion::Kind Transform(StructUnion::Kind);
   stg::ElfSymbol::SymbolType Transform(ElfSymbol::SymbolType);
   stg::ElfSymbol::Binding Transform(ElfSymbol::Binding);
@@ -98,8 +99,9 @@ struct Transformer {
 };
 
 Id Transformer::Transform(const proto::STG& x) {
-  AddNodes(x.void_());
-  AddNodes(x.variadic());
+  AddNodes(x.void_());  // deprecated
+  AddNodes(x.variadic());  // deprecated
+  AddNodes(x.special());
   AddNodes(x.pointer_reference());
   AddNodes(x.pointer_to_member());
   AddNodes(x.typedef_());
@@ -134,11 +136,15 @@ void Transformer::AddNodes(const google::protobuf::RepeatedPtrField<ProtoType>& 
 }
 
 void Transformer::AddNode(const Void& x) {
-  AddNode<stg::Void>(GetId(x.id()));
+  AddNode<stg::Special>(GetId(x.id()), stg::Special::Kind::VOID);
 }
 
 void Transformer::AddNode(const Variadic& x) {
-  AddNode<stg::Variadic>(GetId(x.id()));
+  AddNode<stg::Special>(GetId(x.id()), stg::Special::Kind::VARIADIC);
+}
+
+void Transformer::AddNode(const Special& x) {
+  AddNode<stg::Special>(GetId(x.id()), x.kind());
 }
 
 void Transformer::AddNode(const PointerReference& x) {
@@ -177,10 +183,8 @@ void Transformer::AddNode(const BaseClass& x) {
 }
 
 void Transformer::AddNode(const Method& x) {
-  const auto& vtable_offset =
-      Transform<uint64_t>(x.has_vtable_offset(), x.vtable_offset());
-  AddNode<stg::Method>(GetId(x.id()), x.mangled_name(), x.name(), x.kind(),
-                       vtable_offset, GetId(x.type_id()));
+  AddNode<stg::Method>(GetId(x.id()), x.mangled_name(), x.name(),
+                       x.vtable_offset(), GetId(x.type_id()));
 }
 
 void Transformer::AddNode(const Member& x) {
@@ -279,6 +283,19 @@ std::map<std::string, Id> Transformer::Transform(
   return result;
 }
 
+stg::Special::Kind Transformer::Transform(Special::Kind x) {
+  switch (x) {
+    case Special::VOID:
+      return stg::Special::Kind::VOID;
+    case Special::VARIADIC:
+      return stg::Special::Kind::VARIADIC;
+    case Special::NULLPTR:
+      return stg::Special::Kind::NULLPTR;
+    default:
+      Die() << "unknown Special::Kind " << x;
+  }
+}
+
 stg::PointerReference::Kind Transformer::Transform(PointerReference::Kind x) {
   switch (x) {
     case PointerReference::POINTER:
@@ -338,19 +355,6 @@ stg::BaseClass::Inheritance Transformer::Transform(BaseClass::Inheritance x) {
       return stg::BaseClass::Inheritance::VIRTUAL;
     default:
       Die() << "unknown BaseClass::Inheritance " << x;
-  }
-}
-
-stg::Method::Kind Transformer::Transform(Method::Kind x) {
-  switch (x) {
-    case Method::NON_VIRTUAL:
-      return stg::Method::Kind::NON_VIRTUAL;
-    case Method::STATIC:
-      return stg::Method::Kind::STATIC;
-    case Method::VIRTUAL:
-      return stg::Method::Kind::VIRTUAL;
-    default:
-      Die() << "unknown Method::Kind " << x;
   }
 }
 
@@ -434,7 +438,7 @@ Type Transformer::Transform(const Type& x) {
   return x;
 }
 
-const std::array<uint32_t, 2> kSupportedFormatVersions = {0, 1};
+const std::array<uint32_t, 3> kSupportedFormatVersions = {0, 1, 2};
 
 void CheckFormatVersion(uint32_t version, std::optional<std::string> path) {
   Check(std::count(kSupportedFormatVersions.begin(),

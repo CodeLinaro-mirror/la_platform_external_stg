@@ -83,10 +83,16 @@ struct hash<stg::Pair> {
 
 namespace stg {
 
-struct Void {
-};
+struct Special {
+  enum class Kind {
+    VOID,
+    VARIADIC,
+    NULLPTR,
+  };
+  explicit Special(Kind kind)
+      : kind(kind) {}
 
-struct Variadic {
+  Kind kind;
 };
 
 struct PointerReference {
@@ -175,20 +181,16 @@ struct BaseClass {
 std::ostream& operator<<(std::ostream& os, BaseClass::Inheritance inheritance);
 
 struct Method {
-  enum class Kind { NON_VIRTUAL, STATIC, VIRTUAL };
-  Method(const std::string& mangled_name, const std::string& name, Kind kind,
-         const std::optional<uint64_t> vtable_offset, Id type_id)
-      : mangled_name(mangled_name), name(name), kind(kind),
+  Method(const std::string& mangled_name, const std::string& name,
+         uint64_t vtable_offset, Id type_id)
+      : mangled_name(mangled_name), name(name),
         vtable_offset(vtable_offset), type_id(type_id) {}
 
   std::string mangled_name;
   std::string name;
-  Kind kind;
-  std::optional<uint64_t> vtable_offset;
+  uint64_t vtable_offset;
   Id type_id;
 };
-
-std::ostream& operator<<(std::ostream& os, Method::Kind kind);
 
 struct Member {
   Member(const std::string& name, Id type_id, uint64_t offset, uint64_t bitsize)
@@ -347,12 +349,9 @@ class Graph {
     if (reference.first != Which::ABSENT) {
       Die() << "node value already set: " << id;
     }
-    if constexpr (std::is_same_v<Node, Void>) {
-      reference = {Which::VOID, void_.size()};
-      void_.emplace_back(std::forward<Args>(args)...);
-    } else if constexpr (std::is_same_v<Node, Variadic>) {
-      reference = {Which::VARIADIC, variadic_.size()};
-      variadic_.emplace_back(std::forward<Args>(args)...);
+    if constexpr (std::is_same_v<Node, Special>) {
+      reference = {Which::SPECIAL, special_.size()};
+      special_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, PointerReference>) {
       reference = {Which::POINTER_REFERENCE, pointer_reference_.size()};
       pointer_reference_.emplace_back(std::forward<Args>(args)...);
@@ -435,9 +434,8 @@ class Graph {
   Result Apply(FunctionObject& function, Id id, Args&&... args);
 
   template <typename Function>
-  void ForEach(Function&& function) const {
-    const size_t limit = Limit().ix_;
-    for (size_t ix = 0; ix < limit; ++ix) {
+  void ForEach(Id start, Id limit, Function&& function) const {
+    for (size_t ix = start.ix_; ix < limit.ix_; ++ix) {
       const Id id(ix);
       if (Is(id)) {
         function(id);
@@ -448,8 +446,7 @@ class Graph {
  private:
   enum class Which {
     ABSENT,
-    VOID,
-    VARIADIC,
+    SPECIAL,
     POINTER_REFERENCE,
     POINTER_TO_MEMBER,
     TYPEDEF,
@@ -468,8 +465,7 @@ class Graph {
 
   std::vector<std::pair<Which, size_t>> indirection_;
 
-  std::vector<Void> void_;
-  std::vector<Variadic> variadic_;
+  std::vector<Special> special_;
   std::vector<PointerReference> pointer_reference_;
   std::vector<PointerToMember> pointer_to_member_;
   std::vector<Typedef> typedef_;
@@ -492,10 +488,8 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
   switch (which) {
     case Which::ABSENT:
       Die() << "undefined node: " << id;
-    case Which::VOID:
-      return function(void_[ix], std::forward<Args>(args)...);
-    case Which::VARIADIC:
-      return function(variadic_[ix], std::forward<Args>(args)...);
+    case Which::SPECIAL:
+      return function(special_[ix], std::forward<Args>(args)...);
     case Which::POINTER_REFERENCE:
       return function(pointer_reference_[ix], std::forward<Args>(args)...);
     case Which::POINTER_TO_MEMBER:
@@ -538,11 +532,8 @@ Result Graph::Apply2(
   switch (which1) {
     case Which::ABSENT:
       Die() << "undefined nodes: " << id1 << ", " << id2;
-    case Which::VOID:
-      return function(void_[ix1], void_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::VARIADIC:
-      return function(variadic_[ix1], variadic_[ix2],
+    case Which::SPECIAL:
+      return function(special_[ix1], special_[ix2],
                       std::forward<Args>(args)...);
     case Which::POINTER_REFERENCE:
       return function(pointer_reference_[ix1], pointer_reference_[ix2],
@@ -649,20 +640,28 @@ struct InterfaceKey {
 // key set limited to allocated Ids.
 class DenseIdSet {
  public:
-  explicit DenseIdSet(Id limit) : ids_(limit.ix_, false) {}
+  explicit DenseIdSet(Id start) : offset_(start.ix_) {}
+  void Reserve(Id limit) {
+    ids_.reserve(limit.ix_ - offset_);
+  }
   bool Insert(Id id) {
     const auto ix = id.ix_;
-    if (ix >= ids_.size()) {
-      ids_.resize(ix + 1);
+    if (ix < offset_) {
+      Die() << "DenseIdSet: out of range access to " << id;
     }
-    if (ids_[ix]) {
+    const auto offset_ix = ix - offset_;
+    if (offset_ix >= ids_.size()) {
+      ids_.resize(offset_ix + 1, false);
+    }
+    if (ids_[offset_ix]) {
       return false;
     }
-    ids_[ix] = true;
+    ids_[offset_ix] = true;
     return true;
   }
 
  private:
+  size_t offset_;
   std::vector<bool> ids_;
 };
 
@@ -670,24 +669,27 @@ class DenseIdSet {
 // but with constant time operations and key set limited to allocated Ids.
 class DenseIdMapping {
  public:
-  explicit DenseIdMapping(Id limit) {
-    ids_.reserve(limit.ix_);
-    Populate(limit.ix_);
+  explicit DenseIdMapping(Id start) : offset_(start.ix_) {}
+  void Reserve(Id limit) {
+    ids_.reserve(limit.ix_ - offset_);
   }
   Id& operator[](Id id) {
     const auto ix = id.ix_;
+    if (ix < offset_) {
+      Die() << "DenseIdMapping: out of range access to " << id;
+    }
     Populate(ix + 1);
-    return ids_[ix];
+    return ids_[ix - offset_];
   }
 
  private:
   void Populate(size_t size) {
-    const auto limit = ids_.size();
-    for (size_t ix = limit; ix < size; ++ix) {
+    for (size_t ix = offset_ + ids_.size(); ix < size; ++ix) {
       ids_.emplace_back(ix);
     }
   }
 
+  size_t offset_;
   std::vector<Id> ids_;
 };
 

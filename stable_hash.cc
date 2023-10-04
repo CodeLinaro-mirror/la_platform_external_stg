@@ -68,12 +68,15 @@ HashValue StableHash::operator()(Id id) {
   return it->second;
 }
 
-HashValue StableHash::operator()(const Void&) {
-  return hash_("void");
-}
-
-HashValue StableHash::operator()(const Variadic&) {
-  return hash_("variadic");
+HashValue StableHash::operator()(const Special& x) {
+  switch (x.kind) {
+    case Special::Kind::VOID:
+      return hash_("void");
+    case Special::Kind::VARIADIC:
+      return hash_("variadic");
+    case Special::Kind::NULLPTR:
+      return hash_("nullptr");
+  }
 }
 
 HashValue StableHash::operator()(const PointerReference& x) {
@@ -110,7 +113,7 @@ HashValue StableHash::operator()(const BaseClass& x) {
 }
 
 HashValue StableHash::operator()(const Method& x) {
-  return hash_(x.mangled_name, static_cast<uint32_t>(x.kind));
+  return hash_(x.mangled_name);
 }
 
 HashValue StableHash::operator()(const Member& x) {
