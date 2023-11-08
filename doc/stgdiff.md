@@ -265,33 +265,33 @@ return 0. Otherwise:
 *   Compare two ABI XML files, and print a short report to stdout:
 
     ```
-    stgdiff -f short -a abi.0.xml abi.1.xml -o -
+    stgdiff -a abi.0.xml abi.1.xml -f short -o -
     ```
 
 *   Compare two ABI XML files **without printing anything**:
 
     ```
-    stgdiff abi.0.xml abi.1.xml && echo "Equivalent" || echo "Not equivalent, return code: $?"
+    stgdiff -a abi.0.xml abi.1.xml && echo "Equivalent" || echo "Not equivalent, return code: $?"
     ```
 
 *   Compare two ABI XML files, print short report to stdout and also print diff
     graph visualisation to the file:
 
     ```
-    stgdiff abi.0.xml abi.1.xml -f short -o - -f viz -o graph.viz
+    stgdiff -a abi.0.xml abi.1.xml -f short -o - -f viz -o graph.viz
     ```
 
 *   Compare two ABI XML files, ignoring type presence and type declaration
     status changes, and print short report to stdout:
 
     ```
-    stgdiff -f short -i symbol_type_presence -i type_declaration_status -a abi.0.xml abi.1.xml -o -
+    stgdiff -i symbol_type_presence -i type_declaration_status -a abi.0.xml abi.1.xml -f short -o -
     ```
 
 *   Compare ABI XML to ABI from ELF and print a short report to file:
 
     ```
-    stgdiff -f short -a abi.xml -e example.o -o example.diff
+    stgdiff -a abi.xml -e example.o -f short -o example.diff
     ```
 
 *   Compare two STG files and print fidelity report to stdout:
@@ -304,5 +304,5 @@ return 0. Otherwise:
     stdout:
 
     ```
-    stgdiff -f short -t -e example1.o example2.o -o -
+    stgdiff -t -e example1.o example2.o -f short -o -
     ```
