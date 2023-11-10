@@ -442,6 +442,37 @@ void SortMethodsByMangledName(google::protobuf::RepeatedPtrField<Method>& method
   std::sort(methods.pointer_begin(), methods.pointer_end(), compare);
 }
 
+void SortElfSymbolsByVersionedName(
+    google::protobuf::RepeatedPtrField<ElfSymbol>& elf_symbols) {
+  // TODO: use spaceship operator <=>
+  const auto compare = [](const ElfSymbol* lhs, const ElfSymbol* rhs) {
+    if (const int c = lhs->name().compare(rhs->name()); c != 0) {
+      return c < 0;
+    }
+
+    // Put symbols with version info after those without version info.
+    if (lhs->has_version_info() != rhs->has_version_info()) {
+      return rhs->has_version_info();
+    }
+
+    if (lhs->has_version_info()) {
+      const auto& l_version = lhs->version_info();
+      const auto& r_version = rhs->version_info();
+      if (const int c = l_version.name().compare(r_version.name()); c != 0) {
+        return c < 0;
+      }
+
+      // Put symbols with default version before those with non-default version.
+      if (l_version.is_default() != r_version.is_default()) {
+        return r_version.is_default();
+      }
+    }
+
+    return lhs->id() < rhs->id();
+  };
+  std::sort(elf_symbols.pointer_begin(), elf_symbols.pointer_end(), compare);
+}
+
 void SortNodes(STG& stg) {
   SortNodesById(*stg.mutable_void_());
   SortNodesById(*stg.mutable_variadic());
@@ -457,7 +488,7 @@ void SortNodes(STG& stg) {
   SortNodesByName(*stg.mutable_struct_union());
   SortNodesByName(*stg.mutable_enumeration());
   SortNodesById(*stg.mutable_function());
-  SortNodesByName(*stg.mutable_elf_symbol());
+  SortElfSymbolsByVersionedName(*stg.mutable_elf_symbol());
 }
 
 class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {

@@ -26,6 +26,18 @@ elf_symbol {
   full_name: "test"
 }
 elf_symbol {
+  id: 0x48a2d940
+  name: "versioned_foo"
+  version_info {
+    is_default: true
+    name: "VERS_1"
+  }
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x10985193
+  full_name: "versioned_foo_v1"
+}
+elf_symbol {
   id: 0x48a265ef
   name: "versioned_foo"
   version_info {
@@ -46,18 +58,6 @@ elf_symbol {
   symbol_type: FUNCTION
   type_id: 0x10985193
   full_name: "versioned_foo_v3"
-}
-elf_symbol {
-  id: 0x48a2d940
-  name: "versioned_foo"
-  version_info {
-    is_default: true
-    name: "VERS_1"
-  }
-  is_defined: true
-  symbol_type: FUNCTION
-  type_id: 0x10985193
-  full_name: "versioned_foo_v1"
 }
 elf_symbol {
   id: 0xc828cd97
