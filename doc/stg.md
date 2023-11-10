@@ -123,7 +123,7 @@ There are two types of filters that can be applied to STG output:
 
 The basic syntactical elements are:
 
-*   `glob` - a glob pattern matching symbol names
+*   `glob` - a **glob**(7) pattern supporting `?`, `*` and `[ ... ]` wilcards
 *   `:filename` - the name of a file containing a libabigail format filter list
 
 Filter expressions can be combined with infix disjuction (`|`) and conjunction
