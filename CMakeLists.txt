@@ -95,7 +95,7 @@ add_library(libstg OBJECT
   ${PROTO_HDRS})
 # Needed for generated .pb.h files
 target_include_directories(libstg PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(libstg PRIVATE ${COMMON_LIBRARIES})
+target_link_libraries(libstg PUBLIC ${COMMON_LIBRARIES})
 
 set(STG_EXECUTABLE_TARGETS stg stgdiff stginfo)
 
@@ -103,6 +103,46 @@ foreach(TARGET IN LISTS STG_EXECUTABLE_TARGETS)
   add_executable("${TARGET}" "${TARGET}.cc")
   target_link_libraries("${TARGET}" PRIVATE libstg)
 endforeach()
+
+# Testing
+
+find_package(Catch2 QUIET)
+
+if(NOT Catch2_FOUND)
+
+  message(NOTICE "Catch2 testing framework not found. Disabling tests.")
+
+else()
+  enable_testing()
+
+  add_custom_command(OUTPUT testdata
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_SOURCE_DIR}/testdata/
+            ${CMAKE_BINARY_DIR}/testdata
+  )
+  add_custom_target(testdata_symlink DEPENDS testdata)
+
+  set(TEST_FILES
+    abigail_reader_test
+    elf_reader_test
+    error_test
+    file_descriptor_test
+    filter_test
+    metrics_test
+    order_test
+    reporting_test
+    scc_test
+    stgdiff_test
+  )
+
+  foreach(test_file ${TEST_FILES})
+    add_executable(${test_file} ${test_file}.cc)
+    target_link_libraries(${test_file} Catch2::Catch2WithMain libstg)
+    add_test(NAME ${test_file} COMMAND ${test_file})
+    add_dependencies(${test_file} testdata_symlink)
+  endforeach()
+
+endif()  # Catch2_FOUND
 
 # Installation and packaging
 
