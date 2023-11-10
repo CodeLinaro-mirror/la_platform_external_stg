@@ -51,13 +51,9 @@ ignore options: type_declaration_status symbol_type_presence primitive_type_enco
 
     Read ABI information from ELF symbols and DWARF types.
 
-    NOTE: C++ DWARF type support is a work-in-progress.
-
 *   `-s|--stg`
 
     Read ABI information from a `.stg` file.
-
-    NOTE: The `.stg` format is still novel and subject to change.
 
 ### Options
 
