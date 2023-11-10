@@ -32,17 +32,17 @@ method {
   type_id: 0x9f577646
 }
 method {
-  id: 0x63c715c4
-  mangled_name: "_ZN1Y1fEv"
-  name: "f"
-  type_id: 0x99535d33
-}
-method {
   id: 0xb8b6ef68
   mangled_name: "_ZN1X1gEv"
   name: "g"
   vtable_offset: 1
   type_id: 0x9f577646
+}
+method {
+  id: 0x63c715c4
+  mangled_name: "_ZN1Y1fEv"
+  name: "f"
+  type_id: 0x99535d33
 }
 method {
   id: 0xe8e61433

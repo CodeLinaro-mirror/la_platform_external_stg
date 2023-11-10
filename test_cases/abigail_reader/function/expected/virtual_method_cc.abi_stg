@@ -10,16 +10,16 @@ pointer_reference {
   pointee_type_id: 0xf6f304f7
 }
 method {
+  id: 0x91a60460
+  mangled_name: "_ZN3Foo3barEv"
+  name: "bar"
+  type_id: 0x1d536fb5
+}
+method {
   id: 0x3bae9a68
   mangled_name: "_ZN3Foo3bazEv"
   name: "baz"
   vtable_offset: 1
-  type_id: 0x1d536fb5
-}
-method {
-  id: 0x91a60460
-  mangled_name: "_ZN3Foo3barEv"
-  name: "bar"
   type_id: 0x1d536fb5
 }
 struct_union {

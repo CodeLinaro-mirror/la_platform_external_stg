@@ -434,6 +434,14 @@ void SortNodesByName(google::protobuf::RepeatedPtrField<ProtoNode>& nodes) {
   std::sort(nodes.pointer_begin(), nodes.pointer_end(), compare);
 }
 
+void SortMethodsByMangledName(google::protobuf::RepeatedPtrField<Method>& methods) {
+  const auto compare = [](const Method* lhs, const Method* rhs) {
+    const int comparison = lhs->mangled_name().compare(rhs->mangled_name());
+    return comparison < 0 || (comparison == 0 && lhs->id() < rhs->id());
+  };
+  std::sort(methods.pointer_begin(), methods.pointer_end(), compare);
+}
+
 void SortNodes(STG& stg) {
   SortNodesById(*stg.mutable_void_());
   SortNodesById(*stg.mutable_variadic());
@@ -444,7 +452,7 @@ void SortNodes(STG& stg) {
   SortNodesById(*stg.mutable_primitive());
   SortNodesById(*stg.mutable_array());
   SortNodesById(*stg.mutable_base_class());
-  SortNodesById(*stg.mutable_method());
+  SortMethodsByMangledName(*stg.mutable_method());
   SortNodesByName(*stg.mutable_member());
   SortNodesByName(*stg.mutable_struct_union());
   SortNodesByName(*stg.mutable_enumeration());
