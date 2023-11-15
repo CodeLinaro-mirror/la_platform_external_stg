@@ -15,8 +15,8 @@ struct Func {
 } var;
 
 int Func::change_return_type() { return 0; }
-int Func::add_parameter() { return 0; }
-int Func::remove_parameter(int) { return 0; }
-int Func::change_parameter_type(int) { return 0; }
-int Func::rename_old() { return 0; }
-int Func::change_parameter_name(int) { return 0; }
+int Func::add_parameter() { return 1; }
+int Func::remove_parameter(int) { return 2; }
+int Func::change_parameter_type(int) { return 3; }
+int Func::rename_old() { return 4; }
+int Func::change_parameter_name(int) { return 5; }
