@@ -21,9 +21,6 @@
 
 #include <cstddef>
 #include <functional>
-#include <iomanip>
-#include <ios>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <optional>
@@ -198,7 +195,7 @@ class Reader {
          const std::unique_ptr<Filter>& file_filter, Metrics& metrics)
       : graph_(graph),
         dwarf_(path),
-        elf_(dwarf_.GetElf(), options.Test(ReadOptions::INFO)),
+        elf_(dwarf_.GetElf()),
         options_(options),
         file_filter_(file_filter),
         metrics_(metrics) {}
@@ -207,7 +204,7 @@ class Reader {
          const std::unique_ptr<Filter>& file_filter, Metrics& metrics)
       : graph_(graph),
         dwarf_(data, size),
-        elf_(dwarf_.GetElf(), options.Test(ReadOptions::INFO)),
+        elf_(dwarf_.GetElf()),
         options_(options),
         file_filter_(file_filter),
         metrics_(metrics) {}
@@ -403,10 +400,6 @@ class Reader {
 
 Id Reader::Read() {
   const auto all_symbols = elf_.GetElfSymbols();
-  if (options_.Test(ReadOptions::INFO)) {
-    std::cout << "Parsed " << all_symbols.size() << " symbols\n";
-  }
-
   const bool is_linux_kernel = elf_.IsLinuxKernelBinary();
   const SymbolNameList ksymtab_symbols =
       is_linux_kernel ? GetKsymtabSymbols(all_symbols) : SymbolNameList();
@@ -419,16 +412,7 @@ Id Reader::Read() {
   }
 
   const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
-  if (options_.Test(ReadOptions::INFO) && !cfi_address_map.empty()) {
-    std::cout << "CFI symbols:\n";
-    for (const auto& [name, address] : cfi_address_map) {
-      std::cout << "  " << name << " -> " << Hex(address) << '\n';
-    }
-  }
 
-  if (options_.Test(ReadOptions::INFO)) {
-    std::cout << "Public functions and variables:\n";
-  }
   std::vector<std::pair<ElfSymbol, size_t>> symbols;
   symbols.reserve(all_symbols.size());
   for (const auto& symbol : all_symbols) {
@@ -440,13 +424,6 @@ Id Reader::Read() {
                                  : elf_.GetAbsoluteAddress(symbol);
       symbols.emplace_back(
           SymbolTableEntryToElfSymbol(crc_values, namespaces, symbol), address);
-
-      if (options_.Test(ReadOptions::INFO)) {
-        std::cout << "  " << symbol.binding << ' ' << symbol.symbol_type << " '"
-                  << symbol.name << "'\n    visibility=" << symbol.visibility
-                  << " size=" << symbol.size << " value=" << symbol.value << "["
-                  << symbol.value_type << "]\n";
-      }
     }
   }
   symbols.shrink_to_fit();
