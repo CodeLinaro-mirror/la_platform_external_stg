@@ -34,6 +34,7 @@ license {
 
 cc_defaults {
     name: "defaults",
+    defaults: ["elfutils_transitive_defaults"],
     visibility: [
         "//visibility:private",
     ],
@@ -53,7 +54,6 @@ cc_defaults {
         "libjemalloc5",
         "libprotobuf-cpp-full",
         "libxml2",
-        "libz",
     ],
     compile_multilib: "64",
     target: {
