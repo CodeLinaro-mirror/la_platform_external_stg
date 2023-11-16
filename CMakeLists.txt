@@ -97,7 +97,7 @@ add_library(libstg OBJECT
 target_include_directories(libstg PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(libstg PUBLIC ${COMMON_LIBRARIES})
 
-set(STG_EXECUTABLE_TARGETS stg stgdiff stginfo)
+set(STG_EXECUTABLE_TARGETS stg stgdiff)
 
 foreach(TARGET IN LISTS STG_EXECUTABLE_TARGETS)
   add_executable("${TARGET}" "${TARGET}.cc")
