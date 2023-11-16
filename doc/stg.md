@@ -8,7 +8,6 @@ BTF and ELF/DWARF.
 ```
 stg
   [-m|--metrics]
-  [-i|--info]
   [-d|--keep-duplicates]
   [-t|--types]
   [-F|--files|--file-filter <filter>]
@@ -163,13 +162,3 @@ nodes that are recursively equal. By default, duplicate nodes are eliminated.
 *   `-m|--metrics`
 
     Print various internal timing and other metrics.
-
-*   `-i|--info` - **deprecated**
-
-    This causes the BTF and ELF parsers to dump information to stdout about the
-    entities processed. This is primarily useful for debugging. In the case of
-    BTF input, the output is intended to match the output of `bpftool btf dump
-    file "$file" format raw`.
-
-    This option will be removed as there is no use-case beyond the initial
-    debugging of STG's parsers.

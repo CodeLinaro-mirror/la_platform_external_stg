@@ -130,7 +130,6 @@ int main(int argc, char* argv[]) {
   std::vector<const char*> outputs;
   static option opts[] = {
       {"metrics",         no_argument,       nullptr, 'm'       },
-      {"info",            no_argument,       nullptr, 'i'       },
       {"keep-duplicates", no_argument,       nullptr, 'd'       },
       {"types",           no_argument,       nullptr, 't'       },
       {"files",           required_argument, nullptr, 'F'       },
@@ -148,7 +147,6 @@ int main(int argc, char* argv[]) {
   auto usage = [&]() {
     std::cerr << "usage: " << argv[0] << '\n'
               << "  [-m|--metrics]\n"
-              << "  [-i|--info]\n"
               << "  [-d|--keep-duplicates]\n"
               << "  [-t|--types]\n"
               << "  [-F|--files|--file-filter <filter>]\n"
@@ -162,7 +160,7 @@ int main(int argc, char* argv[]) {
   };
   while (true) {
     int ix;
-    const int c = getopt_long(argc, argv, "-midtS:F:abeso:", opts, &ix);
+    const int c = getopt_long(argc, argv, "-mdtS:F:abeso:", opts, &ix);
     if (c == -1) {
       break;
     }
@@ -170,9 +168,6 @@ int main(int argc, char* argv[]) {
     switch (c) {
       case 'm':
         opt_metrics = true;
-        break;
-      case 'i':
-        opt_read_options.Set(stg::ReadOptions::INFO);
         break;
       case 'd':
         opt_keep_duplicates = true;
