@@ -148,9 +148,6 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  enum LongOptions {
-    kSkipDwarf = 256,
-  };
   // Process arguments.
   bool opt_metrics = false;
   bool opt_exact = false;
@@ -163,19 +160,18 @@ int main(int argc, char* argv[]) {
   Inputs inputs;
   Outputs outputs;
   static option opts[] = {
-      {"metrics",        no_argument,       nullptr, 'm'       },
-      {"abi",            no_argument,       nullptr, 'a'       },
-      {"btf",            no_argument,       nullptr, 'b'       },
-      {"elf",            no_argument,       nullptr, 'e'       },
-      {"stg",            no_argument,       nullptr, 's'       },
-      {"exact",          no_argument,       nullptr, 'x'       },
-      {"types",          no_argument,       nullptr, 't'       },
-      {"ignore",         required_argument, nullptr, 'i'       },
-      {"format",         required_argument, nullptr, 'f'       },
-      {"output",         required_argument, nullptr, 'o'       },
-      {"fidelity",       required_argument, nullptr, 'F'       },
-      {"skip-dwarf",     no_argument,       nullptr, kSkipDwarf},
-      {nullptr,          0,                 nullptr, 0         },
+      {"metrics",        no_argument,       nullptr, 'm' },
+      {"abi",            no_argument,       nullptr, 'a' },
+      {"btf",            no_argument,       nullptr, 'b' },
+      {"elf",            no_argument,       nullptr, 'e' },
+      {"stg",            no_argument,       nullptr, 's' },
+      {"exact",          no_argument,       nullptr, 'x' },
+      {"types",          no_argument,       nullptr, 't' },
+      {"ignore",         required_argument, nullptr, 'i' },
+      {"format",         required_argument, nullptr, 'f' },
+      {"output",         required_argument, nullptr, 'o' },
+      {"fidelity",       required_argument, nullptr, 'F' },
+      {nullptr,          0,                 nullptr, 0   },
   };
   auto usage = [&]() {
     std::cerr << "usage: " << argv[0] << '\n'
@@ -184,7 +180,6 @@ int main(int argc, char* argv[]) {
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file2\n"
               << "  [-x|--exact]\n"
               << "  [-t|--types]\n"
-              << "  [--skip-dwarf]\n"
               << "  [{-i|--ignore} <ignore-option>] ...\n"
               << "  [{-f|--format} <output-format>] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
@@ -256,9 +251,6 @@ int main(int argc, char* argv[]) {
           argument = "/dev/stdout";
         }
         opt_fidelity.emplace(argument);
-        break;
-      case kSkipDwarf:
-        opt_read_options.Set(stg::ReadOptions::SKIP_DWARF);
         break;
       default:
         return usage();

@@ -12,7 +12,6 @@ stg
   [-t|--types]
   [-F|--files|--file-filter <filter>]
   [-S|--symbols|--symbol-filter <filter>]
-  [--skip-dwarf]
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...
   [{-o|--output} {filename|-}] ...
 implicit defaults: --abi
@@ -65,11 +64,6 @@ The tool can be passed any number of inputs to combine into a unified ABI.
 
     Captures all named types found in ELF files as interface types, regardless
     of whether those types are reachable by any symbol.
-
-*   `--skip-dwarf`
-
-    Disable DWARF processing, when reading ELF files. For other formats this
-    option does nothing.
 
 ## Merge
 

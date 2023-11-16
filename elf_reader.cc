@@ -225,11 +225,8 @@ class Reader {
     // the starting node ID to be the current graph limit.
     Unification unification(graph_, graph_.Limit(), metrics_);
 
-    dwarf::Types types;
-    if (!options_.Test(ReadOptions::SKIP_DWARF)) {
-      types = dwarf::Process(dwarf_, elf_.IsLittleEndianBinary(), file_filter_,
-                             graph_);
-    }
+    const dwarf::Types types = dwarf::Process(
+        dwarf_, elf_.IsLittleEndianBinary(), file_filter_, graph_);
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.

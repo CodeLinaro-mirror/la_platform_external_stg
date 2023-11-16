@@ -12,7 +12,6 @@ stgdiff
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file2
   [-x|--exact]
   [-t|--types]
-  [--skip-dwarf]
   [{-i|--ignore} <ignore-option>] ...
   [{-f|--format} <output-format>] ...
   [{-o|--output} {filename|-}] ...
@@ -61,11 +60,6 @@ ignore options: type_declaration_status symbol_type_presence primitive_type_enco
 
     Captures all named types found in ELF files as interface types, regardless
     of whether those types are reachable by any symbol.
-
-*   `--skip-dwarf`
-
-    Disable DWARF processing, when reading ELF files. For other formats this
-    option does nothing.
 
 ## Comparison
 
