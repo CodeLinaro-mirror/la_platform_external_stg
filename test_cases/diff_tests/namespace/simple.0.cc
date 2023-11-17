@@ -1,40 +1,33 @@
 namespace unchanged_n {
 int var;
-}
+}  // namespace unchanged_n
 
 namespace removed_n {
 int var;
-}
+}  // namespace removed_n
 
 namespace foo {
-int var_decl;
+int x1;
 
-int array_decl[5];
+int x2[5];
 
-extern const int qualif_decl = 5;
+extern const int x3 = 5;
 
-typedef int typedef_decl;
+typedef int type_definition;
+type_definition x4;
 
-struct help {
-  int* ptr_decl;
-  int& lref_decl;
-  int&& rref_decl;
-  typedef_decl t;
-};
-
-int func_decl(help a) {
-  (void)a;
+int x5() {
   return 0;
 }
 
-struct StructDecl {
+struct S {
   int x;
-} struct_decl;
+} x6;
 
-union UnionDecl {
+union U {
   int x;
-} union_decl;
+} x7;
 
-enum class EnumDecl { X, Y } enum_decl;
+enum class E { X, Y } x8;
 
 }  // namespace foo
