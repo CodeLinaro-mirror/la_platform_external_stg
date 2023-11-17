@@ -1,17 +1,9 @@
 struct foo {
-  long x;
+  int* ptr;
+  int& lref;
+  int&& rref;
 };
 
-struct boo {
-  foo* ptr1;
-  foo& lref1;
-  foo&& rref1;
-
-  char* ptr2;
-  char& lref2;
-  char&& rref2;
-};
-
-void func(boo a) {
-  (void) a;
+int func(foo x) {
+  return *x.ptr + x.lref + x.rref;
 }
