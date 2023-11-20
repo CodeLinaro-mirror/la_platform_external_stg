@@ -116,12 +116,3 @@ cc_binary_host {
     ],
     static_libs: ["libstg"],
 }
-
-cc_binary_host {
-    name: "stginfo",
-    defaults: ["defaults"],
-    srcs: [
-        "stginfo.cc",
-    ],
-    static_libs: ["libstg"],
-}
