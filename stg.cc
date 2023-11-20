@@ -126,19 +126,19 @@ int main(int argc, char* argv[]) {
   std::vector<const char*> inputs;
   std::vector<const char*> outputs;
   static option opts[] = {
-      {"metrics",         no_argument,       nullptr, 'm' },
-      {"keep-duplicates", no_argument,       nullptr, 'd' },
-      {"types",           no_argument,       nullptr, 't' },
-      {"files",           required_argument, nullptr, 'F' },
-      {"file-filter",     required_argument, nullptr, 'F' },
-      {"symbols",         required_argument, nullptr, 'S' },
-      {"symbol-filter",   required_argument, nullptr, 'S' },
-      {"abi",             no_argument,       nullptr, 'a' },
-      {"btf",             no_argument,       nullptr, 'b' },
-      {"elf",             no_argument,       nullptr, 'e' },
-      {"stg",             no_argument,       nullptr, 's' },
-      {"output",          required_argument, nullptr, 'o' },
-      {nullptr,           0,                 nullptr, 0   },
+      {"metrics",         no_argument,       nullptr, 'm'},
+      {"keep-duplicates", no_argument,       nullptr, 'd'},
+      {"types",           no_argument,       nullptr, 't'},
+      {"files",           required_argument, nullptr, 'F'},
+      {"file-filter",     required_argument, nullptr, 'F'},
+      {"symbols",         required_argument, nullptr, 'S'},
+      {"symbol-filter",   required_argument, nullptr, 'S'},
+      {"abi",             no_argument,       nullptr, 'a'},
+      {"btf",             no_argument,       nullptr, 'b'},
+      {"elf",             no_argument,       nullptr, 'e'},
+      {"stg",             no_argument,       nullptr, 's'},
+      {"output",          required_argument, nullptr, 'o'},
+      {nullptr,           0,                 nullptr, 0  },
   };
   auto usage = [&]() {
     std::cerr << "usage: " << argv[0] << '\n'

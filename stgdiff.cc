@@ -160,18 +160,18 @@ int main(int argc, char* argv[]) {
   Inputs inputs;
   Outputs outputs;
   static option opts[] = {
-      {"metrics",        no_argument,       nullptr, 'm' },
-      {"abi",            no_argument,       nullptr, 'a' },
-      {"btf",            no_argument,       nullptr, 'b' },
-      {"elf",            no_argument,       nullptr, 'e' },
-      {"stg",            no_argument,       nullptr, 's' },
-      {"exact",          no_argument,       nullptr, 'x' },
-      {"types",          no_argument,       nullptr, 't' },
-      {"ignore",         required_argument, nullptr, 'i' },
-      {"format",         required_argument, nullptr, 'f' },
-      {"output",         required_argument, nullptr, 'o' },
-      {"fidelity",       required_argument, nullptr, 'F' },
-      {nullptr,          0,                 nullptr, 0   },
+      {"metrics",        no_argument,       nullptr, 'm'},
+      {"abi",            no_argument,       nullptr, 'a'},
+      {"btf",            no_argument,       nullptr, 'b'},
+      {"elf",            no_argument,       nullptr, 'e'},
+      {"stg",            no_argument,       nullptr, 's'},
+      {"exact",          no_argument,       nullptr, 'x'},
+      {"types",          no_argument,       nullptr, 't'},
+      {"ignore",         required_argument, nullptr, 'i'},
+      {"format",         required_argument, nullptr, 'f'},
+      {"output",         required_argument, nullptr, 'o'},
+      {"fidelity",       required_argument, nullptr, 'F'},
+      {nullptr,          0,                 nullptr, 0  },
   };
   auto usage = [&]() {
     std::cerr << "usage: " << argv[0] << '\n'
