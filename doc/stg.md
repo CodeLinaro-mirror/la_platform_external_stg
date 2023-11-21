@@ -3,20 +3,15 @@
 `stg` is used to extract and process ABI representations from libabigail XML,
 BTF and ELF/DWARF.
 
-NOTE: This tool is a work in progress. Its arguments and behaviour are subject
-to change at short notice.
-
 ## Synopsis
 
 ```
 stg
   [-m|--metrics]
-  [-i|--info]
   [-d|--keep-duplicates]
   [-t|--types]
   [-F|--files|--file-filter <filter>]
   [-S|--symbols|--symbol-filter <filter>]
-  [--skip-dwarf]
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...
   [{-o|--output} {filename|-}] ...
 implicit defaults: --abi
@@ -59,13 +54,9 @@ The tool can be passed any number of inputs to combine into a unified ABI.
 
     Read ABI information from ELF symbols and DWARF types.
 
-    NOTE: C++ DWARF type support is a work in progress.
-
 *   `-s|--stg`
 
     Read ABI information from a `.stg` file.
-
-    NOTE: The `.stg` format is still novel and subject to change.
 
 ### Options
 
@@ -73,11 +64,6 @@ The tool can be passed any number of inputs to combine into a unified ABI.
 
     Captures all named types found in ELF files as interface types, regardless
     of whether those types are reachable by any symbol.
-
-*   `--skip-dwarf`
-
-    Disable DWARF processing, when reading ELF files. For other formats this
-    option does nothing.
 
 ## Merge
 
@@ -123,7 +109,7 @@ There are two types of filters that can be applied to STG output:
 
 The basic syntactical elements are:
 
-*   `glob` - a glob pattern matching symbol names
+*   `glob` - a **glob**(7) pattern supporting `?`, `*` and `[ ... ]` wilcards
 *   `:filename` - the name of a file containing a libabigail format filter list
 
 Filter expressions can be combined with infix disjuction (`|`) and conjunction
@@ -165,17 +151,8 @@ nodes that are recursively equal. By default, duplicate nodes are eliminated.
 
     The output will be an ABI representation in STG's native format.
 
-    NOTE: The `.stg` format is still novel and subject to change.
-
 ## Diagnostics
 
 *   `-m|--metrics`
 
     Print various internal timing and other metrics.
-
-*   `-i|--info`
-
-    This causes the BTF and ELF parsers to dump information to stdout about the
-    entities processed. This is primarily useful for debugging. In the case of
-    BTF input, the output is intended to match the output of `bpftool btf dump
-    file "$file" format raw`.
