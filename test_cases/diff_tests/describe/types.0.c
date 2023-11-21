@@ -28,12 +28,14 @@ struct amusement {
 
 struct amusement * fun() { return 0; }
 
-int M() { return 0; }
-int N() { return 0; }
-int O() { return 0; }
-int P() { return 0; }
+void tweak(int);
 
-int m() { return 0; }
-int n() { return 0; }
-int o() { return 0; }
-int p() { return 0; }
+int M() { tweak(0); return 0; }
+int N() { tweak(1); return 0; }
+int O() { tweak(2); return 0; }
+int P() { tweak(3); return 0; }
+
+int m() { tweak(4); return 0; }
+int n() { tweak(5); return 0; }
+int o() { tweak(6); return 0; }
+int p() { tweak(7); return 0; }

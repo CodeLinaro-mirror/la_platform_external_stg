@@ -10,7 +10,8 @@ struct referring {
   struct nested * inner;
 };
 
-void register_ops6(containing) { }
-void register_ops7(containing*) { }
-void register_ops8(referring) { }
-void register_ops9(referring*) { }
+void tweak(int);
+void register_ops6(containing) { tweak(6); }
+void register_ops7(containing*) { tweak(7); }
+void register_ops8(referring) { tweak(8); }
+void register_ops9(referring*) { tweak(9); }

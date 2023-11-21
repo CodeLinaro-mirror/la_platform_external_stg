@@ -9,12 +9,18 @@ libabigail's XML format, BTF and ELF / DWARF.
 
 The ABI diff tool, `stgdiff`, supports multiple reporting options.
 
+STG has a versioned native file format. Older formats can be read and
+rewritten as the latest.
+
+NOTE: STG is under active developement. Tool arguments and behaviour are
+subject to change.
+
 ## Getting STG
 
 ### Distributions
 
-We intend to package STG for major distributions. Currently we have packages as
-follows:
+We intend to package STG for major distributions. Currently we have
+packages as follows:
 
 | *Distribution*   | *Package*                                             |
 | ---------------- | ----------------------------------------------------- |
@@ -44,8 +50,10 @@ later versions.
 | native format | libprotobuf-dev   | protobuf-devel    |
 | native format | protobuf-compiler | protobuf-compiler |
 | allocator[^1] | libjemalloc-dev   | jemalloc-devel    |
+| catch2[^2]    | catch2            | catch2-devel      |
 
-[^1]: jemalloc is optional but will likely improve performance.
+[^1]: jemalloc is optional, but will likely improve performance.
+[^2]: catch2 is optional, but required to build the test suite.
 
 ### Local Build
 
@@ -55,6 +63,12 @@ Build STG using CMake as follows:
 $ mkdir build && cd build
 $ cmake ..
 $ cmake --build . --parallel
+```
+
+Run the STG unit test suite:
+
+```bash
+$ ctest
 ```
 
 ### Docker Build

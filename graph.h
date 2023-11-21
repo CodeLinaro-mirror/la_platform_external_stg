@@ -108,8 +108,6 @@ struct PointerReference {
   Id pointee_type_id;
 };
 
-std::ostream& operator<<(std::ostream& os, PointerReference::Kind kind);
-
 struct PointerToMember {
   PointerToMember(Id containing_type_id, Id pointee_type_id)
       : containing_type_id(containing_type_id), pointee_type_id(pointee_type_id)
