@@ -116,9 +116,6 @@ void Write(const Graph& graph, Id root, const char* output, Metrics& metrics) {
 }  // namespace stg
 
 int main(int argc, char* argv[]) {
-  enum LongOptions {
-    kSkipDwarf = 256,
-  };
   // Process arguments.
   bool opt_metrics = false;
   bool opt_keep_duplicates = false;
@@ -129,31 +126,27 @@ int main(int argc, char* argv[]) {
   std::vector<const char*> inputs;
   std::vector<const char*> outputs;
   static option opts[] = {
-      {"metrics",         no_argument,       nullptr, 'm'       },
-      {"info",            no_argument,       nullptr, 'i'       },
-      {"keep-duplicates", no_argument,       nullptr, 'd'       },
-      {"types",           no_argument,       nullptr, 't'       },
-      {"files",           required_argument, nullptr, 'F'       },
-      {"file-filter",     required_argument, nullptr, 'F'       },
-      {"symbols",         required_argument, nullptr, 'S'       },
-      {"symbol-filter",   required_argument, nullptr, 'S'       },
-      {"abi",             no_argument,       nullptr, 'a'       },
-      {"btf",             no_argument,       nullptr, 'b'       },
-      {"elf",             no_argument,       nullptr, 'e'       },
-      {"stg",             no_argument,       nullptr, 's'       },
-      {"output",          required_argument, nullptr, 'o'       },
-      {"skip-dwarf",      no_argument,       nullptr, kSkipDwarf},
-      {nullptr,           0,                 nullptr, 0         },
+      {"metrics",         no_argument,       nullptr, 'm'},
+      {"keep-duplicates", no_argument,       nullptr, 'd'},
+      {"types",           no_argument,       nullptr, 't'},
+      {"files",           required_argument, nullptr, 'F'},
+      {"file-filter",     required_argument, nullptr, 'F'},
+      {"symbols",         required_argument, nullptr, 'S'},
+      {"symbol-filter",   required_argument, nullptr, 'S'},
+      {"abi",             no_argument,       nullptr, 'a'},
+      {"btf",             no_argument,       nullptr, 'b'},
+      {"elf",             no_argument,       nullptr, 'e'},
+      {"stg",             no_argument,       nullptr, 's'},
+      {"output",          required_argument, nullptr, 'o'},
+      {nullptr,           0,                 nullptr, 0  },
   };
   auto usage = [&]() {
     std::cerr << "usage: " << argv[0] << '\n'
               << "  [-m|--metrics]\n"
-              << "  [-i|--info]\n"
               << "  [-d|--keep-duplicates]\n"
               << "  [-t|--types]\n"
               << "  [-F|--files|--file-filter <filter>]\n"
               << "  [-S|--symbols|--symbol-filter <filter>]\n"
-              << "  [--skip-dwarf]\n"
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
               << "implicit defaults: --abi\n";
@@ -162,7 +155,7 @@ int main(int argc, char* argv[]) {
   };
   while (true) {
     int ix;
-    const int c = getopt_long(argc, argv, "-midtS:F:abeso:", opts, &ix);
+    const int c = getopt_long(argc, argv, "-mdtS:F:abeso:", opts, &ix);
     if (c == -1) {
       break;
     }
@@ -170,9 +163,6 @@ int main(int argc, char* argv[]) {
     switch (c) {
       case 'm':
         opt_metrics = true;
-        break;
-      case 'i':
-        opt_read_options.Set(stg::ReadOptions::INFO);
         break;
       case 'd':
         opt_keep_duplicates = true;
@@ -206,9 +196,6 @@ int main(int argc, char* argv[]) {
           argument = "/dev/stdout";
         }
         outputs.push_back(argument);
-        break;
-      case kSkipDwarf:
-        opt_read_options.Set(stg::ReadOptions::SKIP_DWARF);
         break;
       default:
         return usage();
