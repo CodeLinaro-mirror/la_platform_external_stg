@@ -434,6 +434,45 @@ void SortNodesByName(google::protobuf::RepeatedPtrField<ProtoNode>& nodes) {
   std::sort(nodes.pointer_begin(), nodes.pointer_end(), compare);
 }
 
+void SortMethodsByMangledName(google::protobuf::RepeatedPtrField<Method>& methods) {
+  const auto compare = [](const Method* lhs, const Method* rhs) {
+    const int comparison = lhs->mangled_name().compare(rhs->mangled_name());
+    return comparison < 0 || (comparison == 0 && lhs->id() < rhs->id());
+  };
+  std::sort(methods.pointer_begin(), methods.pointer_end(), compare);
+}
+
+void SortElfSymbolsByVersionedName(
+    google::protobuf::RepeatedPtrField<ElfSymbol>& elf_symbols) {
+  // TODO: use spaceship operator <=>
+  const auto compare = [](const ElfSymbol* lhs, const ElfSymbol* rhs) {
+    if (const int c = lhs->name().compare(rhs->name()); c != 0) {
+      return c < 0;
+    }
+
+    // Put symbols with version info after those without version info.
+    if (lhs->has_version_info() != rhs->has_version_info()) {
+      return rhs->has_version_info();
+    }
+
+    if (lhs->has_version_info()) {
+      const auto& l_version = lhs->version_info();
+      const auto& r_version = rhs->version_info();
+      if (const int c = l_version.name().compare(r_version.name()); c != 0) {
+        return c < 0;
+      }
+
+      // Put symbols with default version before those with non-default version.
+      if (l_version.is_default() != r_version.is_default()) {
+        return r_version.is_default();
+      }
+    }
+
+    return lhs->id() < rhs->id();
+  };
+  std::sort(elf_symbols.pointer_begin(), elf_symbols.pointer_end(), compare);
+}
+
 void SortNodes(STG& stg) {
   SortNodesById(*stg.mutable_void_());
   SortNodesById(*stg.mutable_variadic());
@@ -444,12 +483,12 @@ void SortNodes(STG& stg) {
   SortNodesById(*stg.mutable_primitive());
   SortNodesById(*stg.mutable_array());
   SortNodesById(*stg.mutable_base_class());
-  SortNodesById(*stg.mutable_method());
+  SortMethodsByMangledName(*stg.mutable_method());
   SortNodesByName(*stg.mutable_member());
   SortNodesByName(*stg.mutable_struct_union());
   SortNodesByName(*stg.mutable_enumeration());
   SortNodesById(*stg.mutable_function());
-  SortNodesByName(*stg.mutable_elf_symbol());
+  SortElfSymbolsByVersionedName(*stg.mutable_elf_symbol());
 }
 
 class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
