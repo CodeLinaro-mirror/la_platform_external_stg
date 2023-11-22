@@ -1,18 +1,14 @@
 struct foo {
-  long x;
+  int* lref_to_ptr;
+  int& ptr_to_lref;
+
+  int* rref_to_ptr;
+  int&& ptr_to_rref;
+
+  int&& lref_to_rref;
+  int& rref_to_lref;
 };
 
-struct boo {
-  foo* lref_to_ptr;
-  foo& ptr_to_lref;
-
-  foo* rref_to_ptr;
-  foo&& ptr_to_rref;
-
-  foo&& lref_to_rref;
-  foo& rref_to_lref;
-};
-
-void func(boo a) {
-  (void) a;
+int func(foo x) {
+  return *x.lref_to_ptr + x.rref_to_lref;
 }
