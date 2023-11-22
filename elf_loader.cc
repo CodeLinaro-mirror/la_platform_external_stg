@@ -28,7 +28,6 @@
 #include <cstddef>
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <limits>
 #include <ostream>
 #include <string>
@@ -254,16 +253,10 @@ std::string_view GetString(Elf* elf, uint32_t section, size_t offset) {
   return name;
 }
 
-Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary,
-                               bool verbose) {
+Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary) {
   GElf_Ehdr elf_header;
   Check(gelf_getehdr(elf, &elf_header) != nullptr)
       << "could not get ELF header";
-
-  if (verbose) {
-    std::cout << "ELF type: " << ElfHeaderTypeToString(elf_header.e_type)
-              << '\n';
-  }
 
   Elf_Scn* symtab = MaybeGetSectionByType(elf, SHT_SYMTAB);
   Elf_Scn* dynsym = MaybeGetSectionByType(elf, SHT_DYNSYM);
@@ -429,8 +422,8 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-ElfLoader::ElfLoader(Elf* elf, bool verbose)
-    : verbose_(verbose), elf_(elf) {
+ElfLoader::ElfLoader(Elf* elf)
+    : elf_(elf) {
   Check(elf_ != nullptr) << "No ELF was provided";
   InitializeElfInformation();
 }
@@ -453,7 +446,7 @@ std::string_view ElfLoader::GetBtfRawData() const {
 
 std::vector<SymbolTableEntry> ElfLoader::GetElfSymbols() const {
   Elf_Scn* symbol_table_section =
-      GetSymbolTableSection(elf_, is_linux_kernel_binary_, verbose_);
+      GetSymbolTableSection(elf_, is_linux_kernel_binary_);
   Check(symbol_table_section != nullptr)
       << "failed to find symbol table section";
 

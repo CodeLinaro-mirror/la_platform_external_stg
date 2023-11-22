@@ -1,18 +1,18 @@
-function symbol 'int Func::remove_par(struct Func*, int)' {_ZN4Func10remove_parEi} was removed
-
 function symbol 'int Func::rename_old(struct Func*)' {_ZN4Func10rename_oldEv} was removed
 
-function symbol 'int Func::change_par_type(struct Func*, int)' {_ZN4Func15change_par_typeEi} was removed
+function symbol 'int Func::add_parameter(struct Func*)' {_ZN4Func13add_parameterEv} was removed
 
-function symbol 'int Func::add_par(struct Func*)' {_ZN4Func7add_parEv} was removed
+function symbol 'int Func::remove_parameter(struct Func*, int)' {_ZN4Func16remove_parameterEi} was removed
 
-function symbol 'int Func::remove_par(struct Func*)' {_ZN4Func10remove_parEv} was added
+function symbol 'int Func::change_parameter_type(struct Func*, int)' {_ZN4Func21change_parameter_typeEi} was removed
 
 function symbol 'int Func::rename_new(struct Func*)' {_ZN4Func10rename_newEv} was added
 
-function symbol 'int Func::change_par_type(struct Func*, long)' {_ZN4Func15change_par_typeEl} was added
+function symbol 'int Func::add_parameter(struct Func*, int)' {_ZN4Func13add_parameterEi} was added
 
-function symbol 'int Func::add_par(struct Func*, int)' {_ZN4Func7add_parEi} was added
+function symbol 'int Func::remove_parameter(struct Func*)' {_ZN4Func16remove_parameterEv} was added
+
+function symbol 'int Func::change_parameter_type(struct Func*, long)' {_ZN4Func21change_parameter_typeEl} was added
 
 function symbol changed from 'int Func::change_return_type(struct Func*)' {_ZN4Func18change_return_typeEv} to 'long Func::change_return_type(struct Func*)' {_ZN4Func18change_return_typeEv}
   type changed from 'int(struct Func*)' to 'long(struct Func*)'

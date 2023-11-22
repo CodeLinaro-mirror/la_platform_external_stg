@@ -1,29 +1,14 @@
 version: 0x00000002
 root_id: 0x84ea5130
-pointer_reference {
-  id: 0x3593bec8
-  kind: POINTER
-  pointee_type_id: 0xfc0e1dbd
-}
-pointer_reference {
-  id: 0x45530328
-  kind: RVALUE_REFERENCE
-  pointee_type_id: 0xfc0e1dbd
-}
-pointer_reference {
-  id: 0xf893a81f
-  kind: LVALUE_REFERENCE
-  pointee_type_id: 0xfc0e1dbd
-}
 typedef {
-  id: 0xc800e9c0
-  name: "foo::typedef_decl"
-  referred_type_id: 0xfc0e1dbd
+  id: 0xbc115339
+  name: "foo::type_definition"
+  referred_type_id: 0x6720d32f
 }
 qualified {
-  id: 0xe3126acd
+  id: 0xc5d9d969
   qualifier: CONST
-  qualified_type_id: 0xfc0e1dbd
+  qualified_type_id: 0x6720d32f
 }
 primitive {
   id: 0x6720d32f
@@ -31,78 +16,37 @@ primitive {
   encoding: SIGNED_INTEGER
   bytesize: 0x00000004
 }
-primitive {
-  id: 0xfc0e1dbd
-  name: "long"
-  encoding: SIGNED_INTEGER
-  bytesize: 0x00000008
-}
 array {
-  id: 0xd6ffa9de
+  id: 0xf0341a7a
   number_of_elements: 5
-  element_type_id: 0xfc0e1dbd
+  element_type_id: 0x6720d32f
 }
 member {
-  id: 0x06b55c66
-  name: "lref_decl"
-  type_id: 0xf893a81f
-  offset: 64
-}
-member {
-  id: 0xa628c4ea
-  name: "ptr_decl"
-  type_id: 0x3593bec8
-}
-member {
-  id: 0xec533626
-  name: "rref_decl"
-  type_id: 0x45530328
-  offset: 128
-}
-member {
-  id: 0xab77db89
-  name: "t"
-  type_id: 0xc800e9c0
-  offset: 192
-}
-member {
-  id: 0xa04e65cb
+  id: 0xa0d54b05
   name: "x"
-  type_id: 0xfc0e1dbd
+  type_id: 0x6720d32f
 }
 struct_union {
-  id: 0x1d623957
+  id: 0x3ba6625d
   kind: STRUCT
-  name: "foo::StructDecl"
+  name: "foo::S"
   definition {
-    bytesize: 8
-    member_id: 0xa04e65cb
+    bytesize: 4
+    member_id: 0xa0d54b05
   }
 }
 struct_union {
-  id: 0x11ae430b
+  id: 0xf05bf1c2
   kind: UNION
-  name: "foo::UnionDecl"
+  name: "foo::U"
   definition {
-    bytesize: 8
-    member_id: 0xa04e65cb
-  }
-}
-struct_union {
-  id: 0xb0fcc680
-  kind: STRUCT
-  name: "foo::help"
-  definition {
-    bytesize: 32
-    member_id: 0xa628c4ea
-    member_id: 0x06b55c66
-    member_id: 0xec533626
-    member_id: 0xab77db89
+    bytesize: 4
+    member_id: 0xa0d54b05
   }
 }
 enumeration {
-  id: 0x6106a0e4
-  name: "foo::EnumDecl"
+  id: 0x249cfa0e
+  name: "foo::E"
   definition {
     underlying_type_id: 0x6720d32f
     enumerator {
@@ -112,98 +56,84 @@ enumeration {
       name: "Y"
       value: 1
     }
-    enumerator {
-      name: "Z"
-      value: 2
-    }
   }
 }
 function {
-  id: 0x8b1f0a39
-  return_type_id: 0xfc0e1dbd
-  parameter_id: 0xb0fcc680
+  id: 0x9d80e32f
+  return_type_id: 0x6720d32f
 }
 elf_symbol {
-  id: 0xb29e1d18
-  name: "_ZN11unchanged_n3varE"
+  id: 0x582117f7
+  name: "_ZN3foo2x1E"
   is_defined: true
   symbol_type: OBJECT
   type_id: 0x6720d32f
-  full_name: "unchanged_n::var"
+  full_name: "foo::x1"
 }
 elf_symbol {
-  id: 0x8002d067
-  name: "_ZN3foo10array_declE"
+  id: 0x717ce2f2
+  name: "_ZN3foo2x2E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd6ffa9de
-  full_name: "foo::array_decl"
+  type_id: 0xf0341a7a
+  full_name: "foo::x2"
 }
 elf_symbol {
-  id: 0x06614d1f
-  name: "_ZN3foo10union_declE"
+  id: 0x4a892240
+  name: "_ZN3foo2x3E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x11ae430b
-  full_name: "foo::union_decl"
+  type_id: 0xc5d9d969
+  full_name: "foo::x3"
 }
 elf_symbol {
-  id: 0xcc7b4c14
-  name: "_ZN3foo11qualif_declE"
+  id: 0x4ec44cf8
+  name: "_ZN3foo2x4E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xe3126acd
-  full_name: "foo::qualif_decl"
+  type_id: 0xbc115339
+  full_name: "foo::x4"
 }
 elf_symbol {
-  id: 0x0d128cae
-  name: "_ZN3foo11struct_declE"
-  is_defined: true
-  symbol_type: OBJECT
-  type_id: 0x1d623957
-  full_name: "foo::struct_decl"
-}
-elf_symbol {
-  id: 0xdda2add0
-  name: "_ZN3foo8var_declE"
-  is_defined: true
-  symbol_type: OBJECT
-  type_id: 0xfc0e1dbd
-  full_name: "foo::var_decl"
-}
-elf_symbol {
-  id: 0x8565a081
-  name: "_ZN3foo9enum_declE"
-  is_defined: true
-  symbol_type: OBJECT
-  type_id: 0x6106a0e4
-  full_name: "foo::enum_decl"
-}
-elf_symbol {
-  id: 0x1ba73e64
-  name: "_ZN3foo9func_declENS_4helpE"
+  id: 0x4d2c388b
+  name: "_ZN3foo2x5Ev"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x8b1f0a39
-  full_name: "foo::func_decl"
+  type_id: 0x9d80e32f
+  full_name: "foo::x5"
 }
 elf_symbol {
-  id: 0xf7cf66a4
-  name: "_ZN7added_n3varE"
+  id: 0x4e82b74d
+  name: "_ZN3foo2x6E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f
-  full_name: "added_n::var"
+  type_id: 0x3ba6625d
+  full_name: "foo::x6"
+}
+elf_symbol {
+  id: 0x60294099
+  name: "_ZN3foo2x7E"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xf05bf1c2
+  full_name: "foo::x7"
+}
+elf_symbol {
+  id: 0x59b8d44f
+  name: "_ZN3foo2x8E"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x249cfa0e
+  full_name: "foo::x8"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xb29e1d18
-  symbol_id: 0x8002d067
-  symbol_id: 0x06614d1f
-  symbol_id: 0xcc7b4c14
-  symbol_id: 0x0d128cae
-  symbol_id: 0xdda2add0
-  symbol_id: 0x8565a081
-  symbol_id: 0x1ba73e64
-  symbol_id: 0xf7cf66a4
+  symbol_id: 0x582117f7
+  symbol_id: 0x717ce2f2
+  symbol_id: 0x4a892240
+  symbol_id: 0x4ec44cf8
+  symbol_id: 0x4d2c388b
+  symbol_id: 0x4e82b74d
+  symbol_id: 0x60294099
+  symbol_id: 0x59b8d44f
 }
