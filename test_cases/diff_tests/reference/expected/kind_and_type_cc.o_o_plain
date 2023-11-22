@@ -1,17 +1,17 @@
-function symbol 'void func(struct boo)' {_Z4func3boo} changed
-  type 'void(struct boo)' changed
-    parameter 1 type 'struct boo' changed
-      member changed from 'struct foo& lref_to_ptr' to 'struct foo* lref_to_ptr'
-        type changed from 'struct foo&' to 'struct foo*'
-      member changed from 'struct foo* ptr_to_lref' to 'struct foo& ptr_to_lref'
-        type changed from 'struct foo*' to 'struct foo&'
-      member changed from 'struct foo&& rref_to_ptr' to 'struct foo* rref_to_ptr'
-        type changed from 'struct foo&&' to 'struct foo*'
-      member changed from 'struct foo* ptr_to_rref' to 'struct foo&& ptr_to_rref'
-        type changed from 'struct foo*' to 'struct foo&&'
-      member changed from 'struct foo& lref_to_rref' to 'struct foo&& lref_to_rref'
-        type changed from 'struct foo&' to 'struct foo&&'
-      member changed from 'struct foo&& rref_to_lref' to 'struct foo& rref_to_lref'
-        type changed from 'struct foo&&' to 'struct foo&'
+function symbol 'int func(struct foo)' {_Z4func3foo} changed
+  type 'int(struct foo)' changed
+    parameter 1 type 'struct foo' changed
+      member changed from 'int& lref_to_ptr' to 'int* lref_to_ptr'
+        type changed from 'int&' to 'int*'
+      member changed from 'int* ptr_to_lref' to 'int& ptr_to_lref'
+        type changed from 'int*' to 'int&'
+      member changed from 'int&& rref_to_ptr' to 'int* rref_to_ptr'
+        type changed from 'int&&' to 'int*'
+      member changed from 'int* ptr_to_rref' to 'int&& ptr_to_rref'
+        type changed from 'int*' to 'int&&'
+      member changed from 'int& lref_to_rref' to 'int&& lref_to_rref'
+        type changed from 'int&' to 'int&&'
+      member changed from 'int&& rref_to_lref' to 'int& rref_to_lref'
+        type changed from 'int&&' to 'int&'
 
 exit code 4

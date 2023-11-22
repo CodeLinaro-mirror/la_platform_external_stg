@@ -26,9 +26,7 @@ namespace stg {
 
 struct ReadOptions {
   enum Value {
-    INFO = 1 << 0,
-    SKIP_DWARF = 1 << 1,
-    TYPE_ROOTS = 1 << 2,
+    TYPE_ROOTS = 1 << 0,
   };
 
   using Bitset = std::underlying_type_t<Value>;

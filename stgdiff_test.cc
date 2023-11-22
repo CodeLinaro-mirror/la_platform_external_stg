@@ -51,9 +51,8 @@ std::string filename_to_path(const std::string& f) {
 
 stg::Id Read(stg::Graph& graph, stg::InputFormat format,
              const std::string& input, stg::Metrics& metrics) {
-  const stg::ReadOptions opt_read_options(stg::ReadOptions::SKIP_DWARF);
   return stg::Read(graph, format, filename_to_path(input).c_str(),
-                   opt_read_options, nullptr, metrics);
+                   stg::ReadOptions(), nullptr, metrics);
 }
 
 TEST_CASE("ignore") {
