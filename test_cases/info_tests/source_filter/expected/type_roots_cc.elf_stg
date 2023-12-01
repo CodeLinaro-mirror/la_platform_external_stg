@@ -1,20 +1,5 @@
 version: 0x00000002
 root_id: 0x84ea5130
-special {
-  id: 0x48b5725f
-  kind: VOID
-}
-pointer_reference {
-  id: 0x18bd6530
-  kind: POINTER
-  pointee_type_id: 0x48b5725f
-}
-typedef {
-  id: 0x4f137329
-  name: "Typedef"
-  referred_type_id: 0x18bd6530
-}
 interface {
   id: 0x84ea5130
-  type_id: 0x4f137329
 }

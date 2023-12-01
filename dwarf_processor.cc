@@ -424,6 +424,11 @@ class Processor {
     const std::string type_name = scope_ + GetName(entry);
     auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
+    if (!ShouldKeepDefinition(entry, type_name)) {
+      // We always model (and keep) typedef definitions. But we should exclude
+      // filtered out types from being type roots.
+      return;
+    }
     AddNamedTypeNode(id);
   }
 
