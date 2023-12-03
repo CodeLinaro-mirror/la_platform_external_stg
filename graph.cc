@@ -155,15 +155,4 @@ std::ostream& operator<<(std::ostream& os, Primitive::Encoding encoding) {
   }
 }
 
-std::ostream& operator<<(std::ostream& os, PointerReference::Kind kind) {
-  switch (kind) {
-    case PointerReference::Kind::POINTER:
-      return os << "pointer";
-    case PointerReference::Kind::LVALUE_REFERENCE:
-      return os << "lvalue reference";
-    case PointerReference::Kind::RVALUE_REFERENCE:
-      return os << "rvalue reference";
-  }
-}
-
 }  // namespace stg
