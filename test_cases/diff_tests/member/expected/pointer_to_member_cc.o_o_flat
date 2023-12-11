@@ -1,5 +1,7 @@
 function symbol 'int struct S::* s2()' {_Z2s2v} was added
 
+function symbol 'int s10(int struct S::*)' {_Z3s10M1Si} was added
+
 function symbol 'void pmz_fun()' {_Z7pmz_funv} was added
 
 variable symbol 'char struct Y::* pmc' was added
