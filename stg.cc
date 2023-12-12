@@ -234,7 +234,7 @@ int main(int argc, char* argv[]) {
     }
     return 0;
   } catch (const stg::Exception& e) {
-    std::cerr << e.what() << '\n';
+    std::cerr << e.what();
     return 1;
   }
 }
