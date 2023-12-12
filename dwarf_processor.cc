@@ -301,6 +301,17 @@ class Processor {
 
  private:
   void Process(Entry& entry) {
+    try {
+      return ProcessInternal(entry);
+    } catch (Exception& e) {
+      std::ostringstream os;
+      os << "processing DIE " << Hex(entry.GetOffset());
+      e.Add(os.str());
+      throw;
+    }
+  }
+
+  void ProcessInternal(Entry& entry) {
     ++result_.processed_entries;
     auto tag = entry.GetTag();
     switch (tag) {
