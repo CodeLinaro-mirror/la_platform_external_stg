@@ -20,8 +20,11 @@ enum class EnumClass {
   ONE   = 1,
 };
 
+typedef void* Typedef;
+
 Struct foo_struct;
 Union foo_union;
 Class foo_class;
 Enum foo_enum;
 EnumClass foo_enum_class;
+Typedef foo_typedef;
