@@ -32,7 +32,7 @@ elf_symbol {
   is_defined: true
   symbol_type: FUNCTION
   type_id: 0x10985193
-  full_name: "versioned_foo_v1"
+  full_name: "versioned_foo"
 }
 elf_symbol {
   id: 0xc828cd97

@@ -20,10 +20,12 @@
 #include "input.h"
 
 #include <memory>
+#include <sstream>
 
 #include "abigail_reader.h"
 #include "btf_reader.h"
 #include "elf_reader.h"
+#include "error.h"
 #include "filter.h"
 #include "graph.h"
 #include "metrics.h"
@@ -32,9 +34,11 @@
 
 namespace stg {
 
-Id Read(Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-        Metrics& metrics) {
+namespace {
+
+Id ReadInternal(Graph& graph, InputFormat format, const char* input,
+                ReadOptions options, const std::unique_ptr<Filter>& file_filter,
+                Metrics& metrics) {
   switch (format) {
     case InputFormat::ABI: {
       Time read(metrics, "read ABI");
@@ -52,6 +56,21 @@ Id Read(Graph& graph, InputFormat format, const char* input,
       Time read(metrics, "read STG");
       return proto::Read(graph, input);
     }
+  }
+}
+
+}  // namespace
+
+Id Read(Graph& graph, InputFormat format, const char* input,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
+        Metrics& metrics) {
+  try {
+    return ReadInternal(graph, format, input, options, file_filter, metrics);
+  } catch (Exception& e) {
+    std::ostringstream os;
+    os << "processing file '" << input << '\'';
+    e.Add(os.str());
+    throw;
   }
 }
 
