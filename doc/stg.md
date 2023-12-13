@@ -98,7 +98,7 @@ There are two types of filters that can be applied to STG output:
     File filters are only applicable to ELF binary objects containing DWARF with
     source location information; any other kind of input will be unaffected.
 
-2.  `-S|--symbols|--symbol-filter <filter>`
+1.  `-S|--symbols|--symbol-filter <filter>`
 
     Filter ELF symbols by name (which may include a `@version` or `@@version`
     suffix).
