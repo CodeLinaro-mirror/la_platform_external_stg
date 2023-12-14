@@ -32,14 +32,20 @@ namespace stg {
 
 class Exception : public std::exception {
  public:
-  explicit Exception(const std::string& message) : message_(message) {}
+  explicit Exception(const std::string& message) {
+    Add(message);
+  }
 
   const char* what() const noexcept(true) final {
     return message_.c_str();
   }
 
+  void Add(const std::string& message) {
+    (message_ += message) += '\n';
+  }
+
  private:
-  const std::string message_;
+  std::string message_;
 };
 
 class Check {
