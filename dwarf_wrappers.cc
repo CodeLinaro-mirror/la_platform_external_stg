@@ -129,13 +129,19 @@ struct Expression {
   size_t length = 0;
 };
 
-Expression GetExpression(Dwarf_Attribute& attribute) {
+std::optional<Expression> MaybeGetExpression(Dwarf_Attribute& attribute) {
   Expression result;
 
   Check(dwarf_getlocation(&attribute, &result.atoms, &result.length) ==
         kReturnOk) << "dwarf_getlocation returned error";
-  Check(result.atoms != nullptr && result.length > 0)
-      << "dwarf_getlocation returned empty expression";
+  // If no location attribute is present or has an empty location description,
+  // the variable is present in the source but not in the object code.
+  // So zero length expression is equivalent of no location attribute.
+  if (result.length == 0) {
+    return std::nullopt;
+  }
+  Check(result.atoms != nullptr)
+      << "dwarf_getlocation returned non-empty expression with NULL atoms";
   return result;
 }
 
@@ -298,7 +304,11 @@ std::optional<Entry> Entry::MaybeGetReference(uint32_t attribute) {
 namespace {
 
 std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
-  const auto expression = GetExpression(attribute);
+  const auto expression_opt = MaybeGetExpression(attribute);
+  if (!expression_opt) {
+    return {};
+  }
+  const Expression& expression = *expression_opt;
 
   Dwarf_Attribute result_attribute;
   if (dwarf_getlocation_attr(&attribute, expression.atoms, &result_attribute) ==
@@ -360,7 +370,11 @@ std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
   }
 
   // Parse location expression
-  const auto expression = GetExpression(attribute.value());
+  const auto expression_opt = MaybeGetExpression(attribute.value());
+  if (!expression_opt) {
+    return {};
+  }
+  const Expression& expression = *expression_opt;
 
   // Parse virtual base classes offset, which looks like this:
   //   [0] = DW_OP_dup
@@ -394,7 +408,11 @@ std::optional<uint64_t> Entry::MaybeGetVtableOffset() {
   }
 
   // Parse location expression
-  const Expression expression = GetExpression(attribute.value());
+  const auto expression_opt = MaybeGetExpression(attribute.value());
+  if (!expression_opt) {
+    return {};
+  }
+  const Expression& expression = *expression_opt;
 
   // We expect compilers to produce expression with one constant operand
   if (expression.length == 1) {

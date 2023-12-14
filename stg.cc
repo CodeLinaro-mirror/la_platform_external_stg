@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<stg::Filter> opt_symbol_filter;
   stg::ReadOptions opt_read_options;
   stg::InputFormat opt_input_format = stg::InputFormat::ABI;
-  std::vector<const char*> inputs;
+  std::vector<std::pair<stg::InputFormat, const char*>> inputs;
   std::vector<const char*> outputs;
   static option opts[] = {
       {"metrics",         no_argument,       nullptr, 'm'},
@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
         opt_input_format = stg::InputFormat::STG;
         break;
       case 1:
-        inputs.push_back(argument);
+        inputs.emplace_back(opt_input_format, argument);
         break;
       case 'o':
         if (strcmp(argument, "-") == 0) {
@@ -207,10 +207,9 @@ int main(int argc, char* argv[]) {
     stg::Metrics metrics;
     std::vector<stg::Id> roots;
     roots.reserve(inputs.size());
-    for (auto input : inputs) {
-      roots.push_back(stg::Read(graph, opt_input_format, input,
-                                opt_read_options, opt_file_filter,
-                                metrics));
+    for (auto& [format, input] : inputs) {
+      roots.push_back(stg::Read(graph, format, input, opt_read_options,
+                                opt_file_filter, metrics));
     }
     stg::Id root =
         roots.size() == 1 ? roots[0] : stg::Merge(graph, roots, metrics);
@@ -235,7 +234,7 @@ int main(int argc, char* argv[]) {
     }
     return 0;
   } catch (const stg::Exception& e) {
-    std::cerr << e.what() << '\n';
+    std::cerr << e.what();
     return 1;
   }
 }
