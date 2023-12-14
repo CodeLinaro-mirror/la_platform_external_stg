@@ -206,6 +206,11 @@ function {
   id: 0x9d80e32f
   return_type_id: 0x6720d32f
 }
+function {
+  id: 0xa875fb6e
+  return_type_id: 0x6720d32f
+  parameter_id: 0xd7d46104
+}
 elf_symbol {
   id: 0xba0e5cd0
   name: "_Z2s2v"
@@ -213,6 +218,14 @@ elf_symbol {
   symbol_type: FUNCTION
   type_id: 0x9464e9b2
   full_name: "s2"
+}
+elf_symbol {
+  id: 0x94e5eb64
+  name: "_Z3s10M1Si"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0xa875fb6e
+  full_name: "s10"
 }
 elf_symbol {
   id: 0x13e4cc52
@@ -353,6 +366,7 @@ elf_symbol {
 interface {
   id: 0x84ea5130
   symbol_id: 0xba0e5cd0
+  symbol_id: 0x94e5eb64
   symbol_id: 0x13e4cc52
   symbol_id: 0x648621f2
   symbol_id: 0xff819903

@@ -37,7 +37,7 @@ Instructions are included for local and Docker builds.
 
 ### Dependencies
 
-STG is written in C++20. It is known to compile with GCC 11, Clang 14 or
+STG is written in C++20. It is known to compile with GCC 11, Clang 15 or
 later versions.
 
 | *Dependency*  | *Debian*          | *RedHat*          |

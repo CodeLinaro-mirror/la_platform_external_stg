@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
     }
     return status;
   } catch (const stg::Exception& e) {
-    std::cerr << e.what() << '\n';
+    std::cerr << e.what();
     return 1;
   }
 }
