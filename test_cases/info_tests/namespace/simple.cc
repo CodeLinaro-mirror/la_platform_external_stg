@@ -1,41 +1,25 @@
-namespace unchanged_n {
-int var;
-}
-
-namespace added_n {
-int var;
-}
-
-// Difference: every int below changed to long
 namespace foo {
-long var_decl;
+int x1;
 
-long array_decl[5];
+int x2[5];
 
-extern const long qualif_decl = 5;
+extern const int x3 = 5;
 
-typedef long typedef_decl;
+typedef int type_definition;
+type_definition x4;
 
-struct help {
-  long* ptr_decl;
-  long& lref_decl;
-  long&& rref_decl;
-  typedef_decl t;
-};
-
-long func_decl(help a) {
-  (void)a;
+int x5() {
   return 0;
 }
 
-struct StructDecl {
-  long x;
-} struct_decl;
+struct S {
+  int x;
+} x6;
 
-union UnionDecl {
-  long x;
-} union_decl;
+union U {
+  int x;
+} x7;
 
-enum class EnumDecl { X, Y, Z } enum_decl;
+enum class E { X, Y } x8;
 
 }  // namespace foo

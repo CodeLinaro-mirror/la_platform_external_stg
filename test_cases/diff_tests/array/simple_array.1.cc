@@ -2,4 +2,4 @@ struct leaf {
   signed int numbers[2];
 };
 
-void foo(leaf *) { }
+void foo(leaf * x) { x->numbers[1] = x->numbers[0]; }

@@ -52,20 +52,22 @@ struct amusement {
 
 struct amusement * fun(void) { return 0; }
 
+void tweak(int);
+
 // declare M as function (void) returning int
-int M(void ) { return 0; }
+int M(void ) { tweak(0); return 0; }
 // declare N as function (void) returning pointer to array 7 of int
-int (*N(void ))[7] { return 0; }
+int (*N(void ))[7] { tweak(1); return 0; }
 // declare O as function (void) returning pointer to int
-int *O(void ) { return 0; }
+int *O(void ) { tweak(2); return 0; }
 // declare P as function (void) returning pointer to function (void) returning int
-int (*P(void ))(void ) { return 0; }
+int (*P(void ))(void ) { tweak(3); return 0; }
 
 // declare m as function (void) returning int
-int m(void ) { return 0; }
+int m(void ) { tweak(4); return 0; }
 // declare n as function (void) returning pointer to array 7 of volatile int
-volatile int (*n(void ))[7] { return 0; }
+volatile int (*n(void ))[7] { tweak(5); return 0; }
 // declare o as function (void) returning pointer to volatile int
-volatile int *o(void ) { return 0; }
+volatile int *o(void ) { tweak(6); return 0; }
 // declare p as function (void) returning pointer to function (void) returning int
-int (*p(void ))(void ) { return 0; }
+int (*p(void ))(void ) { tweak(7); return 0; }

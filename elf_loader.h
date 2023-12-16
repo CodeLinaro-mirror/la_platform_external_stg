@@ -75,7 +75,7 @@ std::string_view UnwrapCFISymbolName(std::string_view cfi_name);
 
 class ElfLoader final {
  public:
-  explicit ElfLoader(Elf* elf, bool verbose = false);
+  explicit ElfLoader(Elf* elf);
 
   std::string_view GetBtfRawData() const;
   std::vector<SymbolTableEntry> GetElfSymbols() const;
@@ -89,7 +89,6 @@ class ElfLoader final {
  private:
   void InitializeElfInformation();
 
-  const bool verbose_;
   Elf* elf_;
   bool is_linux_kernel_binary_;
   bool is_relocatable_;
