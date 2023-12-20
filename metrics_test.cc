@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -23,7 +23,6 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include <catch2/catch.hpp>
 
@@ -50,19 +49,34 @@ TEST_CASE("incomplete") {
 
 TEST_CASE("times") {
   stg::Metrics metrics;
-  const size_t count = 20;
-  std::vector<stg::Time> times;
-  for (size_t i = 0; i < count; ++i) {
-    times.emplace_back(metrics, "name");
-  }
-  for (size_t i = 0; i < count; ++i) {
-    times.pop_back();
+  {
+    const stg::Time t00(metrics, "name");
+    const stg::Time t01(metrics, "name");
+    const stg::Time t02(metrics, "name");
+    const stg::Time t03(metrics, "name");
+    const stg::Time t04(metrics, "name");
+    const stg::Time t05(metrics, "name");
+    const stg::Time t06(metrics, "name");
+    const stg::Time t07(metrics, "name");
+    const stg::Time t08(metrics, "name");
+    const stg::Time t09(metrics, "name");
+    const stg::Time t10(metrics, "name");
+    const stg::Time t11(metrics, "name");
+    const stg::Time t12(metrics, "name");
+    const stg::Time t13(metrics, "name");
+    const stg::Time t14(metrics, "name");
+    const stg::Time t15(metrics, "name");
+    const stg::Time t16(metrics, "name");
+    const stg::Time t17(metrics, "name");
+    const stg::Time t18(metrics, "name");
+    const stg::Time t19(metrics, "name");
   }
   std::ostringstream os;
   stg::Report(metrics, os);
   std::istringstream is(os.str());
   const std::string name = "name:";
   const std::string ms = "ms";
+  const size_t count = 20;
   size_t index = 0;
   double last_time = 0.0;
   while (is && index < count) {
