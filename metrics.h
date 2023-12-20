@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -54,6 +54,8 @@ void Report(const Metrics& metrics, std::ostream& os);
 class Time {
  public:
   Time(Metrics& metrics, const char* name);
+  Time(Time&& other) = delete;
+  Time& operator=(Time&& other) = delete;
   ~Time();
 
  private:
@@ -65,6 +67,8 @@ class Time {
 class Counter {
  public:
   Counter(Metrics& metrics, const char* name);
+  Counter(Counter&& other) = delete;
+  Counter& operator=(Counter&& other) = delete;
   ~Counter();
 
   Counter& operator=(size_t x) {
@@ -91,6 +95,8 @@ class Counter {
 class Histogram {
  public:
   Histogram(Metrics& metrics, const char* name);
+  Histogram(Histogram&& other) = delete;
+  Histogram& operator=(Histogram&& other) = delete;
   ~Histogram();
 
   void Add(size_t item) {
