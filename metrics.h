@@ -35,13 +35,17 @@ struct Nanoseconds {
   uint64_t ns;
 };
 
+struct Frequencies {
+  std::map<size_t, size_t> counts;
+};
+
 struct Metric {
   const char* name;
   std::variant<
       std::monostate,
       Nanoseconds,
       size_t,
-      std::map<size_t, size_t>
+      Frequencies
       > value;
 };
 
@@ -100,13 +104,13 @@ class Histogram {
   ~Histogram();
 
   void Add(size_t item) {
-    ++frequencies_[item];
+    ++frequencies_.counts[item];
   }
 
  private:
   Metrics& metrics_;
   size_t index_;
-  std::map<size_t, size_t> frequencies_;
+  Frequencies frequencies_;
 };
 
 }  // namespace stg

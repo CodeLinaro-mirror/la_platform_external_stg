@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -23,21 +23,15 @@
 #include <iomanip>
 #include <map>
 #include <ostream>
+#include <type_traits>
 #include <utility>
 #include <variant>
 
 namespace stg {
 
-namespace {
-
-std::ostream& operator<<(std::ostream& os, std::monostate) {
-  return os << "<incomplete>";
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const std::map<size_t, size_t>& frequencies) {
+std::ostream& operator<<(std::ostream& os, const Frequencies& frequencies) {
   bool separate = false;
-  for (const auto& [item, frequency] : frequencies) {
+  for (const auto& [item, frequency] : frequencies.counts) {
     if (separate) {
       os << ' ';
     } else {
@@ -56,12 +50,15 @@ std::ostream& operator<<(std::ostream& os, const Nanoseconds& value) {
             << std::setfill(' ') << " ms";
 }
 
-}  // namespace
-
 void Report(const Metrics& metrics, std::ostream& os) {
   for (const auto& metric : metrics) {
     std::visit([&](auto&& value) {
-      os << metric.name << ": " << value << '\n';
+      if constexpr (std::is_same_v<std::decay_t<decltype(value)>,
+                    std::monostate>) {
+        os << metric.name << ": <incomplete>\n";
+      } else {
+        os << metric.name << ": " << value << '\n';
+      }
     }, metric.value);
   }
 }
