@@ -30,7 +30,7 @@
 namespace Test {
 
 TEST_CASE("empty") {
-  stg::Metrics metrics;
+  const stg::Metrics metrics;
   std::ostringstream os;
   stg::Report(metrics, os);
   CHECK(os.str().empty());
