@@ -21,6 +21,9 @@ int (S::*s7)();
 int (S::*s8)[7];
 // declare s9 as volatile pointer to member of class S const int
 const int S::* volatile s9;
+// declare s10 as function (pointer to member of class S int) returning int
+int s10(int S::*);
+int s10(int S::*) { return 0; }
 
 struct X {
   void f(int);
