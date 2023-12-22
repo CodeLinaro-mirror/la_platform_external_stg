@@ -27,6 +27,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_compile_options(-fstrict-enums -Wall -Wextra)
 
+set(MINIMUM_GNU_VERSION 11)
+set(MINIMUM_Clang_VERSION 15)
+
+# Note, the quotes around the variable are significant. If we use a compiler
+# that does not resolve to a definition above, the empty string corresponds to
+# a version where all components are omitted and hence treated as zero.
+if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "${MINIMUM_${CMAKE_CXX_COMPILER_ID}_VERSION}")
+  message(FATAL_ERROR "Unsupported Compiler Version!\n"
+          "Need at least ${CMAKE_CXX_COMPILER_ID} ${MINIMUM_${CMAKE_CXX_COMPILER_ID}_VERSION}")
+endif()
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # GCC has problems detecting "no-return" switches and destructors.
   add_compile_options(-Wno-return-type)
