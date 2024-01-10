@@ -96,7 +96,7 @@ size_t GetByteSize(Entry& entry) {
 }
 
 Primitive::Encoding GetEncoding(Entry& entry) {
-  auto dwarf_encoding = entry.MaybeGetUnsignedConstant(DW_AT_encoding);
+  const auto dwarf_encoding = entry.MaybeGetUnsignedConstant(DW_AT_encoding);
   if (!dwarf_encoding) {
     Die() << "Encoding was not found for " << EntryToString(entry);
   }
@@ -313,7 +313,7 @@ class Processor {
 
   void ProcessInternal(Entry& entry) {
     ++result_.processed_entries;
-    auto tag = entry.GetTag();
+    const auto tag = entry.GetTag();
     switch (tag) {
       case DW_TAG_array_type:
         ProcessArray(entry);
@@ -414,7 +414,7 @@ class Processor {
   }
 
   void ProcessNamespace(Entry& entry) {
-    auto name = GetNameOrEmpty(entry);
+    const auto name = GetNameOrEmpty(entry);
     const PushScopeName push_scope_name(scope_, "namespace", name);
     ProcessAllChildren(entry);
   }
@@ -433,7 +433,7 @@ class Processor {
 
   void ProcessTypedef(Entry& entry) {
     const std::string type_name = scope_ + GetName(entry);
-    auto referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
+    const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
     if (!ShouldKeepDefinition(entry, type_name)) {
       // We always model (and keep) typedef definitions. But we should exclude
@@ -445,7 +445,7 @@ class Processor {
 
   template<typename Node, typename KindType>
   void ProcessReference(Entry& entry, KindType kind) {
-    auto referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
+    const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     AddProcessedNode<Node>(entry, kind, referred_type_id);
   }
 
@@ -483,7 +483,7 @@ class Processor {
   }
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
-    std::string name = GetNameOrEmpty(entry);
+    const auto name = GetNameOrEmpty(entry);
     const std::string full_name = name.empty() ? std::string() : scope_ + name;
     const PushScopeName push_scope_name(scope_, kind, name);
 
@@ -569,9 +569,9 @@ class Processor {
   }
 
   void ProcessMember(Entry& entry) {
-    std::string name = GetNameOrEmpty(entry);
+    const auto name = GetNameOrEmpty(entry);
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    const Id referred_type_id = GetIdForEntry(referred_type);
     auto optional_bit_size = entry.MaybeGetUnsignedConstant(DW_AT_bit_size);
     // Member has DW_AT_bit_size if and only if it is bit field.
     // STG uses bit_size == 0 to mark that the member is not a bit field.
@@ -617,7 +617,7 @@ class Processor {
   }
 
   void ProcessBaseClass(Entry& entry) {
-    const auto type_id = GetReferredTypeId(GetReferredType(entry));
+    const Id type_id = GetReferredTypeId(GetReferredType(entry));
     const auto byte_offset = entry.MaybeGetMemberByteOffset();
     if (!byte_offset) {
       Die() << "No offset found for base class " << EntryToString(entry);
@@ -638,7 +638,7 @@ class Processor {
 
   void ProcessArray(Entry& entry) {
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    Id referred_type_id = GetIdForEntry(referred_type);
     auto children = entry.GetChildren();
     // Multiple children in array describe multiple dimensions of this array.
     // For example, int[M][N] contains two children, M located in the first
@@ -674,7 +674,8 @@ class Processor {
       AddProcessedNode<Enumeration>(entry, name);
       return;
     }
-    auto underlying_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
+    const Id underlying_type_id =
+        GetReferredTypeId(MaybeGetReferredType(entry));
     auto children = entry.GetChildren();
     Enumeration::Enumerators enumerators;
     enumerators.reserve(children.size());
@@ -786,7 +787,7 @@ class Processor {
     auto name_with_context = GetNameWithContext(entry);
 
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    const Id referred_type_id = GetIdForEntry(referred_type);
 
     if (auto address = entry.MaybeGetAddress(DW_AT_location)) {
       // Only external variables with address are useful for ABI monitoring
@@ -823,7 +824,7 @@ class Processor {
   };
 
   Subprogram GetSubprogram(Entry& entry) {
-    auto return_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
+    const Id return_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
 
     std::vector<Id> parameters;
     for (auto& child : entry.GetChildren()) {
@@ -919,7 +920,7 @@ class Processor {
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
-    auto id = GetIdForEntry(entry);
+    const Id id = GetIdForEntry(entry);
     graph_.Set<Node>(id, std::forward<Args>(args)...);
     return id;
   }
