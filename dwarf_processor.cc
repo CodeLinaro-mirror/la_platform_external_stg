@@ -433,7 +433,7 @@ class Processor {
 
   void ProcessTypedef(Entry& entry) {
     const std::string type_name = scope_ + GetName(entry);
-    auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    auto referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
     if (!ShouldKeepDefinition(entry, type_name)) {
       // We always model (and keep) typedef definitions. But we should exclude
@@ -445,15 +445,14 @@ class Processor {
 
   template<typename Node, typename KindType>
   void ProcessReference(Entry& entry, KindType kind) {
-    auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    auto referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     AddProcessedNode<Node>(entry, kind, referred_type_id);
   }
 
   void ProcessPointerToMember(Entry& entry) {
     const Id containing_type_id =
-        GetIdForReferredType(entry.MaybeGetReference(DW_AT_containing_type));
-    const Id pointee_type_id =
-        GetIdForReferredType(MaybeGetReferredType(entry));
+        GetReferredTypeId(entry.MaybeGetReference(DW_AT_containing_type));
+    const Id pointee_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     AddProcessedNode<PointerToMember>(entry, containing_type_id,
                                       pointee_type_id);
   }
@@ -618,7 +617,7 @@ class Processor {
   }
 
   void ProcessBaseClass(Entry& entry) {
-    const auto type_id = GetIdForReferredType(GetReferredType(entry));
+    const auto type_id = GetReferredTypeId(GetReferredType(entry));
     const auto byte_offset = entry.MaybeGetMemberByteOffset();
     if (!byte_offset) {
       Die() << "No offset found for base class " << EntryToString(entry);
@@ -675,7 +674,7 @@ class Processor {
       AddProcessedNode<Enumeration>(entry, name);
       return;
     }
-    auto underlying_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    auto underlying_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     auto children = entry.GetChildren();
     Enumeration::Enumerators enumerators;
     enumerators.reserve(children.size());
@@ -824,14 +823,14 @@ class Processor {
   };
 
   Subprogram GetSubprogram(Entry& entry) {
-    auto return_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    auto return_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
 
     std::vector<Id> parameters;
     for (auto& child : entry.GetChildren()) {
       auto child_tag = child.GetTag();
       switch (child_tag) {
         case DW_TAG_formal_parameter:
-          parameters.push_back(GetIdForReferredType(GetReferredType(child)));
+          parameters.push_back(GetReferredTypeId(GetReferredType(child)));
           break;
         case DW_TAG_unspecified_parameters:
           // Note: C++ allows a single ... argument specification but C does
@@ -908,12 +907,12 @@ class Processor {
 
   // Same as GetIdForEntry, but returns "void_id_" for "unspecified" references,
   // because it is normal for DWARF (5.2 Unspecified Type Entries).
-  Id GetIdForReferredType(std::optional<Entry> referred_type) {
+  Id GetReferredTypeId(std::optional<Entry> referred_type) {
     return referred_type ? GetIdForEntry(*referred_type) : void_id_;
   }
 
   // Wrapper for GetIdForEntry to allow lvalues.
-  Id GetIdForReferredType(Entry referred_type) {
+  Id GetReferredTypeId(Entry referred_type) {
     return GetIdForEntry(referred_type);
   }
 
