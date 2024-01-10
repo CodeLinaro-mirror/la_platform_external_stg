@@ -212,8 +212,8 @@ struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
   std::string operator()(Id id);
   std::string operator()(const BaseClass&);
-  std::string operator()(const Member&);
   std::string operator()(const Method&);
+  std::string operator()(const Member&);
   std::string operator()(const StructUnion&);
   template <typename Node>
   std::string operator()(const Node&);
@@ -282,8 +282,8 @@ struct Compare {
   Result operator()(const Primitive&, const Primitive&);
   Result operator()(const Array&, const Array&);
   Result operator()(const BaseClass&, const BaseClass&);
-  Result operator()(const Member&, const Member&);
   Result operator()(const Method&, const Method&);
+  Result operator()(const Member&, const Member&);
   Result operator()(const StructUnion&, const StructUnion&);
   Result operator()(const Enumeration&, const Enumeration&);
   Result operator()(const Function&, const Function&);
