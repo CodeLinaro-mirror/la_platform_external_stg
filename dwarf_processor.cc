@@ -432,10 +432,11 @@ class Processor {
   }
 
   void ProcessTypedef(Entry& entry) {
-    const std::string type_name = scope_ + GetName(entry);
+    const auto type_name = GetName(entry);
+    const auto full_name = scope_ + type_name;
     const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
-    const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
-    if (!ShouldKeepDefinition(entry, type_name)) {
+    const Id id = AddProcessedNode<Typedef>(entry, full_name, referred_type_id);
+    if (!ShouldKeepDefinition(entry, full_name)) {
       // We always model (and keep) typedef definitions. But we should exclude
       // filtered out types from being type roots.
       return;
@@ -483,9 +484,9 @@ class Processor {
   }
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
-    const auto name = GetNameOrEmpty(entry);
-    const std::string full_name = name.empty() ? std::string() : scope_ + name;
-    const PushScopeName push_scope_name(scope_, kind, name);
+    const auto type_name = GetNameOrEmpty(entry);
+    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const PushScopeName push_scope_name(scope_, kind, type_name);
 
     std::vector<Id> base_classes;
     std::vector<Id> members;
@@ -553,7 +554,7 @@ class Processor {
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
-        !ShouldKeepDefinition(entry, name)) {
+        !ShouldKeepDefinition(entry, type_name)) {
       // Declaration may have partial information about members or method.
       // We only need to parse children for information that will be needed in
       // complete definition, but don't need to store them in incomplete node.
@@ -665,16 +666,15 @@ class Processor {
   }
 
   void ProcessEnum(Entry& entry) {
-    const std::optional<std::string> name_optional = MaybeGetName(entry);
-    const std::string name =
-        name_optional.has_value() ? scope_ + *name_optional : "";
+    const auto type_name = GetNameOrEmpty(entry);
+    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
 
     if (entry.GetFlag(DW_AT_declaration)) {
       // It is expected to have only name and no children in declaration.
       // However, it is not guaranteed and we should do something if we find an
       // example.
       CheckNoChildren(entry);
-      AddProcessedNode<Enumeration>(entry, name);
+      AddProcessedNode<Enumeration>(entry, full_name);
       return;
     }
     const Id underlying_type_id =
@@ -706,13 +706,13 @@ class Processor {
                 << ", " << EntryToString(child);
       }
     }
-    if (!ShouldKeepDefinition(entry, name)) {
-      AddProcessedNode<Enumeration>(entry, name);
+    if (!ShouldKeepDefinition(entry, full_name)) {
+      AddProcessedNode<Enumeration>(entry, full_name);
       return;
     }
-    const Id id = AddProcessedNode<Enumeration>(entry, name, underlying_type_id,
-                                                std::move(enumerators));
-    if (!name.empty()) {
+    const Id id = AddProcessedNode<Enumeration>(
+        entry, full_name, underlying_type_id, std::move(enumerators));
+    if (!full_name.empty()) {
       AddNamedTypeNode(id);
     }
   }
