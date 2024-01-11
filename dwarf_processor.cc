@@ -543,6 +543,9 @@ class Processor {
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
           break;
+        case DW_TAG_variant_part:
+          // TODO: Add a DWARF processor to process variants.
+          break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: "
                 << Hex(child_tag) << ", " << EntryToString(child);
@@ -680,18 +683,28 @@ class Processor {
     Enumeration::Enumerators enumerators;
     enumerators.reserve(children.size());
     for (auto& child : children) {
-      Check(child.GetTag() == DW_TAG_enumerator)
-          << "Enum expects child of DW_TAG_enumerator";
-      std::string enumerator_name = GetName(child);
-      // TODO: detect signedness of underlying type and call
-      // an appropriate method.
-      std::optional<size_t> value_optional =
-          child.MaybeGetUnsignedConstant(DW_AT_const_value);
-      Check(value_optional.has_value()) << "Enumerator should have value";
-      // TODO: support both uint64_t and int64_t, depending on
-      // signedness of underlying type.
-      enumerators.emplace_back(enumerator_name,
-                               static_cast<int64_t>(*value_optional));
+      auto child_tag = child.GetTag();
+      switch (child_tag) {
+        case DW_TAG_enumerator: {
+          const std::string enumerator_name = GetName(child);
+          // TODO: detect signedness of underlying type and call
+          // an appropriate method.
+          std::optional<size_t> value_optional =
+              child.MaybeGetUnsignedConstant(DW_AT_const_value);
+          Check(value_optional.has_value()) << "Enumerator should have value";
+          // TODO: support both uint64_t and int64_t, depending on
+          // signedness of underlying type.
+          enumerators.emplace_back(enumerator_name,
+                                   static_cast<int64_t>(*value_optional));
+          break;
+        }
+        case DW_TAG_subprogram:
+          // TODO: Process enum member functions.
+          break;
+        default:
+          Die() << "Unexpected tag for child of enum: " << Hex(child_tag)
+                << ", " << EntryToString(child);
+      }
     }
     if (!ShouldKeepDefinition(entry, name)) {
       AddProcessedNode<Enumeration>(entry, name);
