@@ -554,7 +554,7 @@ class Processor {
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
-        !ShouldKeepDefinition(entry, type_name)) {
+        !ShouldKeepDefinition(entry, full_name)) {
       // Declaration may have partial information about members or method.
       // We only need to parse children for information that will be needed in
       // complete definition, but don't need to store them in incomplete node.
