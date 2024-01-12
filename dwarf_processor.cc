@@ -477,8 +477,8 @@ class Processor {
       if (name.substr(0, kBuiltinPrefix.size()) == kBuiltinPrefix) {
         return true;
       }
-      Die() << "File filter is provided, but DWARF entry << "
-            << EntryToString(entry) << " << doesn't have DW_AT_decl_file";
+      Die() << "File filter is provided, but " << name << " ("
+            << EntryToString(entry) << ") doesn't have DW_AT_decl_file";
     }
     return (*file_filter_)(*file);
   }
