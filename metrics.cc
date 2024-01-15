@@ -23,9 +23,6 @@
 #include <iomanip>
 #include <map>
 #include <ostream>
-#include <type_traits>
-#include <utility>
-#include <variant>
 
 namespace stg {
 
@@ -50,25 +47,9 @@ std::ostream& operator<<(std::ostream& os, const Nanoseconds& value) {
             << std::setfill(' ') << " ms";
 }
 
-Metrics::~Metrics() {
-  if (print_metrics) {
-    for (const auto& metric : metrics) {
-      std::visit([&](auto&& value) {
-        if constexpr (std::is_same_v<std::decay_t<decltype(value)>,
-                      std::monostate>) {
-          output << metric.name << ": <incomplete>\n";
-        } else {
-          output << metric.name << ": " << value << '\n';
-        }
-      }, metric.value);
-    }
-  }
-}
-
 Time::Time(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.metrics.size()) {
+    : metrics_(metrics), name_(name) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_);
-  metrics_.metrics.push_back(Metric{name, std::monostate()});
 }
 
 Time::~Time() {
@@ -76,25 +57,24 @@ Time::~Time() {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &finish);
   const auto seconds = finish.tv_sec - start_.tv_sec;
   const auto nanos = finish.tv_nsec - start_.tv_nsec;
-  metrics_.metrics[index_].value.emplace<1>(seconds * 1'000'000'000 + nanos);
+  const Nanoseconds value(seconds * 1'000'000'000 + nanos);
+  metrics_.PrintMetric(name_, value);
 }
 
 Counter::Counter(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.metrics.size()), value_(0) {
-  metrics_.metrics.push_back(Metric{name, std::monostate()});
+    : metrics_(metrics), name_(name), value_(0) {
 }
 
 Counter::~Counter() {
-  metrics_.metrics[index_].value = value_;
+  metrics_.PrintMetric(name_, value_);
 }
 
 Histogram::Histogram(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.metrics.size()) {
-  metrics_.metrics.push_back(Metric{name, std::monostate()});
+    : metrics_(metrics), name_(name) {
 }
 
 Histogram::~Histogram() {
-  metrics_.metrics[index_].value.emplace<3>(std::move(frequencies_));
+  metrics_.PrintMetric(name_, frequencies_);
 }
 
 }  // namespace stg

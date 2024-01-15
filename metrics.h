@@ -25,8 +25,6 @@
 #include <ctime>
 #include <map>
 #include <ostream>
-#include <variant>
-#include <vector>
 
 namespace stg {
 
@@ -39,23 +37,17 @@ struct Frequencies {
   std::map<size_t, size_t> counts;
 };
 
-struct Metric {
-  const char* name;
-  std::variant<
-      std::monostate,
-      Nanoseconds,
-      size_t,
-      Frequencies
-      > value;
-};
-
 struct Metrics {
   Metrics(std::ostream& output, bool print_metrics)
       : output(output), print_metrics(print_metrics) {}
-  ~Metrics();
+  template <typename V>
+  void PrintMetric(const char* name, const V& value) {
+    if (print_metrics) {
+      output << name << ": " << value << '\n';
+    }
+  }
   std::ostream& output;
   bool print_metrics;
-  std::vector<Metric> metrics;
 };
 
 // These objects only record values on destruction, so scope them!
@@ -69,7 +61,7 @@ class Time {
 
  private:
   Metrics& metrics_;
-  size_t index_;
+  const char* name_;
   struct timespec start_;
 };
 
@@ -97,7 +89,7 @@ class Counter {
 
  private:
   Metrics& metrics_;
-  size_t index_;
+  const char* name_;
   size_t value_;
 };
 
@@ -114,7 +106,7 @@ class Histogram {
 
  private:
   Metrics& metrics_;
-  size_t index_;
+  const char* name_;
   Frequencies frequencies_;
 };
 

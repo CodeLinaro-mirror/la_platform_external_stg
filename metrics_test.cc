@@ -76,9 +76,7 @@ TEST_CASE("times") {
     std::string second;
     is >> first >> time >> second;
     CHECK(first == name);
-    if (last_time != 0.0) {
-      CHECK(time < last_time);
-    }
+    CHECK(time > last_time);
     CHECK(second == ms);
     last_time = time;
     ++index;
@@ -106,7 +104,7 @@ TEST_CASE("counters") {
     a = 3;
     c += 2;
   }
-  const std::string expected = "a: 3\nb: 2\nc: 19\nd: 0\ne: 1\n";
+  const std::string expected = "e: 1\nd: 0\nc: 19\nb: 2\na: 3\n";
   CHECK(os.str() == expected);
 }
 
