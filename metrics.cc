@@ -50,23 +50,25 @@ std::ostream& operator<<(std::ostream& os, const Nanoseconds& value) {
             << std::setfill(' ') << " ms";
 }
 
-void Report(const Metrics& metrics, std::ostream& os) {
-  for (const auto& metric : metrics) {
-    std::visit([&](auto&& value) {
-      if constexpr (std::is_same_v<std::decay_t<decltype(value)>,
-                    std::monostate>) {
-        os << metric.name << ": <incomplete>\n";
-      } else {
-        os << metric.name << ": " << value << '\n';
-      }
-    }, metric.value);
+Metrics::~Metrics() {
+  if (print_metrics) {
+    for (const auto& metric : metrics) {
+      std::visit([&](auto&& value) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(value)>,
+                      std::monostate>) {
+          output << metric.name << ": <incomplete>\n";
+        } else {
+          output << metric.name << ": " << value << '\n';
+        }
+      }, metric.value);
+    }
   }
 }
 
 Time::Time(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()) {
+    : metrics_(metrics), index_(metrics.metrics.size()) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_);
-  metrics_.push_back(Metric{name, std::monostate()});
+  metrics_.metrics.push_back(Metric{name, std::monostate()});
 }
 
 Time::~Time() {
@@ -74,25 +76,25 @@ Time::~Time() {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &finish);
   const auto seconds = finish.tv_sec - start_.tv_sec;
   const auto nanos = finish.tv_nsec - start_.tv_nsec;
-  metrics_[index_].value.emplace<1>(seconds * 1'000'000'000 + nanos);
+  metrics_.metrics[index_].value.emplace<1>(seconds * 1'000'000'000 + nanos);
 }
 
 Counter::Counter(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()), value_(0) {
-  metrics_.push_back(Metric{name, std::monostate()});
+    : metrics_(metrics), index_(metrics.metrics.size()), value_(0) {
+  metrics_.metrics.push_back(Metric{name, std::monostate()});
 }
 
 Counter::~Counter() {
-  metrics_[index_].value = value_;
+  metrics_.metrics[index_].value = value_;
 }
 
 Histogram::Histogram(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()) {
-  metrics_.push_back(Metric{name, std::monostate()});
+    : metrics_(metrics), index_(metrics.metrics.size()) {
+  metrics_.metrics.push_back(Metric{name, std::monostate()});
 }
 
 Histogram::~Histogram() {
-  metrics_[index_].value.emplace<3>(std::move(frequencies_));
+  metrics_.metrics[index_].value.emplace<3>(std::move(frequencies_));
 }
 
 }  // namespace stg

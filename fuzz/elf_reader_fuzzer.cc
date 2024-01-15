@@ -18,6 +18,7 @@
 // Author: Matthias Maennich
 // Author: Aleksei Vetrov
 
+#include <sstream>
 #include <vector>
 
 #include "elf_reader.h"
@@ -31,9 +32,10 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
     // Fuzzer forbids changing "data", but libdwfl, used in elf::Read, requires
     // read and write access to memory.
     // Luckily, such trivial copy can be easily tracked by fuzzer.
-    std::vector<char> data_copy(data, data + size);
+    std::ostringstream os;
+    stg::Metrics metrics(os, false);
     stg::Graph graph;
-    stg::Metrics metrics;
+    std::vector<char> data_copy(data, data + size);
     stg::elf::Read(graph, data_copy.data(), size, stg::ReadOptions(), nullptr,
                    metrics);
   } catch (const stg::Exception&) {

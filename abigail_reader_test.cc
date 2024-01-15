@@ -39,12 +39,12 @@ std::filesystem::path filename_to_path(const char* f) {
 }
 
 stg::abixml::Document Read(const char* input) {
-  stg::Metrics metrics;
+  stg::Metrics metrics(std::cerr, false);
   return stg::abixml::Read(filename_to_path(input), metrics);
 }
 
 stg::Id Read(stg::Graph& graph, const char* input) {
-  stg::Metrics metrics;
+  stg::Metrics metrics(std::cerr, false);
   return stg::abixml::Read(graph, filename_to_path(input), metrics);
 }
 

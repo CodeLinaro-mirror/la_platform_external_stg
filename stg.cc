@@ -204,7 +204,7 @@ int main(int argc, char* argv[]) {
 
   try {
     stg::Graph graph;
-    stg::Metrics metrics;
+    stg::Metrics metrics(std::cerr, opt_metrics);
     std::vector<stg::Id> roots;
     roots.reserve(inputs.size());
     for (auto& [format, input] : inputs) {
@@ -228,9 +228,6 @@ int main(int argc, char* argv[]) {
     }
     for (auto output : outputs) {
       stg::Write(graph, root, output, metrics);
-    }
-    if (opt_metrics) {
-      stg::Report(metrics, std::cerr);
     }
     return 0;
   } catch (const stg::Exception& e) {

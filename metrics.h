@@ -49,9 +49,14 @@ struct Metric {
       > value;
 };
 
-using Metrics = std::vector<Metric>;
-
-void Report(const Metrics& metrics, std::ostream& os);
+struct Metrics {
+  Metrics(std::ostream& output, bool print_metrics)
+      : output(output), print_metrics(print_metrics) {}
+  ~Metrics();
+  std::ostream& output;
+  bool print_metrics;
+  std::vector<Metric> metrics;
+};
 
 // These objects only record values on destruction, so scope them!
 

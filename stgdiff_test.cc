@@ -19,8 +19,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -240,7 +238,8 @@ TEST_CASE("ignore") {
       );
 
   SECTION(test.name) {
-    stg::Metrics metrics;
+    std::ostringstream os;
+    stg::Metrics metrics(os, false);
 
     // Read inputs.
     stg::Graph graph;
@@ -294,7 +293,8 @@ TEST_CASE("short report") {
                            "added_removed_symbols_only_short_diff"}));
 
   SECTION(test.name) {
-    stg::Metrics metrics;
+    std::ostringstream os;
+    stg::Metrics metrics(os, false);
 
     // Read inputs.
     stg::Graph graph;
@@ -325,7 +325,8 @@ TEST_CASE("short report") {
 }
 
 TEST_CASE("fidelity diff") {
-  stg::Metrics metrics;
+  std::ostringstream os;
+  stg::Metrics metrics(os, false);
 
   // Read inputs.
   stg::Graph graph;

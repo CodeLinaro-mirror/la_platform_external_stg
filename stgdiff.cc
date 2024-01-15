@@ -261,14 +261,10 @@ int main(int argc, char* argv[]) {
   }
 
   try {
-    stg::Metrics metrics;
-    const int status = opt_exact ? RunExact(inputs, opt_read_options, metrics)
-                                 : Run(inputs, outputs, opt_ignore,
-                                       opt_read_options, opt_fidelity, metrics);
-    if (opt_metrics) {
-      stg::Report(metrics, std::cerr);
-    }
-    return status;
+    stg::Metrics metrics(std::cerr, opt_metrics);
+    return opt_exact ? RunExact(inputs, opt_read_options, metrics)
+                     : Run(inputs, outputs, opt_ignore, opt_read_options,
+                           opt_fidelity, metrics);
   } catch (const stg::Exception& e) {
     std::cerr << e.what();
     return 1;

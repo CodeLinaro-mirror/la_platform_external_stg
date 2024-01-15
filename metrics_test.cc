@@ -30,28 +30,18 @@
 namespace Test {
 
 TEST_CASE("empty") {
-  const stg::Metrics metrics;
   std::ostringstream os;
-  stg::Report(metrics, os);
+  {
+    const stg::Metrics metrics(os, true);
+  }
   CHECK(os.str().empty());
-}
-
-TEST_CASE("incomplete") {
-  stg::Metrics metrics;
-  std::ostringstream os;
-  stg::Time a(metrics, "a");
-  stg::Counter b(metrics, "b");
-  stg::Histogram c(metrics, "c");
-  stg::Report(metrics, os);
-  const std::string expected =
-      "a: <incomplete>\nb: <incomplete>\nc: <incomplete>\n";
-  CHECK(os.str() == expected);
 }
 
 TEST_CASE("times") {
   const size_t count = 20;
-  stg::Metrics metrics;
+  std::ostringstream os;
   {
+    stg::Metrics metrics(os, true);
     const std::array<stg::Time, count> timers = {
       stg::Time(metrics, "name"),
       stg::Time(metrics, "name"),
@@ -75,8 +65,6 @@ TEST_CASE("times") {
       stg::Time(metrics, "name"),
     };
   }
-  std::ostringstream os;
-  stg::Report(metrics, os);
   std::istringstream is(os.str());
   const std::string name = "name:";
   const std::string ms = "ms";
@@ -103,8 +91,9 @@ TEST_CASE("times") {
 }
 
 TEST_CASE("counters") {
-  stg::Metrics metrics;
+  std::ostringstream os;
   {
+    stg::Metrics metrics(os, true);
     stg::Counter a(metrics, "a");
     stg::Counter b(metrics, "b");
     stg::Counter c(metrics, "c");
@@ -117,23 +106,20 @@ TEST_CASE("counters") {
     a = 3;
     c += 2;
   }
-  std::ostringstream os;
-  Report(metrics, os);
   const std::string expected = "a: 3\nb: 2\nc: 19\nd: 0\ne: 1\n";
   CHECK(os.str() == expected);
 }
 
 TEST_CASE("histogram") {
-  stg::Metrics metrics;
+  std::ostringstream os;
   {
+    stg::Metrics metrics(os, true);
     stg::Histogram h(metrics, "h");
     h.Add(13);
     h.Add(14);
     h.Add(13);
     h.Add(12);
   }
-  std::ostringstream os;
-  Report(metrics, os);
   const std::string expected = "h: [12]=1 [13]=2 [14]=1\n";
   CHECK(os.str() == expected);
 }
