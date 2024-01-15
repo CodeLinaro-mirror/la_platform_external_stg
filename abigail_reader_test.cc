@@ -28,9 +28,9 @@
 
 #include <catch2/catch.hpp>
 #include "abigail_reader.h"
+#include "equality.h"
 #include "graph.h"
 #include "metrics.h"
-#include "equality.h"
 
 namespace {
 
