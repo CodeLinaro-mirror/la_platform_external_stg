@@ -28,7 +28,6 @@
 #include <cstddef>
 #include <cstring>
 #include <functional>
-#include <iostream>
 #include <limits>
 #include <ostream>
 #include <string>
@@ -218,12 +217,6 @@ Elf_Scn* MaybeGetSectionByType(Elf* elf, Elf64_Word type) {
   return sections[0];
 }
 
-Elf_Scn* GetSectionByType(Elf* elf, Elf64_Word type) {
-  Elf_Scn* section = MaybeGetSectionByType(elf, type);
-  Check(section != nullptr) << "no section found with type " << type;
-  return section;
-}
-
 Elf_Scn* GetSectionByIndex(Elf* elf, size_t index) {
   Elf_Scn* section = elf_getscn(elf, index);
   Check(section != nullptr) << "no section found with index " << index;
@@ -260,27 +253,32 @@ std::string_view GetString(Elf* elf, uint32_t section, size_t offset) {
   return name;
 }
 
-Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary,
-                               bool verbose) {
+Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary) {
   GElf_Ehdr elf_header;
   Check(gelf_getehdr(elf, &elf_header) != nullptr)
       << "could not get ELF header";
 
-  if (verbose) {
-    std::cout << "ELF type: " << ElfHeaderTypeToString(elf_header.e_type)
-              << '\n';
+  Elf_Scn* symtab = MaybeGetSectionByType(elf, SHT_SYMTAB);
+  Elf_Scn* dynsym = MaybeGetSectionByType(elf, SHT_DYNSYM);
+  if (symtab != nullptr && dynsym != nullptr) {
+    // Relocatable ELF binaries, Linux kernel and modules have their
+    // exported symbols in .symtab, all other ELF types have their
+    // exported symbols in .dynsym.
+    if (elf_header.e_type == ET_REL || is_linux_kernel_binary) {
+      return symtab;
+    }
+    if (elf_header.e_type == ET_DYN || elf_header.e_type == ET_EXEC) {
+      return dynsym;
+    }
+    Die() << "unsupported ELF type: '"
+          << ElfHeaderTypeToString(elf_header.e_type) << "'";
+  } else if (symtab != nullptr) {
+    return symtab;
+  } else if (dynsym != nullptr) {
+    return dynsym;
+  } else {
+    Die() << "no ELF symbol table found";
   }
-  // Relocatable ELF binaries, Linux kernel and modules have their exported
-  // symbols in .symtab, all other ELF types have their exported symbols in
-  // .dynsym.
-  if (elf_header.e_type == ET_REL || is_linux_kernel_binary) {
-    return GetSectionByType(elf, SHT_SYMTAB);
-  }
-  if (elf_header.e_type == ET_DYN || elf_header.e_type == ET_EXEC) {
-    return GetSectionByType(elf, SHT_DYNSYM);
-  }
-  Die() << "unsupported ELF type: '" << ElfHeaderTypeToString(elf_header.e_type)
-        << "'";
 }
 
 
@@ -424,8 +422,8 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-ElfLoader::ElfLoader(Elf* elf, bool verbose)
-    : verbose_(verbose), elf_(elf) {
+ElfLoader::ElfLoader(Elf* elf)
+    : elf_(elf) {
   Check(elf_ != nullptr) << "No ELF was provided";
   InitializeElfInformation();
 }
@@ -448,7 +446,7 @@ std::string_view ElfLoader::GetBtfRawData() const {
 
 std::vector<SymbolTableEntry> ElfLoader::GetElfSymbols() const {
   Elf_Scn* symbol_table_section =
-      GetSymbolTableSection(elf_, is_linux_kernel_binary_, verbose_);
+      GetSymbolTableSection(elf_, is_linux_kernel_binary_);
   Check(symbol_table_section != nullptr)
       << "failed to find symbol table section";
 

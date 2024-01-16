@@ -34,9 +34,11 @@ license {
 
 cc_defaults {
     name: "defaults",
+    defaults: ["elfutils_transitive_defaults"],
     visibility: [
         "//visibility:private",
     ],
+    cpp_std: "c++20",
     cflags: [
         "-DUSE_ANDROID_BUILD_NUMBER",
         "-fexceptions",
@@ -52,7 +54,6 @@ cc_defaults {
         "libjemalloc5",
         "libprotobuf-cpp-full",
         "libxml2",
-        "libz",
     ],
     compile_multilib: "64",
     target: {
@@ -112,15 +113,6 @@ cc_binary_host {
     defaults: ["defaults"],
     srcs: [
         "stgdiff.cc",
-    ],
-    static_libs: ["libstg"],
-}
-
-cc_binary_host {
-    name: "stginfo",
-    defaults: ["defaults"],
-    srcs: [
-        "stginfo.cc",
     ],
     static_libs: ["libstg"],
 }

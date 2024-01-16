@@ -40,7 +40,7 @@ namespace btf {
 // BTF Specification: https://www.kernel.org/doc/html/latest/bpf/btf.html
 class Structs {
  public:
-  explicit Structs(Graph& graph, bool verbose = false);
+  explicit Structs(Graph& graph);
   Id Process(std::string_view data);
 
  private:
@@ -54,7 +54,6 @@ class Structs {
   Graph& graph_;
 
   MemoryRange string_section_;
-  const bool verbose_;
 
   std::optional<Id> void_;
   std::optional<Id> variadic_;
@@ -67,7 +66,6 @@ class Structs {
   Id GetId(uint32_t btf_index);
   Id GetParameterId(uint32_t btf_index);
 
-  void PrintHeader(const btf_header* header) const;
   Id BuildTypes(MemoryRange memory);
   void BuildOneType(const btf_type* t, uint32_t btf_index,
                     MemoryRange& memory);
@@ -76,11 +74,11 @@ class Structs {
       bool kflag, const btf_member* members, size_t vlen);
   Enumeration::Enumerators BuildEnums(
       bool is_signed, const struct btf_enum* enums, size_t vlen);
+  Enumeration::Enumerators BuildEnums64(
+      bool is_signed, const struct btf_enum64* enums, size_t vlen);
   std::vector<Id> BuildParams(const struct btf_param* params, size_t vlen);
   Id BuildEnumUnderlyingType(size_t size, bool is_signed);
   std::string GetName(uint32_t name_off);
-
-  static void PrintStrings(MemoryRange memory);
 };
 
 Id ReadFile(Graph& graph, const std::string& path, ReadOptions options);

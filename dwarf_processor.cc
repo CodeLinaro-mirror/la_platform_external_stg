@@ -71,6 +71,11 @@ std::string GetNameOrEmpty(Entry& entry) {
   return std::move(*result);
 }
 
+std::optional<std::string> MaybeGetLinkageName(int version, Entry& entry) {
+  return entry.MaybeGetString(
+      version < 4 ? DW_AT_MIPS_linkage_name : DW_AT_linkage_name);
+}
+
 size_t GetBitSize(Entry& entry) {
   if (auto byte_size = entry.MaybeGetUnsignedConstant(DW_AT_byte_size)) {
     return *byte_size * 8;
@@ -136,26 +141,13 @@ size_t GetNumberOfElements(Entry& entry) {
   // code supports only the DW_TAG_subrange_type.
   Check(entry.GetTag() == DW_TAG_subrange_type)
       << "Array's dimensions should be an entry of DW_TAG_subrange_type";
-  std::optional<size_t> lower_bound_optional =
-      entry.MaybeGetUnsignedConstant(DW_AT_lower_bound);
-  Check(!lower_bound_optional.has_value() || *lower_bound_optional == 0)
-      << "Non-zero DW_AT_lower_bound is not supported";
-  std::optional<size_t> upper_bound_optional =
-      entry.MaybeGetUnsignedConstant(DW_AT_upper_bound);
-  // Don't fail if DW_AT_count is not a constant and treat this as no count
-  // provided. This can happen if array has variable length.
-  std::optional<size_t> number_of_elements_optional = entry.MaybeGetCount();
-  if (upper_bound_optional && number_of_elements_optional) {
-    Die() << "Both DW_AT_upper_bound and DW_AT_count given";
-  } else if (upper_bound_optional) {
-    return *upper_bound_optional + 1;
-  } else if (number_of_elements_optional) {
-    return *number_of_elements_optional;
-  } else {
-    // If a subrange has no DW_AT_count and no DW_AT_upper_bound attribue, its
-    // size is unknown.
-    return 0;
+  std::optional<size_t> number_of_elements = entry.MaybeGetCount();
+  if (number_of_elements) {
+    return *number_of_elements;
   }
+  // If a subrange has no DW_AT_count and no DW_AT_upper_bound attribute, its
+  // size is unknown.
+  return 0;
 }
 
 // Calculate number of bits from the "beginning" of the containing entity to
@@ -271,7 +263,55 @@ class Processor {
         file_filter_(file_filter),
         result_(result) {}
 
+  void ProcessCompilationUnit(CompilationUnit& compilation_unit) {
+    version_ = compilation_unit.version;
+    if (file_filter_ != nullptr) {
+      files_ = dwarf::Files(compilation_unit.entry);
+    }
+    Process(compilation_unit.entry);
+  }
+
+  void CheckUnresolvedIds() const {
+    for (const auto& [offset, id] : id_map_) {
+      if (!graph_.Is(id)) {
+        Die() << "unresolved id " << id << ", DWARF offset " << Hex(offset);
+      }
+    }
+  }
+
+  void ResolveSymbolSpecifications() {
+    std::sort(unresolved_symbol_specifications_.begin(),
+              unresolved_symbol_specifications_.end());
+    std::sort(scoped_names_.begin(), scoped_names_.end());
+    auto symbols_it = unresolved_symbol_specifications_.begin();
+    auto names_it = scoped_names_.begin();
+    while (symbols_it != unresolved_symbol_specifications_.end()) {
+      while (names_it != scoped_names_.end() &&
+             names_it->first < symbols_it->first) {
+        ++names_it;
+      }
+      if (names_it == scoped_names_.end() ||
+          names_it->first != symbols_it->first) {
+        Die() << "Scoped name not found for entry " << Hex(symbols_it->first);
+      }
+      result_.symbols[symbols_it->second].name = names_it->second;
+      ++symbols_it;
+    }
+  }
+
+ private:
   void Process(Entry& entry) {
+    try {
+      return ProcessInternal(entry);
+    } catch (Exception& e) {
+      std::ostringstream os;
+      os << "processing DIE " << Hex(entry.GetOffset());
+      e.Add(os.str());
+      throw;
+    }
+  }
+
+  void ProcessInternal(Entry& entry) {
     ++result_.processed_entries;
     auto tag = entry.GetTag();
     switch (tag) {
@@ -312,7 +352,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
-        ProcessCompileUnit(entry);
+        ProcessAllChildren(entry);
         break;
       case DW_TAG_typedef:
         ProcessTypedef(entry);
@@ -350,6 +390,9 @@ class Processor {
       case DW_TAG_namespace:
         ProcessNamespace(entry);
         break;
+      case DW_TAG_lexical_block:
+        ProcessAllChildren(entry);
+        break;
 
       default:
         // TODO: die on unexpected tag, when this switch contains
@@ -358,35 +401,6 @@ class Processor {
     }
   }
 
-  void CheckUnresolvedIds() const {
-    for (const auto& [offset, id] : id_map_) {
-      if (!graph_.Is(id)) {
-        Die() << "unresolved id " << id << ", DWARF offset " << Hex(offset);
-      }
-    }
-  }
-
-  void ResolveSymbolSpecifications() {
-    std::sort(unresolved_symbol_specifications_.begin(),
-              unresolved_symbol_specifications_.end());
-    std::sort(scoped_names_.begin(), scoped_names_.end());
-    auto symbols_it = unresolved_symbol_specifications_.begin();
-    auto names_it = scoped_names_.begin();
-    while (symbols_it != unresolved_symbol_specifications_.end()) {
-      while (names_it != scoped_names_.end() &&
-             names_it->first < symbols_it->first) {
-        ++names_it;
-      }
-      if (names_it == scoped_names_.end() ||
-          names_it->first != symbols_it->first) {
-        Die() << "Scoped name not found for entry " << Hex(symbols_it->first);
-      }
-      result_.symbols[symbols_it->second].name = names_it->second;
-      ++symbols_it;
-    }
-  }
-
- private:
   void ProcessAllChildren(Entry& entry) {
     for (auto& child : entry.GetChildren()) {
       Process(child);
@@ -397,13 +411,6 @@ class Processor {
     if (!entry.GetChildren().empty()) {
       Die() << "Entry expected to have no children";
     }
-  }
-
-  void ProcessCompileUnit(Entry& entry) {
-    if (file_filter_ != nullptr) {
-      files_ = dwarf::Files(entry);
-    }
-    ProcessAllChildren(entry);
   }
 
   void ProcessNamespace(Entry& entry) {
@@ -428,6 +435,11 @@ class Processor {
     const std::string type_name = scope_ + GetName(entry);
     auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
+    if (!ShouldKeepDefinition(entry, type_name)) {
+      // We always model (and keep) typedef definitions. But we should exclude
+      // filtered out types from being type roots.
+      return;
+    }
     AddNamedTypeNode(id);
   }
 
@@ -506,8 +518,24 @@ class Processor {
         case DW_TAG_union_type:
         case DW_TAG_enumeration_type:
         case DW_TAG_typedef:
+        case DW_TAG_const_type:
+        case DW_TAG_volatile_type:
+        case DW_TAG_restrict_type:
+        case DW_TAG_atomic_type:
+        case DW_TAG_array_type:
+        case DW_TAG_pointer_type:
+        case DW_TAG_reference_type:
+        case DW_TAG_rvalue_reference_type:
+        case DW_TAG_ptr_to_member_type:
+        case DW_TAG_unspecified_type:
         case DW_TAG_variable:
           Process(child);
+          break;
+        case DW_TAG_imported_declaration:
+        case DW_TAG_imported_module:
+          // For now information there is useless for ABI monitoring, but we
+          // need to check that there is no missing information in descendants.
+          CheckNoChildren(child);
           break;
         case DW_TAG_template_type_parameter:
         case DW_TAG_template_value_parameter:
@@ -518,7 +546,7 @@ class Processor {
           break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: "
-                << Hex(child_tag);
+                << Hex(child_tag) << ", " << EntryToString(child);
       }
     }
 
@@ -581,15 +609,11 @@ class Processor {
         Die() << "Method " << EntryToString(entry)
               << " shouldn't have specification";
       }
-      const auto vtable_offset = entry.MaybeGetVtableOffset();
-      if (!vtable_offset) {
-        Die() << "Virtual method " << EntryToString(entry)
-              << " should have offset";
-      }
+      const auto vtable_offset = entry.MaybeGetVtableOffset().value_or(0);
       // TODO: proper handling of missing linkage name
       methods.push_back(AddProcessedNode<Method>(
           entry, subprogram.linkage_name.value_or("{missing}"),
-          *subprogram.name_with_context.unscoped_name, *vtable_offset, id));
+          *subprogram.name_with_context.unscoped_name, vtable_offset, id));
     }
   }
 
@@ -770,7 +794,7 @@ class Processor {
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .name = GetScopedNameForSymbol(new_symbol_idx, name_with_context),
-          .linkage_name = entry.MaybeGetString(DW_AT_linkage_name),
+          .linkage_name = MaybeGetLinkageName(version_, entry),
           .address = *address,
           .id = referred_type_id});
     }
@@ -824,7 +848,18 @@ class Processor {
         case DW_TAG_class_type:
         case DW_TAG_union_type:
         case DW_TAG_typedef:
+        case DW_TAG_const_type:
+        case DW_TAG_volatile_type:
+        case DW_TAG_restrict_type:
+        case DW_TAG_atomic_type:
+        case DW_TAG_array_type:
+        case DW_TAG_pointer_type:
+        case DW_TAG_reference_type:
+        case DW_TAG_rvalue_reference_type:
+        case DW_TAG_ptr_to_member_type:
+        case DW_TAG_unspecified_type:
         case DW_TAG_inlined_subroutine:
+        case DW_TAG_subprogram:
         case DW_TAG_variable:
         case DW_TAG_call_site:
         case DW_TAG_GNU_call_site:
@@ -844,18 +879,19 @@ class Processor {
         case DW_TAG_template_value_parameter:
         case DW_TAG_GNU_template_template_param:
         case DW_TAG_GNU_template_parameter_pack:
+        case DW_TAG_GNU_formal_parameter_pack:
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
           break;
         default:
-          Die() << "Unexpected tag for child of function: " << child_tag << ", "
-                << EntryToString(child);
+          Die() << "Unexpected tag for child of function: " << Hex(child_tag)
+                << ", " << EntryToString(child);
       }
     }
 
     return Subprogram{.node = Function(return_type_id, parameters),
                       .name_with_context = GetNameWithContext(entry),
-                      .linkage_name = entry.MaybeGetString(DW_AT_linkage_name),
+                      .linkage_name = MaybeGetLinkageName(version_, entry),
                       .address = entry.MaybeGetAddress(DW_AT_low_pc),
                       .external = entry.GetFlag(DW_AT_external)};
   }
@@ -900,33 +936,31 @@ class Processor {
   const std::unique_ptr<Filter>& file_filter_;
   Types& result_;
   std::unordered_map<Dwarf_Off, Id> id_map_;
-  // Current scope.
-  Scope scope_;
   std::vector<std::pair<Dwarf_Off, std::string>> scoped_names_;
   std::vector<std::pair<Dwarf_Off, size_t>> unresolved_symbol_specifications_;
+
+  // Current scope.
+  Scope scope_;
+  int version_;
   dwarf::Files files_;
 };
 
-Types ProcessEntries(std::vector<Entry> entries, bool is_little_endian_binary,
-                     const std::unique_ptr<Filter>& file_filter, Graph& graph) {
+Types Process(Handler& dwarf, bool is_little_endian_binary,
+              const std::unique_ptr<Filter>& file_filter, Graph& graph) {
   Types result;
   const Id void_id = graph.Add<Special>(Special::Kind::VOID);
   const Id variadic_id = graph.Add<Special>(Special::Kind::VARIADIC);
+  // TODO: Scope Processor to compilation units?
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
                       file_filter, result);
-  for (auto& entry : entries) {
-    processor.Process(entry);
+  for (auto& compilation_unit : dwarf.GetCompilationUnits()) {
+    // Could fetch top-level attributes like compiler here.
+    processor.ProcessCompilationUnit(compilation_unit);
   }
   processor.CheckUnresolvedIds();
   processor.ResolveSymbolSpecifications();
 
   return result;
-}
-
-Types Process(Handler& dwarf, bool is_little_endian_binary,
-              const std::unique_ptr<Filter>& file_filter, Graph& graph) {
-  return ProcessEntries(dwarf.GetCompilationUnits(), is_little_endian_binary,
-                        file_filter, graph);
 }
 
 }  // namespace dwarf
