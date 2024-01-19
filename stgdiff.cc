@@ -31,12 +31,14 @@
 #include <utility>
 #include <vector>
 
+#include "comparison.h"
 #include "equality.h"
 #include "error.h"
 #include "fidelity.h"
 #include "graph.h"
 #include "input.h"
 #include "metrics.h"
+#include "naming.h"
 #include "reader_options.h"
 #include "reporting.h"
 
