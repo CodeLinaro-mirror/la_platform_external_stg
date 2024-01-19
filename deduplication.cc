@@ -21,11 +21,13 @@
 
 #include <cstddef>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "equality.h"
 #include "equality_cache.h"
 #include "graph.h"
+#include "hashing.h"
 #include "metrics.h"
 #include "substitution.h"
 
