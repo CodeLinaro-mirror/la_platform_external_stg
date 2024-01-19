@@ -118,7 +118,7 @@ std::string GetAttributeOrDie(xmlNodePtr node, const char* name) {
 }
 
 // Set an attribute value.
-void SetAttribute(xmlNodePtr node, const char* name, const std::string &value) {
+void SetAttribute(xmlNodePtr node, const char* name, const std::string& value) {
   xmlSetProp(node, ToLibxml(name), ToLibxml(value.c_str()));
 }
 
