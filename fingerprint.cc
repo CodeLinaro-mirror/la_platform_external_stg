@@ -167,7 +167,7 @@ struct Hasher {
     }
     // Comparison opened, need to close it before returning.
 
-    HashValue result = graph.Apply<HashValue>(*this, id);
+    auto result = graph.Apply<HashValue>(*this, id);
 
     // Check for a complete Strongly-Connected Component.
     auto ids = scc.Close(*handle);
