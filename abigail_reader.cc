@@ -1157,7 +1157,7 @@ void Abigail::ProcessEnum(Id id, xmlNodePtr enumeration) {
   }
 
   xmlNodePtr underlying = Child(enumeration);
-  Check(underlying) << "enum-decl has no child elements";
+  Check(underlying != nullptr) << "enum-decl has no child elements";
   CheckName("underlying-type", underlying);
   const auto type = GetEdge(underlying);
 
@@ -1306,7 +1306,7 @@ Document Read(const std::string& path, Metrics& metrics) {
 Id Read(Graph& graph, const std::string& path, Metrics& metrics) {
   const Document document = Read(path, metrics);
   xmlNodePtr root = xmlDocGetRootElement(document.get());
-  Check(root) << "XML document has no root element";
+  Check(root != nullptr) << "XML document has no root element";
   return Abigail(graph).ProcessRoot(root);
 }
 
