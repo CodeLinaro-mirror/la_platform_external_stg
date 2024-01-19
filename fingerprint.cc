@@ -19,6 +19,7 @@
 
 #include "fingerprint.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <unordered_map>
