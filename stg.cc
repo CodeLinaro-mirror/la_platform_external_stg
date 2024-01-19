@@ -102,7 +102,7 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
 void Write(const Graph& graph, Id root, const char* output, Metrics& metrics) {
   std::ofstream os(output);
   {
-    Time x(metrics, "write");
+    const Time x(metrics, "write");
     proto::Writer writer(graph);
     writer.Write(root, os);
     os << std::flush;

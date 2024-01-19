@@ -41,19 +41,19 @@ Id ReadInternal(Graph& graph, InputFormat format, const char* input,
                 Metrics& metrics) {
   switch (format) {
     case InputFormat::ABI: {
-      Time read(metrics, "read ABI");
+      const Time read(metrics, "read ABI");
       return abixml::Read(graph, input, metrics);
     }
     case InputFormat::BTF: {
-      Time read(metrics, "read BTF");
+      const Time read(metrics, "read BTF");
       return btf::ReadFile(graph, input, options);
     }
     case InputFormat::ELF: {
-      Time read(metrics, "read ELF");
+      const Time read(metrics, "read ELF");
       return elf::Read(graph, input, options, file_filter, metrics);
     }
     case InputFormat::STG: {
-      Time read(metrics, "read STG");
+      const Time read(metrics, "read STG");
       return proto::Read(graph, input);
     }
   }

@@ -96,7 +96,7 @@ int RunExact(const Inputs& inputs, stg::ReadOptions options,
     std::unordered_set<stg::Pair> equalities;
   };
 
-  stg::Time compute(metrics, "equality check");
+  const stg::Time compute(metrics, "equality check");
   PairCache equalities;
   return stg::Equals<PairCache>(graph, equalities)(roots[0], roots[1])
              ? 0
@@ -114,7 +114,7 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
   stg::Compare compare{graph, ignore, metrics};
   std::pair<bool, std::optional<stg::Comparison>> result;
   {
-    stg::Time compute(metrics, "compute diffs");
+    const stg::Time compute(metrics, "compute diffs");
     result = compare(roots[0], roots[1]);
   }
   stg::Check(compare.scc.Empty()) << "internal error: SCC state broken";
@@ -126,7 +126,7 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
   for (const auto& [format, filename] : outputs) {
     std::ofstream output(filename);
     if (comparison) {
-      stg::Time report(metrics, "report diffs");
+      const stg::Time report(metrics, "report diffs");
       stg::reporting::Options options{format, kMaxCrcOnlyChanges};
       stg::reporting::Reporting reporting{graph, compare.outcomes, options,
         names};

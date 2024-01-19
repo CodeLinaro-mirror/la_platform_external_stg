@@ -1290,7 +1290,7 @@ Document Read(const std::string& path, Metrics& metrics) {
   // Read the XML.
   Document document(nullptr, xmlFreeDoc);
   {
-    Time t(metrics, "abigail.libxml_parse");
+    const Time t(metrics, "abigail.libxml_parse");
     std::unique_ptr<
         std::remove_pointer_t<xmlParserCtxtPtr>, void(*)(xmlParserCtxtPtr)>
         context(xmlNewParserCtxt(), xmlFreeParserCtxt);

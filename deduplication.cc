@@ -35,7 +35,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   // Partition the nodes by hash.
   std::unordered_map<HashValue, std::vector<Id>> partitions;
   {
-    Time x(metrics, "partition nodes");
+    const Time x(metrics, "partition nodes");
     for (const auto& [id, fp] : hashes) {
       partitions[fp].push_back(id);
     }
@@ -59,7 +59,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   Counter equalities(metrics, "deduplicate.equalities");
   Counter inequalities(metrics, "deduplicate.inequalities");
   {
-    Time x(metrics, "find duplicates");
+    const Time x(metrics, "find duplicates");
     for (auto& [fp, ids] : partitions) {
       while (ids.size() > 1) {
         std::vector<Id> todo;
@@ -89,7 +89,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   };
   Substitute substitute(graph, remap);
   {
-    Time x(metrics, "rewrite");
+    const Time x(metrics, "rewrite");
     for (const auto& [id, fp] : hashes) {
       Id fid = cache.Find(id);
       if (fid != id) {

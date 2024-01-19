@@ -220,7 +220,7 @@ struct Hasher {
 
 std::unordered_map<Id, HashValue> Fingerprint(
     const Graph& graph, Id root, Metrics& metrics) {
-  Time x(metrics, "hash nodes");
+  const Time x(metrics, "hash nodes");
   std::unordered_map<Id, HashValue> hashes;
   std::unordered_set<Id> todo;
   Hasher hasher(graph, hashes, todo, metrics);
