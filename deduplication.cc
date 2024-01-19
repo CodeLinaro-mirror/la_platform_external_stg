@@ -63,7 +63,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
     for (auto& [fp, ids] : partitions) {
       while (ids.size() > 1) {
         std::vector<Id> todo;
-        Id candidate = ids[0];
+        const Id candidate = ids[0];
         for (size_t i = 1; i < ids.size(); ++i) {
           if (equals(ids[i], candidate)) {
             ++equalities;
@@ -91,7 +91,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   {
     const Time x(metrics, "rewrite");
     for (const auto& [id, fp] : hashes) {
-      Id fid = cache.Find(id);
+      const Id fid = cache.Find(id);
       if (fid != id) {
         graph.Remove(id);
         ++duplicate;

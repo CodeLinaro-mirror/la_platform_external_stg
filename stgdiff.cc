@@ -127,9 +127,9 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
     std::ofstream output(filename);
     if (comparison) {
       const stg::Time report(metrics, "report diffs");
-      stg::reporting::Options options{format, kMaxCrcOnlyChanges};
-      stg::reporting::Reporting reporting{graph, compare.outcomes, options,
-        names};
+      const stg::reporting::Options options{format, kMaxCrcOnlyChanges};
+      const stg::reporting::Reporting reporting{graph, compare.outcomes,
+        options, names};
       Report(reporting, *comparison, output);
       output << std::flush;
     }

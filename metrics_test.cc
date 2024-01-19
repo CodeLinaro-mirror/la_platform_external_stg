@@ -41,7 +41,7 @@ TEST_CASE("times") {
   std::ostringstream os;
   {
     stg::Metrics metrics(os, true);
-    std::array<const stg::Time, count> timers = {
+    const std::array<const stg::Time, count> timers = {
       stg::Time(metrics, "name"),
       stg::Time(metrics, "name"),
       stg::Time(metrics, "name"),
@@ -94,7 +94,7 @@ TEST_CASE("counters") {
     stg::Counter a(metrics, "a");
     stg::Counter b(metrics, "b");
     stg::Counter c(metrics, "c");
-    stg::Counter d(metrics, "d");
+    const stg::Counter d(metrics, "d");
     stg::Counter e(metrics, "e");
     c = 17;
     ++b;

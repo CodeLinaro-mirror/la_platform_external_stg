@@ -95,7 +95,7 @@ struct Hasher {
     auto h = hash('U', static_cast<uint32_t>(x.kind), x.name);
     if (x.definition.has_value()) {
       h = hash(h, '1');
-      auto& definition = *x.definition;
+      const auto& definition = *x.definition;
       ToDo(definition.base_classes);
       ToDo(definition.methods);
       if (x.name.empty()) {
