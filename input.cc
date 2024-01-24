@@ -36,24 +36,24 @@ namespace stg {
 
 namespace {
 
-Id ReadInternal(Graph& graph, InputFormat format, const char* input,
-                ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-                Metrics& metrics) {
+Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
+                const char* input, ReadOptions options,
+                const std::unique_ptr<Filter>& file_filter) {
   switch (format) {
     case InputFormat::ABI: {
-      const Time read(metrics, "read ABI");
-      return abixml::Read(graph, input, metrics);
+      const Time read(runtime, "read ABI");
+      return abixml::Read(runtime, graph, input);
     }
     case InputFormat::BTF: {
-      const Time read(metrics, "read BTF");
+      const Time read(runtime, "read BTF");
       return btf::ReadFile(graph, input, options);
     }
     case InputFormat::ELF: {
-      const Time read(metrics, "read ELF");
-      return elf::Read(graph, input, options, file_filter, metrics);
+      const Time read(runtime, "read ELF");
+      return elf::Read(runtime, graph, input, options, file_filter);
     }
     case InputFormat::STG: {
-      const Time read(metrics, "read STG");
+      const Time read(runtime, "read STG");
       return proto::Read(graph, input);
     }
   }
@@ -61,11 +61,10 @@ Id ReadInternal(Graph& graph, InputFormat format, const char* input,
 
 }  // namespace
 
-Id Read(Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-        Metrics& metrics) {
+Id Read(Runtime& runtime, Graph& graph, InputFormat format, const char* input,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
   try {
-    return ReadInternal(graph, format, input, options, file_filter, metrics);
+    return ReadInternal(runtime, graph, format, input, options, file_filter);
   } catch (Exception& e) {
     std::ostringstream os;
     os << "processing file '" << input << '\'';

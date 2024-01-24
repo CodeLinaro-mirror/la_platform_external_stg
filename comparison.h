@@ -258,15 +258,15 @@ struct ResolveQualifier {
 };
 
 struct Compare {
-  Compare(const Graph& graph, const Ignore& ignore, Metrics& metrics)
+  Compare(Runtime& runtime, const Graph& graph, const Ignore& ignore)
       : graph(graph), ignore(ignore),
-        queried(metrics, "compare.queried"),
-        already_compared(metrics, "compare.already_compared"),
-        being_compared(metrics, "compare.being_compared"),
-        really_compared(metrics, "compare.really_compared"),
-        equivalent(metrics, "compare.equivalent"),
-        inequivalent(metrics, "compare.inequivalent"),
-        scc_size(metrics, "compare.scc_size") {}
+        queried(runtime, "compare.queried"),
+        already_compared(runtime, "compare.already_compared"),
+        being_compared(runtime, "compare.being_compared"),
+        really_compared(runtime, "compare.really_compared"),
+        equivalent(runtime, "compare.equivalent"),
+        inequivalent(runtime, "compare.inequivalent"),
+        scc_size(runtime, "compare.scc_size") {}
   std::pair<bool, std::optional<Comparison>>  operator()(Id id1, Id id2);
 
   Comparison Removed(Id id);

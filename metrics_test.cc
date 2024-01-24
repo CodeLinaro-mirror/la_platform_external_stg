@@ -31,7 +31,7 @@ namespace Test {
 TEST_CASE("empty") {
   std::ostringstream os;
   {
-    const stg::Metrics metrics(os, true);
+    const stg::Runtime runtime(os, true);
   }
   CHECK(os.str().empty());
 }
@@ -40,28 +40,28 @@ TEST_CASE("times") {
   const size_t count = 20;
   std::ostringstream os;
   {
-    stg::Metrics metrics(os, true);
+    stg::Runtime runtime(os, true);
     const std::array<const stg::Time, count> timers = {
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
-      stg::Time(metrics, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
     };
   }
   std::istringstream is(os.str());
@@ -90,12 +90,12 @@ TEST_CASE("times") {
 TEST_CASE("counters") {
   std::ostringstream os;
   {
-    stg::Metrics metrics(os, true);
-    stg::Counter a(metrics, "a");
-    stg::Counter b(metrics, "b");
-    stg::Counter c(metrics, "c");
-    const stg::Counter d(metrics, "d");
-    stg::Counter e(metrics, "e");
+    stg::Runtime runtime(os, true);
+    stg::Counter a(runtime, "a");
+    stg::Counter b(runtime, "b");
+    stg::Counter c(runtime, "c");
+    const stg::Counter d(runtime, "d");
+    stg::Counter e(runtime, "e");
     c = 17;
     ++b;
     ++b;
@@ -110,8 +110,8 @@ TEST_CASE("counters") {
 TEST_CASE("histogram") {
   std::ostringstream os;
   {
-    stg::Metrics metrics(os, true);
-    stg::Histogram h(metrics, "h");
+    stg::Runtime runtime(os, true);
+    stg::Histogram h(runtime, "h");
     h.Add(13);
     h.Add(14);
     h.Add(13);

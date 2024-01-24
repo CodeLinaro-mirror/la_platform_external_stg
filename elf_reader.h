@@ -37,10 +37,10 @@
 namespace stg {
 namespace elf {
 
-Id Read(Graph& graph, const std::string& path, ReadOptions options,
-        const std::unique_ptr<Filter>& file_filter, Metrics& metrics);
-Id Read(Graph& graph, char* data, size_t size, ReadOptions options,
-        const std::unique_ptr<Filter>& file_filter, Metrics& metrics);
+Id Read(Runtime& runtime, Graph& graph, const std::string& path,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
+Id Read(Runtime& runtime, Graph& graph, char* data, size_t size,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
 
 // For unit tests only
 namespace internal {

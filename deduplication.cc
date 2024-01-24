@@ -33,21 +33,21 @@
 
 namespace stg {
 
-Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
+Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes) {
   // Partition the nodes by hash.
   std::unordered_map<HashValue, std::vector<Id>> partitions;
   {
-    const Time x(metrics, "partition nodes");
+    const Time x(runtime, "partition nodes");
     for (const auto& [id, fp] : hashes) {
       partitions[fp].push_back(id);
     }
   }
-  Counter(metrics, "deduplicate.nodes") = hashes.size();
-  Counter(metrics, "deduplicate.hashes") = partitions.size();
+  Counter(runtime, "deduplicate.nodes") = hashes.size();
+  Counter(runtime, "deduplicate.hashes") = partitions.size();
 
-  Histogram hash_partition_size(metrics, "deduplicate.hash_partition_size");
-  Counter min_comparisons(metrics, "deduplicate.min_comparisons");
-  Counter max_comparisons(metrics, "deduplicate.max_comparisons");
+  Histogram hash_partition_size(runtime, "deduplicate.hash_partition_size");
+  Counter min_comparisons(runtime, "deduplicate.min_comparisons");
+  Counter max_comparisons(runtime, "deduplicate.max_comparisons");
   for (const auto& [fp, ids] : partitions) {
     const auto n = ids.size();
     hash_partition_size.Add(n);
@@ -56,12 +56,12 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   }
 
   // Refine partitions of nodes with the same fingerprints.
-  EqualityCache cache(hashes, metrics);
+  EqualityCache cache(runtime, hashes);
   Equals<EqualityCache> equals(graph, cache);
-  Counter equalities(metrics, "deduplicate.equalities");
-  Counter inequalities(metrics, "deduplicate.inequalities");
+  Counter equalities(runtime, "deduplicate.equalities");
+  Counter inequalities(runtime, "deduplicate.inequalities");
   {
-    const Time x(metrics, "find duplicates");
+    const Time x(runtime, "find duplicates");
     for (auto& [fp, ids] : partitions) {
       while (ids.size() > 1) {
         std::vector<Id> todo;
@@ -80,8 +80,8 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   }
 
   // Keep one representative of each set of duplicates.
-  Counter unique(metrics, "deduplicate.unique");
-  Counter duplicate(metrics, "deduplicate.duplicate");
+  Counter unique(runtime, "deduplicate.unique");
+  Counter duplicate(runtime, "deduplicate.duplicate");
   auto remap = [&cache](Id& id) {
     // update id to representative id, avoiding silent stores
     const Id fid = cache.Find(id);
@@ -91,7 +91,7 @@ Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics) {
   };
   Substitute substitute(graph, remap);
   {
-    const Time x(metrics, "rewrite");
+    const Time x(runtime, "rewrite");
     for (const auto& [id, fp] : hashes) {
       const Id fid = cache.Find(id);
       if (fid != id) {

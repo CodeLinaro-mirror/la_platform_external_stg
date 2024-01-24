@@ -146,7 +146,7 @@ class Abigail {
   Id BuildSymbols();
 };
 
-Id Read(Graph& graph, const std::string& path, Metrics& metrics);
+Id Read(Runtime& runtime, Graph& graph, const std::string& path);
 
 // Exposed for testing.
 void Clean(xmlNodePtr root);
@@ -154,7 +154,7 @@ bool EqualTree(xmlNodePtr left, xmlNodePtr right);
 bool SubTree(xmlNodePtr left, xmlNodePtr right);
 using Document =
     std::unique_ptr<std::remove_pointer_t<xmlDocPtr>, void(*)(xmlDocPtr)>;
-Document Read(const std::string& path, Metrics& metrics);
+Document Read(Runtime& runtime, const std::string& path);
 
 }  // namespace abixml
 }  // namespace stg

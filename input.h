@@ -31,9 +31,8 @@ namespace stg {
 
 enum class InputFormat { ABI, BTF, ELF, STG };
 
-Id Read(Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-        Metrics& metrics);
+Id Read(Runtime& runtime, Graph& graph, InputFormat format, const char* input,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
 
 }  // namespace stg
 

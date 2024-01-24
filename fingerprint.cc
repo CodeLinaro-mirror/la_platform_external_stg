@@ -36,10 +36,11 @@ namespace stg {
 namespace {
 
 struct Hasher {
-  Hasher(const Graph& graph, std::unordered_map<Id, HashValue>& hashes,
-         std::unordered_set<Id>& todo, Metrics& metrics)
+  Hasher(Runtime& runtime, const Graph& graph,
+         std::unordered_map<Id, HashValue>& hashes,
+         std::unordered_set<Id>& todo)
       : graph(graph), hashes(hashes), todo(todo),
-        non_trivial_scc_size(metrics, "fingerprint.non_trivial_scc_size") {}
+        non_trivial_scc_size(runtime, "fingerprint.non_trivial_scc_size") {}
 
   // Graph function implementation
   HashValue operator()(const Special& x) {
@@ -219,11 +220,11 @@ struct Hasher {
 }  // namespace
 
 std::unordered_map<Id, HashValue> Fingerprint(
-    const Graph& graph, Id root, Metrics& metrics) {
-  const Time x(metrics, "hash nodes");
+    Runtime& runtime, const Graph& graph, Id root) {
+  const Time x(runtime, "hash nodes");
   std::unordered_map<Id, HashValue> hashes;
   std::unordered_set<Id> todo;
-  Hasher hasher(graph, hashes, todo, metrics);
+  Hasher hasher(runtime, graph, hashes, todo);
   todo.insert(root);
   while (!todo.empty()) {
     for (auto id : std::exchange(todo, {})) {

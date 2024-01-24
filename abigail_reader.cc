@@ -1285,14 +1285,14 @@ Id Abigail::BuildSymbols() {
   return graph_.Add<Interface>(symbols);
 }
 
-Document Read(const std::string& path, Metrics& metrics) {
+Document Read(Runtime& runtime, const std::string& path) {
   // Open input for reading.
   const FileDescriptor fd(path.c_str(), O_RDONLY);
 
   // Read the XML.
   Document document(nullptr, xmlFreeDoc);
   {
-    const Time t(metrics, "abigail.libxml_parse");
+    const Time t(runtime, "abigail.libxml_parse");
     const std::unique_ptr<
         std::remove_pointer_t<xmlParserCtxtPtr>, void(*)(xmlParserCtxtPtr)>
         context(xmlNewParserCtxt(), xmlFreeParserCtxt);
@@ -1305,8 +1305,8 @@ Document Read(const std::string& path, Metrics& metrics) {
   return document;
 }
 
-Id Read(Graph& graph, const std::string& path, Metrics& metrics) {
-  const Document document = Read(path, metrics);
+Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
+  const Document document = Read(runtime, path);
   const xmlNodePtr root = xmlDocGetRootElement(document.get());
   Check(root != nullptr) << "XML document has no root element";
   return Abigail(graph).ProcessRoot(root);

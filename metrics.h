@@ -37,8 +37,8 @@ struct Frequencies {
   std::map<size_t, size_t> counts;
 };
 
-struct Metrics {
-  Metrics(std::ostream& output, bool print_metrics)
+struct Runtime {
+  Runtime(std::ostream& output, bool print_metrics)
       : output(output), print_metrics(print_metrics) {}
   template <typename V>
   void PrintMetric(const char* name, const V& value) {
@@ -54,20 +54,20 @@ struct Metrics {
 
 class Time {
  public:
-  Time(Metrics& metrics, const char* name);
+  Time(Runtime& runtime, const char* name);
   Time(Time&& other) = delete;
   Time& operator=(Time&& other) = delete;
   ~Time();
 
  private:
-  Metrics& metrics_;
+  Runtime& runtime_;
   const char* name_;
   struct timespec start_;
 };
 
 class Counter {
  public:
-  Counter(Metrics& metrics, const char* name);
+  Counter(Runtime& runtime, const char* name);
   Counter(Counter&& other) = delete;
   Counter& operator=(Counter&& other) = delete;
   ~Counter();
@@ -88,14 +88,14 @@ class Counter {
   }
 
  private:
-  Metrics& metrics_;
+  Runtime& runtime_;
   const char* name_;
   size_t value_;
 };
 
 class Histogram {
  public:
-  Histogram(Metrics& metrics, const char* name);
+  Histogram(Runtime& runtime, const char* name);
   Histogram(Histogram&& other) = delete;
   Histogram& operator=(Histogram&& other) = delete;
   ~Histogram();
@@ -105,7 +105,7 @@ class Histogram {
   }
 
  private:
-  Metrics& metrics_;
+  Runtime& runtime_;
   const char* name_;
   Frequencies frequencies_;
 };

@@ -34,15 +34,15 @@ namespace stg {
 // destruction.
 class Unification {
  public:
-  Unification(Graph& graph, Id start, Metrics& metrics)
+  Unification(Runtime& runtime, Graph& graph, Id start)
       : graph_(graph),
         start_(start),
         mapping_(start),
-        metrics_(metrics),
-        find_query_(metrics, "unification.find_query"),
-        find_halved_(metrics, "unification.find_halved"),
-        union_known_(metrics, "unification.union_known"),
-        union_unknown_(metrics, "unification.union_unknown") {}
+        runtime_(runtime),
+        find_query_(runtime, "unification.find_query"),
+        find_halved_(runtime, "unification.find_halved"),
+        union_known_(runtime, "unification.union_known"),
+        union_unknown_(runtime, "unification.union_unknown") {}
 
   ~Unification() {
     if (std::uncaught_exceptions() > 0) {
@@ -50,9 +50,9 @@ class Unification {
       return;
     }
     // apply substitutions to the entire graph
-    const Time time(metrics_, "unification.rewrite");
-    Counter removed(metrics_, "unification.removed");
-    Counter retained(metrics_, "unification.retained");
+    const Time time(runtime_, "unification.rewrite");
+    Counter removed(runtime_, "unification.removed");
+    Counter retained(runtime_, "unification.retained");
     auto remap = [&](Id& id) {
       Update(id);
     };
@@ -118,7 +118,7 @@ class Unification {
   Graph& graph_;
   Id start_;
   DenseIdMapping mapping_;
-  Metrics& metrics_;
+  Runtime& runtime_;
   Counter find_query_;
   Counter find_halved_;
   Counter union_known_;

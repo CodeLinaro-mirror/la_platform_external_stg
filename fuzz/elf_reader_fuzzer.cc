@@ -33,11 +33,11 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
     // read and write access to memory.
     // Luckily, such trivial copy can be easily tracked by fuzzer.
     std::ostringstream os;
-    stg::Metrics metrics(os, false);
+    stg::Runtime runtime(os, false);
     stg::Graph graph;
     std::vector<char> data_copy(data, data + size);
-    stg::elf::Read(graph, data_copy.data(), size, stg::ReadOptions(), nullptr,
-                   metrics);
+    stg::elf::Read(runtime, graph, data_copy.data(), size, stg::ReadOptions(),
+                   nullptr);
   } catch (const stg::Exception&) {
     // Pass as this is us catching invalid ELF properly.
   }

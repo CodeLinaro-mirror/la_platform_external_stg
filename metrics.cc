@@ -47,8 +47,8 @@ std::ostream& operator<<(std::ostream& os, const Nanoseconds& value) {
             << std::setfill(' ') << " ms";
 }
 
-Time::Time(Metrics& metrics, const char* name)
-    : metrics_(metrics), name_(name) {
+Time::Time(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_);
 }
 
@@ -58,23 +58,23 @@ Time::~Time() {
   const auto seconds = finish.tv_sec - start_.tv_sec;
   const auto nanos = finish.tv_nsec - start_.tv_nsec;
   const Nanoseconds value(seconds * 1'000'000'000 + nanos);
-  metrics_.PrintMetric(name_, value);
+  runtime_.PrintMetric(name_, value);
 }
 
-Counter::Counter(Metrics& metrics, const char* name)
-    : metrics_(metrics), name_(name), value_(0) {
+Counter::Counter(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name), value_(0) {
 }
 
 Counter::~Counter() {
-  metrics_.PrintMetric(name_, value_);
+  runtime_.PrintMetric(name_, value_);
 }
 
-Histogram::Histogram(Metrics& metrics, const char* name)
-    : metrics_(metrics), name_(name) {
+Histogram::Histogram(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name) {
 }
 
 Histogram::~Histogram() {
-  metrics_.PrintMetric(name_, frequencies_);
+  runtime_.PrintMetric(name_, frequencies_);
 }
 
 }  // namespace stg
