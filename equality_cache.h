@@ -29,7 +29,7 @@
 
 #include "graph.h"
 #include "hashing.h"
-#include "metrics.h"
+#include "runtime.h"
 
 namespace stg {
 

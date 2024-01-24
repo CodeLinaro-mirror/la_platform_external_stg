@@ -46,7 +46,7 @@
 #include "error.h"
 #include "file_descriptor.h"
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scope.h"
 #include "type_normalisation.h"
 

@@ -28,7 +28,7 @@
 #include "equality_cache.h"
 #include "graph.h"
 #include "hashing.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "substitution.h"
 
 namespace stg {

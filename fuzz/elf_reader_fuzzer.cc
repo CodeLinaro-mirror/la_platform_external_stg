@@ -24,8 +24,8 @@
 #include "elf_reader.h"
 #include "error.h"
 #include "graph.h"
-#include "metrics.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
   try {

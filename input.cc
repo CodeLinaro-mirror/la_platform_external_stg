@@ -28,9 +28,9 @@
 #include "error.h"
 #include "filter.h"
 #include "graph.h"
-#include "metrics.h"
 #include "proto_reader.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 

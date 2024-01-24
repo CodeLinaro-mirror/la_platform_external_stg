@@ -35,9 +35,9 @@
 #include "fingerprint.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
 #include "proto_writer.h"
 #include "reader_options.h"
+#include "runtime.h"
 #include "type_resolution.h"
 #include "unification.h"
 

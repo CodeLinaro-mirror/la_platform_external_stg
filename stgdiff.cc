@@ -37,10 +37,10 @@
 #include "fidelity.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
 #include "naming.h"
 #include "reader_options.h"
 #include "reporting.h"
+#include "runtime.h"
 
 namespace {
 

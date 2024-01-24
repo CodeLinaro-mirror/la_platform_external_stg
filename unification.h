@@ -25,7 +25,7 @@
 #include <unordered_set>
 
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "substitution.h"
 
 namespace stg {

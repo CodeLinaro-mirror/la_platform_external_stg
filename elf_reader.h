@@ -31,8 +31,8 @@
 #include "elf_loader.h"
 #include "filter.h"
 #include "graph.h"
-#include "metrics.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 namespace elf {

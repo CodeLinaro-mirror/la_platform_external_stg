@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scc.h"
 
 namespace stg {

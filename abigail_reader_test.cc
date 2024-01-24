@@ -30,7 +30,7 @@
 #include "abigail_reader.h"
 #include "equality.h"
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 
 namespace {
 

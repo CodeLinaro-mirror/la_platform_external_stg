@@ -17,8 +17,8 @@
 //
 // Author: Giuliano Procida
 
-#ifndef STG_METRICS_H_
-#define STG_METRICS_H_
+#ifndef STG_RUNTIME_H_
+#define STG_RUNTIME_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -112,4 +112,4 @@ class Histogram {
 
 }  // namespace stg
 
-#endif  // STG_METRICS_H_
+#endif  // STG_RUNTIME_H_

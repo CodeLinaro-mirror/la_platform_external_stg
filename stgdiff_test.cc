@@ -26,9 +26,9 @@
 #include "comparison.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
 #include "reader_options.h"
 #include "reporting.h"
+#include "runtime.h"
 
 namespace {
 

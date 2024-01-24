@@ -32,7 +32,7 @@
 
 #include <libxml/tree.h>
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scope.h"
 
 namespace stg {
