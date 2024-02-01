@@ -199,7 +199,11 @@ TEST_CASE("Tidy") {
       TidyTestCase(
           {"duplicate type resolution - stray anonymous member",
            {"abigail_duplicate_types_7.xml",
-            "abigail_duplicate_types_8.xml"}}));
+            "abigail_duplicate_types_8.xml"}}),
+      TidyTestCase(
+          {"corpus group handling",
+           {"abigail_duplicate_types_0.xml",
+            "abigail_duplicate_types_9.xml"}}));
 
   SECTION(test.name) {
     // Read inputs.
