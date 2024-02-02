@@ -157,7 +157,7 @@ class SetFilter : public Filter {
   const Items items_;
 };
 
-static const char* kTokenCharacters = ":!()&|";
+const char* kTokenCharacters = ":!()&|";
 
 // Split a filter expression into tokens.
 //

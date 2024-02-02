@@ -19,7 +19,6 @@
 
 #include "filter.h"
 
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -52,7 +51,6 @@ TEST_CASE("bad syntax cases") {
   };
 
   for (const auto& expression : cases) {
-    std::ostringstream os;
     GIVEN("filter: " + expression) {
       CHECK_THROWS(stg::MakeFilter(expression));
     }
@@ -104,7 +102,6 @@ TEST_CASE("hand-curated cases") {
   };
 
   for (const auto& [expression, ins, outs] : cases) {
-    std::ostringstream os;
     GIVEN("filter: " + expression) {
       auto filter = stg::MakeFilter(expression);
       for (const auto& in : ins) {
