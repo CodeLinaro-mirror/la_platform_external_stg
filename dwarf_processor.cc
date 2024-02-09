@@ -436,7 +436,7 @@ class Processor {
     const auto full_name = scope_ + type_name;
     const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, full_name, referred_type_id);
-    if (!ShouldKeepDefinition(entry, full_name)) {
+    if (!ShouldKeepDefinition(entry, type_name)) {
       // We always model (and keep) typedef definitions. But we should exclude
       // filtered out types from being type roots.
       return;
@@ -554,7 +554,7 @@ class Processor {
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
-        !ShouldKeepDefinition(entry, full_name)) {
+        !ShouldKeepDefinition(entry, type_name)) {
       // Declaration may have partial information about members or method.
       // We only need to parse children for information that will be needed in
       // complete definition, but don't need to store them in incomplete node.
@@ -710,7 +710,7 @@ class Processor {
                 << ", " << EntryToString(child);
       }
     }
-    if (!ShouldKeepDefinition(entry, full_name)) {
+    if (!ShouldKeepDefinition(entry, type_name)) {
       AddProcessedNode<Enumeration>(entry, full_name);
       return;
     }
