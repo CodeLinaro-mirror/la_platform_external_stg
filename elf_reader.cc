@@ -35,8 +35,8 @@
 #include "error.h"
 #include "filter.h"
 #include "graph.h"
-#include "metrics.h"
 #include "reader_options.h"
+#include "runtime.h"
 #include "type_normalisation.h"
 #include "type_resolution.h"
 #include "unification.h"
@@ -191,23 +191,23 @@ namespace {
 
 class Reader {
  public:
-  Reader(Graph& graph, const std::string& path, ReadOptions options,
-         const std::unique_ptr<Filter>& file_filter, Metrics& metrics)
+  Reader(Runtime& runtime, Graph& graph, const std::string& path,
+         ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
         dwarf_(path),
         elf_(dwarf_.GetElf()),
         options_(options),
         file_filter_(file_filter),
-        metrics_(metrics) {}
+        runtime_(runtime) {}
 
-  Reader(Graph& graph, char* data, size_t size, ReadOptions options,
-         const std::unique_ptr<Filter>& file_filter, Metrics& metrics)
+  Reader(Runtime& runtime, Graph& graph, char* data, size_t size,
+         ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
         dwarf_(data, size),
         elf_(dwarf_.GetElf()),
         options_(options),
         file_filter_(file_filter),
-        metrics_(metrics) {}
+        runtime_(runtime) {}
 
   Id Read();
 
@@ -223,7 +223,7 @@ class Reader {
     // the nodes in consideration to the ones allocated by the DWARF processor
     // here and any symbol or type roots that follow. This is done by setting
     // the starting node ID to be the current graph limit.
-    Unification unification(graph_, graph_.Limit(), metrics_);
+    Unification unification(runtime_, graph_, graph_.Limit());
 
     const dwarf::Types types = dwarf::Process(
         dwarf_, elf_.IsLittleEndianBinary(), file_filter_, graph_);
@@ -289,7 +289,7 @@ class Reader {
     }
     roots.push_back(root);
 
-    stg::ResolveTypes(graph_, unification, {roots}, metrics_);
+    stg::ResolveTypes(runtime_, graph_, unification, {roots});
 
     unification.Update(root);
     return root;
@@ -392,7 +392,7 @@ class Reader {
   elf::ElfLoader elf_;
   ReadOptions options_;
   const std::unique_ptr<Filter>& file_filter_;
-  Metrics& metrics_;
+  Runtime& runtime_;
 };
 
 Id Reader::Read() {
@@ -437,14 +437,14 @@ Id Reader::Read() {
 }  // namespace
 }  // namespace internal
 
-Id Read(Graph& graph, const std::string& path, ReadOptions options,
-        const std::unique_ptr<Filter>& file_filter, Metrics& metrics) {
-  return internal::Reader(graph, path, options, file_filter, metrics).Read();
+Id Read(Runtime& runtime, Graph& graph, const std::string& path,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
+  return internal::Reader(runtime, graph, path, options, file_filter).Read();
 }
 
-Id Read(Graph& graph, char* data, size_t size, ReadOptions options,
-        const std::unique_ptr<Filter>& file_filter, Metrics& metrics) {
-  return internal::Reader(graph, data, size, options, file_filter, metrics)
+Id Read(Runtime& runtime, Graph& graph, char* data, size_t size,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
+  return internal::Reader(runtime, graph, data, size, options, file_filter)
       .Read();
 }
 

@@ -18,24 +18,26 @@
 // Author: Matthias Maennich
 // Author: Aleksei Vetrov
 
+#include <sstream>
 #include <vector>
 
 #include "elf_reader.h"
 #include "error.h"
 #include "graph.h"
-#include "metrics.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
   try {
     // Fuzzer forbids changing "data", but libdwfl, used in elf::Read, requires
     // read and write access to memory.
     // Luckily, such trivial copy can be easily tracked by fuzzer.
-    std::vector<char> data_copy(data, data + size);
+    std::ostringstream os;
+    stg::Runtime runtime(os, false);
     stg::Graph graph;
-    stg::Metrics metrics;
-    stg::elf::Read(graph, data_copy.data(), size, stg::ReadOptions(), nullptr,
-                   metrics);
+    std::vector<char> data_copy(data, data + size);
+    stg::elf::Read(runtime, graph, data_copy.data(), size, stg::ReadOptions(),
+                   nullptr);
   } catch (const stg::Exception&) {
     // Pass as this is us catching invalid ELF properly.
   }
