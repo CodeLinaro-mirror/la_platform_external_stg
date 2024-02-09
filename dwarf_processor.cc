@@ -699,7 +699,11 @@ class Processor {
           break;
         }
         case DW_TAG_subprogram:
-          // TODO: Process enum member functions.
+          // STG does not support virtual methods for enums.
+          Check(child.MaybeGetUnsignedConstant(DW_AT_virtuality)
+                    .value_or(DW_VIRTUALITY_none) == DW_VIRTUALITY_none)
+              << "Enums can not have virtual methods: " << EntryToString(child);
+          ProcessFunction(child);
           break;
         default:
           Die() << "Unexpected tag for child of enum: " << Hex(child_tag)
