@@ -91,11 +91,11 @@ struct Substitute {
     Update(x.type_id);
   }
 
-  void operator()(Member& x) {
+  void operator()(Method& x) {
     Update(x.type_id);
   }
 
-  void operator()(Method& x) {
+  void operator()(Member& x) {
     Update(x.type_id);
   }
 
