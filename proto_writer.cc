@@ -497,8 +497,7 @@ class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
       google::protobuf::TextFormat::BaseTextGenerator* generator) const override {
     std::ostringstream os;
     // 0x01234567
-    os << std::showbase << std::hex << std::setfill('0') << std::internal
-       << std::setw(10) << value;
+    os << "0x" << std::hex << std::setfill('0') << std::setw(8) << value;
     generator->PrintString(os.str());
   }
 };

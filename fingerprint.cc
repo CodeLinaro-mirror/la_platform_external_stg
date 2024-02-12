@@ -19,6 +19,7 @@
 
 #include "fingerprint.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -28,17 +29,18 @@
 
 #include "graph.h"
 #include "hashing.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scc.h"
 
 namespace stg {
 namespace {
 
 struct Hasher {
-  Hasher(const Graph& graph, std::unordered_map<Id, HashValue>& hashes,
-         std::unordered_set<Id>& todo, Metrics& metrics)
+  Hasher(Runtime& runtime, const Graph& graph,
+         std::unordered_map<Id, HashValue>& hashes,
+         std::unordered_set<Id>& todo)
       : graph(graph), hashes(hashes), todo(todo),
-        non_trivial_scc_size(metrics, "fingerprint.non_trivial_scc_size") {}
+        non_trivial_scc_size(runtime, "fingerprint.non_trivial_scc_size") {}
 
   // Graph function implementation
   HashValue operator()(const Special& x) {
@@ -94,7 +96,7 @@ struct Hasher {
     auto h = hash('U', static_cast<uint32_t>(x.kind), x.name);
     if (x.definition.has_value()) {
       h = hash(h, '1');
-      auto& definition = *x.definition;
+      const auto& definition = *x.definition;
       ToDo(definition.base_classes);
       ToDo(definition.methods);
       if (x.name.empty()) {
@@ -166,7 +168,7 @@ struct Hasher {
     }
     // Comparison opened, need to close it before returning.
 
-    HashValue result = graph.Apply<HashValue>(*this, id);
+    auto result = graph.Apply<HashValue>(*this, id);
 
     // Check for a complete Strongly-Connected Component.
     auto ids = scc.Close(*handle);
@@ -218,11 +220,11 @@ struct Hasher {
 }  // namespace
 
 std::unordered_map<Id, HashValue> Fingerprint(
-    const Graph& graph, Id root, Metrics& metrics) {
-  Time x(metrics, "hash nodes");
+    Runtime& runtime, const Graph& graph, Id root) {
+  const Time x(runtime, "hash nodes");
   std::unordered_map<Id, HashValue> hashes;
   std::unordered_set<Id> todo;
-  Hasher hasher(graph, hashes, todo, metrics);
+  Hasher hasher(runtime, graph, hashes, todo);
   todo.insert(root);
   while (!todo.empty()) {
     for (auto id : std::exchange(todo, {})) {

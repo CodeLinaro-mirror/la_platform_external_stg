@@ -41,8 +41,8 @@
 #include <linux/btf.h>
 #include "elf_loader.h"
 #include "error.h"
-#include "graph.h"
 #include "file_descriptor.h"
+#include "graph.h"
 #include "reader_options.h"
 
 namespace stg {
