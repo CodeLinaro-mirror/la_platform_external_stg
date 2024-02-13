@@ -19,8 +19,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
-#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -28,9 +26,9 @@
 #include "comparison.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
 #include "reader_options.h"
 #include "reporting.h"
+#include "runtime.h"
 
 namespace {
 
@@ -49,10 +47,10 @@ std::string filename_to_path(const std::string& f) {
   return std::filesystem::path("testdata") / f;
 }
 
-stg::Id Read(stg::Graph& graph, stg::InputFormat format,
-             const std::string& input, stg::Metrics& metrics) {
-  return stg::Read(graph, format, filename_to_path(input).c_str(),
-                   stg::ReadOptions(), nullptr, metrics);
+stg::Id Read(stg::Runtime& runtime, stg::Graph& graph, stg::InputFormat format,
+             const std::string& input) {
+  return stg::Read(runtime, graph, format, filename_to_path(input).c_str(),
+                   stg::ReadOptions(), nullptr);
 }
 
 TEST_CASE("ignore") {
@@ -240,15 +238,16 @@ TEST_CASE("ignore") {
       );
 
   SECTION(test.name) {
-    stg::Metrics metrics;
+    std::ostringstream os;
+    stg::Runtime runtime(os, false);
 
     // Read inputs.
     stg::Graph graph;
-    const auto id0 = Read(graph, test.format0, test.file0, metrics);
-    const auto id1 = Read(graph, test.format1, test.file1, metrics);
+    const auto id0 = Read(runtime, graph, test.format0, test.file0);
+    const auto id1 = Read(runtime, graph, test.format1, test.file1);
 
     // Compute differences.
-    stg::Compare compare{graph, test.ignore, metrics};
+    stg::Compare compare{runtime, graph, test.ignore};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SMALL reports.
@@ -294,15 +293,16 @@ TEST_CASE("short report") {
                            "added_removed_symbols_only_short_diff"}));
 
   SECTION(test.name) {
-    stg::Metrics metrics;
+    std::ostringstream os;
+    stg::Runtime runtime(os, false);
 
     // Read inputs.
     stg::Graph graph;
-    const auto id0 = Read(graph, stg::InputFormat::ABI, test.xml0, metrics);
-    const auto id1 = Read(graph, stg::InputFormat::ABI, test.xml1, metrics);
+    const auto id0 = Read(runtime, graph, stg::InputFormat::ABI, test.xml0);
+    const auto id1 = Read(runtime, graph, stg::InputFormat::ABI, test.xml1);
 
     // Compute differences.
-    stg::Compare compare{graph, {}, metrics};
+    stg::Compare compare{runtime, graph, {}};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SHORT reports.
@@ -325,14 +325,15 @@ TEST_CASE("short report") {
 }
 
 TEST_CASE("fidelity diff") {
-  stg::Metrics metrics;
+  std::ostringstream os;
+  stg::Runtime runtime(os, false);
 
   // Read inputs.
   stg::Graph graph;
   const auto id0 =
-      Read(graph, stg::InputFormat::STG, "fidelity_diff_0.stg", metrics);
+      Read(runtime, graph, stg::InputFormat::STG, "fidelity_diff_0.stg");
   const auto id1 =
-      Read(graph, stg::InputFormat::STG, "fidelity_diff_1.stg", metrics);
+      Read(runtime, graph, stg::InputFormat::STG, "fidelity_diff_1.stg");
 
   // Compute fidelity diff.
   auto fidelity_diff = stg::GetFidelityTransitions(graph, id0, id1);

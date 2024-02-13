@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -17,16 +17,14 @@
 //
 // Author: Giuliano Procida
 
-#ifndef STG_METRICS_H_
-#define STG_METRICS_H_
+#ifndef STG_RUNTIME_H_
+#define STG_RUNTIME_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
 #include <map>
 #include <ostream>
-#include <variant>
-#include <vector>
 
 namespace stg {
 
@@ -35,36 +33,43 @@ struct Nanoseconds {
   uint64_t ns;
 };
 
-struct Metric {
-  const char* name;
-  std::variant<
-      std::monostate,
-      Nanoseconds,
-      size_t,
-      std::map<size_t, size_t>
-      > value;
+struct Frequencies {
+  std::map<size_t, size_t> counts;
 };
 
-using Metrics = std::vector<Metric>;
-
-void Report(const Metrics& metrics, std::ostream& os);
+struct Runtime {
+  Runtime(std::ostream& output, bool print_metrics)
+      : output(output), print_metrics(print_metrics) {}
+  template <typename V>
+  void PrintMetric(const char* name, const V& value) {
+    if (print_metrics) {
+      output << name << ": " << value << '\n';
+    }
+  }
+  std::ostream& output;
+  bool print_metrics;
+};
 
 // These objects only record values on destruction, so scope them!
 
 class Time {
  public:
-  Time(Metrics& metrics, const char* name);
+  Time(Runtime& runtime, const char* name);
+  Time(Time&& other) = delete;
+  Time& operator=(Time&& other) = delete;
   ~Time();
 
  private:
-  Metrics& metrics_;
-  size_t index_;
+  Runtime& runtime_;
+  const char* name_;
   struct timespec start_;
 };
 
 class Counter {
  public:
-  Counter(Metrics& metrics, const char* name);
+  Counter(Runtime& runtime, const char* name);
+  Counter(Counter&& other) = delete;
+  Counter& operator=(Counter&& other) = delete;
   ~Counter();
 
   Counter& operator=(size_t x) {
@@ -83,26 +88,28 @@ class Counter {
   }
 
  private:
-  Metrics& metrics_;
-  size_t index_;
+  Runtime& runtime_;
+  const char* name_;
   size_t value_;
 };
 
 class Histogram {
  public:
-  Histogram(Metrics& metrics, const char* name);
+  Histogram(Runtime& runtime, const char* name);
+  Histogram(Histogram&& other) = delete;
+  Histogram& operator=(Histogram&& other) = delete;
   ~Histogram();
 
   void Add(size_t item) {
-    ++frequencies_[item];
+    ++frequencies_.counts[item];
   }
 
  private:
-  Metrics& metrics_;
-  size_t index_;
-  std::map<size_t, size_t> frequencies_;
+  Runtime& runtime_;
+  const char* name_;
+  Frequencies frequencies_;
 };
 
 }  // namespace stg
 
-#endif  // STG_METRICS_H_
+#endif  // STG_RUNTIME_H_
