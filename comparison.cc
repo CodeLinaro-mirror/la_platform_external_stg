@@ -428,6 +428,13 @@ Result Compare::operator()(const BaseClass& x1, const BaseClass& x2) {
   return result;
 }
 
+Result Compare::operator()(const Method& x1, const Method& x2) {
+  Result result;
+  result.MaybeAddNodeDiff("vtable offset", x1.vtable_offset, x2.vtable_offset);
+  result.MaybeAddEdgeDiff("", (*this)(x1.type_id, x2.type_id));
+  return result;
+}
+
 Result Compare::operator()(const Member& x1, const Member& x2) {
   Result result;
   result.MaybeAddNodeDiff("offset", x1.offset, x2.offset);
@@ -443,13 +450,6 @@ Result Compare::operator()(const Member& x1, const Member& x2) {
       result.MaybeAddNodeDiff("bit-field size", x1.bitsize, x2.bitsize);
     }
   }
-  result.MaybeAddEdgeDiff("", (*this)(x1.type_id, x2.type_id));
-  return result;
-}
-
-Result Compare::operator()(const Method& x1, const Method& x2) {
-  Result result;
-  result.MaybeAddNodeDiff("vtable offset", x1.vtable_offset, x2.vtable_offset);
   result.MaybeAddEdgeDiff("", (*this)(x1.type_id, x2.type_id));
   return result;
 }
@@ -740,15 +740,15 @@ std::string MatchingKey::operator()(const BaseClass& x) {
   return (*this)(x.type_id);
 }
 
+std::string MatchingKey::operator()(const Method& x) {
+  return x.name + ',' + x.mangled_name;
+}
+
 std::string MatchingKey::operator()(const Member& x) {
   if (!x.name.empty()) {
     return x.name;
   }
   return (*this)(x.type_id);
-}
-
-std::string MatchingKey::operator()(const Method& x) {
-  return x.name + ',' + x.mangled_name;
 }
 
 std::string MatchingKey::operator()(const StructUnion& x) {
