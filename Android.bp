@@ -61,6 +61,8 @@ cc_defaults {
             enabled: false,
         },
     },
+    // TODO(b/324274771): figure out a better solution
+    native_coverage: false,
 }
 
 cc_library_host_static {
@@ -81,12 +83,12 @@ cc_library_host_static {
         "fingerprint.cc",
         "graph.cc",
         "input.cc",
-        "metrics.cc",
         "naming.cc",
         "post_processing.cc",
         "proto_reader.cc",
         "proto_writer.cc",
         "reporting.cc",
+        "runtime.cc",
         "stable_hash.cc",
         "stg.proto",
         "type_normalisation.cc",

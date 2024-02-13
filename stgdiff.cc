@@ -31,14 +31,16 @@
 #include <utility>
 #include <vector>
 
+#include "comparison.h"
 #include "equality.h"
 #include "error.h"
 #include "fidelity.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
+#include "naming.h"
 #include "reader_options.h"
 #include "reporting.h"
+#include "runtime.h"
 
 namespace {
 
@@ -50,12 +52,12 @@ using Inputs = std::vector<std::pair<stg::InputFormat, const char*>>;
 using Outputs =
     std::vector<std::pair<stg::reporting::OutputFormat, const char*>>;
 
-std::vector<stg::Id> Read(const Inputs& inputs, stg::Graph& graph,
-                          stg::ReadOptions options, stg::Metrics& metrics) {
+std::vector<stg::Id> Read(stg::Runtime& runtime, const Inputs& inputs,
+                          stg::Graph& graph, stg::ReadOptions options) {
   std::vector<stg::Id> roots;
   for (const auto& [format, filename] : inputs) {
-    roots.push_back(stg::Read(graph, format, filename, options, nullptr,
-                              metrics));
+    roots.push_back(stg::Read(runtime, graph, format, filename, options,
+                              nullptr));
   }
   return roots;
 }
@@ -74,10 +76,10 @@ int RunFidelity(const char* filename, const stg::Graph& graph,
   return diffs_reported ? kFidelityChange : 0;
 }
 
-int RunExact(const Inputs& inputs, stg::ReadOptions options,
-             stg::Metrics& metrics) {
+int RunExact(stg::Runtime& runtime, const Inputs& inputs,
+             stg::ReadOptions options) {
   stg::Graph graph;
-  const auto roots = Read(inputs, graph, options, metrics);
+  const auto roots = Read(runtime, inputs, graph, options);
 
   struct PairCache {
     std::optional<bool> Query(const stg::Pair& comparison) const {
@@ -94,25 +96,25 @@ int RunExact(const Inputs& inputs, stg::ReadOptions options,
     std::unordered_set<stg::Pair> equalities;
   };
 
-  stg::Time compute(metrics, "equality check");
+  const stg::Time compute(runtime, "equality check");
   PairCache equalities;
   return stg::Equals<PairCache>(graph, equalities)(roots[0], roots[1])
              ? 0
              : kAbiChange;
 }
 
-int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
-        stg::ReadOptions options, std::optional<const char*> fidelity,
-        stg::Metrics& metrics) {
+int Run(stg::Runtime& runtime, const Inputs& inputs, const Outputs& outputs,
+        stg::Ignore ignore, stg::ReadOptions options,
+        std::optional<const char*> fidelity) {
   // Read inputs.
   stg::Graph graph;
-  const auto roots = Read(inputs, graph, options, metrics);
+  const auto roots = Read(runtime, inputs, graph, options);
 
   // Compute differences.
-  stg::Compare compare{graph, ignore, metrics};
+  stg::Compare compare{runtime, graph, ignore};
   std::pair<bool, std::optional<stg::Comparison>> result;
   {
-    stg::Time compute(metrics, "compute diffs");
+    const stg::Time compute(runtime, "compute diffs");
     result = compare(roots[0], roots[1]);
   }
   stg::Check(compare.scc.Empty()) << "internal error: SCC state broken";
@@ -124,10 +126,10 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
   for (const auto& [format, filename] : outputs) {
     std::ofstream output(filename);
     if (comparison) {
-      stg::Time report(metrics, "report diffs");
-      stg::reporting::Options options{format, kMaxCrcOnlyChanges};
-      stg::reporting::Reporting reporting{graph, compare.outcomes, options,
-        names};
+      const stg::Time report(runtime, "report diffs");
+      const stg::reporting::Options options{format, kMaxCrcOnlyChanges};
+      const stg::reporting::Reporting reporting{graph, compare.outcomes,
+        options, names};
       Report(reporting, *comparison, output);
       output << std::flush;
     }
@@ -138,7 +140,7 @@ int Run(const Inputs& inputs, const Outputs& outputs, stg::Ignore ignore,
 
   // Compute fidelity diff if requested.
   if (fidelity) {
-    const stg::Time report(metrics, "fidelity");
+    const stg::Time report(runtime, "fidelity");
     status |= RunFidelity(*fidelity, graph, roots);
   }
 
@@ -261,14 +263,10 @@ int main(int argc, char* argv[]) {
   }
 
   try {
-    stg::Metrics metrics;
-    const int status = opt_exact ? RunExact(inputs, opt_read_options, metrics)
-                                 : Run(inputs, outputs, opt_ignore,
-                                       opt_read_options, opt_fidelity, metrics);
-    if (opt_metrics) {
-      stg::Report(metrics, std::cerr);
-    }
-    return status;
+    stg::Runtime runtime(std::cerr, opt_metrics);
+    return opt_exact ? RunExact(runtime, inputs, opt_read_options)
+                     : Run(runtime, inputs, outputs, opt_ignore,
+                           opt_read_options, opt_fidelity);
   } catch (const stg::Exception& e) {
     std::cerr << e.what();
     return 1;

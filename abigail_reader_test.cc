@@ -28,9 +28,9 @@
 
 #include <catch2/catch.hpp>
 #include "abigail_reader.h"
-#include "graph.h"
-#include "metrics.h"
 #include "equality.h"
+#include "graph.h"
+#include "runtime.h"
 
 namespace {
 
@@ -39,13 +39,13 @@ std::filesystem::path filename_to_path(const char* f) {
 }
 
 stg::abixml::Document Read(const char* input) {
-  stg::Metrics metrics;
-  return stg::abixml::Read(filename_to_path(input), metrics);
+  stg::Runtime runtime(std::cerr, false);
+  return stg::abixml::Read(runtime, filename_to_path(input));
 }
 
 stg::Id Read(stg::Graph& graph, const char* input) {
-  stg::Metrics metrics;
-  return stg::abixml::Read(graph, filename_to_path(input), metrics);
+  stg::Runtime runtime(std::cerr, false);
+  return stg::abixml::Read(runtime, graph, filename_to_path(input));
 }
 
 struct EqualTreeTestCase {
@@ -199,7 +199,11 @@ TEST_CASE("Tidy") {
       TidyTestCase(
           {"duplicate type resolution - stray anonymous member",
            {"abigail_duplicate_types_7.xml",
-            "abigail_duplicate_types_8.xml"}}));
+            "abigail_duplicate_types_8.xml"}}),
+      TidyTestCase(
+          {"corpus group handling",
+           {"abigail_duplicate_types_0.xml",
+            "abigail_duplicate_types_9.xml"}}));
 
   SECTION(test.name) {
     // Read inputs.

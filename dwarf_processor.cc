@@ -96,7 +96,7 @@ size_t GetByteSize(Entry& entry) {
 }
 
 Primitive::Encoding GetEncoding(Entry& entry) {
-  auto dwarf_encoding = entry.MaybeGetUnsignedConstant(DW_AT_encoding);
+  const auto dwarf_encoding = entry.MaybeGetUnsignedConstant(DW_AT_encoding);
   if (!dwarf_encoding) {
     Die() << "Encoding was not found for " << EntryToString(entry);
   }
@@ -313,7 +313,7 @@ class Processor {
 
   void ProcessInternal(Entry& entry) {
     ++result_.processed_entries;
-    auto tag = entry.GetTag();
+    const auto tag = entry.GetTag();
     switch (tag) {
       case DW_TAG_array_type:
         ProcessArray(entry);
@@ -414,7 +414,7 @@ class Processor {
   }
 
   void ProcessNamespace(Entry& entry) {
-    auto name = GetNameOrEmpty(entry);
+    const auto name = GetNameOrEmpty(entry);
     const PushScopeName push_scope_name(scope_, "namespace", name);
     ProcessAllChildren(entry);
   }
@@ -432,9 +432,10 @@ class Processor {
   }
 
   void ProcessTypedef(Entry& entry) {
-    const std::string type_name = scope_ + GetName(entry);
-    auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
-    const Id id = AddProcessedNode<Typedef>(entry, type_name, referred_type_id);
+    const auto type_name = GetName(entry);
+    const auto full_name = scope_ + type_name;
+    const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
+    const Id id = AddProcessedNode<Typedef>(entry, full_name, referred_type_id);
     if (!ShouldKeepDefinition(entry, type_name)) {
       // We always model (and keep) typedef definitions. But we should exclude
       // filtered out types from being type roots.
@@ -445,15 +446,14 @@ class Processor {
 
   template<typename Node, typename KindType>
   void ProcessReference(Entry& entry, KindType kind) {
-    auto referred_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     AddProcessedNode<Node>(entry, kind, referred_type_id);
   }
 
   void ProcessPointerToMember(Entry& entry) {
     const Id containing_type_id =
-        GetIdForReferredType(entry.MaybeGetReference(DW_AT_containing_type));
-    const Id pointee_type_id =
-        GetIdForReferredType(MaybeGetReferredType(entry));
+        GetReferredTypeId(entry.MaybeGetReference(DW_AT_containing_type));
+    const Id pointee_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     AddProcessedNode<PointerToMember>(entry, containing_type_id,
                                       pointee_type_id);
   }
@@ -477,16 +477,16 @@ class Processor {
       if (name.substr(0, kBuiltinPrefix.size()) == kBuiltinPrefix) {
         return true;
       }
-      Die() << "File filter is provided, but DWARF entry << "
-            << EntryToString(entry) << " << doesn't have DW_AT_decl_file";
+      Die() << "File filter is provided, but " << name << " ("
+            << EntryToString(entry) << ") doesn't have DW_AT_decl_file";
     }
     return (*file_filter_)(*file);
   }
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
-    std::string name = GetNameOrEmpty(entry);
-    const std::string full_name = name.empty() ? std::string() : scope_ + name;
-    const PushScopeName push_scope_name(scope_, kind, name);
+    const auto type_name = GetNameOrEmpty(entry);
+    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const PushScopeName push_scope_name(scope_, kind, type_name);
 
     std::vector<Id> base_classes;
     std::vector<Id> members;
@@ -544,6 +544,9 @@ class Processor {
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
           break;
+        case DW_TAG_variant_part:
+          // TODO: Add a DWARF processor to process variants.
+          break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: "
                 << Hex(child_tag) << ", " << EntryToString(child);
@@ -551,7 +554,7 @@ class Processor {
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
-        !ShouldKeepDefinition(entry, name)) {
+        !ShouldKeepDefinition(entry, type_name)) {
       // Declaration may have partial information about members or method.
       // We only need to parse children for information that will be needed in
       // complete definition, but don't need to store them in incomplete node.
@@ -570,9 +573,9 @@ class Processor {
   }
 
   void ProcessMember(Entry& entry) {
-    std::string name = GetNameOrEmpty(entry);
+    const auto name = GetNameOrEmpty(entry);
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    const Id referred_type_id = GetIdForEntry(referred_type);
     auto optional_bit_size = entry.MaybeGetUnsignedConstant(DW_AT_bit_size);
     // Member has DW_AT_bit_size if and only if it is bit field.
     // STG uses bit_size == 0 to mark that the member is not a bit field.
@@ -618,7 +621,7 @@ class Processor {
   }
 
   void ProcessBaseClass(Entry& entry) {
-    const auto type_id = GetIdForReferredType(GetReferredType(entry));
+    const Id type_id = GetReferredTypeId(GetReferredType(entry));
     const auto byte_offset = entry.MaybeGetMemberByteOffset();
     if (!byte_offset) {
       Die() << "No offset found for base class " << EntryToString(entry);
@@ -639,7 +642,7 @@ class Processor {
 
   void ProcessArray(Entry& entry) {
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    Id referred_type_id = GetIdForEntry(referred_type);
     auto children = entry.GetChildren();
     // Multiple children in array describe multiple dimensions of this array.
     // For example, int[M][N] contains two children, M located in the first
@@ -663,43 +666,57 @@ class Processor {
   }
 
   void ProcessEnum(Entry& entry) {
-    const std::optional<std::string> name_optional = MaybeGetName(entry);
-    const std::string name =
-        name_optional.has_value() ? scope_ + *name_optional : "";
+    const auto type_name = GetNameOrEmpty(entry);
+    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
 
     if (entry.GetFlag(DW_AT_declaration)) {
       // It is expected to have only name and no children in declaration.
       // However, it is not guaranteed and we should do something if we find an
       // example.
       CheckNoChildren(entry);
-      AddProcessedNode<Enumeration>(entry, name);
+      AddProcessedNode<Enumeration>(entry, full_name);
       return;
     }
-    auto underlying_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    const Id underlying_type_id =
+        GetReferredTypeId(MaybeGetReferredType(entry));
     auto children = entry.GetChildren();
     Enumeration::Enumerators enumerators;
     enumerators.reserve(children.size());
     for (auto& child : children) {
-      Check(child.GetTag() == DW_TAG_enumerator)
-          << "Enum expects child of DW_TAG_enumerator";
-      std::string enumerator_name = GetName(child);
-      // TODO: detect signedness of underlying type and call
-      // an appropriate method.
-      std::optional<size_t> value_optional =
-          child.MaybeGetUnsignedConstant(DW_AT_const_value);
-      Check(value_optional.has_value()) << "Enumerator should have value";
-      // TODO: support both uint64_t and int64_t, depending on
-      // signedness of underlying type.
-      enumerators.emplace_back(enumerator_name,
-                               static_cast<int64_t>(*value_optional));
+      auto child_tag = child.GetTag();
+      switch (child_tag) {
+        case DW_TAG_enumerator: {
+          const std::string enumerator_name = GetName(child);
+          // TODO: detect signedness of underlying type and call
+          // an appropriate method.
+          std::optional<size_t> value_optional =
+              child.MaybeGetUnsignedConstant(DW_AT_const_value);
+          Check(value_optional.has_value()) << "Enumerator should have value";
+          // TODO: support both uint64_t and int64_t, depending on
+          // signedness of underlying type.
+          enumerators.emplace_back(enumerator_name,
+                                   static_cast<int64_t>(*value_optional));
+          break;
+        }
+        case DW_TAG_subprogram:
+          // STG does not support virtual methods for enums.
+          Check(child.MaybeGetUnsignedConstant(DW_AT_virtuality)
+                    .value_or(DW_VIRTUALITY_none) == DW_VIRTUALITY_none)
+              << "Enums can not have virtual methods: " << EntryToString(child);
+          ProcessFunction(child);
+          break;
+        default:
+          Die() << "Unexpected tag for child of enum: " << Hex(child_tag)
+                << ", " << EntryToString(child);
+      }
     }
-    if (!ShouldKeepDefinition(entry, name)) {
-      AddProcessedNode<Enumeration>(entry, name);
+    if (!ShouldKeepDefinition(entry, type_name)) {
+      AddProcessedNode<Enumeration>(entry, full_name);
       return;
     }
-    const Id id = AddProcessedNode<Enumeration>(entry, name, underlying_type_id,
-                                                std::move(enumerators));
-    if (!name.empty()) {
+    const Id id = AddProcessedNode<Enumeration>(
+        entry, full_name, underlying_type_id, std::move(enumerators));
+    if (!full_name.empty()) {
       AddNamedTypeNode(id);
     }
   }
@@ -787,7 +804,7 @@ class Processor {
     auto name_with_context = GetNameWithContext(entry);
 
     auto referred_type = GetReferredType(entry);
-    auto referred_type_id = GetIdForEntry(referred_type);
+    const Id referred_type_id = GetIdForEntry(referred_type);
 
     if (auto address = entry.MaybeGetAddress(DW_AT_location)) {
       // Only external variables with address are useful for ABI monitoring
@@ -824,14 +841,14 @@ class Processor {
   };
 
   Subprogram GetSubprogram(Entry& entry) {
-    auto return_type_id = GetIdForReferredType(MaybeGetReferredType(entry));
+    const Id return_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
 
     std::vector<Id> parameters;
     for (auto& child : entry.GetChildren()) {
       auto child_tag = child.GetTag();
       switch (child_tag) {
         case DW_TAG_formal_parameter:
-          parameters.push_back(GetIdForReferredType(GetReferredType(child)));
+          parameters.push_back(GetReferredTypeId(GetReferredType(child)));
           break;
         case DW_TAG_unspecified_parameters:
           // Note: C++ allows a single ... argument specification but C does
@@ -908,19 +925,19 @@ class Processor {
 
   // Same as GetIdForEntry, but returns "void_id_" for "unspecified" references,
   // because it is normal for DWARF (5.2 Unspecified Type Entries).
-  Id GetIdForReferredType(std::optional<Entry> referred_type) {
+  Id GetReferredTypeId(std::optional<Entry> referred_type) {
     return referred_type ? GetIdForEntry(*referred_type) : void_id_;
   }
 
   // Wrapper for GetIdForEntry to allow lvalues.
-  Id GetIdForReferredType(Entry referred_type) {
+  Id GetReferredTypeId(Entry referred_type) {
     return GetIdForEntry(referred_type);
   }
 
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
-    auto id = GetIdForEntry(entry);
+    const Id id = GetIdForEntry(entry);
     graph_.Set<Node>(id, std::forward<Args>(args)...);
     return id;
   }
