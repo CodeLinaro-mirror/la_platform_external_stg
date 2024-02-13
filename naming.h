@@ -66,8 +66,8 @@ struct Describe {
   Name operator()(const Primitive&);
   Name operator()(const Array&);
   Name operator()(const BaseClass&);
-  Name operator()(const Member&);
   Name operator()(const Method&);
+  Name operator()(const Member&);
   Name operator()(const StructUnion&);
   Name operator()(const Enumeration&);
   Name operator()(const Function&);
@@ -81,8 +81,8 @@ struct DescribeKind {
   explicit DescribeKind(const Graph& graph) : graph(graph) {}
   std::string operator()(Id id);
   std::string operator()(const BaseClass&);
-  std::string operator()(const Member&);
   std::string operator()(const Method&);
+  std::string operator()(const Member&);
   std::string operator()(const ElfSymbol&);
   std::string operator()(const Interface&);
   template <typename Node>

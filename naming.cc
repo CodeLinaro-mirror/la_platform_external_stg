@@ -173,6 +173,13 @@ Name Describe::operator()(const BaseClass& x) {
   return (*this)(x.type_id);
 }
 
+Name Describe::operator()(const Method& x) {
+  if (x.mangled_name == x.name) {
+    return Name{x.name};
+  }
+  return Name{x.name + " {" + x.mangled_name + "}"};
+}
+
 Name Describe::operator()(const Member& x) {
   auto description = (*this)(x.type_id);
   if (!x.name.empty()) {
@@ -183,13 +190,6 @@ Name Describe::operator()(const Member& x) {
         Side::RIGHT, Precedence::ATOMIC, ':' + std::to_string(x.bitsize));
   }
   return description;
-}
-
-Name Describe::operator()(const Method& x) {
-  if (x.mangled_name == x.name) {
-    return Name{x.name};
-  }
-  return Name{x.name + " {" + x.mangled_name + "}"};
 }
 
 Name Describe::operator()(const StructUnion& x) {
@@ -258,12 +258,12 @@ std::string DescribeKind::operator()(const BaseClass&) {
   return "base class";
 }
 
-std::string DescribeKind::operator()(const Member&) {
-  return "member";
-}
-
 std::string DescribeKind::operator()(const Method&) {
   return "method";
+}
+
+std::string DescribeKind::operator()(const Member&) {
+  return "member";
 }
 
 std::string DescribeKind::operator()(const ElfSymbol& x) {
