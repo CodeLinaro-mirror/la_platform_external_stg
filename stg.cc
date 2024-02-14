@@ -35,9 +35,9 @@
 #include "fingerprint.h"
 #include "graph.h"
 #include "input.h"
-#include "metrics.h"
 #include "proto_writer.h"
 #include "reader_options.h"
+#include "runtime.h"
 #include "type_resolution.h"
 #include "unification.h"
 
@@ -55,10 +55,10 @@ struct GetInterface {
   }
 };
 
-Id Merge(Graph& graph, const std::vector<Id>& roots, Metrics& metrics) {
+Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
   bool failed = false;
   // this rewrites the graph on destruction
-  Unification unification(graph, Id(0), metrics);
+  Unification unification(runtime, graph, Id(0));
   unification.Reserve(graph.Limit());
   std::map<std::string, Id> symbols;
   std::map<std::string, Id> types;
@@ -99,10 +99,10 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
   std::swap(interface.symbols, symbols);
 }
 
-void Write(const Graph& graph, Id root, const char* output, Metrics& metrics) {
+void Write(Runtime& runtime, const Graph& graph, Id root, const char* output) {
   std::ofstream os(output);
   {
-    Time x(metrics, "write");
+    const Time x(runtime, "write");
     proto::Writer writer(graph);
     writer.Write(root, os);
     os << std::flush;
@@ -204,33 +204,30 @@ int main(int argc, char* argv[]) {
 
   try {
     stg::Graph graph;
-    stg::Metrics metrics;
+    stg::Runtime runtime(std::cerr, opt_metrics);
     std::vector<stg::Id> roots;
     roots.reserve(inputs.size());
     for (auto& [format, input] : inputs) {
-      roots.push_back(stg::Read(graph, format, input, opt_read_options,
-                                opt_file_filter, metrics));
+      roots.push_back(stg::Read(runtime, graph, format, input, opt_read_options,
+                                opt_file_filter));
     }
     stg::Id root =
-        roots.size() == 1 ? roots[0] : stg::Merge(graph, roots, metrics);
+        roots.size() == 1 ? roots[0] : stg::Merge(runtime, graph, roots);
     if (opt_symbol_filter) {
       stg::FilterSymbols(graph, root, *opt_symbol_filter);
     }
     if (!opt_keep_duplicates) {
       {
-        stg::Unification unification(graph, stg::Id(0), metrics);
+        stg::Unification unification(runtime, graph, stg::Id(0));
         unification.Reserve(graph.Limit());
-        stg::ResolveTypes(graph, unification, {root}, metrics);
+        stg::ResolveTypes(runtime, graph, unification, {root});
         unification.Update(root);
       }
-      const auto hashes = stg::Fingerprint(graph, root, metrics);
-      root = stg::Deduplicate(graph, root, hashes, metrics);
+      const auto hashes = stg::Fingerprint(runtime, graph, root);
+      root = stg::Deduplicate(runtime, graph, root, hashes);
     }
     for (auto output : outputs) {
-      stg::Write(graph, root, output, metrics);
-    }
-    if (opt_metrics) {
-      stg::Report(metrics, std::cerr);
+      stg::Write(runtime, graph, root, output);
     }
     return 0;
   } catch (const stg::Exception& e) {
