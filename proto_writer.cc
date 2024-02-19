@@ -36,6 +36,7 @@
 #include <google/protobuf/text_format.h>
 #include "error.h"
 #include "graph.h"
+#include "naming.h"
 #include "stable_hash.h"
 #include "stg.pb.h"
 
@@ -504,12 +505,35 @@ void SortNodes(STG& stg) {
 class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
   void PrintUInt32(
       uint32_t value,
-      google::protobuf::TextFormat::BaseTextGenerator* generator) const override {
+      google::protobuf::TextFormat::BaseTextGenerator* generator) const final {
     std::ostringstream os;
     // 0x01234567
     os << "0x" << std::hex << std::setfill('0') << std::setw(8) << value;
     generator->PrintString(os.str());
   }
+};
+
+class AnnotationHexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
+ public:
+  AnnotationHexPrinter(
+      Describe& describe,
+      const std::unordered_map<uint32_t, Id>& internal_id_by_external_id)
+      : describe_(describe),
+        internal_id_by_external_id_(internal_id_by_external_id) {}
+
+ private:
+  void PrintUInt32(
+      uint32_t value,
+      google::protobuf::TextFormat::BaseTextGenerator* generator) const final {
+    std::ostringstream os;
+    // 0x01234567  # Describe(0x01234567)
+    os << "0x" << std::hex << std::setfill('0') << std::setw(8) << value
+       << "  # " << describe_(internal_id_by_external_id_.at(value));
+    generator->PrintString(os.str());
+  }
+
+  Describe& describe_;
+  const std::unordered_map<uint32_t, Id>& internal_id_by_external_id_;
 };
 
 const uint32_t kWrittenFormatVersion = 2;
