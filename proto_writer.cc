@@ -506,21 +506,19 @@ const uint32_t kWrittenFormatVersion = 2;
 
 }  // namespace
 
-void Print(const STG& stg, std::ostream& os) {
-  google::protobuf::TextFormat::Printer printer;
-  printer.SetDefaultFieldValuePrinter(new HexPrinter());
-  std::string output;
-  printer.PrintToString(stg, &output);
-  os << output;
-}
-
 void Writer::Write(const Id& root, std::ostream& os) {
   proto::STG stg;
   StableId stable_id(graph_);
   stg.set_root_id(Transform<StableId>(graph_, stg, stable_id)(root));
   SortNodes(stg);
   stg.set_version(kWrittenFormatVersion);
-  Print(stg, os);
+
+  // Print
+  google::protobuf::TextFormat::Printer printer;
+  printer.SetDefaultFieldValuePrinter(new HexPrinter());
+  std::string output;
+  printer.PrintToString(stg, &output);
+  os << output;
 }
 
 }  // namespace proto
