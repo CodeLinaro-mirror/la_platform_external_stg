@@ -89,9 +89,17 @@ struct Transform {
   ElfSymbol::Binding operator()(stg::ElfSymbol::Binding);
   ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility);
 
+  std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
+    std::unordered_map<uint32_t, Id> internal_id_map;
+    for (const auto [id, ext_id] : external_id_by_internal_id) {
+      internal_id_map.emplace(ext_id, id);
+    }
+    return internal_id_map;
+  }
+
   const Graph& graph;
   proto::STG& stg;
-  std::unordered_map<Id, uint32_t> external_id;
+  std::unordered_map<Id, uint32_t> external_id_by_internal_id;
   std::unordered_set<uint32_t> used_ids;
 
   // Function object: Id -> uint32_t
@@ -100,7 +108,7 @@ struct Transform {
 
 template <typename MapId>
 uint32_t Transform<MapId>::operator()(Id id) {
-  auto [it, inserted] = external_id.emplace(id, 0);
+  auto [it, inserted] = external_id_by_internal_id.emplace(id, 0);
   if (inserted) {
     uint32_t mapped_id = map_id(id);
 
