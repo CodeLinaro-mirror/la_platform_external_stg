@@ -20,8 +20,7 @@
 #ifndef STG_PROTO_WRITER_H_
 #define STG_PROTO_WRITER_H_
 
-#include <ostream>
-
+#include <google/protobuf/io/zero_copy_stream.h>
 #include "graph.h"
 
 namespace stg {
@@ -31,7 +30,7 @@ class Writer {
  public:
   explicit Writer(const stg::Graph& graph)
       : graph_(graph) {}
-  void Write(const Id&, std::ostream&);
+  void Write(const Id&, google::protobuf::io::ZeroCopyOutputStream&);
 
  private:
   const stg::Graph& graph_;

@@ -31,8 +31,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/repeated_ptr_field.h>
 #include <google/protobuf/text_format.h>
+#include "error.h"
 #include "graph.h"
 #include "stable_hash.h"
 #include "stg.pb.h"
@@ -506,7 +508,7 @@ const uint32_t kWrittenFormatVersion = 2;
 
 }  // namespace
 
-void Writer::Write(const Id& root, std::ostream& os) {
+void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os) {
   proto::STG stg;
   StableId stable_id(graph_);
   stg.set_root_id(Transform<StableId>(graph_, stg, stable_id)(root));
@@ -516,9 +518,7 @@ void Writer::Write(const Id& root, std::ostream& os) {
   // Print
   google::protobuf::TextFormat::Printer printer;
   printer.SetDefaultFieldValuePrinter(new HexPrinter());
-  std::string output;
-  printer.PrintToString(stg, &output);
-  os << output;
+  Check(printer.Print(stg, &os)) << "Failed to write STG";
 }
 
 }  // namespace proto

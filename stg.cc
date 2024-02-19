@@ -17,20 +17,21 @@
 //
 // Author: Giuliano Procida
 
+#include <fcntl.h>
 #include <getopt.h>
 
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include "deduplication.h"
 #include "error.h"
+#include "file_descriptor.h"
 #include "filter.h"
 #include "fingerprint.h"
 #include "graph.h"
@@ -100,15 +101,15 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
 }
 
 void Write(Runtime& runtime, const Graph& graph, Id root, const char* output) {
-  std::ofstream os(output);
+  FileDescriptor output_file_descriptor(output, O_CREAT | O_WRONLY | O_TRUNC,
+                                        S_IRUSR | S_IWUSR);
+  google::protobuf::io::FileOutputStream os(output_file_descriptor.Value());
   {
     const Time x(runtime, "write");
     proto::Writer writer(graph);
     writer.Write(root, os);
-    os << std::flush;
-  }
-  if (!os) {
-    Die() << "error writing to " << '\'' << output << '\'';
+    Check(os.Flush()) << "error writing to '" << output
+                      << "': " << os.GetErrno();
   }
 }
 
