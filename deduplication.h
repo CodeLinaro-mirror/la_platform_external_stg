@@ -25,13 +25,13 @@
 
 #include "graph.h"
 #include "hashing.h"
-#include "metrics.h"
+#include "runtime.h"
 
 namespace stg {
 
 using Hashes = std::unordered_map<Id, HashValue>;
 
-Id Deduplicate(Graph& graph, Id root, const Hashes& hashes, Metrics& metrics);
+Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes);
 
 }  // namespace stg
 

@@ -25,7 +25,7 @@
 
 #include "graph.h"
 #include "hashing.h"
-#include "metrics.h"
+#include "runtime.h"
 
 namespace stg {
 
@@ -35,7 +35,7 @@ namespace stg {
 // Given any mutual dependencies between hashes, it falls back to a very poor
 // but safe hash for the affected nodes: the size of the SCC.
 std::unordered_map<Id, HashValue> Fingerprint(
-    const Graph& graph, Id root, Metrics& metrics);
+    Runtime& runtime, const Graph& graph, Id root);
 
 }  // namespace stg
 
