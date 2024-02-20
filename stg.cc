@@ -101,9 +101,10 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
 }
 
 void Write(Runtime& runtime, const Graph& graph, Id root, const char* output) {
-  FileDescriptor output_file_descriptor(output, O_CREAT | O_WRONLY | O_TRUNC,
-                                        S_IRUSR | S_IWUSR);
-  google::protobuf::io::FileOutputStream os(output_file_descriptor.Value());
+  const FileDescriptor output_fd(
+      output, O_CREAT | O_WRONLY | O_TRUNC,
+      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+  google::protobuf::io::FileOutputStream os(output_fd.Value());
   {
     const Time x(runtime, "write");
     proto::Writer writer(graph);
