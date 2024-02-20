@@ -23,13 +23,13 @@
 #include <vector>
 
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "unification.h"
 
 namespace stg {
 
-void ResolveTypes(Graph& graph, Unification& unification,
-                  const std::vector<Id>& roots, Metrics& metrics);
+void ResolveTypes(Runtime& runtime, Graph& graph, Unification& unification,
+                  const std::vector<Id>& roots);
 
 }  // namespace stg
 

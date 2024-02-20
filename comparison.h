@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scc.h"
 
 namespace stg {
@@ -212,8 +212,8 @@ struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
   std::string operator()(Id id);
   std::string operator()(const BaseClass&);
-  std::string operator()(const Member&);
   std::string operator()(const Method&);
+  std::string operator()(const Member&);
   std::string operator()(const StructUnion&);
   template <typename Node>
   std::string operator()(const Node&);
@@ -258,15 +258,15 @@ struct ResolveQualifier {
 };
 
 struct Compare {
-  Compare(const Graph& graph, const Ignore& ignore, Metrics& metrics)
+  Compare(Runtime& runtime, const Graph& graph, const Ignore& ignore)
       : graph(graph), ignore(ignore),
-        queried(metrics, "compare.queried"),
-        already_compared(metrics, "compare.already_compared"),
-        being_compared(metrics, "compare.being_compared"),
-        really_compared(metrics, "compare.really_compared"),
-        equivalent(metrics, "compare.equivalent"),
-        inequivalent(metrics, "compare.inequivalent"),
-        scc_size(metrics, "compare.scc_size") {}
+        queried(runtime, "compare.queried"),
+        already_compared(runtime, "compare.already_compared"),
+        being_compared(runtime, "compare.being_compared"),
+        really_compared(runtime, "compare.really_compared"),
+        equivalent(runtime, "compare.equivalent"),
+        inequivalent(runtime, "compare.inequivalent"),
+        scc_size(runtime, "compare.scc_size") {}
   std::pair<bool, std::optional<Comparison>>  operator()(Id id1, Id id2);
 
   Comparison Removed(Id id);
@@ -282,8 +282,8 @@ struct Compare {
   Result operator()(const Primitive&, const Primitive&);
   Result operator()(const Array&, const Array&);
   Result operator()(const BaseClass&, const BaseClass&);
-  Result operator()(const Member&, const Member&);
   Result operator()(const Method&, const Method&);
+  Result operator()(const Member&, const Member&);
   Result operator()(const StructUnion&, const StructUnion&);
   Result operator()(const Enumeration&, const Enumeration&);
   Result operator()(const Function&, const Function&);
