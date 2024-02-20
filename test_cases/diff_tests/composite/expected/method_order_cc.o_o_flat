@@ -24,21 +24,21 @@ function symbol 'void S::S(struct S*)' {_ZN1SC2Ev} changed
       pointed-to type 'struct S' changed
 
 type 'struct S' changed
-  method 'z {_ZN1S1zEv}' changed
+  method 'void z(struct S*)' changed
     type 'void(struct S*)' changed
       parameter 1 type 'struct S*' changed
         pointed-to type 'struct S' changed
-  method 'y {_ZN1S1yEv}' changed
+  method 'void y(struct S*)' changed
     vtable offset changed from 1 to 2
     type 'void(struct S*)' changed
       parameter 1 type 'struct S*' changed
         pointed-to type 'struct S' changed
-  method 'x {_ZN1S1xEv}' changed
+  method 'void x(struct S*)' changed
     vtable offset changed from 2 to 1
     type 'void(struct S*)' changed
       parameter 1 type 'struct S*' changed
         pointed-to type 'struct S' changed
-  method 'w {_ZN1S1wEv}' changed
+  method 'void w(struct S*)' changed
     type 'void(struct S*)' changed
       parameter 1 type 'struct S*' changed
         pointed-to type 'struct S' changed
