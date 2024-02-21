@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,8 +20,8 @@
 #include "proto_writer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
-#include <functional>
 #include <iomanip>
 #include <ios>
 #include <ostream>
@@ -29,8 +29,8 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
+#include <google/protobuf/descriptor.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/repeated_ptr_field.h>
 #include <google/protobuf/text_format.h>
@@ -538,19 +538,61 @@ class AnnotationHexPrinter : public google::protobuf::TextFormat::FastFieldValue
 
 const uint32_t kWrittenFormatVersion = 2;
 
+// Collection of fields which represent edges in the STG proto.
+//
+// This collection is used to register the AnnotationHexPrinter for each of the
+// fields, which will print a description of the node in STG to which the edge
+// points.
+const std::array<const google::protobuf::FieldDescriptor*, 18> edge_descriptors = {
+    PointerReference::descriptor()->FindFieldByNumber(3),
+    PointerToMember::descriptor()->FindFieldByNumber(3),
+    Typedef::descriptor()->FindFieldByNumber(3),
+    Qualified::descriptor()->FindFieldByNumber(3),
+    Array::descriptor()->FindFieldByNumber(3),
+    BaseClass::descriptor()->FindFieldByNumber(2),
+    Method::descriptor()->FindFieldByNumber(5),
+    Member::descriptor()->FindFieldByNumber(3),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(2),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(3),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(4),
+    Enumeration::Definition::descriptor()->FindFieldByNumber(1),
+    Function::descriptor()->FindFieldByNumber(2),
+    Function::descriptor()->FindFieldByNumber(3),
+    ElfSymbol::descriptor()->FindFieldByNumber(10),
+    Interface::descriptor()->FindFieldByNumber(2),
+    Interface::descriptor()->FindFieldByNumber(3),
+    STG::descriptor()->FindFieldByNumber(2),
+};
+
 }  // namespace
 
-void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os) {
+void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os,
+                   bool annotate) {
   proto::STG stg;
   StableId stable_id(graph_);
-  stg.set_root_id(Transform<StableId>(graph_, stg, stable_id)(root));
+  Transform<StableId> transform(graph_, stg, stable_id);
+  stg.set_root_id(transform(root));
   SortNodes(stg);
   stg.set_version(kWrittenFormatVersion);
 
   // Print
   google::protobuf::TextFormat::Printer printer;
   printer.SetDefaultFieldValuePrinter(new HexPrinter());
-  Check(printer.Print(stg, &os)) << "Failed to write STG";
+  if (annotate) {
+    NameCache names;
+    Describe describe(graph_, names);
+    auto internal_id_by_external_id = transform.GetInternalIdByExternalIdMap();
+    for (const auto* descriptor : edge_descriptors) {
+      Check(printer.RegisterFieldValuePrinter(
+          descriptor,
+          new AnnotationHexPrinter(describe, internal_id_by_external_id)))
+          << "Failed to register annotation printer for descriptor: "
+          << descriptor->name();
+    }
+    Check(printer.Print(stg, &os)) << "Failed to write STG";
+  } else {
+    Check(printer.Print(stg, &os)) << "Failed to write STG";
+  }
 }
 
 }  // namespace proto

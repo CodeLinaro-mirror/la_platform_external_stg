@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -28,9 +28,8 @@ namespace proto {
 
 class Writer {
  public:
-  explicit Writer(const stg::Graph& graph)
-      : graph_(graph) {}
-  void Write(const Id&, google::protobuf::io::ZeroCopyOutputStream&);
+  explicit Writer(const stg::Graph& graph) : graph_(graph) {}
+  void Write(const Id&, google::protobuf::io::ZeroCopyOutputStream&, bool);
 
  private:
   const stg::Graph& graph_;
