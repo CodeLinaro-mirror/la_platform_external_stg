@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -8,58 +8,58 @@ primitive {
 }
 base_class {
   id: 0x1fbc7d3f
-  type_id: 0x207acb9f
+  type_id: 0x207acb9f  # struct B
   offset: 32
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x1fbc7d40
-  type_id: 0x207acb9f
+  type_id: 0x207acb9f  # struct B
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x27aeadc1
-  type_id: 0xc0318865
+  type_id: 0xc0318865  # struct C
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x27aeadc2
-  type_id: 0xc0318865
+  type_id: 0xc0318865  # struct C
   offset: 64
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x27e7d0b7
-  type_id: 0xc1147dbd
+  type_id: 0xc1147dbd  # struct A
   offset: 32
   inheritance: NON_VIRTUAL
 }
 member {
   id: 0x8dbf34b3
   name: "m"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 96
 }
 member {
   id: 0x8dbf39d1
   name: "m"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 64
 }
 member {
   id: 0xa0d54b05
   name: "x"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xff142a57
   name: "y"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x21525565
   name: "z"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 struct_union {
   id: 0xc1147dbd
@@ -67,7 +67,7 @@ struct_union {
   name: "A"
   definition {
     bytesize: 4
-    member_id: 0xa0d54b05
+    member_id: 0xa0d54b05  # int x
   }
 }
 struct_union {
@@ -76,9 +76,9 @@ struct_union {
   name: "AddRemove"
   definition {
     bytesize: 12
-    base_class_id: 0x27aeadc1
-    base_class_id: 0x1fbc7d3f
-    member_id: 0x8dbf39d1
+    base_class_id: 0x27aeadc1  # struct C
+    base_class_id: 0x1fbc7d3f  # struct B
+    member_id: 0x8dbf39d1  # int m
   }
 }
 struct_union {
@@ -87,7 +87,7 @@ struct_union {
   name: "B"
   definition {
     bytesize: 4
-    member_id: 0xff142a57
+    member_id: 0xff142a57  # int y
   }
 }
 struct_union {
@@ -96,7 +96,7 @@ struct_union {
   name: "C"
   definition {
     bytesize: 4
-    member_id: 0x21525565
+    member_id: 0x21525565  # int z
   }
 }
 struct_union {
@@ -105,10 +105,10 @@ struct_union {
   name: "DiffOrder"
   definition {
     bytesize: 16
-    base_class_id: 0x1fbc7d40
-    base_class_id: 0x27e7d0b7
-    base_class_id: 0x27aeadc2
-    member_id: 0x8dbf34b3
+    base_class_id: 0x1fbc7d40  # struct B
+    base_class_id: 0x27e7d0b7  # struct A
+    base_class_id: 0x27aeadc2  # struct C
+    member_id: 0x8dbf34b3  # int m
   }
 }
 elf_symbol {
@@ -116,7 +116,7 @@ elf_symbol {
   name: "add_remove"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x69557e8a
+  type_id: 0x69557e8a  # struct AddRemove
   full_name: "add_remove"
 }
 elf_symbol {
@@ -124,11 +124,11 @@ elf_symbol {
   name: "diff_order"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x4e854f8f
+  type_id: 0x4e854f8f  # struct DiffOrder
   full_name: "diff_order"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x4a0401b7
-  symbol_id: 0x18b35aa3
+  symbol_id: 0x4a0401b7  # struct AddRemove add_remove
+  symbol_id: 0x18b35aa3  # struct DiffOrder diff_order
 }

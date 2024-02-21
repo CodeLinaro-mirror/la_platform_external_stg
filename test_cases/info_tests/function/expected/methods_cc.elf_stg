@@ -1,9 +1,9 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 pointer_reference {
   id: 0x07c134ac
   kind: POINTER
-  pointee_type_id: 0x3544342c
+  pointee_type_id: 0x3544342c  # struct Func
 }
 primitive {
   id: 0x6720d32f
@@ -20,7 +20,7 @@ primitive {
 member {
   id: 0xa04e65cb
   name: "x"
-  type_id: 0xfc0e1dbd
+  type_id: 0xfc0e1dbd  # long
 }
 struct_union {
   id: 0x3544342c
@@ -28,37 +28,37 @@ struct_union {
   name: "Func"
   definition {
     bytesize: 8
-    member_id: 0xa04e65cb
+    member_id: 0xa04e65cb  # long x
   }
 }
 function {
   id: 0x9c70ae04
-  return_type_id: 0x6720d32f
-  parameter_id: 0x07c134ac
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x07c134ac  # struct Func*
 }
 function {
   id: 0x9dec2d48
-  return_type_id: 0x6720d32f
-  parameter_id: 0x07c134ac
-  parameter_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x07c134ac  # struct Func*
+  parameter_id: 0x6720d32f  # int
 }
 function {
   id: 0x9f809672
-  return_type_id: 0x6720d32f
-  parameter_id: 0x07c134ac
-  parameter_id: 0xfc0e1dbd
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x07c134ac  # struct Func*
+  parameter_id: 0xfc0e1dbd  # long
 }
 function {
   id: 0xa6d076b2
-  return_type_id: 0xfc0e1dbd
-  parameter_id: 0x07c134ac
+  return_type_id: 0xfc0e1dbd  # long
+  parameter_id: 0x07c134ac  # struct Func*
 }
 elf_symbol {
   id: 0x905e5cdc
   name: "_ZN4Func10remove_parEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9c70ae04
+  type_id: 0x9c70ae04  # int(struct Func*)
   full_name: "Func::remove_par"
 }
 elf_symbol {
@@ -66,7 +66,7 @@ elf_symbol {
   name: "_ZN4Func10rename_newEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9c70ae04
+  type_id: 0x9c70ae04  # int(struct Func*)
   full_name: "Func::rename_new"
 }
 elf_symbol {
@@ -74,7 +74,7 @@ elf_symbol {
   name: "_ZN4Func15change_par_nameEi"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9dec2d48
+  type_id: 0x9dec2d48  # int(struct Func*, int)
   full_name: "Func::change_par_name"
 }
 elf_symbol {
@@ -82,7 +82,7 @@ elf_symbol {
   name: "_ZN4Func15change_par_typeEl"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9f809672
+  type_id: 0x9f809672  # int(struct Func*, long)
   full_name: "Func::change_par_type"
 }
 elf_symbol {
@@ -90,7 +90,7 @@ elf_symbol {
   name: "_ZN4Func18change_return_typeEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xa6d076b2
+  type_id: 0xa6d076b2  # long(struct Func*)
   full_name: "Func::change_return_type"
 }
 elf_symbol {
@@ -98,7 +98,7 @@ elf_symbol {
   name: "_ZN4Func7add_parEi"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9dec2d48
+  type_id: 0x9dec2d48  # int(struct Func*, int)
   full_name: "Func::add_par"
 }
 elf_symbol {
@@ -106,16 +106,16 @@ elf_symbol {
   name: "var"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3544342c
+  type_id: 0x3544342c  # struct Func
   full_name: "var"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x905e5cdc
-  symbol_id: 0xb2a4b8f4
-  symbol_id: 0x3f2e69f4
-  symbol_id: 0xae78d7be
-  symbol_id: 0x6168ec15
-  symbol_id: 0x5f3f90d1
-  symbol_id: 0x3997c6eb
+  symbol_id: 0x905e5cdc  # int Func::remove_par(struct Func*)
+  symbol_id: 0xb2a4b8f4  # int Func::rename_new(struct Func*)
+  symbol_id: 0x3f2e69f4  # int Func::change_par_name(struct Func*, int)
+  symbol_id: 0xae78d7be  # int Func::change_par_type(struct Func*, long)
+  symbol_id: 0x6168ec15  # long Func::change_return_type(struct Func*)
+  symbol_id: 0x5f3f90d1  # int Func::add_par(struct Func*, int)
+  symbol_id: 0x3997c6eb  # struct Func var
 }

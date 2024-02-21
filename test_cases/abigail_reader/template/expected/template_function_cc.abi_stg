@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,7 +7,7 @@ special {
 pointer_reference {
   id: 0xde581bbb
   kind: LVALUE_REFERENCE
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x6720d32f
@@ -16,12 +16,12 @@ primitive {
 }
 function {
   id: 0x10985193
-  return_type_id: 0x48b5725f
+  return_type_id: 0x48b5725f  # void
 }
 function {
   id: 0x270e577d
-  return_type_id: 0x48b5725f
-  parameter_id: 0xde581bbb
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0xde581bbb  # int&
 }
 elf_symbol {
   id: 0x8a449676
@@ -29,7 +29,7 @@ elf_symbol {
   is_defined: true
   symbol_type: FUNCTION
   binding: WEAK
-  type_id: 0x270e577d
+  type_id: 0x270e577d  # void(int&)
   full_name: "func<int, 17>"
 }
 elf_symbol {
@@ -37,11 +37,11 @@ elf_symbol {
   name: "_Z7triggerv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "trigger"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x8a449676
-  symbol_id: 0x9fd01bb1
+  symbol_id: 0x8a449676  # void func<int, 17>(int&)
+  symbol_id: 0x9fd01bb1  # void trigger()
 }

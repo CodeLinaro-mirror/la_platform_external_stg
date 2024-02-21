@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -8,14 +8,14 @@ primitive {
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 elf_symbol {
   id: 0x92009dc1
   name: "_Z3barv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "bar"
 }
 elf_symbol {
@@ -32,7 +32,7 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x92009dc1
-  symbol_id: 0xa4e142ef
-  symbol_id: 0x06f8338c
+  symbol_id: 0x92009dc1  # int bar()
+  symbol_id: 0xa4e142ef  # _ZN2ns3fooE
+  symbol_id: 0x06f8338c  # foo
 }

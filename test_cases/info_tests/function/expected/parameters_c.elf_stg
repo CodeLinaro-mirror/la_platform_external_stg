@@ -1,19 +1,19 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 pointer_reference {
   id: 0x2be339a0
   kind: POINTER
-  pointee_type_id: 0x85cc001f
+  pointee_type_id: 0x85cc001f  # int(int, int, int, int)
 }
 pointer_reference {
   id: 0x2be35e80
   kind: POINTER
-  pointee_type_id: 0x85cd9c9c
+  pointee_type_id: 0x85cd9c9c  # int(int, int, int)
 }
 pointer_reference {
   id: 0x2be52c8d
   kind: POINTER
-  pointee_type_id: 0x85d454a8
+  pointee_type_id: 0x85d454a8  # int(int, int)
 }
 primitive {
   id: 0x6720d32f
@@ -24,72 +24,72 @@ primitive {
 member {
   id: 0xab194353
   name: "f01"
-  type_id: 0x2be52c8d
+  type_id: 0x2be52c8d  # int(*)(int, int)
 }
 member {
   id: 0xe7582706
   name: "f02"
-  type_id: 0x2be52c8d
+  type_id: 0x2be52c8d  # int(*)(int, int)
   offset: 64
 }
 member {
   id: 0x269f96e1
   name: "f03"
-  type_id: 0x2be52c8d
+  type_id: 0x2be52c8d  # int(*)(int, int)
   offset: 128
 }
 member {
   id: 0x6edf7381
   name: "f04"
-  type_id: 0x2be35e80
+  type_id: 0x2be35e80  # int(*)(int, int, int)
   offset: 192
 }
 member {
   id: 0xae1e0655
   name: "f05"
-  type_id: 0x2be35e80
+  type_id: 0x2be35e80  # int(*)(int, int, int)
   offset: 256
 }
 member {
   id: 0xec5d8fef
   name: "f06"
-  type_id: 0x2be35e80
+  type_id: 0x2be35e80  # int(*)(int, int, int)
   offset: 320
 }
 member {
   id: 0x2d9d2928
   name: "f07"
-  type_id: 0x2be35e80
+  type_id: 0x2be35e80  # int(*)(int, int, int)
   offset: 384
 }
 member {
   id: 0x7fd98f4c
   name: "f08"
-  type_id: 0x2be35e80
+  type_id: 0x2be35e80  # int(*)(int, int, int)
   offset: 448
 }
 member {
   id: 0xbd1a65d0
   name: "f09"
-  type_id: 0x2be339a0
+  type_id: 0x2be339a0  # int(*)(int, int, int, int)
   offset: 512
 }
 member {
   id: 0x15949fa0
   name: "f10"
-  type_id: 0x2be339a0
+  type_id: 0x2be339a0  # int(*)(int, int, int, int)
   offset: 576
 }
 member {
   id: 0xd553c44f
   name: "f11"
-  type_id: 0x2be339a0
+  type_id: 0x2be339a0  # int(*)(int, int, int, int)
   offset: 640
 }
 member {
   id: 0x94135c5f
   name: "f12"
-  type_id: 0x2be339a0
+  type_id: 0x2be339a0  # int(*)(int, int, int, int)
   offset: 704
 }
 struct_union {
@@ -98,47 +98,47 @@ struct_union {
   name: "S"
   definition {
     bytesize: 96
-    member_id: 0xab194353
-    member_id: 0xe7582706
-    member_id: 0x269f96e1
-    member_id: 0x6edf7381
-    member_id: 0xae1e0655
-    member_id: 0xec5d8fef
-    member_id: 0x2d9d2928
-    member_id: 0x7fd98f4c
-    member_id: 0xbd1a65d0
-    member_id: 0x15949fa0
-    member_id: 0xd553c44f
-    member_id: 0x94135c5f
+    member_id: 0xab194353  # int(* f01)(int, int)
+    member_id: 0xe7582706  # int(* f02)(int, int)
+    member_id: 0x269f96e1  # int(* f03)(int, int)
+    member_id: 0x6edf7381  # int(* f04)(int, int, int)
+    member_id: 0xae1e0655  # int(* f05)(int, int, int)
+    member_id: 0xec5d8fef  # int(* f06)(int, int, int)
+    member_id: 0x2d9d2928  # int(* f07)(int, int, int)
+    member_id: 0x7fd98f4c  # int(* f08)(int, int, int)
+    member_id: 0xbd1a65d0  # int(* f09)(int, int, int, int)
+    member_id: 0x15949fa0  # int(* f10)(int, int, int, int)
+    member_id: 0xd553c44f  # int(* f11)(int, int, int, int)
+    member_id: 0x94135c5f  # int(* f12)(int, int, int, int)
   }
 }
 function {
   id: 0x85cc001f
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
 }
 function {
   id: 0x85cd9c9c
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
 }
 function {
   id: 0x85d454a8
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
 }
 elf_symbol {
   id: 0x8bf70937
   name: "f01"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85d454a8
+  type_id: 0x85d454a8  # int(int, int)
   full_name: "f01"
 }
 elf_symbol {
@@ -146,7 +146,7 @@ elf_symbol {
   name: "f02"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85d454a8
+  type_id: 0x85d454a8  # int(int, int)
   full_name: "f02"
 }
 elf_symbol {
@@ -154,7 +154,7 @@ elf_symbol {
   name: "f03"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85d454a8
+  type_id: 0x85d454a8  # int(int, int)
   full_name: "f03"
 }
 elf_symbol {
@@ -162,7 +162,7 @@ elf_symbol {
   name: "f04"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cd9c9c
+  type_id: 0x85cd9c9c  # int(int, int, int)
   full_name: "f04"
 }
 elf_symbol {
@@ -170,7 +170,7 @@ elf_symbol {
   name: "f05"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cd9c9c
+  type_id: 0x85cd9c9c  # int(int, int, int)
   full_name: "f05"
 }
 elf_symbol {
@@ -178,7 +178,7 @@ elf_symbol {
   name: "f06"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cd9c9c
+  type_id: 0x85cd9c9c  # int(int, int, int)
   full_name: "f06"
 }
 elf_symbol {
@@ -186,7 +186,7 @@ elf_symbol {
   name: "f07"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cd9c9c
+  type_id: 0x85cd9c9c  # int(int, int, int)
   full_name: "f07"
 }
 elf_symbol {
@@ -194,7 +194,7 @@ elf_symbol {
   name: "f08"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cd9c9c
+  type_id: 0x85cd9c9c  # int(int, int, int)
   full_name: "f08"
 }
 elf_symbol {
@@ -202,7 +202,7 @@ elf_symbol {
   name: "f09"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cc001f
+  type_id: 0x85cc001f  # int(int, int, int, int)
   full_name: "f09"
 }
 elf_symbol {
@@ -210,7 +210,7 @@ elf_symbol {
   name: "f10"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cc001f
+  type_id: 0x85cc001f  # int(int, int, int, int)
   full_name: "f10"
 }
 elf_symbol {
@@ -218,7 +218,7 @@ elf_symbol {
   name: "f11"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cc001f
+  type_id: 0x85cc001f  # int(int, int, int, int)
   full_name: "f11"
 }
 elf_symbol {
@@ -226,7 +226,7 @@ elf_symbol {
   name: "f12"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85cc001f
+  type_id: 0x85cc001f  # int(int, int, int, int)
   full_name: "f12"
 }
 elf_symbol {
@@ -234,22 +234,22 @@ elf_symbol {
   name: "s"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf57dfbfc
+  type_id: 0xf57dfbfc  # struct S
   full_name: "s"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x8bf70937
-  symbol_id: 0xcab4baef
-  symbol_id: 0x09745218
-  symbol_id: 0xb2312b1c
-  symbol_id: 0x76f6b896
-  symbol_id: 0x37b65de0
-  symbol_id: 0xf477c0b7
-  symbol_id: 0x4aca4031
-  symbol_id: 0x858be3e5
-  symbol_id: 0x288f47a4
-  symbol_id: 0xe9cfbccb
-  symbol_id: 0xaf0c113b
-  symbol_id: 0x3e4f6c44
+  symbol_id: 0x8bf70937  # int f01(int, int)
+  symbol_id: 0xcab4baef  # int f02(int, int)
+  symbol_id: 0x09745218  # int f03(int, int)
+  symbol_id: 0xb2312b1c  # int f04(int, int, int)
+  symbol_id: 0x76f6b896  # int f05(int, int, int)
+  symbol_id: 0x37b65de0  # int f06(int, int, int)
+  symbol_id: 0xf477c0b7  # int f07(int, int, int)
+  symbol_id: 0x4aca4031  # int f08(int, int, int)
+  symbol_id: 0x858be3e5  # int f09(int, int, int, int)
+  symbol_id: 0x288f47a4  # int f10(int, int, int, int)
+  symbol_id: 0xe9cfbccb  # int f11(int, int, int, int)
+  symbol_id: 0xaf0c113b  # int f12(int, int, int, int)
+  symbol_id: 0x3e4f6c44  # struct S s
 }

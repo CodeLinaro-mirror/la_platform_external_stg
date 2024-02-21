@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,102 +7,102 @@ special {
 pointer_reference {
   id: 0x0b5e55a4
   kind: POINTER
-  pointee_type_id: 0x0739b00c
+  pointee_type_id: 0x0739b00c  # struct X
 }
 pointer_reference {
   id: 0x13580d6c
   kind: POINTER
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_reference {
   id: 0x1945b139
   kind: POINTER
-  pointee_type_id: 0x4f562278
+  pointee_type_id: 0x4f562278  # struct S
 }
 pointer_reference {
   id: 0x2df0016c
   kind: POINTER
-  pointee_type_id: 0x9d80e32f
+  pointee_type_id: 0x9d80e32f  # int()
 }
 pointer_reference {
   id: 0x2f8903cb
   kind: POINTER
-  pointee_type_id: 0x9464e9b2
+  pointee_type_id: 0x9464e9b2  # int struct S::*()
 }
 pointer_reference {
   id: 0x3f6521e6
   kind: POINTER
-  pointee_type_id: 0xd7d46104
+  pointee_type_id: 0xd7d46104  # int struct S::*
 }
 pointer_to_member {
   id: 0x25925b84
   containing_type_id: 0x8f5f455e
-  pointee_type_id: 0x384f7d7c
+  pointee_type_id: 0x384f7d7c  # char
 }
 pointer_to_member {
   id: 0x50f283da
   containing_type_id: 0x329a7805
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_to_member {
   id: 0x7867bbed
   containing_type_id: 0x0739b00c
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_to_member {
   id: 0x7867c9c8
   containing_type_id: 0x0739b00c
-  pointee_type_id: 0x15053314
+  pointee_type_id: 0x15053314  # double
 }
 pointer_to_member {
   id: 0x7867cf1e
   containing_type_id: 0x0739b00c
-  pointee_type_id: 0x13d347b6
+  pointee_type_id: 0x13d347b6  # void(struct X*, int)
 }
 pointer_to_member {
   id: 0x7bd84cb2
   containing_type_id: 0xfa4f7de5
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_to_member {
   id: 0xd7d4157c
   containing_type_id: 0x4f562278
-  pointee_type_id: 0x13580d6c
+  pointee_type_id: 0x13580d6c  # int*
 }
 pointer_to_member {
   id: 0xd7d42bd4
   containing_type_id: 0x4f562278
-  pointee_type_id: 0x2df0016c
+  pointee_type_id: 0x2df0016c  # int(*)()
 }
 pointer_to_member {
   id: 0xd7d46104
   containing_type_id: 0x4f562278
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_to_member {
   id: 0xd7d47722
   containing_type_id: 0x4f562278
-  pointee_type_id: 0x7106acfa
+  pointee_type_id: 0x7106acfa  # int[7]
 }
 pointer_to_member {
   id: 0xd7d49df5
   containing_type_id: 0x4f562278
-  pointee_type_id: 0x9bd18f61
+  pointee_type_id: 0x9bd18f61  # int(struct S*)
 }
 pointer_to_member {
   id: 0xd7d4c3fd
   containing_type_id: 0x4f562278
-  pointee_type_id: 0xc5d9d969
+  pointee_type_id: 0xc5d9d969  # const int
 }
 qualified {
   id: 0xa1e34272
   qualifier: VOLATILE
-  qualified_type_id: 0xd7d4c3fd
+  qualified_type_id: 0xd7d4c3fd  # const int struct S::*
 }
 qualified {
   id: 0xc5d9d969
   qualifier: CONST
-  qualified_type_id: 0x6720d32f
+  qualified_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x15053314
@@ -125,34 +125,34 @@ primitive {
 array {
   id: 0x5d3b8070
   number_of_elements: 7
-  element_type_id: 0xd7d46104
+  element_type_id: 0xd7d46104  # int struct S::*
 }
 array {
   id: 0x7106acfa
   number_of_elements: 7
-  element_type_id: 0x6720d32f
+  element_type_id: 0x6720d32f  # int
 }
 member {
   id: 0x80bcb4cd
   name: "a"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xabd8f37a
   name: "t"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xec187cbe
   name: "u"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 struct_union {
   id: 0x329a7805
   kind: STRUCT
   definition {
     bytesize: 4
-    member_id: 0xabd8f37a
+    member_id: 0xabd8f37a  # int t
   }
 }
 struct_union {
@@ -166,7 +166,7 @@ struct_union {
   name: "U"
   definition {
     bytesize: 4
-    member_id: 0xec187cbe
+    member_id: 0xec187cbe  # int u
   }
 }
 struct_union {
@@ -175,7 +175,7 @@ struct_union {
   name: "X"
   definition {
     bytesize: 4
-    member_id: 0x80bcb4cd
+    member_id: 0x80bcb4cd  # int a
   }
 }
 struct_union {
@@ -185,38 +185,38 @@ struct_union {
 }
 function {
   id: 0x10985193
-  return_type_id: 0x48b5725f
+  return_type_id: 0x48b5725f  # void
 }
 function {
   id: 0x13d347b6
-  return_type_id: 0x48b5725f
-  parameter_id: 0x0b5e55a4
-  parameter_id: 0x6720d32f
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x0b5e55a4  # struct X*
+  parameter_id: 0x6720d32f  # int
 }
 function {
   id: 0x9464e9b2
-  return_type_id: 0xd7d46104
+  return_type_id: 0xd7d46104  # int struct S::*
 }
 function {
   id: 0x9bd18f61
-  return_type_id: 0x6720d32f
-  parameter_id: 0x1945b139
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x1945b139  # struct S*
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 function {
   id: 0xa875fb6e
-  return_type_id: 0x6720d32f
-  parameter_id: 0xd7d46104
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0xd7d46104  # int struct S::*
 }
 elf_symbol {
   id: 0xba0e5cd0
   name: "_Z2s2v"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9464e9b2
+  type_id: 0x9464e9b2  # int struct S::*()
   full_name: "s2"
 }
 elf_symbol {
@@ -224,7 +224,7 @@ elf_symbol {
   name: "_Z3s10M1Si"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xa875fb6e
+  type_id: 0xa875fb6e  # int(int struct S::*)
   full_name: "s10"
 }
 elf_symbol {
@@ -232,7 +232,7 @@ elf_symbol {
   name: "_Z7pmz_funv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "pmz_fun"
 }
 elf_symbol {
@@ -240,7 +240,7 @@ elf_symbol {
   name: "pmc"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x25925b84
+  type_id: 0x25925b84  # char struct Y::*
   full_name: "pmc"
 }
 elf_symbol {
@@ -248,7 +248,7 @@ elf_symbol {
   name: "pmcu"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7bd84cb2
+  type_id: 0x7bd84cb2  # int union U::*
   full_name: "pmcu"
 }
 elf_symbol {
@@ -256,7 +256,7 @@ elf_symbol {
   name: "pmd"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7867c9c8
+  type_id: 0x7867c9c8  # double struct X::*
   full_name: "pmd"
 }
 elf_symbol {
@@ -264,7 +264,7 @@ elf_symbol {
   name: "pmf"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7867cf1e
+  type_id: 0x7867cf1e  # void(struct X::*)(struct X*, int)
   full_name: "pmf"
 }
 elf_symbol {
@@ -272,7 +272,7 @@ elf_symbol {
   name: "pmi"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7867bbed
+  type_id: 0x7867bbed  # int struct X::*
   full_name: "pmi"
 }
 elf_symbol {
@@ -280,7 +280,7 @@ elf_symbol {
   name: "pmu"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7bd84cb2
+  type_id: 0x7bd84cb2  # int union U::*
   full_name: "pmu"
 }
 elf_symbol {
@@ -288,7 +288,7 @@ elf_symbol {
   name: "pmy"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x50f283da
+  type_id: 0x50f283da  # int struct { int t; }::*
   full_name: "pmy"
 }
 elf_symbol {
@@ -296,7 +296,7 @@ elf_symbol {
   name: "s0"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd7d46104
+  type_id: 0xd7d46104  # int struct S::*
   full_name: "s0"
 }
 elf_symbol {
@@ -304,7 +304,7 @@ elf_symbol {
   name: "s1"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3f6521e6
+  type_id: 0x3f6521e6  # int struct S::**
   full_name: "s1"
 }
 elf_symbol {
@@ -312,7 +312,7 @@ elf_symbol {
   name: "s3"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x2f8903cb
+  type_id: 0x2f8903cb  # int struct S::*(*)()
   full_name: "s3"
 }
 elf_symbol {
@@ -320,7 +320,7 @@ elf_symbol {
   name: "s4"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x5d3b8070
+  type_id: 0x5d3b8070  # int struct S::*[7]
   full_name: "s4"
 }
 elf_symbol {
@@ -328,7 +328,7 @@ elf_symbol {
   name: "s5"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd7d4157c
+  type_id: 0xd7d4157c  # int* struct S::*
   full_name: "s5"
 }
 elf_symbol {
@@ -336,7 +336,7 @@ elf_symbol {
   name: "s6"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd7d42bd4
+  type_id: 0xd7d42bd4  # int(* struct S::*)()
   full_name: "s6"
 }
 elf_symbol {
@@ -344,7 +344,7 @@ elf_symbol {
   name: "s7"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd7d49df5
+  type_id: 0xd7d49df5  # int(struct S::*)(struct S*)
   full_name: "s7"
 }
 elf_symbol {
@@ -352,7 +352,7 @@ elf_symbol {
   name: "s8"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd7d47722
+  type_id: 0xd7d47722  # int(struct S::*)[7]
   full_name: "s8"
 }
 elf_symbol {
@@ -360,28 +360,28 @@ elf_symbol {
   name: "s9"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xa1e34272
+  type_id: 0xa1e34272  # const int struct S::* volatile
   full_name: "s9"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xba0e5cd0
-  symbol_id: 0x94e5eb64
-  symbol_id: 0x13e4cc52
-  symbol_id: 0x648621f2
-  symbol_id: 0xff819903
-  symbol_id: 0x2ec71519
-  symbol_id: 0xa0583676
-  symbol_id: 0xfd020c80
-  symbol_id: 0xf60097d9
-  symbol_id: 0xc90bc4a4
-  symbol_id: 0xdaa14405
-  symbol_id: 0x1660e091
-  symbol_id: 0x9be13bad
-  symbol_id: 0xd5a33a44
-  symbol_id: 0x136353fe
-  symbol_id: 0x57200721
-  symbol_id: 0x94e3994e
-  symbol_id: 0xd0a5df97
-  symbol_id: 0x3065441f
+  symbol_id: 0xba0e5cd0  # int struct S::* s2()
+  symbol_id: 0x94e5eb64  # int s10(int struct S::*)
+  symbol_id: 0x13e4cc52  # void pmz_fun()
+  symbol_id: 0x648621f2  # char struct Y::* pmc
+  symbol_id: 0xff819903  # int union U::* pmcu
+  symbol_id: 0x2ec71519  # double struct X::* pmd
+  symbol_id: 0xa0583676  # void(struct X::* pmf)(struct X*, int)
+  symbol_id: 0xfd020c80  # int struct X::* pmi
+  symbol_id: 0xf60097d9  # int union U::* pmu
+  symbol_id: 0xc90bc4a4  # int struct { int t; }::* pmy
+  symbol_id: 0xdaa14405  # int struct S::* s0
+  symbol_id: 0x1660e091  # int struct S::** s1
+  symbol_id: 0x9be13bad  # int struct S::*(* s3)()
+  symbol_id: 0xd5a33a44  # int struct S::* s4[7]
+  symbol_id: 0x136353fe  # int* struct S::* s5
+  symbol_id: 0x57200721  # int(* struct S::* s6)()
+  symbol_id: 0x94e3994e  # int(struct S::* s7)(struct S*)
+  symbol_id: 0xd0a5df97  # int(struct S::* s8)[7]
+  symbol_id: 0x3065441f  # const int struct S::* volatile s9
 }
