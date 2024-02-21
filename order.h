@@ -29,11 +29,11 @@
 #include "error.h"
 
 namespace stg {
-// Updates a given ordering of items with items from a second ordering,
-// incorporating as much of the latter's order as is compatible.
+// Uses an ordering of items to update items in a second ordering,
+// incorporating as much of the first's order as is compatible.
 //
-// The two orderings are reconciled by starting with the left ordering and
-// greedily inserting new items from the right ordering, in a position which
+// The two orderings are reconciled by starting with the second ordering and
+// greedily inserting new items from the first ordering, in a position which
 // satisfies that ordering, if possible.
 //
 // Example, before and after:
@@ -41,21 +41,21 @@ namespace stg {
 // indexes1: rose, george, emily
 // indexes2: george, ted, emily
 //
-// indexes1: rose, george, ted, emily
+// indexes2: rose, george, ted, emily
 template <typename T>
-void ExtendOrder(std::vector<T>& indexes1, const std::vector<T>& indexes2) {
-  // keep track of where we can insert in indexes1
+void ExtendOrder(const std::vector<T>& indexes1, std::vector<T>& indexes2) {
+  // keep track of where we can insert in indexes2
   size_t pos = 0;
-  for (const auto& value : indexes2) {
-    auto found = std::find(indexes1.begin(), indexes1.end(), value);
-    if (found == indexes1.end()) {
+  for (const auto& value : indexes1) {
+    auto found = std::find(indexes2.begin(), indexes2.end(), value);
+    if (found == indexes2.end()) {
       // new node, insert at first possible place
-      indexes1.insert(indexes1.begin() + pos, value);
+      indexes2.insert(indexes2.begin() + pos, value);
       // now pointing at inserted item, point after it
       ++pos;
-    } else if (indexes1.begin() + pos <= found) {
+    } else if (indexes2.begin() + pos <= found) {
       // safe to use the constraint, point after found item
-      pos = found - indexes1.begin() + 1;
+      pos = found - indexes2.begin() + 1;
     }
   }
 }
@@ -195,10 +195,10 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   for (const auto& ordered_index : positions2) {
     indexes2.push_back(ordered_index.second);
   }
-  // Merge the two orderings of indexes.
+  // Merge the two orderings of indexes, giving preference to the second.
   ExtendOrder(indexes1, indexes2);
   // Use this to permute the original data array.
-  Permute(data, indexes1);
+  Permute(data, indexes2);
 }
 
 }  // namespace stg

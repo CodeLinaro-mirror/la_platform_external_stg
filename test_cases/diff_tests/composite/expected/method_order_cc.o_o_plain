@@ -7,14 +7,14 @@ function symbol 'void S::w(struct S*)' {_ZN1S1wEv} changed
             parameter 1 type 'struct S*' changed
               pointed-to type 'struct S' changed
                 (being reported)
-        method 'void y(struct S*)' changed
-          vtable offset changed from 1 to 2
+        method 'void x(struct S*)' changed
+          vtable offset changed from 2 to 1
           type 'void(struct S*)' changed
             parameter 1 type 'struct S*' changed
               pointed-to type 'struct S' changed
                 (being reported)
-        method 'void x(struct S*)' changed
-          vtable offset changed from 2 to 1
+        method 'void y(struct S*)' changed
+          vtable offset changed from 1 to 2
           type 'void(struct S*)' changed
             parameter 1 type 'struct S*' changed
               pointed-to type 'struct S' changed

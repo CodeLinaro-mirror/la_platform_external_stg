@@ -1,7 +1,7 @@
 type 'struct S' changed
-  method 'void y(struct S*)' changed
-    vtable offset changed from 1 to 2
   method 'void x(struct S*)' changed
     vtable offset changed from 2 to 1
+  method 'void y(struct S*)' changed
+    vtable offset changed from 1 to 2
 
 exit code 4

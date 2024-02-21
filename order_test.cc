@@ -114,15 +114,15 @@ TEST_CASE("randomly-generating ordering sequences, fully-matching") {
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
       const auto order1 = MakePermutation(k, gen);
-      auto order1_copy = order1;
-      auto order2 = MakePermutation(k, gen);
+      const auto order2 = MakePermutation(k, gen);
+      auto order2_copy = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1_copy, order2);
+        stg::ExtendOrder(order1, order2_copy);
         for (size_t i = 0; i < k; ++i) {
-          // order1_copy should be unchanged
-          CHECK(order1_copy[i] == order1[i]);
+          // order2_copy should be unchanged
+          CHECK(order2_copy[i] == order2[i]);
         }
       }
     }
@@ -141,21 +141,20 @@ TEST_CASE("randomly-generating ordering sequences, disjoint") {
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
       const auto order1 = MakePermutation(k, gen);
-      auto order1_copy = order1;
       auto order2 = MakePermutation(k, gen);
       for (size_t i = 0; i < k; ++i) {
         order2[i] += k;
       }
-      const auto order2_copy = order2;
+      auto order2_copy = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1_copy, order2);
+        stg::ExtendOrder(order1, order2_copy);
         for (size_t i = 0; i < k; ++i) {
-          // order2 should appear as the first part
-          CHECK(order1_copy[i] == order2[i]);
-          // order1 should appear as the second part
-          CHECK(order1_copy[i + k] == order1[i]);
+          // order1 should appear as the first part
+          CHECK(order2_copy[i] == order1[i]);
+          // order2 should appear as the second part
+          CHECK(order2_copy[i + k] == order2[i]);
         }
       }
     }
@@ -174,36 +173,35 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
       const auto order1 = MakePermutation(k, gen);
-      auto order1_copy = order1;
       auto order2 = MakePermutation(k, gen);
       for (size_t i = 0; i < k; ++i) {
         order2[i] += k - 1;
       }
       const auto pivot = k - 1;
-      const auto order2_copy = order2;
+      auto order2_copy = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1_copy, order2);
-        CHECK(order1_copy.size() == 2 * k - 1);
-        // order2 pre, order1 pre, pivot, order2 post, order1 post
+        stg::ExtendOrder(order1, order2_copy);
+        CHECK(order2_copy.size() == 2 * k - 1);
+        // order1 pre, order2 pre, pivot, order1 post, order2 post
         size_t ix = 0;
         size_t ix1 = 0;
         size_t ix2 = 0;
-        while (order2[ix2] != pivot) {
-          CHECK(order1_copy[ix++] == order2[ix2++]);
-        }
         while (order1[ix1] != pivot) {
-          CHECK(order1_copy[ix++] == order1[ix1++]);
+          CHECK(order2_copy[ix++] == order1[ix1++]);
         }
-        ++ix2;
+        while (order2[ix2] != pivot) {
+          CHECK(order2_copy[ix++] == order2[ix2++]);
+        }
         ++ix1;
-        CHECK(order1_copy[ix++] == pivot);
-        while (ix2 < k) {
-          CHECK(order1_copy[ix++] == order2[ix2++]);
-        }
+        ++ix2;
+        CHECK(order2_copy[ix++] == pivot);
         while (ix1 < k) {
-          CHECK(order1_copy[ix++] == order1[ix1++]);
+          CHECK(order2_copy[ix++] == order1[ix1++]);
+        }
+        while (ix2 < k) {
+          CHECK(order2_copy[ix++] == order2[ix2++]);
         }
       }
     }
@@ -213,8 +211,8 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
 TEST_CASE("hand-curated ordering sequences") {
   using Sequence = std::vector<std::string>;
   // NOTES:
-  //   The output sequence MUST include the first sequence as a subsequence.
-  //   The second sequence's ordering is respected as far as possible.
+  //   The output sequence MUST include the second sequence as a subsequence.
+  //   The first sequence's ordering is respected as far as possible.
   std::vector<std::tuple<Sequence, Sequence, Sequence>> cases = {
     {{"rose", "george", "emily"}, {"george", "ted", "emily"},
       {"rose", "george", "ted", "emily"}},
@@ -227,13 +225,12 @@ TEST_CASE("hand-curated ordering sequences") {
     {{"a", "b", "d"}, {"b", "c", "d"}, {"a", "b", "c", "d"}},
     {{"a", "c", "d"}, {"a", "b", "c"}, {"a", "b", "c", "d"}},
     {{"b", "c", "d"}, {"a", "b"}, {"a", "b", "c", "d"}},
-    {{"a", "z"}, {"z", "a", "q"}, {"a", "z", "q"}},
+    {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
-    auto order1_copy = order1;
     auto order2_copy = order2;
-    stg::ExtendOrder(order1_copy, order2_copy);
-    CHECK(order1_copy == expected);
+    stg::ExtendOrder(order1, order2_copy);
+    CHECK(order2_copy == expected);
   }
 }
 
