@@ -115,15 +115,13 @@ TEST_CASE("randomly-generating ordering sequences, fully-matching") {
       gen.seed(seed);
       const auto order1 = MakePermutation(k, gen);
       const auto order2 = MakePermutation(k, gen);
-      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
+        auto combined = order2;
         stg::ExtendOrder(order1, combined);
-        for (size_t i = 0; i < k; ++i) {
-          // combined should be unchanged
-          CHECK(combined[i] == order2[i]);
-        }
+        // combined should be unchanged
+        CHECK(combined == order2);
       }
     }
   }
@@ -145,10 +143,10 @@ TEST_CASE("randomly-generating ordering sequences, disjoint") {
       for (size_t i = 0; i < k; ++i) {
         order2[i] += k;
       }
-      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
+        auto combined = order2;
         stg::ExtendOrder(order1, combined);
         for (size_t i = 0; i < k; ++i) {
           // order1 should appear as the first part
@@ -178,10 +176,10 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
         order2[i] += k - 1;
       }
       const auto pivot = k - 1;
-      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
+        auto combined = order2;
         stg::ExtendOrder(order1, combined);
         CHECK(combined.size() == 2 * k - 1);
         // order1 pre, order2 pre, pivot, order1 post, order2 post
