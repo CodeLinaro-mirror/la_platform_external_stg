@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -118,9 +118,8 @@ TEST_CASE("randomly-generating ordering sequences, fully-matching") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        auto combined = order2;
-        stg::ExtendOrder(order1, combined);
-        // combined should be unchanged
+        const auto combined = stg::CombineOrders(order1, order2, k);
+        // combined should be identical to order2
         CHECK(combined == order2);
       }
     }
@@ -146,8 +145,7 @@ TEST_CASE("randomly-generating ordering sequences, disjoint") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        auto combined = order2;
-        stg::ExtendOrder(order1, combined);
+        const auto combined = stg::CombineOrders(order1, order2, 2 * k);
         for (size_t i = 0; i < k; ++i) {
           // order1 should appear as the first part
           CHECK(combined[i] == order1[i]);
@@ -179,8 +177,7 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        auto combined = order2;
-        stg::ExtendOrder(order1, combined);
+        const auto combined = stg::CombineOrders(order1, order2, 2 * k - 1);
         CHECK(combined.size() == 2 * k - 1);
         // order1 pre, order2 pre, pivot, order1 post, order2 post
         size_t ix = 0;
@@ -226,8 +223,7 @@ TEST_CASE("hand-curated ordering sequences") {
     {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
-    auto combined = order2;
-    stg::ExtendOrder(order1, combined);
+    const auto combined = stg::CombineOrders(order1, order2, expected.size());
     CHECK(combined == expected);
   }
 }
