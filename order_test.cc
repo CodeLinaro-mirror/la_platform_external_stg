@@ -115,14 +115,14 @@ TEST_CASE("randomly-generating ordering sequences, fully-matching") {
       gen.seed(seed);
       const auto order1 = MakePermutation(k, gen);
       const auto order2 = MakePermutation(k, gen);
-      auto order2_copy = order2;
+      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1, order2_copy);
+        stg::ExtendOrder(order1, combined);
         for (size_t i = 0; i < k; ++i) {
-          // order2_copy should be unchanged
-          CHECK(order2_copy[i] == order2[i]);
+          // combined should be unchanged
+          CHECK(combined[i] == order2[i]);
         }
       }
     }
@@ -145,16 +145,16 @@ TEST_CASE("randomly-generating ordering sequences, disjoint") {
       for (size_t i = 0; i < k; ++i) {
         order2[i] += k;
       }
-      auto order2_copy = order2;
+      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1, order2_copy);
+        stg::ExtendOrder(order1, combined);
         for (size_t i = 0; i < k; ++i) {
           // order1 should appear as the first part
-          CHECK(order2_copy[i] == order1[i]);
+          CHECK(combined[i] == order1[i]);
           // order2 should appear as the second part
-          CHECK(order2_copy[i + k] == order2[i]);
+          CHECK(combined[i + k] == order2[i]);
         }
       }
     }
@@ -178,30 +178,30 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
         order2[i] += k - 1;
       }
       const auto pivot = k - 1;
-      auto order2_copy = order2;
+      auto combined = order2;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        stg::ExtendOrder(order1, order2_copy);
-        CHECK(order2_copy.size() == 2 * k - 1);
+        stg::ExtendOrder(order1, combined);
+        CHECK(combined.size() == 2 * k - 1);
         // order1 pre, order2 pre, pivot, order1 post, order2 post
         size_t ix = 0;
         size_t ix1 = 0;
         size_t ix2 = 0;
         while (order1[ix1] != pivot) {
-          CHECK(order2_copy[ix++] == order1[ix1++]);
+          CHECK(combined[ix++] == order1[ix1++]);
         }
         while (order2[ix2] != pivot) {
-          CHECK(order2_copy[ix++] == order2[ix2++]);
+          CHECK(combined[ix++] == order2[ix2++]);
         }
         ++ix1;
         ++ix2;
-        CHECK(order2_copy[ix++] == pivot);
+        CHECK(combined[ix++] == pivot);
         while (ix1 < k) {
-          CHECK(order2_copy[ix++] == order1[ix1++]);
+          CHECK(combined[ix++] == order1[ix1++]);
         }
         while (ix2 < k) {
-          CHECK(order2_copy[ix++] == order2[ix2++]);
+          CHECK(combined[ix++] == order2[ix2++]);
         }
       }
     }
@@ -228,9 +228,9 @@ TEST_CASE("hand-curated ordering sequences") {
     {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
-    auto order2_copy = order2;
-    stg::ExtendOrder(order1, order2_copy);
-    CHECK(order2_copy == expected);
+    auto combined = order2;
+    stg::ExtendOrder(order1, combined);
+    CHECK(combined == expected);
   }
 }
 
