@@ -186,9 +186,9 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   std::stable_sort(positions1.begin(), positions1.end());
   std::stable_sort(positions2.begin(), positions2.end());
   std::vector<size_t> indexes1;
-  indexes1.reserve(size);
+  indexes1.reserve(positions1.size());
   std::vector<size_t> indexes2;
-  indexes2.reserve(positions2.size());
+  indexes2.reserve(size);
   for (const auto& ordered_index : positions1) {
     indexes1.push_back(ordered_index.second);
   }
