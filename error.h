@@ -124,7 +124,7 @@ template <typename T>
 std::ostream& operator<<(std::ostream& os, const Hex<T>& hex_value) {
   // not quite right if an exception is thrown
   const auto flags = os.flags();
-  os << std::hex << std::showbase << hex_value.value;
+  os << "0x" << std::hex << hex_value.value;
   os.flags(flags);
   return os;
 }

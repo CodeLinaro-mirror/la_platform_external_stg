@@ -28,7 +28,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <iomanip>
 #include <ios>
 #include <map>
 #include <memory>
@@ -47,7 +46,7 @@
 #include "error.h"
 #include "file_descriptor.h"
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "scope.h"
 #include "type_normalisation.h"
 
@@ -88,7 +87,7 @@ xmlNodePtr Next(xmlNodePtr node) {
 }
 
 xmlNodePtr GetOnlyChild(xmlNodePtr element) {
-  xmlNodePtr child = Child(element);
+  const xmlNodePtr child = Child(element);
   if (child == nullptr || Next(child) != nullptr) {
     Die() << "element '" << GetName(element) << "' without exactly one child";
   }
@@ -119,7 +118,7 @@ std::string GetAttributeOrDie(xmlNodePtr node, const char* name) {
 }
 
 // Set an attribute value.
-void SetAttribute(xmlNodePtr node, const char* name, const std::string &value) {
+void SetAttribute(xmlNodePtr node, const char* name, const std::string& value) {
   xmlSetProp(node, ToLibxml(name), ToLibxml(value.c_str()));
 }
 
@@ -275,7 +274,7 @@ void StripNonElements(xmlNodePtr node) {
     case XML_ELEMENT_NODE: {
       xmlNodePtr child = Child(node);
       while (child) {
-        xmlNodePtr next = Next(child);
+        const xmlNodePtr next = Next(child);
         StripNonElements(child);
         child = next;
       }
@@ -1148,7 +1147,8 @@ void Abigail::ProcessStructUnion(Id id, bool is_struct,
 }
 
 void Abigail::ProcessEnum(Id id, xmlNodePtr enumeration) {
-  bool forward = ReadAttribute<bool>(enumeration, "is-declaration-only", false);
+  const bool forward =
+      ReadAttribute<bool>(enumeration, "is-declaration-only", false);
   const auto name = ReadAttribute<bool>(enumeration, "is-anonymous", false)
                     ? std::string()
                     : scope_name_ + GetAttributeOrDie(enumeration, "name");
@@ -1157,8 +1157,8 @@ void Abigail::ProcessEnum(Id id, xmlNodePtr enumeration) {
     return;
   }
 
-  xmlNodePtr underlying = Child(enumeration);
-  Check(underlying) << "enum-decl has no child elements";
+  const xmlNodePtr underlying = Child(enumeration);
+  Check(underlying != nullptr) << "enum-decl has no child elements";
   CheckName("underlying-type", underlying);
   const auto type = GetEdge(underlying);
 
@@ -1188,16 +1188,17 @@ Id Abigail::ProcessBaseClass(xmlNodePtr base_class) {
 
 std::optional<Id> Abigail::ProcessDataMember(bool is_struct,
                                              xmlNodePtr data_member) {
-  xmlNodePtr decl = GetOnlyChild(data_member);
+  const xmlNodePtr decl = GetOnlyChild(data_member);
   CheckName("var-decl", decl);
   if (ReadAttribute<bool>(data_member, "static", false)) {
     ProcessDecl(true, decl);
     return {};
   }
 
-  size_t offset = is_struct
-              ? ReadAttributeOrDie<size_t>(data_member, "layout-offset-in-bits")
-              : 0;
+  const auto offset = is_struct
+                      ? ReadAttributeOrDie<size_t>(data_member,
+                                                   "layout-offset-in-bits")
+                      : 0;
   const auto name = GetAttributeOrDie(decl, "name");
   const auto type = GetEdge(decl);
 
@@ -1207,7 +1208,7 @@ std::optional<Id> Abigail::ProcessDataMember(bool is_struct,
 
 void Abigail::ProcessMemberFunction(std::vector<Id>& methods,
                                     xmlNodePtr method) {
-  xmlNodePtr decl = GetOnlyChild(method);
+  const xmlNodePtr decl = GetOnlyChild(method);
   CheckName("function-decl", decl);
   // ProcessDecl creates symbol references so must be called unconditionally.
   const auto type = ProcessDecl(false, decl);
@@ -1222,7 +1223,7 @@ void Abigail::ProcessMemberFunction(std::vector<Id>& methods,
 }
 
 void Abigail::ProcessMemberType(xmlNodePtr member_type) {
-  xmlNodePtr decl = GetOnlyChild(member_type);
+  const xmlNodePtr decl = GetOnlyChild(member_type);
   const auto type_id = GetAttributeOrDie(decl, "id");
   const auto id = GetNode(type_id);
   if (graph_.Is(id)) {
@@ -1284,15 +1285,15 @@ Id Abigail::BuildSymbols() {
   return graph_.Add<Interface>(symbols);
 }
 
-Document Read(const std::string& path, Metrics& metrics) {
+Document Read(Runtime& runtime, const std::string& path) {
   // Open input for reading.
-  FileDescriptor fd(path.c_str(), O_RDONLY);
+  const FileDescriptor fd(path.c_str(), O_RDONLY);
 
   // Read the XML.
   Document document(nullptr, xmlFreeDoc);
   {
-    Time t(metrics, "abigail.libxml_parse");
-    std::unique_ptr<
+    const Time t(runtime, "abigail.libxml_parse");
+    const std::unique_ptr<
         std::remove_pointer_t<xmlParserCtxtPtr>, void(*)(xmlParserCtxtPtr)>
         context(xmlNewParserCtxt(), xmlFreeParserCtxt);
     document.reset(
@@ -1304,10 +1305,10 @@ Document Read(const std::string& path, Metrics& metrics) {
   return document;
 }
 
-Id Read(Graph& graph, const std::string& path, Metrics& metrics) {
-  const Document document = Read(path, metrics);
-  xmlNodePtr root = xmlDocGetRootElement(document.get());
-  Check(root) << "XML document has no root element";
+Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
+  const Document document = Read(runtime, path);
+  const xmlNodePtr root = xmlDocGetRootElement(document.get());
+  Check(root != nullptr) << "XML document has no root element";
   return Abigail(graph).ProcessRoot(root);
 }
 

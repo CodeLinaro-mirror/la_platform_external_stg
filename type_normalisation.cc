@@ -118,11 +118,11 @@ struct FindQualifiedTypesAndFunctions {
     (*this)(x.type_id);
   }
 
-  void operator()(const Member& x, Id) {
+  void operator()(const Method& x, Id) {
     (*this)(x.type_id);
   }
 
-  void operator()(const Method& x, Id) {
+  void operator()(const Member& x, Id) {
     (*this)(x.type_id);
   }
 
