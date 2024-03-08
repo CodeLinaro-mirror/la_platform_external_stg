@@ -45,6 +45,10 @@ namespace dwarf {
 
 namespace {
 
+bool HasIncompleteTypes(uint64_t language) {
+  return language != DW_LANG_Rust;
+}
+
 std::string EntryToString(Entry& entry) {
   std::ostringstream os;
   os << "DWARF entry <" << Hex(entry.GetOffset()) << ">";
@@ -352,6 +356,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
+        language_ = entry.MustGetUnsignedConstant(DW_AT_language);
         ProcessAllChildren(entry);
         break;
       case DW_TAG_typedef:
@@ -466,7 +471,7 @@ class Processor {
   }
 
   bool ShouldKeepDefinition(Entry& entry, const std::string& name) const {
-    if (file_filter_ == nullptr) {
+    if (!HasIncompleteTypes(language_) || file_filter_ == nullptr) {
       return true;
     }
     const auto file = files_.MaybeGetFile(entry, DW_AT_decl_file);
@@ -960,6 +965,7 @@ class Processor {
   Scope scope_;
   int version_;
   dwarf::Files files_;
+  uint64_t language_;
 };
 
 Types Process(Handler& dwarf, bool is_little_endian_binary,

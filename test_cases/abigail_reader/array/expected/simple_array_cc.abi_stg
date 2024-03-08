@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x4585663f
   name: "unsigned int"
@@ -8,17 +8,17 @@ primitive {
 array {
   id: 0x7dc8196c
   number_of_elements: 2
-  element_type_id: 0x4585663f
+  element_type_id: 0x4585663f  # unsigned int
 }
 elf_symbol {
   id: 0x30693519
   name: "numbers"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x7dc8196c
+  type_id: 0x7dc8196c  # unsigned int[2]
   full_name: "numbers"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x30693519
+  symbol_id: 0x30693519  # unsigned int numbers[2]
 }
