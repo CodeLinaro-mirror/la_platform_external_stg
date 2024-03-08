@@ -45,6 +45,10 @@ namespace dwarf {
 
 namespace {
 
+bool HasIncompleteTypes(uint64_t language) {
+  return language != DW_LANG_Rust;
+}
+
 std::string EntryToString(Entry& entry) {
   std::ostringstream os;
   os << "DWARF entry <" << Hex(entry.GetOffset()) << ">";
@@ -467,7 +471,7 @@ class Processor {
   }
 
   bool ShouldKeepDefinition(Entry& entry, const std::string& name) const {
-    if (file_filter_ == nullptr) {
+    if (!HasIncompleteTypes(language_) || file_filter_ == nullptr) {
       return true;
     }
     const auto file = files_.MaybeGetFile(entry, DW_AT_decl_file);
