@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -8,7 +8,7 @@ primitive {
 member {
   id: 0x9cebeb53
   name: "bar"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 struct_union {
   id: 0xf6f304f7
@@ -16,19 +16,19 @@ struct_union {
   name: "Foo"
   definition {
     bytesize: 4
-    member_id: 0x9cebeb53
+    member_id: 0x9cebeb53  # int bar
   }
 }
 function {
   id: 0xe5d22a85
-  return_type_id: 0xf6f304f7
+  return_type_id: 0xf6f304f7  # struct Foo
 }
 elf_symbol {
   id: 0x20a0c465
   name: "_ZN3Foo2stE"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   full_name: "Foo::st"
 }
 elf_symbol {
@@ -36,11 +36,11 @@ elf_symbol {
   name: "_ZN3Foo7DefaultEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xe5d22a85
+  type_id: 0xe5d22a85  # struct Foo()
   full_name: "Foo::Default"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x20a0c465
-  symbol_id: 0x3ccd5aea
+  symbol_id: 0x20a0c465  # int Foo::st
+  symbol_id: 0x3ccd5aea  # struct Foo Foo::Default()
 }

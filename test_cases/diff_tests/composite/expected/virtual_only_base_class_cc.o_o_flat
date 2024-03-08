@@ -21,19 +21,19 @@ function symbol 'void Y::Y(struct Y*)' {_ZN1YC2Ev} changed
       pointed-to type 'struct Y' changed
 
 type 'struct X' changed
-  method 'f {_ZN1X1fEv}' changed
+  method 'int f(struct X*)' changed
     type 'int(struct X*)' changed
       parameter 1 type 'struct X*' changed
         pointed-to type 'struct X' changed
-  method 'g {_ZN1X1gEv}' was added
+  method 'int g(struct X*)' was added
 
 type 'struct Y' changed
   base class 'struct X' changed
     type 'struct X' changed
-  method 'f {_ZN1Y1fEv}' changed
+  method 'int f(struct Y*)' changed
     type 'int(struct Y*)' changed
       parameter 1 type 'struct Y*' changed
         pointed-to type 'struct Y' changed
-  method 'g {_ZN1Y1gEv}' was added
+  method 'int g(struct Y*)' was added
 
 exit code 4

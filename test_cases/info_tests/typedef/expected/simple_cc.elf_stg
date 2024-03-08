@@ -1,9 +1,9 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 typedef {
   id: 0x1e70e31d
   name: "large"
-  referred_type_id: 0x6720d32f
+  referred_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x6720d32f
@@ -20,7 +20,7 @@ primitive {
 member {
   id: 0xa0ac1b35
   name: "x"
-  type_id: 0x1e70e31d
+  type_id: 0x1e70e31d  # large
 }
 struct_union {
   id: 0xb88f5ef1
@@ -28,25 +28,25 @@ struct_union {
   name: "foo"
   definition {
     bytesize: 4
-    member_id: 0xa0ac1b35
+    member_id: 0xa0ac1b35  # large x
   }
 }
 function {
   id: 0x8903ec25
-  return_type_id: 0xfc0e1dbd
-  parameter_id: 0xb88f5ef1
+  return_type_id: 0xfc0e1dbd  # long
+  parameter_id: 0xb88f5ef1  # struct foo
 }
 function {
   id: 0xa0bc035e
-  return_type_id: 0xfc0e1dbd
-  parameter_id: 0x1e70e31d
+  return_type_id: 0xfc0e1dbd  # long
+  parameter_id: 0x1e70e31d  # large
 }
 elf_symbol {
   id: 0x7ecd75c6
   name: "_Z3id13foo"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x8903ec25
+  type_id: 0x8903ec25  # long(struct foo)
   full_name: "id1"
 }
 elf_symbol {
@@ -54,11 +54,11 @@ elf_symbol {
   name: "_Z3id2i"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xa0bc035e
+  type_id: 0xa0bc035e  # long(large)
   full_name: "id2"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x7ecd75c6
-  symbol_id: 0x763ddaba
+  symbol_id: 0x7ecd75c6  # long id1(struct foo)
+  symbol_id: 0x763ddaba  # long id2(large)
 }

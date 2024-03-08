@@ -1,9 +1,9 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 pointer_reference {
   id: 0x2a409878
   kind: POINTER
-  pointee_type_id: 0x8342877c
+  pointee_type_id: 0x8342877c  # struct M
 }
 primitive {
   id: 0x6720d32f
@@ -14,12 +14,12 @@ primitive {
 member {
   id: 0xb53d99d2
   name: "head"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xeeb7e480
   name: "tail"
-  type_id: 0x2a409878
+  type_id: 0x2a409878  # struct M*
   offset: 64
 }
 struct_union {
@@ -28,24 +28,24 @@ struct_union {
   name: "M"
   definition {
     bytesize: 16
-    member_id: 0xb53d99d2
-    member_id: 0xeeb7e480
+    member_id: 0xb53d99d2  # int head
+    member_id: 0xeeb7e480  # struct M* tail
   }
 }
 function {
   id: 0x9710c531
-  return_type_id: 0x6720d32f
-  parameter_id: 0x2a409878
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x2a409878  # struct M*
 }
 elf_symbol {
   id: 0x6713ecab
   name: "loop"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9710c531
+  type_id: 0x9710c531  # int(struct M*)
   full_name: "loop"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x6713ecab
+  symbol_id: 0x6713ecab  # int loop(struct M*)
 }

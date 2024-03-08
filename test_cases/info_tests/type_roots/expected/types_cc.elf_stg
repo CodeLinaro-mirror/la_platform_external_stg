@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,27 +7,27 @@ special {
 pointer_reference {
   id: 0x1200d1dc
   kind: POINTER
-  pointee_type_id: 0x6243a1ef
+  pointee_type_id: 0x6243a1ef  # struct S2
 }
 pointer_reference {
   id: 0x20b816bd
   kind: POINTER
-  pointee_type_id: 0xa8a0bc6a
+  pointee_type_id: 0xa8a0bc6a  # union U2
 }
 pointer_reference {
   id: 0x2be23006
   kind: POINTER
-  pointee_type_id: 0x85c82684
+  pointee_type_id: 0x85c82684  # enum E2
 }
 typedef {
   id: 0xe9e9f0af
   name: "T1"
-  referred_type_id: 0x5d8155a5
+  referred_type_id: 0x5d8155a5  # unsigned char
 }
 typedef {
   id: 0xab298d57
   name: "T2"
-  referred_type_id: 0x186c44db
+  referred_type_id: 0x186c44db  # struct { }
 }
 primitive {
   id: 0x4585663f
@@ -78,7 +78,7 @@ enumeration {
   id: 0xb06ea7a9
   name: "E1"
   definition {
-    underlying_type_id: 0x4585663f
+    underlying_type_id: 0x4585663f  # unsigned int
   }
 }
 enumeration {
@@ -87,30 +87,30 @@ enumeration {
 }
 function {
   id: 0x3c3a5242
-  return_type_id: 0x48b5725f
-  parameter_id: 0xb06ea7a9
-  parameter_id: 0x2be23006
-  parameter_id: 0x59489d72
-  parameter_id: 0x1200d1dc
-  parameter_id: 0xe9e9f0af
-  parameter_id: 0xab298d57
-  parameter_id: 0x264d3dec
-  parameter_id: 0x20b816bd
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0xb06ea7a9  # enum E1
+  parameter_id: 0x2be23006  # enum E2*
+  parameter_id: 0x59489d72  # struct S1
+  parameter_id: 0x1200d1dc  # struct S2*
+  parameter_id: 0xe9e9f0af  # T1
+  parameter_id: 0xab298d57  # T2
+  parameter_id: 0x264d3dec  # union U1
+  parameter_id: 0x20b816bd  # union U2*
 }
 elf_symbol {
   id: 0xedaed4d8
   name: "_Z4func2E1P2E22S1P2S2h2T22U1P2U2"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x3c3a5242
+  type_id: 0x3c3a5242  # void(enum E1, enum E2*, struct S1, struct S2*, T1, T2, union U1, union U2*)
   full_name: "func"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xedaed4d8
-  type_id: 0xe9e9f0af
-  type_id: 0xab298d57
-  type_id: 0xb06ea7a9
-  type_id: 0x59489d72
-  type_id: 0x264d3dec
+  symbol_id: 0xedaed4d8  # void func(enum E1, enum E2*, struct S1, struct S2*, T1, T2, union U1, union U2*)
+  type_id: 0xe9e9f0af  # T1
+  type_id: 0xab298d57  # T2
+  type_id: 0xb06ea7a9  # enum E1
+  type_id: 0x59489d72  # struct S1
+  type_id: 0x264d3dec  # union U1
 }
