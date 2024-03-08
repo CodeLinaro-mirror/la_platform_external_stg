@@ -1,39 +1,39 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 pointer_reference {
   id: 0x13580d6c
   kind: POINTER
-  pointee_type_id: 0x6720d32f
+  pointee_type_id: 0x6720d32f  # int
 }
 pointer_reference {
   id: 0x3be64ffd
   kind: POINTER
-  pointee_type_id: 0xc5d9d969
+  pointee_type_id: 0xc5d9d969  # const int
 }
 qualified {
   id: 0x4008d327
   qualifier: RESTRICT
-  qualified_type_id: 0x13580d6c
+  qualified_type_id: 0x13580d6c  # int*
 }
 qualified {
   id: 0x4a274383
   qualifier: RESTRICT
-  qualified_type_id: 0x3be64ffd
+  qualified_type_id: 0x3be64ffd  # const int*
 }
 qualified {
   id: 0xc5d9d969
   qualifier: CONST
-  qualified_type_id: 0x6720d32f
+  qualified_type_id: 0x6720d32f  # int
 }
 qualified {
   id: 0xcc13d96b
   qualifier: CONST
-  qualified_type_id: 0x4008d327
+  qualified_type_id: 0x4008d327  # int* restrict
 }
 qualified {
   id: 0xd8c7eef9
   qualifier: CONST
-  qualified_type_id: 0x13580d6c
+  qualified_type_id: 0x13580d6c  # int*
 }
 primitive {
   id: 0x6720d32f
@@ -45,7 +45,7 @@ elf_symbol {
   name: "a"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3be64ffd
+  type_id: 0x3be64ffd  # const int*
   full_name: "a"
 }
 elf_symbol {
@@ -53,7 +53,7 @@ elf_symbol {
   name: "b"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd8c7eef9
+  type_id: 0xd8c7eef9  # int* const
   full_name: "b"
 }
 elf_symbol {
@@ -61,7 +61,7 @@ elf_symbol {
   name: "c"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x4008d327
+  type_id: 0x4008d327  # int* restrict
   full_name: "c"
 }
 elf_symbol {
@@ -69,7 +69,7 @@ elf_symbol {
   name: "d"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x4a274383
+  type_id: 0x4a274383  # const int* restrict
   full_name: "d"
 }
 elf_symbol {
@@ -77,7 +77,7 @@ elf_symbol {
   name: "e"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xcc13d96b
+  type_id: 0xcc13d96b  # int* restrict const
   full_name: "e"
 }
 elf_symbol {
@@ -85,15 +85,15 @@ elf_symbol {
   name: "f"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xcc13d96b
+  type_id: 0xcc13d96b  # int* restrict const
   full_name: "f"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xa7b0241d
-  symbol_id: 0xe371117a
-  symbol_id: 0x2230fb28
-  symbol_id: 0x63f6f9b1
-  symbol_id: 0xa2b65a7e
-  symbol_id: 0xe0778f95
+  symbol_id: 0xa7b0241d  # const int* a
+  symbol_id: 0xe371117a  # int* const b
+  symbol_id: 0x2230fb28  # int* restrict c
+  symbol_id: 0x63f6f9b1  # const int* restrict d
+  symbol_id: 0xa2b65a7e  # int* restrict const e
+  symbol_id: 0xe0778f95  # int* restrict const f
 }

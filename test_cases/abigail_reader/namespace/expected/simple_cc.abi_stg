@@ -1,14 +1,14 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 typedef {
   id: 0xbc115339
   name: "foo::type_definition"
-  referred_type_id: 0x6720d32f
+  referred_type_id: 0x6720d32f  # int
 }
 qualified {
   id: 0xc5d9d969
   qualifier: CONST
-  qualified_type_id: 0x6720d32f
+  qualified_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x398ea63b
@@ -23,12 +23,12 @@ primitive {
 array {
   id: 0xf0341a7a
   number_of_elements: 5
-  element_type_id: 0x6720d32f
+  element_type_id: 0x6720d32f  # int
 }
 member {
   id: 0xa0d54b05
   name: "x"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 struct_union {
   id: 0x3ba6625d
@@ -36,7 +36,7 @@ struct_union {
   name: "foo::S"
   definition {
     bytesize: 4
-    member_id: 0xa0d54b05
+    member_id: 0xa0d54b05  # int x
   }
 }
 struct_union {
@@ -45,14 +45,14 @@ struct_union {
   name: "foo::U"
   definition {
     bytesize: 4
-    member_id: 0xa0d54b05
+    member_id: 0xa0d54b05  # int x
   }
 }
 enumeration {
   id: 0x249cfa0e
   name: "foo::E"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "X"
     }
@@ -64,14 +64,14 @@ enumeration {
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 elf_symbol {
   id: 0x582117f7
   name: "_ZN3foo2x1E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   full_name: "foo::x1"
 }
 elf_symbol {
@@ -79,7 +79,7 @@ elf_symbol {
   name: "_ZN3foo2x2E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf0341a7a
+  type_id: 0xf0341a7a  # int[5]
   full_name: "foo::x2"
 }
 elf_symbol {
@@ -87,7 +87,7 @@ elf_symbol {
   name: "_ZN3foo2x3E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xc5d9d969
+  type_id: 0xc5d9d969  # const int
   full_name: "foo::x3"
 }
 elf_symbol {
@@ -95,7 +95,7 @@ elf_symbol {
   name: "_ZN3foo2x4E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xbc115339
+  type_id: 0xbc115339  # foo::type_definition
   full_name: "foo::x4"
 }
 elf_symbol {
@@ -103,7 +103,7 @@ elf_symbol {
   name: "_ZN3foo2x5Ev"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "foo::x5"
 }
 elf_symbol {
@@ -111,7 +111,7 @@ elf_symbol {
   name: "_ZN3foo2x6E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3ba6625d
+  type_id: 0x3ba6625d  # struct foo::S
   full_name: "foo::x6"
 }
 elf_symbol {
@@ -119,7 +119,7 @@ elf_symbol {
   name: "_ZN3foo2x7E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf05bf1c2
+  type_id: 0xf05bf1c2  # union foo::U
   full_name: "foo::x7"
 }
 elf_symbol {
@@ -127,17 +127,17 @@ elf_symbol {
   name: "_ZN3foo2x8E"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x249cfa0e
+  type_id: 0x249cfa0e  # enum foo::E
   full_name: "foo::x8"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x582117f7
-  symbol_id: 0x717ce2f2
-  symbol_id: 0x4a892240
-  symbol_id: 0x4ec44cf8
-  symbol_id: 0x4d2c388b
-  symbol_id: 0x4e82b74d
-  symbol_id: 0x60294099
-  symbol_id: 0x59b8d44f
+  symbol_id: 0x582117f7  # int foo::x1
+  symbol_id: 0x717ce2f2  # int foo::x2[5]
+  symbol_id: 0x4a892240  # const int foo::x3
+  symbol_id: 0x4ec44cf8  # foo::type_definition foo::x4
+  symbol_id: 0x4d2c388b  # int foo::x5()
+  symbol_id: 0x4e82b74d  # struct foo::S foo::x6
+  symbol_id: 0x60294099  # union foo::U foo::x7
+  symbol_id: 0x59b8d44f  # enum foo::E foo::x8
 }

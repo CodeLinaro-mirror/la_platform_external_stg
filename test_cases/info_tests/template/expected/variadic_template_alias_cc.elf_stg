@@ -1,9 +1,9 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 typedef {
   id: 0xda6f7726
   name: "Jones<int, bool, char>"
-  referred_type_id: 0x6720d32f
+  referred_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x6720d32f
@@ -16,10 +16,10 @@ elf_symbol {
   name: "x"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xda6f7726
+  type_id: 0xda6f7726  # Jones<int, bool, char>
   full_name: "x"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x7709bd40
+  symbol_id: 0x7709bd40  # Jones<int, bool, char> x
 }

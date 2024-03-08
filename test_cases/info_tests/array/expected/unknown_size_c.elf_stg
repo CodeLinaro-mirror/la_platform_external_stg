@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x15053314
   name: "double"
@@ -14,17 +14,17 @@ primitive {
 }
 array {
   id: 0xc178c235
-  element_type_id: 0x15053314
+  element_type_id: 0x15053314  # double
 }
 member {
   id: 0x9cebeb53
   name: "bar"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x964b7931
   name: "baz"
-  type_id: 0xc178c235
+  type_id: 0xc178c235  # double[0]
   offset: 64
 }
 struct_union {
@@ -33,8 +33,8 @@ struct_union {
   name: "foo"
   definition {
     bytesize: 8
-    member_id: 0x9cebeb53
-    member_id: 0x964b7931
+    member_id: 0x9cebeb53  # int bar
+    member_id: 0x964b7931  # double baz[0]
   }
 }
 elf_symbol {
@@ -42,10 +42,10 @@ elf_symbol {
   name: "x"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xb88f5ef1
+  type_id: 0xb88f5ef1  # struct foo
   full_name: "x"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x7709bd40
+  symbol_id: 0x7709bd40  # struct foo x
 }
