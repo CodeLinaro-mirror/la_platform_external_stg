@@ -352,6 +352,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
+        language_ = entry.MustGetUnsignedConstant(DW_AT_language);
         ProcessAllChildren(entry);
         break;
       case DW_TAG_typedef:
@@ -960,6 +961,7 @@ class Processor {
   Scope scope_;
   int version_;
   dwarf::Files files_;
+  uint64_t language_;
 };
 
 Types Process(Handler& dwarf, bool is_little_endian_binary,
