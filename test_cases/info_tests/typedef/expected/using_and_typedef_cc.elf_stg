@@ -1,14 +1,14 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 typedef {
   id: 0x1e70e31d
   name: "large"
-  referred_type_id: 0x6720d32f
+  referred_type_id: 0x6720d32f  # int
 }
 typedef {
   id: 0x8a4b42d3
   name: "small"
-  referred_type_id: 0xb0312d5a
+  referred_type_id: 0xb0312d5a  # short
 }
 primitive {
   id: 0x6720d32f
@@ -24,18 +24,18 @@ primitive {
 }
 function {
   id: 0x444df63a
-  return_type_id: 0x8a4b42d3
+  return_type_id: 0x8a4b42d3  # small
 }
 function {
   id: 0xa208cc61
-  return_type_id: 0x1e70e31d
+  return_type_id: 0x1e70e31d  # large
 }
 elf_symbol {
   id: 0x92009dc1
   name: "_Z3barv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xa208cc61
+  type_id: 0xa208cc61  # large()
   full_name: "bar"
 }
 elf_symbol {
@@ -43,11 +43,11 @@ elf_symbol {
   name: "_Z3foov"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x444df63a
+  type_id: 0x444df63a  # small()
   full_name: "foo"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x92009dc1
-  symbol_id: 0x10da60a3
+  symbol_id: 0x92009dc1  # large bar()
+  symbol_id: 0x10da60a3  # small foo()
 }

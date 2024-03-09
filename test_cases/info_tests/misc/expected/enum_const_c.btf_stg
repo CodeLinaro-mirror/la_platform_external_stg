@@ -1,14 +1,14 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 typedef {
   id: 0x7d386fee
   name: "Foo"
-  referred_type_id: 0x226ff690
+  referred_type_id: 0x226ff690  # enum Foo
 }
 qualified {
   id: 0xc35ff659
   qualifier: CONST
-  qualified_type_id: 0x7d386fee
+  qualified_type_id: 0x7d386fee  # Foo
 }
 primitive {
   id: 0x2b903cc5
@@ -20,7 +20,7 @@ enumeration {
   id: 0x226ff690
   name: "Foo"
   definition {
-    underlying_type_id: 0x2b903cc5
+    underlying_type_id: 0x2b903cc5  # enum-underlying-unsigned-32
     enumerator {
       name: "FOO_ONE"
       value: 1
@@ -37,17 +37,17 @@ enumeration {
 }
 function {
   id: 0xcbe2d488
-  return_type_id: 0x7d386fee
-  parameter_id: 0xc35ff659
+  return_type_id: 0x7d386fee  # Foo
+  parameter_id: 0xc35ff659  # const Foo
 }
 elf_symbol {
   id: 0xdfa4312b
   name: "getEnum"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xcbe2d488
+  type_id: 0xcbe2d488  # Foo(const Foo)
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xdfa4312b
+  symbol_id: 0xdfa4312b  # Foo getEnum(const Foo)
 }

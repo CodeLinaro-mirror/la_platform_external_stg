@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -9,92 +9,92 @@ primitive {
 array {
   id: 0x9d362140
   number_of_elements: 17
-  element_type_id: 0x6720d32f
+  element_type_id: 0x6720d32f  # int
 }
 member {
   id: 0x80bcb4cd
   name: "a"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x4cff5574
   name: "b"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 32
 }
 member {
   id: 0x4cff584f
   name: "b"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x0f3f9186
   name: "c"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 32
 }
 member {
   id: 0xc37de7d7
   name: "d"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 64
 }
 member {
   id: 0x874410b0
   name: "e"
-  type_id: 0x9d362140
+  type_id: 0x9d362140  # int[17]
 }
 member {
   id: 0x41fcdfad
   name: "f"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 544
 }
 member {
   id: 0x023d43d4
   name: "g"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 576
 }
 member {
   id: 0xa8938b2e
   name: "h"
-  type_id: 0x7578447d
+  type_id: 0x7578447d  # struct T1<int>
 }
 member {
   id: 0x86c14d13
   name: "i"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x2d952030
   name: "j"
-  type_id: 0xa5c1eab5
+  type_id: 0xa5c1eab5  # struct T2<int, int>
 }
 member {
   id: 0x6940985f
   name: "k"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xc5d22295
   name: "l"
-  type_id: 0xcb978265
+  type_id: 0xcb978265  # struct T3<17, int>
 }
 member {
   id: 0x8dbf3d30
   name: "m"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x46ee5fe7
   name: "n"
-  type_id: 0x8891f0f8
+  type_id: 0x8891f0f8  # union T6<T3>
 }
 member {
   id: 0x04420382
   name: "o"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   offset: 608
 }
 struct_union {
@@ -103,8 +103,8 @@ struct_union {
   name: "T1<int>"
   definition {
     bytesize: 8
-    member_id: 0x80bcb4cd
-    member_id: 0x4cff5574
+    member_id: 0x80bcb4cd  # int a
+    member_id: 0x4cff5574  # int b
   }
 }
 struct_union {
@@ -113,9 +113,9 @@ struct_union {
   name: "T2<int, int>"
   definition {
     bytesize: 12
-    member_id: 0x4cff584f
-    member_id: 0x0f3f9186
-    member_id: 0xc37de7d7
+    member_id: 0x4cff584f  # int b
+    member_id: 0x0f3f9186  # int c
+    member_id: 0xc37de7d7  # int d
   }
 }
 struct_union {
@@ -124,9 +124,9 @@ struct_union {
   name: "T3<17, int>"
   definition {
     bytesize: 76
-    member_id: 0x874410b0
-    member_id: 0x41fcdfad
-    member_id: 0x023d43d4
+    member_id: 0x874410b0  # int e[17]
+    member_id: 0x41fcdfad  # int f
+    member_id: 0x023d43d4  # int g
   }
 }
 struct_union {
@@ -135,8 +135,8 @@ struct_union {
   name: "T4<T1>"
   definition {
     bytesize: 8
-    member_id: 0xa8938b2e
-    member_id: 0x86c14d13
+    member_id: 0xa8938b2e  # struct T1<int> h
+    member_id: 0x86c14d13  # int i
   }
 }
 struct_union {
@@ -145,8 +145,8 @@ struct_union {
   name: "T5<T2>"
   definition {
     bytesize: 12
-    member_id: 0x2d952030
-    member_id: 0x6940985f
+    member_id: 0x2d952030  # struct T2<int, int> j
+    member_id: 0x6940985f  # int k
   }
 }
 struct_union {
@@ -155,8 +155,8 @@ struct_union {
   name: "T6<T3>"
   definition {
     bytesize: 76
-    member_id: 0xc5d22295
-    member_id: 0x8dbf3d30
+    member_id: 0xc5d22295  # struct T3<17, int> l
+    member_id: 0x8dbf3d30  # int m
   }
 }
 struct_union {
@@ -165,8 +165,8 @@ struct_union {
   name: "T7<T6>"
   definition {
     bytesize: 80
-    member_id: 0x46ee5fe7
-    member_id: 0x04420382
+    member_id: 0x46ee5fe7  # union T6<T3> n
+    member_id: 0x04420382  # int o
   }
 }
 elf_symbol {
@@ -174,7 +174,7 @@ elf_symbol {
   name: "v1"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd94d74b0
+  type_id: 0xd94d74b0  # union T4<T1>
   full_name: "v1"
 }
 elf_symbol {
@@ -182,7 +182,7 @@ elf_symbol {
   name: "v2"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x5e0ea2b4
+  type_id: 0x5e0ea2b4  # union T5<T2>
   full_name: "v2"
 }
 elf_symbol {
@@ -190,7 +190,7 @@ elf_symbol {
   name: "v3"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x8891f0f8
+  type_id: 0x8891f0f8  # union T6<T3>
   full_name: "v3"
 }
 elf_symbol {
@@ -198,13 +198,13 @@ elf_symbol {
   name: "v4"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x886d9bb6
+  type_id: 0x886d9bb6  # struct T7<T6>
   full_name: "v4"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xab18a5e8
-  symbol_id: 0x975e59cf
-  symbol_id: 0x2999e447
-  symbol_id: 0x19de9370
+  symbol_id: 0xab18a5e8  # union T4<T1> v1
+  symbol_id: 0x975e59cf  # union T5<T2> v2
+  symbol_id: 0x2999e447  # union T6<T3> v3
+  symbol_id: 0x19de9370  # struct T7<T6> v4
 }

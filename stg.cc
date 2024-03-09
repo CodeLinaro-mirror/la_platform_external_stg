@@ -17,20 +17,21 @@
 //
 // Author: Giuliano Procida
 
+#include <fcntl.h>
 #include <getopt.h>
 
 #include <cstring>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include "deduplication.h"
 #include "error.h"
+#include "file_descriptor.h"
 #include "filter.h"
 #include "fingerprint.h"
 #include "graph.h"
@@ -99,16 +100,18 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
   std::swap(interface.symbols, symbols);
 }
 
-void Write(Runtime& runtime, const Graph& graph, Id root, const char* output) {
-  std::ofstream os(output);
+void Write(Runtime& runtime, const Graph& graph, Id root, const char* output,
+           bool annotate) {
+  const FileDescriptor output_fd(
+      output, O_CREAT | O_WRONLY | O_TRUNC,
+      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+  google::protobuf::io::FileOutputStream os(output_fd.Value());
   {
     const Time x(runtime, "write");
     proto::Writer writer(graph);
-    writer.Write(root, os);
-    os << std::flush;
-  }
-  if (!os) {
-    Die() << "error writing to " << '\'' << output << '\'';
+    writer.Write(root, os, annotate);
+    Check(os.Flush()) << "error writing to '" << output
+                      << "': " << os.GetErrno();
   }
 }
 
@@ -125,6 +128,7 @@ int main(int argc, char* argv[]) {
   stg::InputFormat opt_input_format = stg::InputFormat::ABI;
   std::vector<std::pair<stg::InputFormat, const char*>> inputs;
   std::vector<const char*> outputs;
+  bool opt_annotate = false;
   static option opts[] = {
       {"metrics",         no_argument,       nullptr, 'm'},
       {"keep-duplicates", no_argument,       nullptr, 'd'},
@@ -138,6 +142,7 @@ int main(int argc, char* argv[]) {
       {"elf",             no_argument,       nullptr, 'e'},
       {"stg",             no_argument,       nullptr, 's'},
       {"output",          required_argument, nullptr, 'o'},
+      {"annotate",        no_argument,       nullptr, 'A'},
       {nullptr,           0,                 nullptr, 0  },
   };
   auto usage = [&]() {
@@ -149,13 +154,14 @@ int main(int argc, char* argv[]) {
               << "  [-S|--symbols|--symbol-filter <filter>]\n"
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
+              << "  [-A|--annotate]\n"
               << "implicit defaults: --abi\n";
     stg::FilterUsage(std::cerr);
     return 1;
   };
   while (true) {
     int ix;
-    const int c = getopt_long(argc, argv, "-mdtS:F:abeso:", opts, &ix);
+    const int c = getopt_long(argc, argv, "-mdtS:F:abeso:A", opts, &ix);
     if (c == -1) {
       break;
     }
@@ -197,6 +203,9 @@ int main(int argc, char* argv[]) {
         }
         outputs.push_back(argument);
         break;
+      case 'A':
+        opt_annotate = true;
+        break;
       default:
         return usage();
     }
@@ -227,7 +236,7 @@ int main(int argc, char* argv[]) {
       root = stg::Deduplicate(runtime, graph, root, hashes);
     }
     for (auto output : outputs) {
-      stg::Write(runtime, graph, root, output);
+      stg::Write(runtime, graph, root, output, opt_annotate);
     }
     return 0;
   } catch (const stg::Exception& e) {

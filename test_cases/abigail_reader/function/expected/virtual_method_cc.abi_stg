@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,20 +7,20 @@ special {
 pointer_reference {
   id: 0x372cf89a
   kind: POINTER
-  pointee_type_id: 0xf6f304f7
+  pointee_type_id: 0xf6f304f7  # struct Foo
 }
 method {
   id: 0x91a60460
   mangled_name: "_ZN3Foo3barEv"
   name: "bar"
-  type_id: 0x1d536fb5
+  type_id: 0x1d536fb5  # void(struct Foo*)
 }
 method {
   id: 0x3bae9a68
   mangled_name: "_ZN3Foo3bazEv"
   name: "baz"
   vtable_offset: 1
-  type_id: 0x1d536fb5
+  type_id: 0x1d536fb5  # void(struct Foo*)
 }
 struct_union {
   id: 0xf6f304f7
@@ -28,21 +28,21 @@ struct_union {
   name: "Foo"
   definition {
     bytesize: 8
-    method_id: 0x91a60460
-    method_id: 0x3bae9a68
+    method_id: 0x91a60460  # void bar(struct Foo*)
+    method_id: 0x3bae9a68  # void baz(struct Foo*)
   }
 }
 function {
   id: 0x1d536fb5
-  return_type_id: 0x48b5725f
-  parameter_id: 0x372cf89a
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x372cf89a  # struct Foo*
 }
 elf_symbol {
   id: 0x043f549e
   name: "_ZN3Foo3barEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x1d536fb5
+  type_id: 0x1d536fb5  # void(struct Foo*)
   full_name: "Foo::bar"
 }
 elf_symbol {
@@ -50,7 +50,7 @@ elf_symbol {
   name: "_ZN3Foo3bazEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x1d536fb5
+  type_id: 0x1d536fb5  # void(struct Foo*)
   full_name: "Foo::baz"
 }
 elf_symbol {
@@ -76,15 +76,15 @@ elf_symbol {
   name: "foo"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf6f304f7
+  type_id: 0xf6f304f7  # struct Foo
   full_name: "foo"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x043f549e
-  symbol_id: 0x39ee62e8
-  symbol_id: 0x263987d0
-  symbol_id: 0x264c5a0d
-  symbol_id: 0x9e36cb56
-  symbol_id: 0x06f8338c
+  symbol_id: 0x043f549e  # void Foo::bar(struct Foo*)
+  symbol_id: 0x39ee62e8  # void Foo::baz(struct Foo*)
+  symbol_id: 0x263987d0  # _ZTI3Foo
+  symbol_id: 0x264c5a0d  # _ZTS3Foo
+  symbol_id: 0x9e36cb56  # _ZTV3Foo
+  symbol_id: 0x06f8338c  # struct Foo foo
 }

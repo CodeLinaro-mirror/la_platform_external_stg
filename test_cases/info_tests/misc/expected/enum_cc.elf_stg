@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,12 +7,12 @@ special {
 pointer_reference {
   id: 0xf3bba530
   kind: LVALUE_REFERENCE
-  pointee_type_id: 0xd0ae2902
+  pointee_type_id: 0xd0ae2902  # const enum Colour
 }
 qualified {
   id: 0xd0ae2902
   qualifier: CONST
-  qualified_type_id: 0x32ff1281
+  qualified_type_id: 0x32ff1281  # enum Colour
 }
 primitive {
   id: 0x5d8155a5
@@ -24,7 +24,7 @@ enumeration {
   id: 0x32ff1281
   name: "Colour"
   definition {
-    underlying_type_id: 0x5d8155a5
+    underlying_type_id: 0x5d8155a5  # unsigned char
     enumerator {
       name: "red"
     }
@@ -40,18 +40,18 @@ enumeration {
 }
 function {
   id: 0x2c76b8df
-  return_type_id: 0x48b5725f
-  parameter_id: 0xf3bba530
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0xf3bba530  # const enum Colour&
 }
 elf_symbol {
   id: 0x80272d52
   name: "_Z3fooRK6Colour"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x2c76b8df
+  type_id: 0x2c76b8df  # void(const enum Colour&)
   full_name: "foo"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x80272d52
+  symbol_id: 0x80272d52  # void foo(const enum Colour&)
 }
