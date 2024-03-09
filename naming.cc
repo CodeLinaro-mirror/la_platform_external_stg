@@ -174,10 +174,7 @@ Name Describe::operator()(const BaseClass& x) {
 }
 
 Name Describe::operator()(const Method& x) {
-  if (x.mangled_name == x.name) {
-    return Name{x.name};
-  }
-  return Name{x.name + " {" + x.mangled_name + "}"};
+  return (*this)(x.type_id).Add(Side::LEFT, Precedence::ATOMIC, x.name);
 }
 
 Name Describe::operator()(const Member& x) {

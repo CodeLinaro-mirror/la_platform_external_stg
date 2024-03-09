@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -11,18 +11,18 @@ primitive {
 }
 function {
   id: 0x10985193
-  return_type_id: 0x48b5725f
+  return_type_id: 0x48b5725f  # void
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 elf_symbol {
   id: 0x886f3c7a
   name: "test"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "test"
 }
 elf_symbol {
@@ -34,7 +34,7 @@ elf_symbol {
   }
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v1"
 }
 elf_symbol {
@@ -45,7 +45,7 @@ elf_symbol {
   }
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v2"
 }
 elf_symbol {
@@ -56,7 +56,7 @@ elf_symbol {
   }
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v3"
 }
 elf_symbol {
@@ -64,7 +64,7 @@ elf_symbol {
   name: "versioned_foo_v1"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v1"
 }
 elf_symbol {
@@ -72,7 +72,7 @@ elf_symbol {
   name: "versioned_foo_v2"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v2"
 }
 elf_symbol {
@@ -80,16 +80,16 @@ elf_symbol {
   name: "versioned_foo_v3"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "versioned_foo_v3"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x886f3c7a
-  symbol_id: 0x48a2d940
-  symbol_id: 0x48a265ef
-  symbol_id: 0x48a26aef
-  symbol_id: 0xc828cd97
-  symbol_id: 0x77e76a1f
-  symbol_id: 0x36a79a97
+  symbol_id: 0x886f3c7a  # int test()
+  symbol_id: 0x48a2d940  # void versioned_foo_v1()
+  symbol_id: 0x48a265ef  # void versioned_foo_v2()
+  symbol_id: 0x48a26aef  # void versioned_foo_v3()
+  symbol_id: 0xc828cd97  # void versioned_foo_v1()
+  symbol_id: 0x77e76a1f  # void versioned_foo_v2()
+  symbol_id: 0x36a79a97  # void versioned_foo_v3()
 }
