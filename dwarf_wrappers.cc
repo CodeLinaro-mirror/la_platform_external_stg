@@ -274,6 +274,15 @@ std::optional<uint64_t> Entry::MaybeGetUnsignedConstant(uint32_t attribute) {
   return value;
 }
 
+uint64_t Entry::MustGetUnsignedConstant(uint32_t attribute) {
+  auto maybe_constant = MaybeGetUnsignedConstant(attribute);
+  if (!maybe_constant) {
+    Die() << "DWARF entry <" << Hex(GetOffset()) << "> with tag " << GetTag()
+          << " is missing attribute " << Hex(attribute);
+  }
+  return maybe_constant.value();
+}
+
 bool Entry::GetFlag(uint32_t attribute) {
   bool result = false;
   auto dwarf_attribute = (attribute == DW_AT_declaration)
