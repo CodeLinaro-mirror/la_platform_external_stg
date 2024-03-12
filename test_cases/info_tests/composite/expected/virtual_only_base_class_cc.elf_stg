@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,27 +7,27 @@ special {
 pointer_reference {
   id: 0x01ec39fc
   kind: POINTER
-  pointee_type_id: 0x2df0016c
+  pointee_type_id: 0x2df0016c  # int(*)()
 }
 pointer_reference {
   id: 0x0b5e55a4
   kind: POINTER
-  pointee_type_id: 0x0739b00c
+  pointee_type_id: 0x0739b00c  # struct X
 }
 pointer_reference {
   id: 0x134ef871
   kind: POINTER
-  pointee_type_id: 0x677b0759
+  pointee_type_id: 0x677b0759  # struct Y
 }
 pointer_reference {
   id: 0x2df0016c
   kind: POINTER
-  pointee_type_id: 0x9d80e32f
+  pointee_type_id: 0x9d80e32f  # int()
 }
 pointer_reference {
   id: 0xc65e4373
   kind: LVALUE_REFERENCE
-  pointee_type_id: 0x0739b00c
+  pointee_type_id: 0x0739b00c  # struct X
 }
 primitive {
   id: 0x6720d32f
@@ -37,39 +37,39 @@ primitive {
 }
 base_class {
   id: 0x166ca3db
-  type_id: 0x0739b00c
+  type_id: 0x0739b00c  # struct X
   inheritance: NON_VIRTUAL
 }
 method {
   id: 0x4dd47407
   mangled_name: "_ZN1X1fEv"
   name: "f"
-  type_id: 0x9f577646
+  type_id: 0x9f577646  # int(struct X*)
 }
 method {
   id: 0xb8b6ef68
   mangled_name: "_ZN1X1gEv"
   name: "g"
   vtable_offset: 1
-  type_id: 0x9f577646
+  type_id: 0x9f577646  # int(struct X*)
 }
 method {
   id: 0x63c715c4
   mangled_name: "_ZN1Y1fEv"
   name: "f"
-  type_id: 0x99535d33
+  type_id: 0x99535d33  # int(struct Y*)
 }
 method {
   id: 0xe8e61433
   mangled_name: "_ZN1Y1gEv"
   name: "g"
   vtable_offset: 1
-  type_id: 0x99535d33
+  type_id: 0x99535d33  # int(struct Y*)
 }
 member {
   id: 0x687cadfe
   name: "_vptr$X"
-  type_id: 0x01ec39fc
+  type_id: 0x01ec39fc  # int(**)()
 }
 struct_union {
   id: 0x0739b00c
@@ -77,9 +77,9 @@ struct_union {
   name: "X"
   definition {
     bytesize: 8
-    method_id: 0x4dd47407
-    method_id: 0xb8b6ef68
-    member_id: 0x687cadfe
+    method_id: 0x4dd47407  # int f(struct X*)
+    method_id: 0xb8b6ef68  # int g(struct X*)
+    member_id: 0x687cadfe  # int(** _vptr$X)()
   }
 }
 struct_union {
@@ -88,46 +88,46 @@ struct_union {
   name: "Y"
   definition {
     bytesize: 8
-    base_class_id: 0x166ca3db
-    method_id: 0x63c715c4
-    method_id: 0xe8e61433
+    base_class_id: 0x166ca3db  # struct X
+    method_id: 0x63c715c4  # int f(struct Y*)
+    method_id: 0xe8e61433  # int g(struct Y*)
   }
 }
 function {
   id: 0x124fc4fa
-  return_type_id: 0x48b5725f
-  parameter_id: 0x0b5e55a4
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x0b5e55a4  # struct X*
 }
 function {
   id: 0x144bef8f
-  return_type_id: 0x48b5725f
-  parameter_id: 0x134ef871
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x134ef871  # struct Y*
 }
 function {
   id: 0x99535d33
-  return_type_id: 0x6720d32f
-  parameter_id: 0x134ef871
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x134ef871  # struct Y*
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 function {
   id: 0x9f577646
-  return_type_id: 0x6720d32f
-  parameter_id: 0x0b5e55a4
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x0b5e55a4  # struct X*
 }
 function {
   id: 0xac1773f3
-  return_type_id: 0x6720d32f
-  parameter_id: 0xc65e4373
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0xc65e4373  # struct X&
 }
 elf_symbol {
   id: 0x10da60a3
   name: "_Z3foov"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "foo"
 }
 elf_symbol {
@@ -135,7 +135,7 @@ elf_symbol {
   name: "_Z3funR1X"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xac1773f3
+  type_id: 0xac1773f3  # int(struct X&)
   full_name: "fun"
 }
 elf_symbol {
@@ -144,7 +144,7 @@ elf_symbol {
   is_defined: true
   symbol_type: FUNCTION
   binding: WEAK
-  type_id: 0x124fc4fa
+  type_id: 0x124fc4fa  # void(struct X*)
   full_name: "X::X"
 }
 elf_symbol {
@@ -152,7 +152,7 @@ elf_symbol {
   name: "_ZN1Y1fEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x99535d33
+  type_id: 0x99535d33  # int(struct Y*)
   full_name: "Y::f"
 }
 elf_symbol {
@@ -160,7 +160,7 @@ elf_symbol {
   name: "_ZN1Y1gEv"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x99535d33
+  type_id: 0x99535d33  # int(struct Y*)
   full_name: "Y::g"
 }
 elf_symbol {
@@ -169,7 +169,7 @@ elf_symbol {
   is_defined: true
   symbol_type: FUNCTION
   binding: WEAK
-  type_id: 0x144bef8f
+  type_id: 0x144bef8f  # void(struct Y*)
   full_name: "Y::Y"
 }
 elf_symbol {
@@ -192,13 +192,13 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x10da60a3
-  symbol_id: 0xbc33871c
-  symbol_id: 0x0bbcf1df
-  symbol_id: 0x71a2fb93
-  symbol_id: 0x938b5d81
-  symbol_id: 0x8f2ed63c
-  symbol_id: 0x62dbf9a8
-  symbol_id: 0x68f7d82f
-  symbol_id: 0x4df3aa88
+  symbol_id: 0x10da60a3  # int foo()
+  symbol_id: 0xbc33871c  # int fun(struct X&)
+  symbol_id: 0x0bbcf1df  # void X::X(struct X*)
+  symbol_id: 0x71a2fb93  # int Y::f(struct Y*)
+  symbol_id: 0x938b5d81  # int Y::g(struct Y*)
+  symbol_id: 0x8f2ed63c  # void Y::Y(struct Y*)
+  symbol_id: 0x62dbf9a8  # _ZTI1Y
+  symbol_id: 0x68f7d82f  # _ZTS1Y
+  symbol_id: 0x4df3aa88  # _ZTV1Y
 }

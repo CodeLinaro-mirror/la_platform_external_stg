@@ -1,30 +1,30 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 base_class {
   id: 0x1fbc7d3f
-  type_id: 0x207acb9f
+  type_id: 0x207acb9f  # struct B
   offset: 8
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x27e7d0b7
-  type_id: 0xc1147dbd
+  type_id: 0xc1147dbd  # struct A
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0x35d2bca3
-  type_id: 0x89c1cdee
+  type_id: 0x89c1cdee  # struct Base
   inheritance: NON_VIRTUAL
 }
 base_class {
   id: 0xc09b23a0
-  type_id: 0x207acb9f
+  type_id: 0x207acb9f  # struct B
   offset: 256
   inheritance: VIRTUAL
 }
 base_class {
   id: 0xf8c08e28
-  type_id: 0xc1147dbd
+  type_id: 0xc1147dbd  # struct A
   offset: 192
   inheritance: VIRTUAL
 }
@@ -34,7 +34,7 @@ struct_union {
   name: "A"
   definition {
     bytesize: 1
-    base_class_id: 0x35d2bca3
+    base_class_id: 0x35d2bca3  # struct Base
   }
 }
 struct_union {
@@ -43,7 +43,7 @@ struct_union {
   name: "B"
   definition {
     bytesize: 1
-    base_class_id: 0x35d2bca3
+    base_class_id: 0x35d2bca3  # struct Base
   }
 }
 struct_union {
@@ -60,8 +60,8 @@ struct_union {
   name: "NonToVirtual"
   definition {
     bytesize: 16
-    base_class_id: 0xf8c08e28
-    base_class_id: 0xc09b23a0
+    base_class_id: 0xf8c08e28  # struct A
+    base_class_id: 0xc09b23a0  # struct B
   }
 }
 struct_union {
@@ -70,8 +70,8 @@ struct_union {
   name: "VirtualToNon"
   definition {
     bytesize: 2
-    base_class_id: 0x27e7d0b7
-    base_class_id: 0x1fbc7d3f
+    base_class_id: 0x27e7d0b7  # struct A
+    base_class_id: 0x1fbc7d3f  # struct B
   }
 }
 elf_symbol {
@@ -156,7 +156,7 @@ elf_symbol {
   name: "non_to_virtual"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf69d5505
+  type_id: 0xf69d5505  # struct NonToVirtual
   full_name: "non_to_virtual"
 }
 elf_symbol {
@@ -164,22 +164,22 @@ elf_symbol {
   name: "virtual_to_non"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x61cd3569
+  type_id: 0x61cd3569  # struct VirtualToNon
   full_name: "virtual_to_non"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x2ee62e36
-  symbol_id: 0x61d9eaff
-  symbol_id: 0x6cd6c36e
-  symbol_id: 0xa299f851
-  symbol_id: 0x24d58148
-  symbol_id: 0x4beeefa7
-  symbol_id: 0x4681bdd1
-  symbol_id: 0x19ce5ac1
-  symbol_id: 0xbc82394c
-  symbol_id: 0xd4bd55f3
-  symbol_id: 0xdebc2088
-  symbol_id: 0x486f617d
-  symbol_id: 0x2d368ead
+  symbol_id: 0x2ee62e36  # _ZN12NonToVirtualC1Ev
+  symbol_id: 0x61d9eaff  # _ZTI12NonToVirtual
+  symbol_id: 0x6cd6c36e  # _ZTI1A
+  symbol_id: 0xa299f851  # _ZTI1B
+  symbol_id: 0x24d58148  # _ZTI4Base
+  symbol_id: 0x4beeefa7  # _ZTS12NonToVirtual
+  symbol_id: 0x4681bdd1  # _ZTS1A
+  symbol_id: 0x19ce5ac1  # _ZTS1B
+  symbol_id: 0xbc82394c  # _ZTS4Base
+  symbol_id: 0xd4bd55f3  # _ZTT12NonToVirtual
+  symbol_id: 0xdebc2088  # _ZTV12NonToVirtual
+  symbol_id: 0x486f617d  # struct NonToVirtual non_to_virtual
+  symbol_id: 0x2d368ead  # struct VirtualToNon virtual_to_non
 }

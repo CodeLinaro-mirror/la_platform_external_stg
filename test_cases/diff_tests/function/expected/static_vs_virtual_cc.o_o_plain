@@ -25,7 +25,7 @@ function symbol changed from 'int VirtualToStatic::print(struct VirtualToStatic*
 variable symbol 'struct StaticToVirtual static_to_virtual' changed
   type 'struct StaticToVirtual' changed
     byte size changed from 4 to 16
-    method 'print {_ZN15StaticToVirtual5printEv}' was added
+    method 'int print(struct StaticToVirtual*)' was added
     member 'int(** _vptr$StaticToVirtual)()' was added
     member 'int m' changed
       offset changed from 0 to 64
@@ -33,7 +33,7 @@ variable symbol 'struct StaticToVirtual static_to_virtual' changed
 variable symbol 'struct VirtualToStatic virtual_to_static' changed
   type 'struct VirtualToStatic' changed
     byte size changed from 16 to 4
-    method 'print {_ZN15VirtualToStatic5printEv}' was removed
+    method 'int print(struct VirtualToStatic*)' was removed
     member 'int(** _vptr$VirtualToStatic)()' was removed
     member 'int m' changed
       offset changed from 64 to 0
