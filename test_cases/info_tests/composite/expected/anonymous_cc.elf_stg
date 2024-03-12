@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x4585663f
   name: "unsigned int"
@@ -15,37 +15,37 @@ primitive {
 member {
   id: 0xcd3a8d16
   name: "anon_class"
-  type_id: 0x307fdda9
+  type_id: 0x307fdda9  # struct { long x; }
 }
 member {
   id: 0x66d27b29
   name: "anon_enum"
-  type_id: 0x7bdf7a79
+  type_id: 0x7bdf7a79  # enum { X = 2, }
   offset: 192
 }
 member {
   id: 0x08cb6e25
   name: "anon_struct"
-  type_id: 0x307fdda9
+  type_id: 0x307fdda9  # struct { long x; }
   offset: 64
 }
 member {
   id: 0x7deb8c98
   name: "anon_union"
-  type_id: 0x7ee944b3
+  type_id: 0x7ee944b3  # union { long x; }
   offset: 128
 }
 member {
   id: 0xa04e65cb
   name: "x"
-  type_id: 0xfc0e1dbd
+  type_id: 0xfc0e1dbd  # long
 }
 struct_union {
   id: 0x307fdda9
   kind: STRUCT
   definition {
     bytesize: 8
-    member_id: 0xa04e65cb
+    member_id: 0xa04e65cb  # long x
   }
 }
 struct_union {
@@ -53,7 +53,7 @@ struct_union {
   kind: UNION
   definition {
     bytesize: 8
-    member_id: 0xa04e65cb
+    member_id: 0xa04e65cb  # long x
   }
 }
 struct_union {
@@ -62,16 +62,16 @@ struct_union {
   name: "Foo"
   definition {
     bytesize: 32
-    member_id: 0xcd3a8d16
-    member_id: 0x08cb6e25
-    member_id: 0x7deb8c98
-    member_id: 0x66d27b29
+    member_id: 0xcd3a8d16  # struct { long x; } anon_class
+    member_id: 0x08cb6e25  # struct { long x; } anon_struct
+    member_id: 0x7deb8c98  # union { long x; } anon_union
+    member_id: 0x66d27b29  # enum { X = 2, } anon_enum
   }
 }
 enumeration {
   id: 0x7bdf7a79
   definition {
-    underlying_type_id: 0x4585663f
+    underlying_type_id: 0x4585663f  # unsigned int
     enumerator {
       name: "X"
       value: 2
@@ -83,10 +83,10 @@ elf_symbol {
   name: "var"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf6f304f7
+  type_id: 0xf6f304f7  # struct Foo
   full_name: "var"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x3997c6eb
+  symbol_id: 0x3997c6eb  # struct Foo var
 }

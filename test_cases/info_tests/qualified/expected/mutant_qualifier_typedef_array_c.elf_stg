@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,97 +7,97 @@ special {
 pointer_reference {
   id: 0x37cf4758
   kind: POINTER
-  pointee_type_id: 0xf57dfbfc
+  pointee_type_id: 0xf57dfbfc  # struct S
 }
 typedef {
   id: 0x46a9f023
   name: "A"
-  referred_type_id: 0x7106acfa
+  referred_type_id: 0x7106acfa  # int[7]
 }
 typedef {
   id: 0x8468cdd8
   name: "B"
-  referred_type_id: 0x46a9f023
+  referred_type_id: 0x46a9f023  # A
 }
 typedef {
   id: 0xc52928ca
   name: "C"
-  referred_type_id: 0xfd0bded4
+  referred_type_id: 0xfd0bded4  # const B
 }
 typedef {
   id: 0x00eb2593
   name: "D"
-  referred_type_id: 0xc52928ca
+  referred_type_id: 0xc52928ca  # C
 }
 typedef {
   id: 0x41ab82dc
   name: "E"
-  referred_type_id: 0x942cbbe9
+  referred_type_id: 0x942cbbe9  # volatile D
 }
 typedef {
   id: 0x816a54f3
   name: "F"
-  referred_type_id: 0x41ab82dc
+  referred_type_id: 0x41ab82dc  # E
 }
 qualified {
   id: 0x847c923a
   qualifier: VOLATILE
-  qualified_type_id: 0x41ab82dc
+  qualified_type_id: 0x41ab82dc  # E
 }
 qualified {
   id: 0x85bc0e85
   qualifier: VOLATILE
-  qualified_type_id: 0x46a9f023
+  qualified_type_id: 0x46a9f023  # A
 }
 qualified {
   id: 0x942cbbe9
   qualifier: VOLATILE
-  qualified_type_id: 0x00eb2593
+  qualified_type_id: 0x00eb2593  # D
 }
 qualified {
   id: 0xa55c38bf
   qualifier: VOLATILE
-  qualified_type_id: 0xc52928ca
+  qualified_type_id: 0xc52928ca  # C
 }
 qualified {
   id: 0xb44ce7b1
   qualifier: VOLATILE
-  qualified_type_id: 0x816a54f3
+  qualified_type_id: 0x816a54f3  # F
 }
 qualified {
   id: 0xb50c41fb
   qualifier: VOLATILE
-  qualified_type_id: 0x8468cdd8
+  qualified_type_id: 0x8468cdd8  # B
 }
 qualified {
   id: 0xcc7b0d15
   qualifier: CONST
-  qualified_type_id: 0x41ab82dc
+  qualified_type_id: 0x41ab82dc  # E
 }
 qualified {
   id: 0xcdbb91aa
   qualifier: CONST
-  qualified_type_id: 0x46a9f023
+  qualified_type_id: 0x46a9f023  # A
 }
 qualified {
   id: 0xdc2b24c6
   qualifier: CONST
-  qualified_type_id: 0x00eb2593
+  qualified_type_id: 0x00eb2593  # D
 }
 qualified {
   id: 0xed5ba790
   qualifier: CONST
-  qualified_type_id: 0xc52928ca
+  qualified_type_id: 0xc52928ca  # C
 }
 qualified {
   id: 0xfc4b789e
   qualifier: CONST
-  qualified_type_id: 0x816a54f3
+  qualified_type_id: 0x816a54f3  # F
 }
 qualified {
   id: 0xfd0bded4
   qualifier: CONST
-  qualified_type_id: 0x8468cdd8
+  qualified_type_id: 0x8468cdd8  # B
 }
 primitive {
   id: 0x6720d32f
@@ -108,77 +108,77 @@ primitive {
 array {
   id: 0x7106acfa
   number_of_elements: 7
-  element_type_id: 0x6720d32f
+  element_type_id: 0x6720d32f  # int
 }
 member {
   id: 0x859eb33b
   name: "c_a"
-  type_id: 0xcdbb91aa
+  type_id: 0xcdbb91aa  # const A
 }
 member {
   id: 0xedd386c5
   name: "c_b"
-  type_id: 0xfd0bded4
+  type_id: 0xfd0bded4  # const B
   offset: 448
 }
 member {
   id: 0x2c3cbbdb
   name: "c_c"
-  type_id: 0xed5ba790
+  type_id: 0xed5ba790  # const C
   offset: 896
 }
 member {
   id: 0x6e72662a
   name: "c_d"
-  type_id: 0xdc2b24c6
+  type_id: 0xdc2b24c6  # const D
   offset: 1344
 }
 member {
   id: 0xae9dc617
   name: "c_e"
-  type_id: 0xcc7b0d15
+  type_id: 0xcc7b0d15  # const E
   offset: 1792
 }
 member {
   id: 0xe8ed5f4a
   name: "c_f"
-  type_id: 0xfc4b789e
+  type_id: 0xfc4b789e  # const F
   offset: 2240
 }
 member {
   id: 0x052ba833
   name: "v_a"
-  type_id: 0x85bc0e85
+  type_id: 0x85bc0e85  # volatile A
   offset: 224
 }
 member {
   id: 0xaf583c89
   name: "v_b"
-  type_id: 0xb50c41fb
+  type_id: 0xb50c41fb  # volatile B
   offset: 672
 }
 member {
   id: 0xeb8bef0f
   name: "v_c"
-  type_id: 0xa55c38bf
+  type_id: 0xa55c38bf  # volatile C
   offset: 1120
 }
 member {
   id: 0x47fcea6b
   name: "v_d"
-  type_id: 0x942cbbe9
+  type_id: 0x942cbbe9  # volatile D
   offset: 1568
 }
 member {
   id: 0x002c128f
   name: "v_e"
-  type_id: 0x847c923a
+  type_id: 0x847c923a  # volatile E
   offset: 2016
 }
 member {
   id: 0xc45bf5fc
   name: "v_f"
-  type_id: 0xb44ce7b1
+  type_id: 0xb44ce7b1  # volatile F
   offset: 2464
 }
 struct_union {
@@ -187,34 +187,34 @@ struct_union {
   name: "S"
   definition {
     bytesize: 336
-    member_id: 0x859eb33b
-    member_id: 0x052ba833
-    member_id: 0xedd386c5
-    member_id: 0xaf583c89
-    member_id: 0x2c3cbbdb
-    member_id: 0xeb8bef0f
-    member_id: 0x6e72662a
-    member_id: 0x47fcea6b
-    member_id: 0xae9dc617
-    member_id: 0x002c128f
-    member_id: 0xe8ed5f4a
-    member_id: 0xc45bf5fc
+    member_id: 0x859eb33b  # const A c_a
+    member_id: 0x052ba833  # volatile A v_a
+    member_id: 0xedd386c5  # const B c_b
+    member_id: 0xaf583c89  # volatile B v_b
+    member_id: 0x2c3cbbdb  # const C c_c
+    member_id: 0xeb8bef0f  # volatile C v_c
+    member_id: 0x6e72662a  # const D c_d
+    member_id: 0x47fcea6b  # volatile D v_d
+    member_id: 0xae9dc617  # const E c_e
+    member_id: 0x002c128f  # volatile E v_e
+    member_id: 0xe8ed5f4a  # const F c_f
+    member_id: 0xc45bf5fc  # volatile F v_f
   }
 }
 function {
   id: 0x1d6b8045
-  return_type_id: 0x48b5725f
-  parameter_id: 0x37cf4758
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x37cf4758  # struct S*
 }
 elf_symbol {
   id: 0xc018d523
   name: "fun"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x1d6b8045
+  type_id: 0x1d6b8045  # void(struct S*)
   full_name: "fun"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xc018d523
+  symbol_id: 0xc018d523  # void fun(struct S*)
 }
