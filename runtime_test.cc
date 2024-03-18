@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -17,49 +17,53 @@
 //
 // Author: Giuliano Procida
 
-#include "metrics.h"
+#include "runtime.h"
 
+#include <array>
 #include <cstddef>
-#include <cstdint>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include <catch2/catch.hpp>
 
 namespace Test {
 
 TEST_CASE("empty") {
-  stg::Metrics metrics;
   std::ostringstream os;
-  stg::Report(metrics, os);
+  {
+    const stg::Runtime runtime(os, true);
+  }
   CHECK(os.str().empty());
 }
 
-TEST_CASE("incomplete") {
-  stg::Metrics metrics;
-  std::ostringstream os;
-  stg::Time a(metrics, "a");
-  stg::Counter b(metrics, "b");
-  stg::Histogram c(metrics, "c");
-  stg::Report(metrics, os);
-  const std::string expected =
-      "a: <incomplete>\nb: <incomplete>\nc: <incomplete>\n";
-  CHECK(os.str() == expected);
-}
-
 TEST_CASE("times") {
-  stg::Metrics metrics;
   const size_t count = 20;
-  std::vector<stg::Time> times;
-  for (size_t i = 0; i < count; ++i) {
-    times.emplace_back(metrics, "name");
-  }
-  for (size_t i = 0; i < count; ++i) {
-    times.pop_back();
-  }
   std::ostringstream os;
-  stg::Report(metrics, os);
+  {
+    stg::Runtime runtime(os, true);
+    const std::array<const stg::Time, count> timers = {
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+      stg::Time(runtime, "name"),
+    };
+  }
   std::istringstream is(os.str());
   const std::string name = "name:";
   const std::string ms = "ms";
@@ -71,9 +75,7 @@ TEST_CASE("times") {
     std::string second;
     is >> first >> time >> second;
     CHECK(first == name);
-    if (last_time != 0.0) {
-      CHECK(time < last_time);
-    }
+    CHECK(time > last_time);
     CHECK(second == ms);
     last_time = time;
     ++index;
@@ -86,13 +88,14 @@ TEST_CASE("times") {
 }
 
 TEST_CASE("counters") {
-  stg::Metrics metrics;
+  std::ostringstream os;
   {
-    stg::Counter a(metrics, "a");
-    stg::Counter b(metrics, "b");
-    stg::Counter c(metrics, "c");
-    stg::Counter d(metrics, "d");
-    stg::Counter e(metrics, "e");
+    stg::Runtime runtime(os, true);
+    stg::Counter a(runtime, "a");
+    stg::Counter b(runtime, "b");
+    stg::Counter c(runtime, "c");
+    const stg::Counter d(runtime, "d");
+    stg::Counter e(runtime, "e");
     c = 17;
     ++b;
     ++b;
@@ -100,23 +103,20 @@ TEST_CASE("counters") {
     a = 3;
     c += 2;
   }
-  std::ostringstream os;
-  Report(metrics, os);
-  const std::string expected = "a: 3\nb: 2\nc: 19\nd: 0\ne: 1\n";
+  const std::string expected = "e: 1\nd: 0\nc: 19\nb: 2\na: 3\n";
   CHECK(os.str() == expected);
 }
 
 TEST_CASE("histogram") {
-  stg::Metrics metrics;
+  std::ostringstream os;
   {
-    stg::Histogram h(metrics, "h");
+    stg::Runtime runtime(os, true);
+    stg::Histogram h(runtime, "h");
     h.Add(13);
     h.Add(14);
     h.Add(13);
     h.Add(12);
   }
-  std::ostringstream os;
-  Report(metrics, os);
   const std::string expected = "h: [12]=1 [13]=2 [14]=1\n";
   CHECK(os.str() == expected);
 }

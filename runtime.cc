@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2023 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -17,27 +17,18 @@
 //
 // Author: Giuliano Procida
 
-#include "metrics.h"
+#include "runtime.h"
 
 #include <cstddef>
 #include <iomanip>
 #include <map>
 #include <ostream>
-#include <utility>
-#include <variant>
 
 namespace stg {
 
-namespace {
-
-std::ostream& operator<<(std::ostream& os, std::monostate) {
-  return os << "<incomplete>";
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         const std::map<size_t, size_t>& frequencies) {
+std::ostream& operator<<(std::ostream& os, const Frequencies& frequencies) {
   bool separate = false;
-  for (const auto& [item, frequency] : frequencies) {
+  for (const auto& [item, frequency] : frequencies.counts) {
     if (separate) {
       os << ' ';
     } else {
@@ -56,20 +47,9 @@ std::ostream& operator<<(std::ostream& os, const Nanoseconds& value) {
             << std::setfill(' ') << " ms";
 }
 
-}  // namespace
-
-void Report(const Metrics& metrics, std::ostream& os) {
-  for (const auto& metric : metrics) {
-    std::visit([&](auto&& value) {
-      os << metric.name << ": " << value << '\n';
-    }, metric.value);
-  }
-}
-
-Time::Time(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()) {
+Time::Time(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name) {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_);
-  metrics_.push_back(Metric{name, std::monostate()});
 }
 
 Time::~Time() {
@@ -77,25 +57,24 @@ Time::~Time() {
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &finish);
   const auto seconds = finish.tv_sec - start_.tv_sec;
   const auto nanos = finish.tv_nsec - start_.tv_nsec;
-  metrics_[index_].value.emplace<1>(seconds * 1'000'000'000 + nanos);
+  const Nanoseconds value(seconds * 1'000'000'000 + nanos);
+  runtime_.PrintMetric(name_, value);
 }
 
-Counter::Counter(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()), value_(0) {
-  metrics_.push_back(Metric{name, std::monostate()});
+Counter::Counter(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name), value_(0) {
 }
 
 Counter::~Counter() {
-  metrics_[index_].value = value_;
+  runtime_.PrintMetric(name_, value_);
 }
 
-Histogram::Histogram(Metrics& metrics, const char* name)
-    : metrics_(metrics), index_(metrics.size()) {
-  metrics_.push_back(Metric{name, std::monostate()});
+Histogram::Histogram(Runtime& runtime, const char* name)
+    : runtime_(runtime), name_(name) {
 }
 
 Histogram::~Histogram() {
-  metrics_[index_].value.emplace<3>(std::move(frequencies_));
+  runtime_.PrintMetric(name_, frequencies_);
 }
 
 }  // namespace stg

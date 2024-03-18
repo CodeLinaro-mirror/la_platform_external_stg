@@ -28,32 +28,32 @@
 #include "error.h"
 #include "filter.h"
 #include "graph.h"
-#include "metrics.h"
 #include "proto_reader.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 
 namespace {
 
-Id ReadInternal(Graph& graph, InputFormat format, const char* input,
-                ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-                Metrics& metrics) {
+Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
+                const char* input, ReadOptions options,
+                const std::unique_ptr<Filter>& file_filter) {
   switch (format) {
     case InputFormat::ABI: {
-      Time read(metrics, "read ABI");
-      return abixml::Read(graph, input, metrics);
+      const Time read(runtime, "read ABI");
+      return abixml::Read(runtime, graph, input);
     }
     case InputFormat::BTF: {
-      Time read(metrics, "read BTF");
+      const Time read(runtime, "read BTF");
       return btf::ReadFile(graph, input, options);
     }
     case InputFormat::ELF: {
-      Time read(metrics, "read ELF");
-      return elf::Read(graph, input, options, file_filter, metrics);
+      const Time read(runtime, "read ELF");
+      return elf::Read(runtime, graph, input, options, file_filter);
     }
     case InputFormat::STG: {
-      Time read(metrics, "read STG");
+      const Time read(runtime, "read STG");
       return proto::Read(graph, input);
     }
   }
@@ -61,11 +61,10 @@ Id ReadInternal(Graph& graph, InputFormat format, const char* input,
 
 }  // namespace
 
-Id Read(Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-        Metrics& metrics) {
+Id Read(Runtime& runtime, Graph& graph, InputFormat format, const char* input,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
   try {
-    return ReadInternal(graph, format, input, options, file_filter, metrics);
+    return ReadInternal(runtime, graph, format, input, options, file_filter);
   } catch (Exception& e) {
     std::ostringstream os;
     os << "processing file '" << input << '\'';

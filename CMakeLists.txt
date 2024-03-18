@@ -92,12 +92,12 @@ add_library(libstg OBJECT
   fingerprint.cc
   graph.cc
   input.cc
-  metrics.cc
   naming.cc
   post_processing.cc
   proto_reader.cc
   proto_writer.cc
   reporting.cc
+  runtime.cc
   stable_hash.cc
   type_normalisation.cc
   type_resolution.cc
@@ -139,9 +139,9 @@ else()
     error_test
     file_descriptor_test
     filter_test
-    metrics_test
     order_test
     reporting_test
+    runtime_test
     scc_test
     stgdiff_test
   )

@@ -24,16 +24,15 @@
 
 #include "filter.h"
 #include "graph.h"
-#include "metrics.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 
 enum class InputFormat { ABI, BTF, ELF, STG };
 
-Id Read(Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter,
-        Metrics& metrics);
+Id Read(Runtime& runtime, Graph& graph, InputFormat format, const char* input,
+        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
 
 }  // namespace stg
 

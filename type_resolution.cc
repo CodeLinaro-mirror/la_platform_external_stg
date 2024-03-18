@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "graph.h"
-#include "metrics.h"
+#include "runtime.h"
 #include "unification.h"
 
 namespace stg {
@@ -35,13 +35,13 @@ namespace {
 
 // Collect named type definition and declaration nodes.
 struct NamedTypes {
-  NamedTypes(const Graph& graph, Metrics& metrics)
+  NamedTypes(Runtime& runtime, const Graph& graph)
       : graph(graph),
         seen(Id(0)),
-        nodes(metrics, "named_types.nodes"),
-        types(metrics, "named_types.types"),
-        definitions(metrics, "named_types.definitions"),
-        declarations(metrics, "named_types.declarations") {
+        nodes(runtime, "named_types.nodes"),
+        types(runtime, "named_types.types"),
+        definitions(runtime, "named_types.definitions"),
+        declarations(runtime, "named_types.declarations") {
     seen.Reserve(graph.Limit());
   }
 
@@ -184,24 +184,24 @@ struct NamedTypes {
 
 }  // namespace
 
-void ResolveTypes(Graph& graph, Unification& unification,
-                  const std::vector<Id>& roots, Metrics& metrics) {
-  const Time total(metrics, "resolve.total");
+void ResolveTypes(Runtime& runtime, Graph& graph, Unification& unification,
+                  const std::vector<Id>& roots) {
+  const Time total(runtime, "resolve.total");
 
   // collect named types
-  NamedTypes named_types(graph, metrics);
+  NamedTypes named_types(runtime, graph);
   {
-    const Time time(metrics, "resolve.collection");
+    const Time time(runtime, "resolve.collection");
     for (const Id& root : roots) {
       named_types(root);
     }
   }
 
   {
-    const Time time(metrics, "resolve.unification");
-    Counter definition_unified(metrics, "resolve.definition.unified");
-    Counter definition_not_unified(metrics, "resolve.definition.not_unified");
-    Counter declaration_unified(metrics, "resolve.declaration.unified");
+    const Time time(runtime, "resolve.unification");
+    Counter definition_unified(runtime, "resolve.definition.unified");
+    Counter definition_not_unified(runtime, "resolve.definition.not_unified");
+    Counter declaration_unified(runtime, "resolve.declaration.unified");
     for (auto& [_, info] : named_types.type_info) {
       // try to unify the type definitions
       auto& definitions = info.definitions;
