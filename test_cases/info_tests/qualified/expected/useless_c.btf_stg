@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,37 +7,37 @@ special {
 pointer_reference {
   id: 0x0dd55c4a
   kind: POINTER
-  pointee_type_id: 0x1d1597b4
+  pointee_type_id: 0x1d1597b4  # void(const volatile struct foo*)
 }
 pointer_reference {
   id: 0x24b3ee1b
   kind: POINTER
-  pointee_type_id: 0xb88f5ef1
+  pointee_type_id: 0xb88f5ef1  # struct foo
 }
 pointer_reference {
   id: 0x3637189c
   kind: POINTER
-  pointee_type_id: 0xf29c84ee
+  pointee_type_id: 0xf29c84ee  # const volatile struct foo
 }
 qualified {
   id: 0x9763259f
   qualifier: VOLATILE
-  qualified_type_id: 0x0dd55c4a
+  qualified_type_id: 0x0dd55c4a  # void(*)(const volatile struct foo*)
 }
 qualified {
   id: 0xba35a531
   qualifier: VOLATILE
-  qualified_type_id: 0xb88f5ef1
+  qualified_type_id: 0xb88f5ef1  # struct foo
 }
 qualified {
   id: 0xf29c84ee
   qualifier: CONST
-  qualified_type_id: 0xba35a531
+  qualified_type_id: 0xba35a531  # volatile struct foo
 }
 qualified {
   id: 0xf9c924c5
   qualifier: CONST
-  qualified_type_id: 0x9763259f
+  qualified_type_id: 0x9763259f  # void(* volatile)(const volatile struct foo*)
 }
 struct_union {
   id: 0xb88f5ef1
@@ -48,43 +48,43 @@ struct_union {
 }
 function {
   id: 0x19b4aa15
-  return_type_id: 0x48b5725f
-  parameter_id: 0x24b3ee1b
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x24b3ee1b  # struct foo*
 }
 function {
   id: 0x1d1597b4
-  return_type_id: 0x48b5725f
-  parameter_id: 0x3637189c
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x3637189c  # const volatile struct foo*
 }
 function {
   id: 0x2eea18a2
-  return_type_id: 0x48b5725f
-  parameter_id: 0xf9c924c5
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0xf9c924c5  # void(* volatile const)(const volatile struct foo*)
 }
 elf_symbol {
   id: 0xa58ca0b6
   name: "bar"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x1d1597b4
+  type_id: 0x1d1597b4  # void(const volatile struct foo*)
 }
 elf_symbol {
   id: 0xe89bbaac
   name: "bar_2"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x19b4aa15
+  type_id: 0x19b4aa15  # void(struct foo*)
 }
 elf_symbol {
   id: 0xbf8fc404
   name: "baz"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x2eea18a2
+  type_id: 0x2eea18a2  # void(void(* volatile const)(const volatile struct foo*))
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xa58ca0b6
-  symbol_id: 0xe89bbaac
-  symbol_id: 0xbf8fc404
+  symbol_id: 0xa58ca0b6  # void bar(const volatile struct foo*)
+  symbol_id: 0xe89bbaac  # void bar_2(struct foo*)
+  symbol_id: 0xbf8fc404  # void baz(void(* volatile const)(const volatile struct foo*))
 }

@@ -14,6 +14,7 @@ stg
   [-S|--symbols|--symbol-filter <filter>]
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...
   [{-o|--output} {filename|-}] ...
+  [-A|--annotate]
 implicit defaults: --abi
 filter syntax:
   <filter>   ::= <term>          |  <expression> '|' <term>
@@ -156,3 +157,48 @@ nodes that are recursively equal. By default, duplicate nodes are eliminated.
 *   `-m|--metrics`
 
     Print various internal timing and other metrics.
+
+## Annotations
+
+*   `-A|--annotate`
+
+    Output node descriptions for edges in the graph as inline textual protobuf
+    comments.
+
+    Sample STG output:
+
+    ```
+    root_id: 0x84ea5130  # interface
+    primitive {
+      id: 0x6720d32f
+      name: "int"
+      bytesize: 0x00000004
+    }
+    struct_union {
+      id: 0xf57dfbfc
+      kind: STRUCT
+      name: "S"
+    }
+    function {
+      id: 0x85d454a8
+      return_type_id: 0x6720d32f  # int
+      parameter_id: 0x6720d32f  # int
+    }
+    elf_symbol {
+      id: 0x8bf70937
+      name: "func"
+      symbol_type: FUNCTION
+      type_id: 0x85d454a8  # int(int)
+    }
+    elf_symbol {
+      id: 0x3e4f6c44
+      name: "s"
+      symbol_type: OBJECT
+      type_id: 0xf57dfbfc  # struct S
+    }
+    interface {
+      id: 0x84ea5130
+      symbol_id: 0x8bf70937  # int func(int)
+      symbol_id: 0x3e4f6c44  # struct S s
+    }
+    ```

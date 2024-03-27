@@ -28,12 +28,12 @@ variable symbol 'struct VirtualToNormal virtual_to_normal' changed
 
 type 'struct NormalToVirtual' changed
   byte size changed from 1 to 8
-  method 'print {_ZN15NormalToVirtual5printEv}' was added
+  method 'void print(struct NormalToVirtual*)' was added
   member 'int(** _vptr$NormalToVirtual)()' was added
 
 type 'struct VirtualToNormal' changed
   byte size changed from 8 to 1
-  method 'print {_ZN15VirtualToNormal5printEv}' was removed
+  method 'void print(struct VirtualToNormal*)' was removed
   member 'int(** _vptr$VirtualToNormal)()' was removed
 
 exit code 4

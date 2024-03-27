@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0x48b5725f
   kind: VOID
@@ -7,17 +7,17 @@ special {
 pointer_reference {
   id: 0xc3b63b14
   kind: LVALUE_REFERENCE
-  pointee_type_id: 0x10985193
+  pointee_type_id: 0x10985193  # void()
 }
 pointer_reference {
   id: 0xf6e6592a
   kind: LVALUE_REFERENCE
-  pointee_type_id: 0xc5d9d969
+  pointee_type_id: 0xc5d9d969  # const int
 }
 qualified {
   id: 0xc5d9d969
   qualifier: CONST
-  qualified_type_id: 0x6720d32f
+  qualified_type_id: 0x6720d32f  # int
 }
 primitive {
   id: 0x6720d32f
@@ -107,14 +107,14 @@ struct_union {
 }
 function {
   id: 0x10985193
-  return_type_id: 0x48b5725f
+  return_type_id: 0x48b5725f  # void
 }
 elf_symbol {
   id: 0x65e66866
   name: "_Z1ev"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x10985193
+  type_id: 0x10985193  # void()
   full_name: "e"
 }
 elf_symbol {
@@ -122,7 +122,7 @@ elf_symbol {
   name: "c"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf6e6592a
+  type_id: 0xf6e6592a  # const int&
   full_name: "c"
 }
 elf_symbol {
@@ -130,7 +130,7 @@ elf_symbol {
   name: "f"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xc3b63b14
+  type_id: 0xc3b63b14  # void(&)()
   full_name: "f"
 }
 elf_symbol {
@@ -138,7 +138,7 @@ elf_symbol {
   name: "v_char"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x54943dbe
+  type_id: 0x54943dbe  # struct S<'p'>
   full_name: "v_char"
 }
 elf_symbol {
@@ -146,7 +146,7 @@ elf_symbol {
   name: "v_enumerator"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x2119c209
+  type_id: 0x2119c209  # struct S<(K)0>
   full_name: "v_enumerator"
 }
 elf_symbol {
@@ -154,7 +154,7 @@ elf_symbol {
   name: "v_function_pointer"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3a75138f
+  type_id: 0x3a75138f  # struct S<&d>
   full_name: "v_function_pointer"
 }
 elf_symbol {
@@ -162,7 +162,7 @@ elf_symbol {
   name: "v_function_reference"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x31dac610
+  type_id: 0x31dac610  # struct S<&e>
   full_name: "v_function_reference"
 }
 elf_symbol {
@@ -170,7 +170,7 @@ elf_symbol {
   name: "v_int"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3bb4a383
+  type_id: 0x3bb4a383  # struct S<15>
   full_name: "v_int"
 }
 elf_symbol {
@@ -178,7 +178,7 @@ elf_symbol {
   name: "v_int_pointer"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xe4d3d1c9
+  type_id: 0xe4d3d1c9  # struct S<&a>
   full_name: "v_int_pointer"
 }
 elf_symbol {
@@ -186,7 +186,7 @@ elf_symbol {
   name: "v_int_reference"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x0e0f27de
+  type_id: 0x0e0f27de  # struct S<4>
   full_name: "v_int_reference"
 }
 elf_symbol {
@@ -194,7 +194,7 @@ elf_symbol {
   name: "v_nullptr"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x0257c3b9
+  type_id: 0x0257c3b9  # struct S<nullptr>
   full_name: "v_nullptr"
 }
 elf_symbol {
@@ -202,7 +202,7 @@ elf_symbol {
   name: "v_pointer_to_member"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x04d4366e
+  type_id: 0x04d4366e  # struct S<&H::i2>
   full_name: "v_pointer_to_member"
 }
 elf_symbol {
@@ -210,22 +210,22 @@ elf_symbol {
   name: "v_pointer_to_method"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x8fd5ff58
+  type_id: 0x8fd5ff58  # struct S<&H::j2>
   full_name: "v_pointer_to_method"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x65e66866
-  symbol_id: 0x2230fb28
-  symbol_id: 0xe0778f95
-  symbol_id: 0xea07c015
-  symbol_id: 0xc31d4af7
-  symbol_id: 0x87e5aa8a
-  symbol_id: 0x2c4cacfa
-  symbol_id: 0x40715147
-  symbol_id: 0x575714fe
-  symbol_id: 0xe323633f
-  symbol_id: 0x481dfc0e
-  symbol_id: 0xcb9e41aa
-  symbol_id: 0x3dc86173
+  symbol_id: 0x65e66866  # void e()
+  symbol_id: 0x2230fb28  # const int& c
+  symbol_id: 0xe0778f95  # void(& f)()
+  symbol_id: 0xea07c015  # struct S<'p'> v_char
+  symbol_id: 0xc31d4af7  # struct S<(K)0> v_enumerator
+  symbol_id: 0x87e5aa8a  # struct S<&d> v_function_pointer
+  symbol_id: 0x2c4cacfa  # struct S<&e> v_function_reference
+  symbol_id: 0x40715147  # struct S<15> v_int
+  symbol_id: 0x575714fe  # struct S<&a> v_int_pointer
+  symbol_id: 0xe323633f  # struct S<4> v_int_reference
+  symbol_id: 0x481dfc0e  # struct S<nullptr> v_nullptr
+  symbol_id: 0xcb9e41aa  # struct S<&H::i2> v_pointer_to_member
+  symbol_id: 0x3dc86173  # struct S<&H::j2> v_pointer_to_method
 }

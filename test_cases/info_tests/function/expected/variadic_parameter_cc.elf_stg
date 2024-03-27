@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 special {
   id: 0xa52a0930
   kind: VARIADIC
@@ -12,34 +12,34 @@ primitive {
 }
 function {
   id: 0x85d454a8
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
 }
 function {
   id: 0x85fd1e2a
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0xa52a0930
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0xa52a0930  # ...
 }
 function {
   id: 0x86dc7fc0
-  return_type_id: 0x6720d32f
-  parameter_id: 0x6720d32f
-  parameter_id: 0xa52a0930
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x6720d32f  # int
+  parameter_id: 0xa52a0930  # ...
 }
 function {
   id: 0xb4ca6163
-  return_type_id: 0x6720d32f
-  parameter_id: 0xa52a0930
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0xa52a0930  # ...
 }
 elf_symbol {
   id: 0xcac6ee98
   name: "_Z4foo1iiz"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85fd1e2a
+  type_id: 0x85fd1e2a  # int(int, int, ...)
   full_name: "foo1"
 }
 elf_symbol {
@@ -47,7 +47,7 @@ elf_symbol {
   name: "_Z4foo2iz"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x86dc7fc0
+  type_id: 0x86dc7fc0  # int(int, ...)
   full_name: "foo2"
 }
 elf_symbol {
@@ -55,7 +55,7 @@ elf_symbol {
   name: "_Z4foo3ii"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x85d454a8
+  type_id: 0x85d454a8  # int(int, int)
   full_name: "foo3"
 }
 elf_symbol {
@@ -63,13 +63,13 @@ elf_symbol {
   name: "_Z4foo4z"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xb4ca6163
+  type_id: 0xb4ca6163  # int(...)
   full_name: "foo4"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xcac6ee98
-  symbol_id: 0xa5cf8676
-  symbol_id: 0x2522c6f3
-  symbol_id: 0x16a736d0
+  symbol_id: 0xcac6ee98  # int foo1(int, int, ...)
+  symbol_id: 0xa5cf8676  # int foo2(int, ...)
+  symbol_id: 0x2522c6f3  # int foo3(int, int)
+  symbol_id: 0x16a736d0  # int foo4(...)
 }
