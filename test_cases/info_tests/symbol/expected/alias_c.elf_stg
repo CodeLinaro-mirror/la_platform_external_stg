@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -8,14 +8,14 @@ primitive {
 }
 function {
   id: 0x9d80e32f
-  return_type_id: 0x6720d32f
+  return_type_id: 0x6720d32f  # int
 }
 elf_symbol {
   id: 0xa7b0241d
   name: "a"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "a"
 }
 elf_symbol {
@@ -23,7 +23,7 @@ elf_symbol {
   name: "b"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "a"
 }
 elf_symbol {
@@ -32,7 +32,7 @@ elf_symbol {
   is_defined: true
   symbol_type: FUNCTION
   binding: WEAK
-  type_id: 0x9d80e32f
+  type_id: 0x9d80e32f  # int()
   full_name: "a"
 }
 elf_symbol {
@@ -40,7 +40,7 @@ elf_symbol {
   name: "x"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   full_name: "x"
 }
 elf_symbol {
@@ -48,7 +48,7 @@ elf_symbol {
   name: "y"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   full_name: "x"
 }
 elf_symbol {
@@ -57,15 +57,15 @@ elf_symbol {
   is_defined: true
   symbol_type: OBJECT
   binding: WEAK
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
   full_name: "x"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xa7b0241d
-  symbol_id: 0xe371117a
-  symbol_id: 0x2230fb28
-  symbol_id: 0x7709bd40
-  symbol_id: 0xb5c9c657
-  symbol_id: 0xf58aebbc
+  symbol_id: 0xa7b0241d  # int a()
+  symbol_id: 0xe371117a  # int a()
+  symbol_id: 0x2230fb28  # int a()
+  symbol_id: 0x7709bd40  # int x
+  symbol_id: 0xb5c9c657  # int x
+  symbol_id: 0xf58aebbc  # int x
 }

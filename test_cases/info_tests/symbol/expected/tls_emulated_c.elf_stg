@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 elf_symbol {
   id: 0x688c97e0
   name: "__emutls_t.var2"
@@ -20,7 +20,7 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x688c97e0
-  symbol_id: 0xa2dcdaef
-  symbol_id: 0xe19c7b87
+  symbol_id: 0x688c97e0  # __emutls_t.var2
+  symbol_id: 0xa2dcdaef  # __emutls_v.var1
+  symbol_id: 0xe19c7b87  # __emutls_v.var2
 }
