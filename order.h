@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021 Google LLC
+// Copyright 2021-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -29,35 +29,53 @@
 #include "error.h"
 
 namespace stg {
-// Updates a given ordering of items with items from a second ordering,
-// incorporating as much of the latter's order as is compatible.
+// Combines two orderings of unique items, eliminating duplicates between the
+// sequences, preserving the relative positions of the items in the second
+// ordering and incorporating as much of the first's order as is compatible.
 //
-// The two orderings are reconciled by starting with the left ordering and
-// greedily inserting new items from the right ordering, in a position which
-// satisfies that ordering, if possible.
+// The two orderings are reconciled by examining each item from the first
+// sequence in turn. If it is not present in the second sequence, it is greedily
+// appended to the combined sequence. If it is present but hasn't yet been
+// appended, then all items from the current position in the second sequence up
+// to and including it are appended in bulk. Otherwise it is skipped. Finally,
+// all items from the current position in the second sequence are appended.
+//
+// This guarantees that the second sequence is a subsequence of the combined
+// sequence and that items unique to the first subsequence are output as early
+// as possible and only out of order if they are one of the extra items appended
+// in bulk.
 //
 // Example, before and after:
 //
 // indexes1: rose, george, emily
 // indexes2: george, ted, emily
 //
-// indexes1: rose, george, ted, emily
+// combined: rose, george, ted, emily
 template <typename T>
-void ExtendOrder(std::vector<T>& indexes1, const std::vector<T>& indexes2) {
-  // keep track of where we can insert in indexes1
-  size_t pos = 0;
-  for (const auto& value : indexes2) {
-    auto found = std::find(indexes1.begin(), indexes1.end(), value);
-    if (found == indexes1.end()) {
-      // new node, insert at first possible place
-      indexes1.insert(indexes1.begin() + pos, value);
-      // now pointing at inserted item, point after it
-      ++pos;
-    } else if (indexes1.begin() + pos <= found) {
-      // safe to use the constraint, point after found item
-      pos = found - indexes1.begin() + 1;
+std::vector<T> CombineOrders(const std::vector<T>& indexes1,
+                             const std::vector<T>& indexes2,
+                             size_t combined_size) {
+  std::vector<T> combined;
+  combined.reserve(combined_size);
+  // keep track of where we are up to in indexes2
+  auto position = indexes2.begin();
+  for (const auto& value : indexes1) {
+    auto found = std::find(indexes2.begin(), indexes2.end(), value);
+    if (found == indexes2.end()) {
+      // value not found in the second ordering, append immediately
+      combined.push_back(value);
+    } else {
+      // copy up to and including found value, if not yet copied
+      for (; position <= found; ++position) {
+        combined.push_back(*position);
+      }
     }
   }
+  // copy any remaining values unique to indexes2
+  for (; position < indexes2.end(); ++position) {
+    combined.push_back(*position);
+  }
+  return combined;
 }
 
 // Permutes the data array according to the permutation.
@@ -120,7 +138,7 @@ void Permute(std::vector<T>& data, std::vector<size_t>& permutation) {
 // The first and second positions are interpreted separately, with the first's
 // implied ordering having precedence in the event of a conflict.
 //
-// The real work is done by ExtendOrder and Permute.
+// The real work is done by CombineOrders and Permute.
 //
 // In practice the input data are the output of a matching process, consider:
 //
@@ -186,7 +204,7 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   std::stable_sort(positions1.begin(), positions1.end());
   std::stable_sort(positions2.begin(), positions2.end());
   std::vector<size_t> indexes1;
-  indexes1.reserve(size);
+  indexes1.reserve(positions1.size());
   std::vector<size_t> indexes2;
   indexes2.reserve(positions2.size());
   for (const auto& ordered_index : positions1) {
@@ -195,10 +213,10 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   for (const auto& ordered_index : positions2) {
     indexes2.push_back(ordered_index.second);
   }
-  // Merge the two orderings of indexes.
-  ExtendOrder(indexes1, indexes2);
+  // Merge the two orderings of indexes, giving preference to the second.
+  auto combined = CombineOrders(indexes1, indexes2, size);
   // Use this to permute the original data array.
-  Permute(data, indexes1);
+  Permute(data, combined);
 }
 
 }  // namespace stg
