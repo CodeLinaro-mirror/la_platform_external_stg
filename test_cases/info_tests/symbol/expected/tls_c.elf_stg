@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 elf_symbol {
   id: 0x3c10a6b0
   name: "var1"
@@ -14,6 +14,6 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x3c10a6b0
-  symbol_id: 0x7652705b
+  symbol_id: 0x3c10a6b0  # var1
+  symbol_id: 0x7652705b  # var2
 }

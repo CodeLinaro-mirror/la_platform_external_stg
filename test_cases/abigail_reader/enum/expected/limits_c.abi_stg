@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x32ed1f25
   name: "unnamed-enum-underlying-type-64"
@@ -14,7 +14,7 @@ enumeration {
   id: 0xd3d36586
   name: "A"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "Ae"
       value: -2147483648
@@ -25,7 +25,7 @@ enumeration {
   id: 0x909102c3
   name: "B"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "Be"
       value: -1
@@ -36,7 +36,7 @@ enumeration {
   id: 0x515c78f9
   name: "C"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "Ce"
       value: 2147483647
@@ -47,7 +47,7 @@ enumeration {
   id: 0x181e741d
   name: "D"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "De"
       value: 2147483648
@@ -58,7 +58,7 @@ enumeration {
   id: 0xd8dfd34f
   name: "E"
   definition {
-    underlying_type_id: 0x32ed1f25
+    underlying_type_id: 0x32ed1f25  # unnamed-enum-underlying-type-64
     enumerator {
       name: "Ee"
       value: -9223372036854775808
@@ -69,7 +69,7 @@ enumeration {
   id: 0x9b93ce42
   name: "F"
   definition {
-    underlying_type_id: 0x32ed1f25
+    underlying_type_id: 0x32ed1f25  # unnamed-enum-underlying-type-64
     enumerator {
       name: "Fe"
       value: 9223372036854775807
@@ -80,7 +80,7 @@ enumeration {
   id: 0x5a53132a
   name: "G"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "Ge"
       value: 16777216
@@ -91,7 +91,7 @@ enumeration {
   id: 0x3717ab70
   name: "H"
   definition {
-    underlying_type_id: 0x32ed1f25
+    underlying_type_id: 0x32ed1f25  # unnamed-enum-underlying-type-64
     enumerator {
       name: "He"
       value: 281474976710656
@@ -102,7 +102,7 @@ enumeration {
   id: 0xe9d74c38
   name: "I"
   definition {
-    underlying_type_id: 0x398ea63b
+    underlying_type_id: 0x398ea63b  # unnamed-enum-underlying-type-32
     enumerator {
       name: "Ie"
       value: 4294967295
@@ -113,7 +113,7 @@ enumeration {
   id: 0xaa901a01
   name: "J"
   definition {
-    underlying_type_id: 0x32ed1f25
+    underlying_type_id: 0x32ed1f25  # unnamed-enum-underlying-type-64
     enumerator {
       name: "Je"
       value: -1
@@ -125,7 +125,7 @@ elf_symbol {
   name: "G"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x5a53132a
+  type_id: 0x5a53132a  # enum G
   full_name: "G"
 }
 elf_symbol {
@@ -133,7 +133,7 @@ elf_symbol {
   name: "a"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd3d36586
+  type_id: 0xd3d36586  # enum A
   full_name: "a"
 }
 elf_symbol {
@@ -141,7 +141,7 @@ elf_symbol {
   name: "b"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x909102c3
+  type_id: 0x909102c3  # enum B
   full_name: "b"
 }
 elf_symbol {
@@ -149,7 +149,7 @@ elf_symbol {
   name: "c"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x515c78f9
+  type_id: 0x515c78f9  # enum C
   full_name: "c"
 }
 elf_symbol {
@@ -157,7 +157,7 @@ elf_symbol {
   name: "d"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x181e741d
+  type_id: 0x181e741d  # enum D
   full_name: "d"
 }
 elf_symbol {
@@ -165,7 +165,7 @@ elf_symbol {
   name: "e"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xd8dfd34f
+  type_id: 0xd8dfd34f  # enum E
   full_name: "e"
 }
 elf_symbol {
@@ -173,7 +173,7 @@ elf_symbol {
   name: "f"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x9b93ce42
+  type_id: 0x9b93ce42  # enum F
   full_name: "f"
 }
 elf_symbol {
@@ -181,7 +181,7 @@ elf_symbol {
   name: "h"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x3717ab70
+  type_id: 0x3717ab70  # enum H
   full_name: "h"
 }
 elf_symbol {
@@ -189,7 +189,7 @@ elf_symbol {
   name: "i"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xe9d74c38
+  type_id: 0xe9d74c38  # enum I
   full_name: "i"
 }
 elf_symbol {
@@ -197,19 +197,19 @@ elf_symbol {
   name: "j"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xaa901a01
+  type_id: 0xaa901a01  # enum J
   full_name: "j"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x79256de9
-  symbol_id: 0xa7b0241d
-  symbol_id: 0xe371117a
-  symbol_id: 0x2230fb28
-  symbol_id: 0x63f6f9b1
-  symbol_id: 0xa2b65a7e
-  symbol_id: 0xe0778f95
-  symbol_id: 0x68f3ac2c
-  symbol_id: 0xa9b30393
-  symbol_id: 0xe98c5fb8
+  symbol_id: 0x79256de9  # enum G G
+  symbol_id: 0xa7b0241d  # enum A a
+  symbol_id: 0xe371117a  # enum B b
+  symbol_id: 0x2230fb28  # enum C c
+  symbol_id: 0x63f6f9b1  # enum D d
+  symbol_id: 0xa2b65a7e  # enum E e
+  symbol_id: 0xe0778f95  # enum F f
+  symbol_id: 0x68f3ac2c  # enum H h
+  symbol_id: 0xa9b30393  # enum I i
+  symbol_id: 0xe98c5fb8  # enum J j
 }

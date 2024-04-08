@@ -1,19 +1,19 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 pointer_reference {
   id: 0x0483e6f8
   kind: POINTER
-  pointee_type_id: 0x384f7d7c
+  pointee_type_id: 0x384f7d7c  # char
 }
 pointer_reference {
   id: 0x0fd17562
   kind: POINTER
-  pointee_type_id: 0x15053314
+  pointee_type_id: 0x15053314  # double
 }
 pointer_reference {
   id: 0x3593bec8
   kind: POINTER
-  pointee_type_id: 0xfc0e1dbd
+  pointee_type_id: 0xfc0e1dbd  # long
 }
 primitive {
   id: 0x15053314
@@ -41,62 +41,62 @@ primitive {
 }
 function {
   id: 0x0fbdff1a
-  return_type_id: 0x384f7d7c
-  parameter_id: 0x3593bec8
+  return_type_id: 0x384f7d7c  # char
+  parameter_id: 0x3593bec8  # long*
 }
 function {
   id: 0x12af7c46
-  return_type_id: 0x384f7d7c
-  parameter_id: 0x4585663f
-  parameter_id: 0x4585663f
-  parameter_id: 0x0483e6f8
+  return_type_id: 0x384f7d7c  # char
+  parameter_id: 0x4585663f  # unsigned int
+  parameter_id: 0x4585663f  # unsigned int
+  parameter_id: 0x0483e6f8  # char*
 }
 function {
   id: 0x13870cf2
-  return_type_id: 0x384f7d7c
-  parameter_id: 0x4585663f
-  parameter_id: 0x0fd17562
+  return_type_id: 0x384f7d7c  # char
+  parameter_id: 0x4585663f  # unsigned int
+  parameter_id: 0x0fd17562  # double*
 }
 elf_symbol {
   id: 0xa58ca0b6
   name: "bar"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x0fbdff1a
+  type_id: 0x0fbdff1a  # char(long*)
 }
 elf_symbol {
   id: 0x06f8338c
   name: "foo"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x0fbdff1a
+  type_id: 0x0fbdff1a  # char(long*)
 }
 elf_symbol {
   id: 0x4602d7e1
   name: "quux"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x13870cf2
+  type_id: 0x13870cf2  # char(unsigned int, double*)
 }
 elf_symbol {
   id: 0x376a8db4
   name: "spong"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x13870cf2
+  type_id: 0x13870cf2  # char(unsigned int, double*)
 }
 elf_symbol {
   id: 0x3579f91c
   name: "wibble"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x12af7c46
+  type_id: 0x12af7c46  # char(unsigned int, unsigned int, char*)
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xa58ca0b6
-  symbol_id: 0x06f8338c
-  symbol_id: 0x4602d7e1
-  symbol_id: 0x376a8db4
-  symbol_id: 0x3579f91c
+  symbol_id: 0xa58ca0b6  # char bar(long*)
+  symbol_id: 0x06f8338c  # char foo(long*)
+  symbol_id: 0x4602d7e1  # char quux(unsigned int, double*)
+  symbol_id: 0x376a8db4  # char spong(unsigned int, double*)
+  symbol_id: 0x3579f91c  # char wibble(unsigned int, unsigned int, char*)
 }
