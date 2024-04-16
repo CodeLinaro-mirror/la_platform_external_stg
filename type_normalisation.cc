@@ -145,6 +145,11 @@ struct FindQualifiedTypesAndFunctions {
     }
   }
 
+  void operator()(const Variant& x, Id) {
+    (*this)(x.discriminant_type_id);
+    (*this)(x.members);
+  }
+
   void operator()(const Function& x, Id node_id) {
     functions.emplace(node_id);
     for (auto& id : x.parameters) {

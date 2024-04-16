@@ -65,6 +65,7 @@ struct Transformer {
   void AddNode(const BaseClass&);
   void AddNode(const Method&);
   void AddNode(const Member&);
+  void AddNode(const Variant&);
   void AddNode(const StructUnion&);
   void AddNode(const Enumeration&);
   void AddNode(const VariantMember&);
@@ -115,6 +116,7 @@ Id Transformer::Transform(const proto::STG& x) {
   AddNodes(x.variant_member());
   AddNodes(x.struct_union());
   AddNodes(x.enumeration());
+  AddNodes(x.variant());
   AddNodes(x.function());
   AddNodes(x.elf_symbol());
   AddNodes(x.symbols());
@@ -222,6 +224,11 @@ void Transformer::AddNode(const Enumeration& x) {
   } else {
     AddNode<stg::Enumeration>(GetId(x.id()), x.name());
   }
+}
+
+void Transformer::AddNode(const Variant& x) {
+  AddNode<stg::Variant>(GetId(x.id()), x.name(), x.bytesize(),
+                        GetId(x.discriminant_type_id()), x.member_id());
 }
 
 void Transformer::AddNode(const Function& x) {

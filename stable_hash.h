@@ -48,6 +48,7 @@ class StableHash {
   HashValue operator()(const VariantMember&);
   HashValue operator()(const StructUnion&);
   HashValue operator()(const Enumeration&);
+  HashValue operator()(const Variant&);
   HashValue operator()(const Function&);
   HashValue operator()(const ElfSymbol&);
   HashValue operator()(const Interface&);

@@ -119,6 +119,11 @@ struct Substitute {
     }
   }
 
+  void operator()(Variant& x) {
+    Update(x.discriminant_type_id);
+    Update(x.members);
+  }
+
   void operator()(Function& x) {
     Update(x.parameters);
     Update(x.return_type_id);

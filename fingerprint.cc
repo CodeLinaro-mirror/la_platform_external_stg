@@ -138,6 +138,12 @@ struct Hasher {
     return h;
   }
 
+  HashValue operator()(const Variant& x) {
+    auto h = hash('v', x.name, x.bytesize, (*this)(x.discriminant_type_id));
+    ToDo(x.members);
+    return h;
+  }
+
   HashValue operator()(const Function& x) {
     auto h = hash('F', (*this)(x.return_type_id));
     for (const auto& parameter : x.parameters) {

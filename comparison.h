@@ -288,6 +288,7 @@ struct Compare {
   Result operator()(const VariantMember&, const VariantMember&);
   Result operator()(const StructUnion&, const StructUnion&);
   Result operator()(const Enumeration&, const Enumeration&);
+  Result operator()(const Variant&, const Variant&);
   Result operator()(const Function&, const Function&);
   Result operator()(const ElfSymbol&, const ElfSymbol&);
   Result operator()(const Interface&, const Interface&);

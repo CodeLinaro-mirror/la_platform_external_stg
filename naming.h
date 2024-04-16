@@ -71,6 +71,7 @@ struct Describe {
   Name operator()(const VariantMember&);
   Name operator()(const StructUnion&);
   Name operator()(const Enumeration&);
+  Name operator()(const Variant&);
   Name operator()(const Function&);
   Name operator()(const ElfSymbol&);
   Name operator()(const Interface&);

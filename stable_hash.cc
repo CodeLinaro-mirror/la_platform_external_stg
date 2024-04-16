@@ -159,6 +159,13 @@ HashValue StableHash::operator()(const Enumeration& x) {
       hash, DecayHashCombineInReverse<8>(x.definition->enumerators, hash_enum));
 }
 
+HashValue StableHash::operator()(const Variant& x) {
+  HashValue hash = hash_('V', x.name, x.bytesize);
+  hash = DecayHashCombine<8>(hash, (*this)(x.discriminant_type_id));
+  return DecayHashCombine<2>(hash,
+                             DecayHashCombineInReverse<8>(x.members, *this));
+}
+
 HashValue StableHash::operator()(const Function& x) {
   return DecayHashCombine<2>(hash_('f', (*this)(x.return_type_id)),
                              DecayHashCombineInReverse<4>(x.parameters, *this));

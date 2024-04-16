@@ -45,7 +45,7 @@ struct NamedTypes {
     seen.Reserve(graph.Limit());
   }
 
-  enum class Tag { STRUCT, UNION, ENUM, TYPEDEF };
+  enum class Tag { STRUCT, UNION, ENUM, TYPEDEF, VARIANT };
   using Type = std::pair<Tag, std::string>;
   struct Info {
     std::vector<Id> definitions;
@@ -158,6 +158,14 @@ struct NamedTypes {
       info.declarations.push_back(id);
       ++declarations;
     }
+  }
+
+  void operator()(const Variant& x, Id id) {
+    const auto& name = x.name;
+    auto& info = GetInfo(Tag::VARIANT, name);
+    info.definitions.push_back(id);
+    ++definitions;
+    (*this)(x.members);
   }
 
   void operator()(const Function& x, Id) {

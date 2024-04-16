@@ -77,6 +77,7 @@ struct Transform {
   void operator()(const stg::VariantMember&, uint32_t);
   void operator()(const stg::StructUnion&, uint32_t);
   void operator()(const stg::Enumeration&, uint32_t);
+  void operator()(const stg::Variant&, uint32_t);
   void operator()(const stg::Function&, uint32_t);
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
@@ -259,6 +260,18 @@ void Transform<MapId>::operator()(const stg::Enumeration& x, uint32_t id) {
       enumerator.set_name(name);
       enumerator.set_value(value);
     }
+  }
+}
+
+template <typename MapId>
+void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
+  auto& variant = *stg.add_variant();
+  variant.set_id(id);
+  variant.set_name(x.name);
+  variant.set_bytesize(x.bytesize);
+  variant.set_discriminant_type_id((*this)(x.discriminant_type_id));
+  for (const auto id : x.members) {
+    variant.add_member_id((*this)(id));
   }
 }
 

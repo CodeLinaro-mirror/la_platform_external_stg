@@ -560,6 +560,23 @@ Result Compare::operator()(const Enumeration& x1, const Enumeration& x2) {
   return result;
 }
 
+Result Compare::operator()(const Variant& x1, const Variant& x2) {
+  Result result;
+  // Compare two identically named variants recursively, holding diffs.
+  // Everything else treated as distinct. No recursion.
+  if (x1.name != x2.name) {
+    return result.MarkIncomparable();
+  }
+  result.diff_.holds_changes = true;  // Anonymous variants are not allowed.
+
+  result.MaybeAddNodeDiff("bytesize", x1.bytesize, x2.bytesize);
+  const auto type_diff =
+      (*this)(x1.discriminant_type_id, x2.discriminant_type_id);
+  result.MaybeAddEdgeDiff("discriminant", type_diff);
+  CompareNodes(result, *this, x1.members, x2.members);
+  return result;
+}
+
 Result Compare::operator()(const Function& x1, const Function& x2) {
   Result result;
   const auto type_diff = (*this)(x1.return_type_id, x2.return_type_id);

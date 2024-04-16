@@ -56,6 +56,7 @@ struct Fidelity {
   void operator()(const VariantMember&, Id);
   void operator()(const StructUnion&, Id);
   void operator()(const Enumeration&, Id);
+  void operator()(const Variant&, Id);
   void operator()(const Function&, Id);
   void operator()(const ElfSymbol&, Id);
   void operator()(const Interface&, Id);
@@ -149,6 +150,11 @@ void Fidelity::operator()(const Enumeration& x, Id id) {
       it->second = TypeFidelity::FULLY_DEFINED;
     }
   }
+}
+
+void Fidelity::operator()(const Variant& x, Id id) {
+  types.emplace(describe(id).ToString(), TypeFidelity::FULLY_DEFINED);
+  (*this)(x.members);
 }
 
 void Fidelity::operator()(const Function& x, Id) {

@@ -225,6 +225,12 @@ Name Describe::operator()(const Enumeration& x) {
   return Name{os.str()};
 }
 
+Name Describe::operator()(const Variant& x) {
+  std::ostringstream os;
+  os << "variant " << x.name;
+  return Name{os.str()};
+}
+
 Name Describe::operator()(const Function& x) {
   std::ostringstream os;
   os << '(';

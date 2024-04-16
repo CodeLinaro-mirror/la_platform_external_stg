@@ -194,6 +194,13 @@ struct Equals {
     return result;
   }
 
+  bool operator()(const Variant& x1, const Variant& x2) {
+    return x1.name == x2.name
+        && x1.bytesize == x2.bytesize
+        && (*this)(x1.discriminant_type_id, x2.discriminant_type_id)
+        && (*this)(x1.members, x2.members);
+  }
+
   bool operator()(const Function& x1, const Function& x2) {
     return (*this)(x1.parameters, x2.parameters)
         && (*this)(x1.return_type_id, x2.return_type_id);

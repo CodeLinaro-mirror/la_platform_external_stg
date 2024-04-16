@@ -243,6 +243,20 @@ struct Enumeration {
   std::optional<Definition> definition;
 };
 
+struct Variant {
+  Variant(const std::string& name, uint64_t bytesize, Id discriminant_type_id,
+          const std::vector<Id>& members)
+      : name(name),
+        bytesize(bytesize),
+        discriminant_type_id(discriminant_type_id),
+        members(members) {}
+
+  std::string name;
+  uint64_t bytesize;
+  Id discriminant_type_id;
+  std::vector<Id> members;
+};
+
 struct Function {
   Function(Id return_type_id, const std::vector<Id>& parameters)
       : return_type_id(return_type_id), parameters(parameters) {}
@@ -382,6 +396,9 @@ class Graph {
     } else if constexpr (std::is_same_v<Node, Enumeration>) {
       reference = {Which::ENUMERATION, enumeration_.size()};
       enumeration_.emplace_back(std::forward<Args>(args)...);
+    } else if constexpr (std::is_same_v<Node, Variant>) {
+      reference = {Which::VARIANT, variant_.size()};
+      variant_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, Function>) {
       reference = {Which::FUNCTION, function_.size()};
       function_.emplace_back(std::forward<Args>(args)...);
@@ -456,6 +473,7 @@ class Graph {
     VARIANT_MEMBER,
     STRUCT_UNION,
     ENUMERATION,
+    VARIANT,
     FUNCTION,
     ELF_SYMBOL,
     INTERFACE,
@@ -476,6 +494,7 @@ class Graph {
   std::vector<VariantMember> variant_member_;
   std::vector<StructUnion> struct_union_;
   std::vector<Enumeration> enumeration_;
+  std::vector<Variant> variant_;
   std::vector<Function> function_;
   std::vector<ElfSymbol> elf_symbol_;
   std::vector<Interface> interface_;
@@ -513,6 +532,8 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
       return function(struct_union_[ix], std::forward<Args>(args)...);
     case Which::ENUMERATION:
       return function(enumeration_[ix], std::forward<Args>(args)...);
+    case Which::VARIANT:
+      return function(variant_[ix], std::forward<Args>(args)...);
     case Which::FUNCTION:
       return function(function_[ix], std::forward<Args>(args)...);
     case Which::ELF_SYMBOL:
@@ -572,6 +593,9 @@ Result Graph::Apply2(
     case Which::ENUMERATION:
       return function(enumeration_[ix1], enumeration_[ix2],
                       std::forward<Args>(args)...);
+    case Which::VARIANT:
+      return function(variant_[ix1], variant_[ix2],
+                      std::forward<Args>(args)...);
     case Which::FUNCTION:
       return function(function_[ix1], function_[ix2],
                       std::forward<Args>(args)...);
@@ -626,6 +650,13 @@ struct InterfaceKey {
       Die() << "anonymous enum interface type";
     }
     return "enum " + x.name;
+  }
+
+  std::string operator()(const stg::Variant& x) const {
+    if (x.name.empty()) {
+      Die() << "anonymous variant interface type";
+    }
+    return "variant " + x.name;
   }
 
   std::string operator()(const stg::ElfSymbol& x) const {
