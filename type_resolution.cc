@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -118,6 +118,10 @@ struct NamedTypes {
   }
 
   void operator()(const Member& x, Id) {
+    (*this)(x.type_id);
+  }
+
+  void operator()(const VariantMember& x, Id) {
     (*this)(x.type_id);
   }
 

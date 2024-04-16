@@ -74,6 +74,7 @@ struct Transform {
   void operator()(const stg::BaseClass&, uint32_t);
   void operator()(const stg::Method&, uint32_t);
   void operator()(const stg::Member&, uint32_t);
+  void operator()(const stg::VariantMember&, uint32_t);
   void operator()(const stg::StructUnion&, uint32_t);
   void operator()(const stg::Enumeration&, uint32_t);
   void operator()(const stg::Function&, uint32_t);
@@ -210,6 +211,17 @@ void Transform<MapId>::operator()(const stg::Member& x, uint32_t id) {
   member.set_type_id((*this)(x.type_id));
   member.set_offset(x.offset);
   member.set_bitsize(x.bitsize);
+}
+
+template <typename MapId>
+void Transform<MapId>::operator()(const stg::VariantMember& x, uint32_t id) {
+  auto& variant_member = *stg.add_variant_member();
+  variant_member.set_id(id);
+  variant_member.set_name(x.name);
+  if (x.discriminant_value) {
+    variant_member.set_discriminant_value(*x.discriminant_value);
+  }
+  variant_member.set_type_id((*this)(x.type_id));
 }
 
 template <typename MapId>

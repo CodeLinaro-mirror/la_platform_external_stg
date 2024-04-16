@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -124,6 +124,14 @@ HashValue StableHash::operator()(const Member& x) {
   } else {
     return DecayHashCombine<8>(hash, (*this)(x.type_id));
   }
+}
+
+HashValue StableHash::operator()(const VariantMember& x) {
+  HashValue hash = hash_('v', x.name);
+  hash = DecayHashCombine<8>(hash, (*this)(x.type_id));
+  return x.discriminant_value
+             ? DecayHashCombine<20>(hash, hash_(*x.discriminant_value))
+             : hash;
 }
 
 HashValue StableHash::operator()(const StructUnion& x) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -454,6 +454,14 @@ Result Compare::operator()(const Member& x1, const Member& x2) {
   return result;
 }
 
+Result Compare::operator()(const VariantMember& x1, const VariantMember& x2) {
+  Result result;
+  result.MaybeAddNodeDiff("discriminant", x1.discriminant_value,
+                          x2.discriminant_value);
+  result.MaybeAddEdgeDiff("", (*this)(x1.type_id, x2.type_id));
+  return result;
+}
+
 Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
   Result result;
   // Compare two anonymous types recursively, not holding diffs.
@@ -749,6 +757,10 @@ std::string MatchingKey::operator()(const Member& x) {
     return x.name;
   }
   return (*this)(x.type_id);
+}
+
+std::string MatchingKey::operator()(const VariantMember& x) {
+  return x.name;
 }
 
 std::string MatchingKey::operator()(const StructUnion& x) {

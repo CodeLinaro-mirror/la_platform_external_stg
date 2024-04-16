@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -45,6 +45,7 @@ class StableHash {
   HashValue operator()(const BaseClass&);
   HashValue operator()(const Method&);
   HashValue operator()(const Member&);
+  HashValue operator()(const VariantMember&);
   HashValue operator()(const StructUnion&);
   HashValue operator()(const Enumeration&);
   HashValue operator()(const Function&);

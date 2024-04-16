@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -186,6 +186,12 @@ Name Describe::operator()(const Member& x) {
     description = description.Add(
         Side::RIGHT, Precedence::ATOMIC, ':' + std::to_string(x.bitsize));
   }
+  return description;
+}
+
+Name Describe::operator()(const VariantMember& x) {
+  auto description = (*this)(x.type_id);
+  description = description.Add(Side::LEFT, Precedence::ATOMIC, x.name);
   return description;
 }
 

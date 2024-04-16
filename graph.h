@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2023 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -195,6 +195,16 @@ struct Member {
   uint64_t bitsize;
 };
 
+struct VariantMember {
+  VariantMember(const std::string& name,
+                std::optional<int64_t> discriminant_value, Id type_id)
+      : name(name), discriminant_value(discriminant_value), type_id(type_id) {}
+
+  std::string name;
+  std::optional<int64_t> discriminant_value;
+  Id type_id;
+};
+
 struct StructUnion {
   enum class Kind { STRUCT, UNION };
   struct Definition {
@@ -363,6 +373,9 @@ class Graph {
     } else if constexpr (std::is_same_v<Node, Member>) {
       reference = {Which::MEMBER, member_.size()};
       member_.emplace_back(std::forward<Args>(args)...);
+    } else if constexpr (std::is_same_v<Node, VariantMember>) {
+      reference = {Which::VARIANT_MEMBER, variant_member_.size()};
+      variant_member_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, StructUnion>) {
       reference = {Which::STRUCT_UNION, struct_union_.size()};
       struct_union_.emplace_back(std::forward<Args>(args)...);
@@ -440,6 +453,7 @@ class Graph {
     BASE_CLASS,
     METHOD,
     MEMBER,
+    VARIANT_MEMBER,
     STRUCT_UNION,
     ENUMERATION,
     FUNCTION,
@@ -459,6 +473,7 @@ class Graph {
   std::vector<BaseClass> base_class_;
   std::vector<Method> method_;
   std::vector<Member> member_;
+  std::vector<VariantMember> variant_member_;
   std::vector<StructUnion> struct_union_;
   std::vector<Enumeration> enumeration_;
   std::vector<Function> function_;
@@ -492,6 +507,8 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
       return function(method_[ix], std::forward<Args>(args)...);
     case Which::MEMBER:
       return function(member_[ix], std::forward<Args>(args)...);
+    case Which::VARIANT_MEMBER:
+      return function(variant_member_[ix], std::forward<Args>(args)...);
     case Which::STRUCT_UNION:
       return function(struct_union_[ix], std::forward<Args>(args)...);
     case Which::ENUMERATION:
@@ -545,6 +562,9 @@ Result Graph::Apply2(
                       std::forward<Args>(args)...);
     case Which::MEMBER:
       return function(member_[ix1], member_[ix2],
+                      std::forward<Args>(args)...);
+    case Which::VARIANT_MEMBER:
+      return function(variant_member_[ix1], variant_member_[ix2],
                       std::forward<Args>(args)...);
     case Which::STRUCT_UNION:
       return function(struct_union_[ix1], struct_union_[ix2],

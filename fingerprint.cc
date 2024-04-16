@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Giuliano Procida
+// Author: Siddharth Nayyar
 
 #include "fingerprint.h"
 
@@ -90,6 +91,14 @@ struct Hasher {
 
   HashValue operator()(const Member& x) {
     return hash('D', x.name, x.offset, (*this)(x.type_id));
+  }
+
+  HashValue operator()(const VariantMember& x) {
+    auto h = hash('m', x.name, (*this)(x.type_id));
+    if (x.discriminant_value) {
+      h = hash(h, *x.discriminant_value);
+    }
+    return h;
   }
 
   HashValue operator()(const StructUnion& x) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2023 Google LLC
+// Copyright 2023-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -53,6 +53,7 @@ struct Fidelity {
   void operator()(const BaseClass&, Id);
   void operator()(const Method&, Id);
   void operator()(const Member&, Id);
+  void operator()(const VariantMember&, Id);
   void operator()(const StructUnion&, Id);
   void operator()(const Enumeration&, Id);
   void operator()(const Function&, Id);
@@ -118,6 +119,10 @@ void Fidelity::operator()(const Method& x, Id) {
 }
 
 void Fidelity::operator()(const Member& x, Id) {
+  (*this)(x.type_id);
+}
+
+void Fidelity::operator()(const VariantMember& x, Id) {
   (*this)(x.type_id);
 }
 

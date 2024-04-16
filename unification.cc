@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -166,6 +166,13 @@ struct Unifier {
     return x1.name == x2.name
         && x1.offset == x2.offset
         && x1.bitsize == x2.bitsize
+        && (*this)(x1.type_id, x2.type_id)
+        ? Right : Neither;
+  }
+
+  Winner operator()(const VariantMember& x1, const VariantMember& x2) {
+    return x1.name == x2.name
+        && x1.discriminant_value == x2.discriminant_value
         && (*this)(x1.type_id, x2.type_id)
         ? Right : Neither;
   }
