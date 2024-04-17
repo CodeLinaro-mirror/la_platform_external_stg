@@ -23,6 +23,7 @@
 #define STG_COMPARISON_H_
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <memory>
@@ -32,7 +33,6 @@
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -46,19 +46,19 @@ namespace stg {
 struct Ignore {
   enum Value {
     // noise reduction
-    SYMBOL_TYPE_PRESENCE = 1<<0,
-    TYPE_DECLARATION_STATUS = 1<<1,
-    PRIMITIVE_TYPE_ENCODING = 1<<2,
-    MEMBER_SIZE = 1<<3,
-    ENUM_UNDERLYING_TYPE = 1<<4,
-    QUALIFIER = 1<<5,
-    SYMBOL_CRC = 1<<6,
+    SYMBOL_TYPE_PRESENCE,
+    TYPE_DECLARATION_STATUS,
+    PRIMITIVE_TYPE_ENCODING,
+    MEMBER_SIZE,
+    ENUM_UNDERLYING_TYPE,
+    QUALIFIER,
+    SYMBOL_CRC,
     // ABI compatibility testing
-    INTERFACE_ADDITION = 1<<7,
-    TYPE_DEFINITION_ADDITION = 1<<8,
+    INTERFACE_ADDITION,
+    TYPE_DEFINITION_ADDITION,
   };
 
-  using Bitset = std::underlying_type_t<Value>;
+  using Bitset = uint16_t;
 
   Ignore() = default;
   template <typename... Values>
@@ -69,10 +69,10 @@ struct Ignore {
   }
 
   void Set(Value other) {
-    bitset |= static_cast<Bitset>(other);
+    bitset = bitset | (1 << other);
   }
   bool Test(Value other) const {
-    return bitset & static_cast<Bitset>(other);
+    return bitset & (1 << other);
   }
 
   Bitset bitset = 0;
