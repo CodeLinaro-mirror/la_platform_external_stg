@@ -94,7 +94,7 @@ struct Transform {
 
   std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
     std::unordered_map<uint32_t, Id> internal_id_map;
-    for (const auto [id, ext_id] : external_id_by_internal_id) {
+    for (const auto& [id, ext_id] : external_id_by_internal_id) {
       internal_id_map.emplace(ext_id, id);
     }
     return internal_id_map;
