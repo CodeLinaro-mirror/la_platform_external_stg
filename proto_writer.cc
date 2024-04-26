@@ -74,8 +74,10 @@ struct Transform {
   void operator()(const stg::BaseClass&, uint32_t);
   void operator()(const stg::Method&, uint32_t);
   void operator()(const stg::Member&, uint32_t);
+  void operator()(const stg::VariantMember&, uint32_t);
   void operator()(const stg::StructUnion&, uint32_t);
   void operator()(const stg::Enumeration&, uint32_t);
+  void operator()(const stg::Variant&, uint32_t);
   void operator()(const stg::Function&, uint32_t);
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
@@ -92,7 +94,7 @@ struct Transform {
 
   std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
     std::unordered_map<uint32_t, Id> internal_id_map;
-    for (const auto [id, ext_id] : external_id_by_internal_id) {
+    for (const auto& [id, ext_id] : external_id_by_internal_id) {
       internal_id_map.emplace(ext_id, id);
     }
     return internal_id_map;
@@ -213,6 +215,17 @@ void Transform<MapId>::operator()(const stg::Member& x, uint32_t id) {
 }
 
 template <typename MapId>
+void Transform<MapId>::operator()(const stg::VariantMember& x, uint32_t id) {
+  auto& variant_member = *stg.add_variant_member();
+  variant_member.set_id(id);
+  variant_member.set_name(x.name);
+  if (x.discriminant_value) {
+    variant_member.set_discriminant_value(*x.discriminant_value);
+  }
+  variant_member.set_type_id((*this)(x.type_id));
+}
+
+template <typename MapId>
 void Transform<MapId>::operator()(const stg::StructUnion& x, uint32_t id) {
   auto& struct_union = *stg.add_struct_union();
   struct_union.set_id(id);
@@ -247,6 +260,18 @@ void Transform<MapId>::operator()(const stg::Enumeration& x, uint32_t id) {
       enumerator.set_name(name);
       enumerator.set_value(value);
     }
+  }
+}
+
+template <typename MapId>
+void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
+  auto& variant = *stg.add_variant();
+  variant.set_id(id);
+  variant.set_name(x.name);
+  variant.set_bytesize(x.bytesize);
+  variant.set_discriminant_type_id((*this)(x.discriminant_type_id));
+  for (const auto id : x.members) {
+    variant.add_member_id((*this)(id));
   }
 }
 

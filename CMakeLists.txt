@@ -117,11 +117,11 @@ endforeach()
 
 # Testing
 
-find_package(Catch2 QUIET)
+find_package(Catch2 2 QUIET)
 
 if(NOT Catch2_FOUND)
 
-  message(NOTICE "Catch2 testing framework not found. Disabling tests.")
+  message(NOTICE "Catch2 v2 testing framework not found. Disabling tests.")
 
 else()
   enable_testing()
