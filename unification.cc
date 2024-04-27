@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -170,6 +170,13 @@ struct Unifier {
         ? Right : Neither;
   }
 
+  Winner operator()(const VariantMember& x1, const VariantMember& x2) {
+    return x1.name == x2.name
+        && x1.discriminant_value == x2.discriminant_value
+        && (*this)(x1.type_id, x2.type_id)
+        ? Right : Neither;
+  }
+
   Winner operator()(const StructUnion& x1, const StructUnion& x2) {
     const auto& definition1 = x1.definition;
     const auto& definition2 = x2.definition;
@@ -196,6 +203,14 @@ struct Unifier {
                && definition1->enumerators == definition2->enumerators;
     }
     return result ? definition2.has_value() ? Right : Left : Neither;
+  }
+
+  Winner operator()(const Variant& x1, const Variant& x2) {
+    return x1.name == x2.name
+        && x1.bytesize == x2.bytesize
+        && (*this)(x1.discriminant_type_id, x2.discriminant_type_id)
+        && (*this)(x1.members, x2.members)
+        ? Right : Neither;
   }
 
   Winner operator()(const Function& x1, const Function& x2) {
