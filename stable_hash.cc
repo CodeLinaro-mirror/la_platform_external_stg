@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -126,6 +126,14 @@ HashValue StableHash::operator()(const Member& x) {
   }
 }
 
+HashValue StableHash::operator()(const VariantMember& x) {
+  HashValue hash = hash_('v', x.name);
+  hash = DecayHashCombine<8>(hash, (*this)(x.type_id));
+  return x.discriminant_value
+             ? DecayHashCombine<20>(hash, hash_(*x.discriminant_value))
+             : hash;
+}
+
 HashValue StableHash::operator()(const StructUnion& x) {
   HashValue hash = hash_('S', static_cast<uint32_t>(x.kind), x.name,
                          static_cast<bool>(x.definition));
@@ -149,6 +157,13 @@ HashValue StableHash::operator()(const Enumeration& x) {
   };
   return DecayHashCombine<2>(
       hash, DecayHashCombineInReverse<8>(x.definition->enumerators, hash_enum));
+}
+
+HashValue StableHash::operator()(const Variant& x) {
+  HashValue hash = hash_('V', x.name, x.bytesize);
+  hash = DecayHashCombine<8>(hash, (*this)(x.discriminant_type_id));
+  return DecayHashCombine<2>(hash,
+                             DecayHashCombineInReverse<8>(x.members, *this));
 }
 
 HashValue StableHash::operator()(const Function& x) {
