@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -65,8 +65,10 @@ struct Transformer {
   void AddNode(const BaseClass&);
   void AddNode(const Method&);
   void AddNode(const Member&);
+  void AddNode(const Variant&);
   void AddNode(const StructUnion&);
   void AddNode(const Enumeration&);
+  void AddNode(const VariantMember&);
   void AddNode(const Function&);
   void AddNode(const ElfSymbol&);
   void AddNode(const Symbols&);
@@ -111,8 +113,10 @@ Id Transformer::Transform(const proto::STG& x) {
   AddNodes(x.base_class());
   AddNodes(x.method());
   AddNodes(x.member());
+  AddNodes(x.variant_member());
   AddNodes(x.struct_union());
   AddNodes(x.enumeration());
+  AddNodes(x.variant());
   AddNodes(x.function());
   AddNodes(x.elf_symbol());
   AddNodes(x.symbols());
@@ -192,6 +196,14 @@ void Transformer::AddNode(const Member& x) {
                        x.bitsize());
 }
 
+void Transformer::AddNode(const VariantMember& x) {
+  const auto& discr_value = x.has_discriminant_value()
+                                ? std::make_optional(x.discriminant_value())
+                                : std::nullopt;
+  AddNode<stg::VariantMember>(GetId(x.id()), x.name(), discr_value,
+                              GetId(x.type_id()));
+}
+
 void Transformer::AddNode(const StructUnion& x) {
   if (x.has_definition()) {
     AddNode<stg::StructUnion>(
@@ -212,6 +224,11 @@ void Transformer::AddNode(const Enumeration& x) {
   } else {
     AddNode<stg::Enumeration>(GetId(x.id()), x.name());
   }
+}
+
+void Transformer::AddNode(const Variant& x) {
+  AddNode<stg::Variant>(GetId(x.id()), x.name(), x.bytesize(),
+                        GetId(x.discriminant_type_id()), x.member_id());
 }
 
 void Transformer::AddNode(const Function& x) {
