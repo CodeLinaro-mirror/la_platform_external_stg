@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -68,8 +68,10 @@ struct Describe {
   Name operator()(const BaseClass&);
   Name operator()(const Method&);
   Name operator()(const Member&);
+  Name operator()(const VariantMember&);
   Name operator()(const StructUnion&);
   Name operator()(const Enumeration&);
+  Name operator()(const Variant&);
   Name operator()(const Function&);
   Name operator()(const ElfSymbol&);
   Name operator()(const Interface&);
