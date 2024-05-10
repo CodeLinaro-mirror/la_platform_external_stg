@@ -52,6 +52,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(LibElf REQUIRED)
 find_package(LibDw REQUIRED)
 find_package(LibXml2 REQUIRED)
+find_package(LinuxUAPI REQUIRED)
 find_package(Protobuf REQUIRED)
 
 if(NOT Protobuf_PROTOC_EXECUTABLE)
