@@ -1,0 +1,53 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x2d2f93e0
+  name: "u8"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0xd4bacb77
+  name: "u32"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+enumeration {
+  id: 0x96f0eeaf
+  name: "methods::Foo"
+  definition {
+    underlying_type_id: 0x2d2f93e0  # u8
+    enumerator {
+      name: "Zero"
+    }
+    enumerator {
+      name: "One"
+      value: 1
+    }
+    enumerator {
+      name: "Two"
+      value: 2
+    }
+    enumerator {
+      name: "Three"
+      value: 3
+    }
+  }
+}
+function {
+  id: 0x8d8230ce
+  return_type_id: 0xd4bacb77  # u32
+  parameter_id: 0x96f0eeaf  # enum methods::Foo
+}
+elf_symbol {
+  id: 0x14be2940
+  name: "Foo__to_u32"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x8d8230ce  # u32(enum methods::Foo)
+  full_name: "methods::to_u32"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x14be2940  # u32 methods::to_u32(enum methods::Foo)
+}
