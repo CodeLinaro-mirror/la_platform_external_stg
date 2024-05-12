@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: protobuffer -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -158,6 +158,13 @@ message Member {
   uint64 bitsize = 5;
 }
 
+message VariantMember {
+  fixed32 id = 1;
+  string name = 2;
+  optional int64 discriminant_value = 3;
+  fixed32 type_id = 4;
+}
+
 message StructUnion {
   enum Kind {
     KIND_UNSPECIFIED = 0;
@@ -192,6 +199,14 @@ message Enumeration {
   fixed32 id = 1;
   string name = 2;
   optional Definition definition = 3;
+}
+
+message Variant {
+  fixed32 id = 1;
+  string name = 2;
+  uint64 bytesize = 3;
+  fixed32 discriminant_type_id = 4;
+  repeated fixed32 member_id = 5;
 }
 
 message Function {
@@ -268,10 +283,12 @@ message STG {
   repeated BaseClass base_class = 12;
   repeated Method method = 13;
   repeated Member member = 14;
-  repeated StructUnion struct_union = 15;
-  repeated Enumeration enumeration = 16;
-  repeated Function function = 17;
-  repeated ElfSymbol elf_symbol = 18;
-  repeated Symbols symbols = 19;
-  repeated Interface interface = 20;
+  repeated VariantMember variant_member = 15;
+  repeated StructUnion struct_union = 16;
+  repeated Enumeration enumeration = 17;
+  repeated Variant variant = 18;
+  repeated Function function = 19;
+  repeated ElfSymbol elf_symbol = 20;
+  repeated Symbols symbols = 21;
+  repeated Interface interface = 22;
 }
