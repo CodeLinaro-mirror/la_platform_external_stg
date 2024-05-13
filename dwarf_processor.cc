@@ -577,6 +577,37 @@ class Processor {
     }
   }
 
+  void ProcessVariantMember(Entry& entry) {
+    // TODO: Process signed discriminant values.
+    auto dw_discriminant_value =
+        entry.MaybeGetUnsignedConstant(DW_AT_discr_value);
+    auto discriminant_value =
+        dw_discriminant_value
+            ? std::optional(static_cast<int64_t>(*dw_discriminant_value))
+            : std::nullopt;
+
+    auto children = entry.GetChildren();
+    if (children.size() != 1) {
+      Die() << "Unexpected number of children for variant member: "
+            << EntryToString(entry);
+    }
+
+    auto child = children[0];
+    if (child.GetTag() != DW_TAG_member) {
+      Die() << "Unexpected tag for variant member child: "
+            << Hex(child.GetTag()) << ", " << EntryToString(child);
+    }
+    if (GetDataBitOffset(child, 0, is_little_endian_binary_) != 0) {
+      Die() << "Unexpected data member location for variant member: "
+            << EntryToString(child);
+    }
+
+    const std::string name = GetNameOrEmpty(child);
+    auto referred_type_id = GetReferredTypeId(GetReferredType(child));
+    AddProcessedNode<VariantMember>(entry, name, discriminant_value,
+                                    referred_type_id);
+  }
+
   void ProcessMember(Entry& entry) {
     const auto name = GetNameOrEmpty(entry);
     auto referred_type = GetReferredType(entry);
