@@ -757,6 +757,56 @@ class Processor {
     }
   }
 
+  struct VariantAndMembers {
+    Id discriminant_type_id;
+    std::vector<Id> members;
+  };
+
+  VariantAndMembers GetVariantAndMembers(Entry& entry) {
+    std::vector<Id> members;
+    std::optional<Id> discriminant_type_id = std::nullopt;
+    auto discriminant_entry = entry.MaybeGetReference(DW_AT_discr);
+    if (!discriminant_entry.has_value()) {
+      Die() << "Variant must have a discriminant: " << EntryToString(entry);
+    }
+
+    for (auto& child : entry.GetChildren()) {
+      auto child_tag = child.GetTag();
+      switch (child_tag) {
+        case DW_TAG_member: {
+          if (child.GetOffset() != discriminant_entry->GetOffset()) {
+            Die() << "Encountered unexpected member for variant: "
+                  << EntryToString(entry);
+          }
+          discriminant_type_id = GetReferredTypeId(GetReferredType(child));
+          if (GetDataBitOffset(child, 0, is_little_endian_binary_) != 0) {
+            Die() << "Unexpected member location for variant discriminant: "
+                  << EntryToString(child);
+          }
+          if (!child.GetFlag(DW_AT_artificial)) {
+            Die() << "Variant discriminant must be an artificial member: "
+                  << EntryToString(child);
+          }
+          break;
+        }
+        case DW_TAG_variant:
+          members.push_back(GetIdForEntry(child));
+          ProcessVariantMember(child);
+          break;
+        default:
+          Die() << "Unexpected tag for child of variant: " << Hex(child_tag)
+                << ", " << EntryToString(child);
+      }
+    }
+
+    if (!discriminant_type_id.has_value()) {
+      Die() << "No discriminant member found for variant: "
+            << EntryToString(entry);
+    }
+    return VariantAndMembers{.discriminant_type_id = *discriminant_type_id,
+                             .members = std::move(members)};
+  }
+
   struct NameWithContext {
     std::optional<Dwarf_Off> specification;
     std::optional<std::string> unscoped_name;
