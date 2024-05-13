@@ -496,6 +496,7 @@ class Processor {
     std::vector<Id> base_classes;
     std::vector<Id> members;
     std::vector<Id> methods;
+    std::optional<VariantAndMembers> variant_and_members = std::nullopt;
 
     for (auto& child : entry.GetChildren()) {
       auto child_tag = child.GetTag();
@@ -550,12 +551,27 @@ class Processor {
           // properly (resulting in no references to such DIEs).
           break;
         case DW_TAG_variant_part:
-          // TODO: Add a DWARF processor to process variants.
+          if (full_name.empty()) {
+            Die() << "Variant name should not be empty: "
+                  << EntryToString(entry);
+          }
+          variant_and_members = GetVariantAndMembers(child);
           break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: "
                 << Hex(child_tag) << ", " << EntryToString(child);
       }
+    }
+
+    if (variant_and_members.has_value()) {
+      // Add a Variant node since this entry represents a variant rather than a
+      // struct or union.
+      const Id id =
+          AddProcessedNode<Variant>(entry, full_name, GetByteSize(entry),
+                                    variant_and_members->discriminant_type_id,
+                                    std::move(variant_and_members->members));
+      AddNamedTypeNode(id);
+      return;
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
