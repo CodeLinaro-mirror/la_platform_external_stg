@@ -38,19 +38,19 @@ Instructions are included for local and Docker builds.
 ### Dependencies
 
 STG is written in C++20. It is known to compile with GCC 11, Clang 15 or
-later versions.
+later versions. Mininum requirements for a local build are:
 
-| *Dependency*  | *Debian*          | *RedHat*          |
-| ------------- | ----------------- | ----------------- |
-| build         | cmake             | cmake             |
-| ELF, BTF      | libelf-dev        | elfutils-devel    |
-| DWARF         | libdw-dev         | elfutils-devel    |
-| XML           | libxml2-dev       | libxml2-devel     |
-| BTF           | linux-libc-dev    | kernel-headers    |
-| native format | libprotobuf-dev   | protobuf-devel    |
-| native format | protobuf-compiler | protobuf-compiler |
-| allocator[^1] | libjemalloc-dev   | jemalloc-devel    |
-| catch2[^2]    | catch2            | catch2-devel      |
+| *Dependency*  | *Debian*          | *RedHat*          | *Version* |
+| ------------- | ----------------- | ----------------- | --------- |
+| build         | cmake             | cmake             | 3.14      |
+| ELF, BTF      | libelf-dev        | elfutils-devel    | 0.189     |
+| DWARF         | libdw-dev         | elfutils-devel    | 0.189     |
+| XML           | libxml2-dev       | libxml2-devel     | 2.9       |
+| BTF           | linux-libc-dev    | kernel-headers    | 5.19      |
+| native format | libprotobuf-dev   | protobuf-devel    | 3.19      |
+| native format | protobuf-compiler | protobuf-compiler | 3.19      |
+| allocator[^1] | libjemalloc-dev   | jemalloc-devel    | 5         |
+| catch2[^2]    | catch2            | catch2-devel      | 2 (only)  |
 
 [^1]: jemalloc is optional, but will likely improve performance.
 [^2]: catch2 is optional, but required to build the test suite.
