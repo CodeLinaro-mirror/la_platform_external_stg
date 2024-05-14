@@ -998,9 +998,19 @@ class Processor {
         case DW_TAG_template_value_parameter:
         case DW_TAG_GNU_template_template_param:
         case DW_TAG_GNU_template_parameter_pack:
-        case DW_TAG_GNU_formal_parameter_pack:
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
+          break;
+        case DW_TAG_GNU_formal_parameter_pack:
+          // https://wiki.dwarfstd.org/C++0x_Variadic_templates.md
+          //
+          // As per this (rejected) proposal, GCC includes parameters as
+          // children of this DIE.
+          for (auto& child2 : child.GetChildren()) {
+            if (child2.GetTag() ==  DW_TAG_formal_parameter) {
+              parameters.push_back(GetReferredTypeId(GetReferredType(child2)));
+            }
+          }
           break;
         default:
           Die() << "Unexpected tag for child of function: " << Hex(child_tag)
