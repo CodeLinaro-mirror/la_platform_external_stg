@@ -1007,7 +1007,7 @@ class Processor {
           // As per this (rejected) proposal, GCC includes parameters as
           // children of this DIE.
           for (auto& child2 : child.GetChildren()) {
-            if (child2.GetTag() ==  DW_TAG_formal_parameter) {
+            if (child2.GetTag() == DW_TAG_formal_parameter) {
               parameters.push_back(GetReferredTypeId(GetReferredType(child2)));
             }
           }
