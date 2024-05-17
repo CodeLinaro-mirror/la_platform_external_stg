@@ -244,16 +244,16 @@ struct Enumeration {
 };
 
 struct Variant {
-  Variant(const std::string& name, uint64_t bytesize, Id discriminant_type_id,
-          const std::vector<Id>& members)
+  Variant(const std::string& name, uint64_t bytesize,
+          std::optional<Id> discriminant, const std::vector<Id>& members)
       : name(name),
         bytesize(bytesize),
-        discriminant_type_id(discriminant_type_id),
+        discriminant(discriminant),
         members(members) {}
 
   std::string name;
   uint64_t bytesize;
-  Id discriminant_type_id;
+  std::optional<Id> discriminant;
   std::vector<Id> members;
 };
 
