@@ -20,6 +20,7 @@
 #include "unification.h"
 
 #include <cstddef>
+#include <optional>
 #include <utility>
 
 #include "graph.h"
@@ -77,6 +78,14 @@ struct Unifier {
     mapping.insert({fid1, fid2});
 
     return true;
+  }
+
+  bool operator()(const std::optional<Id>& opt1,
+                  const std::optional<Id>& opt2) {
+    if (opt1.has_value() && opt2.has_value()) {
+      return (*this)(opt1.value(), opt2.value());
+    }
+    return opt1.has_value() == opt2.has_value();
   }
 
   bool operator()(const std::vector<Id>& ids1, const std::vector<Id>& ids2) {
@@ -208,7 +217,7 @@ struct Unifier {
   Winner operator()(const Variant& x1, const Variant& x2) {
     return x1.name == x2.name
         && x1.bytesize == x2.bytesize
-        && (*this)(x1.discriminant_type_id, x2.discriminant_type_id)
+        && (*this)(x1.discriminant, x2.discriminant)
         && (*this)(x1.members, x2.members)
         ? Right : Neither;
   }

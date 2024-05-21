@@ -269,7 +269,9 @@ void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
   variant.set_id(id);
   variant.set_name(x.name);
   variant.set_bytesize(x.bytesize);
-  variant.set_discriminant_type_id((*this)(x.discriminant_type_id));
+  if (x.discriminant.has_value()) {
+    variant.set_discriminant((*this)(x.discriminant.value()));
+  }
   for (const auto id : x.members) {
     variant.add_member_id((*this)(id));
   }
