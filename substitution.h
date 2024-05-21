@@ -120,7 +120,9 @@ struct Substitute {
   }
 
   void operator()(Variant& x) {
-    Update(x.discriminant_type_id);
+    if (x.discriminant.has_value()) {
+      Update(x.discriminant.value());
+    }
     Update(x.members);
   }
 

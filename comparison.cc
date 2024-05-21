@@ -570,9 +570,15 @@ Result Compare::operator()(const Variant& x1, const Variant& x2) {
   result.diff_.holds_changes = true;  // Anonymous variants are not allowed.
 
   result.MaybeAddNodeDiff("bytesize", x1.bytesize, x2.bytesize);
-  const auto type_diff =
-      (*this)(x1.discriminant_type_id, x2.discriminant_type_id);
-  result.MaybeAddEdgeDiff("discriminant", type_diff);
+  if (x1.discriminant.has_value() && x2.discriminant.has_value()) {
+    const auto type_diff =
+        (*this)(x1.discriminant.value(), x2.discriminant.value());
+    result.MaybeAddEdgeDiff("discriminant", type_diff);
+  } else if (x1.discriminant.has_value()) {
+    result.AddEdgeDiff("", Removed(x1.discriminant.value()));
+  } else if (x2.discriminant.has_value()) {
+    result.AddEdgeDiff("", Added(x2.discriminant.value()));
+  }
   CompareNodes(result, *this, x1.members, x2.members);
   return result;
 }
