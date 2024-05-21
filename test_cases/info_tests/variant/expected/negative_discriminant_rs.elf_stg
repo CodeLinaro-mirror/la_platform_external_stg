@@ -19,6 +19,10 @@ primitive {
   bytesize: 0x00000008
 }
 member {
+  id: 0x18ba9281
+  type_id: 0xedc43a15  # i64
+}
+member {
   id: 0x976dcda7
   name: "__0"
   type_id: 0xd4bacb77  # u32
@@ -69,25 +73,25 @@ struct_union {
   }
 }
 variant {
-  id: 0x29673df8
+  id: 0x298b726b
   name: "negative_discriminant::Foo"
   bytesize: 16
-  discriminant_type_id: 0xedc43a15
+  discriminant: 0x18ba9281
   member_id: 0x72c55dce
   member_id: 0x528ee922
   member_id: 0x27839c0b
 }
 function {
-  id: 0xb409a4c0
+  id: 0xb432b724
   return_type_id: 0x62aebfd4  # bool
-  parameter_id: 0x29673df8  # variant negative_discriminant::Foo
+  parameter_id: 0x298b726b  # variant negative_discriminant::Foo
 }
 elf_symbol {
   id: 0x0f95dadc
   name: "is_minus_one"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xb409a4c0  # bool(variant negative_discriminant::Foo)
+  type_id: 0xb432b724  # bool(variant negative_discriminant::Foo)
   full_name: "negative_discriminant::is_minus_one"
 }
 interface {
