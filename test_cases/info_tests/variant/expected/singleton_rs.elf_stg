@@ -1,0 +1,42 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x62aebfd4
+  name: "bool"
+  encoding: BOOLEAN
+  bytesize: 0x00000001
+}
+variant_member {
+  id: 0xfc304e1e
+  name: "Unit"
+  type_id: 0x312c753c
+}
+struct_union {
+  id: 0x312c753c
+  kind: STRUCT
+  name: "singleton::Singleton::Unit"
+  definition {
+  }
+}
+variant {
+  id: 0x9063b3ee
+  name: "singleton::Singleton"
+  member_id: 0xfc304e1e
+}
+function {
+  id: 0x9a488745
+  return_type_id: 0x62aebfd4  # bool
+  parameter_id: 0x9063b3ee  # variant singleton::Singleton
+}
+elf_symbol {
+  id: 0x4e2f2fc8
+  name: "is_unit"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x9a488745  # bool(variant singleton::Singleton)
+  full_name: "singleton::is_unit"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x4e2f2fc8  # bool singleton::is_unit(variant singleton::Singleton)
+}
