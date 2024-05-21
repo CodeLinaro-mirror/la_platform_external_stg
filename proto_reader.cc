@@ -227,8 +227,11 @@ void Transformer::AddNode(const Enumeration& x) {
 }
 
 void Transformer::AddNode(const Variant& x) {
-  AddNode<stg::Variant>(GetId(x.id()), x.name(), x.bytesize(),
-                        GetId(x.discriminant_type_id()), x.member_id());
+  const auto& discriminant = x.has_discriminant()
+                                 ? std::make_optional(GetId(x.discriminant()))
+                                 : std::nullopt;
+  AddNode<stg::Variant>(GetId(x.id()), x.name(), x.bytesize(), discriminant,
+                        x.member_id());
 }
 
 void Transformer::AddNode(const Function& x) {

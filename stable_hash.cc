@@ -161,7 +161,9 @@ HashValue StableHash::operator()(const Enumeration& x) {
 
 HashValue StableHash::operator()(const Variant& x) {
   HashValue hash = hash_('V', x.name, x.bytesize);
-  hash = DecayHashCombine<8>(hash, (*this)(x.discriminant_type_id));
+  if (x.discriminant.has_value()) {
+    hash = DecayHashCombine<12>(hash, (*this)(x.discriminant.value()));
+  }
   return DecayHashCombine<2>(hash,
                              DecayHashCombineInReverse<8>(x.members, *this));
 }
