@@ -1,0 +1,33 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x62aebfd4
+  name: "bool"
+  encoding: BOOLEAN
+  bytesize: 0x00000001
+}
+struct_union {
+  id: 0x7a8d8645
+  kind: STRUCT
+  name: "negative_discriminant::Foo"
+  definition {
+    bytesize: 16
+  }
+}
+function {
+  id: 0xa0f30a2f
+  return_type_id: 0x62aebfd4  # bool
+  parameter_id: 0x7a8d8645  # struct negative_discriminant::Foo
+}
+elf_symbol {
+  id: 0x0f95dadc
+  name: "is_minus_one"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0xa0f30a2f  # bool(struct negative_discriminant::Foo)
+  full_name: "negative_discriminant::is_minus_one"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x0f95dadc  # bool negative_discriminant::is_minus_one(struct negative_discriminant::Foo)
+}
