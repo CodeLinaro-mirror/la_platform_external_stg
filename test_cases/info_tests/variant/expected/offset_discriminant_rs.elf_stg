@@ -1,0 +1,106 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x384f7d7c
+  name: "char"
+  encoding: UTF
+  bytesize: 0x00000004
+}
+primitive {
+  id: 0x62aebfd4
+  name: "bool"
+  encoding: BOOLEAN
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0xd4bacb77
+  name: "u32"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+member {
+  id: 0x16e523e2
+  type_id: 0xd4bacb77  # u32
+  offset: 32
+}
+member {
+  id: 0x97813cf0
+  name: "__0"
+  type_id: 0x384f7d7c  # char
+}
+member {
+  id: 0xdbc0cd2f
+  name: "__1"
+  type_id: 0x384f7d7c  # char
+  offset: 32
+}
+variant_member {
+  id: 0x56b9f935
+  name: "Two"
+  type_id: 0x573dc947
+}
+variant_member {
+  id: 0x69cfc441
+  name: "One"
+  discriminant_value: 1114112
+  type_id: 0x988e2459
+}
+variant_member {
+  id: 0x276cfc01
+  name: "Zero"
+  discriminant_value: 1114113
+  type_id: 0xb2cd8432
+}
+struct_union {
+  id: 0x988e2459
+  kind: STRUCT
+  name: "offset_discriminant::Foo::One"
+  definition {
+    bytesize: 8
+    member_id: 0x97813cf0  # char __0
+  }
+}
+struct_union {
+  id: 0x573dc947
+  kind: STRUCT
+  name: "offset_discriminant::Foo::Two"
+  definition {
+    bytesize: 8
+    member_id: 0x97813cf0  # char __0
+    member_id: 0xdbc0cd2f  # char __1
+  }
+}
+struct_union {
+  id: 0xb2cd8432
+  kind: STRUCT
+  name: "offset_discriminant::Foo::Zero"
+  definition {
+    bytesize: 8
+  }
+}
+variant {
+  id: 0x82b2aa29
+  name: "offset_discriminant::Foo"
+  bytesize: 8
+  discriminant: 0x16e523e2
+  member_id: 0x56b9f935
+  member_id: 0x69cfc441
+  member_id: 0x276cfc01
+}
+function {
+  id: 0x9efcc134
+  return_type_id: 0x62aebfd4  # bool
+  parameter_id: 0x82b2aa29  # variant offset_discriminant::Foo
+}
+elf_symbol {
+  id: 0x699cebd9
+  name: "is_zero"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x9efcc134  # bool(variant offset_discriminant::Foo)
+  full_name: "offset_discriminant::is_zero"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x699cebd9  # bool offset_discriminant::is_zero(variant offset_discriminant::Foo)
+}
