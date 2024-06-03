@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -189,6 +189,12 @@ Name Describe::operator()(const Member& x) {
   return description;
 }
 
+Name Describe::operator()(const VariantMember& x) {
+  auto description = (*this)(x.type_id);
+  description = description.Add(Side::LEFT, Precedence::ATOMIC, x.name);
+  return description;
+}
+
 Name Describe::operator()(const StructUnion& x) {
   std::ostringstream os;
   os << x.kind << ' ';
@@ -216,6 +222,12 @@ Name Describe::operator()(const Enumeration& x) {
     }
     os << '}';
   }
+  return Name{os.str()};
+}
+
+Name Describe::operator()(const Variant& x) {
+  std::ostringstream os;
+  os << "variant " << x.name;
   return Name{os.str()};
 }
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -22,6 +22,7 @@
 
 #include <cstddef>
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "graph.h"
@@ -77,6 +78,14 @@ struct Equals {
       equality_cache.AllDifferent(comparisons);
     }
     return result;
+  }
+
+  bool operator()(const std::optional<Id>& opt1,
+                  const std::optional<Id>& opt2) {
+    if (opt1.has_value() && opt2.has_value()) {
+      return (*this)(opt1.value(), opt2.value());
+    }
+    return opt1.has_value() == opt2.has_value();
   }
 
   bool operator()(const std::vector<Id>& ids1, const std::vector<Id>& ids2) {
@@ -160,6 +169,12 @@ struct Equals {
         && (*this)(x1.type_id, x2.type_id);
   }
 
+  bool operator()(const VariantMember& x1, const VariantMember& x2) {
+    return x1.name == x2.name
+        && x1.discriminant_value == x2.discriminant_value
+        && (*this)(x1.type_id, x2.type_id);
+  }
+
   bool operator()(const StructUnion& x1, const StructUnion& x2) {
     const auto& definition1 = x1.definition;
     const auto& definition2 = x2.definition;
@@ -186,6 +201,13 @@ struct Equals {
                && definition1->enumerators == definition2->enumerators;
     }
     return result;
+  }
+
+  bool operator()(const Variant& x1, const Variant& x2) {
+    return x1.name == x2.name
+        && x1.bytesize == x2.bytesize
+        && (*this)(x1.discriminant, x2.discriminant)
+        && (*this)(x1.members, x2.members);
   }
 
   bool operator()(const Function& x1, const Function& x2) {

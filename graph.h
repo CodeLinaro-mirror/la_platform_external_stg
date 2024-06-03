@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2023 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -200,6 +200,16 @@ struct Member {
   uint64_t bitsize;
 };
 
+struct VariantMember {
+  VariantMember(const std::string& name,
+                std::optional<int64_t> discriminant_value, Id type_id)
+      : name(name), discriminant_value(discriminant_value), type_id(type_id) {}
+
+  std::string name;
+  std::optional<int64_t> discriminant_value;
+  Id type_id;
+};
+
 struct StructUnion {
   enum class Kind { STRUCT, UNION };
   struct Definition {
@@ -236,6 +246,20 @@ struct Enumeration {
 
   std::string name;
   std::optional<Definition> definition;
+};
+
+struct Variant {
+  Variant(const std::string& name, uint64_t bytesize,
+          std::optional<Id> discriminant, const std::vector<Id>& members)
+      : name(name),
+        bytesize(bytesize),
+        discriminant(discriminant),
+        members(members) {}
+
+  std::string name;
+  uint64_t bytesize;
+  std::optional<Id> discriminant;
+  std::vector<Id> members;
 };
 
 struct Function {
@@ -377,12 +401,18 @@ class Graph {
     } else if constexpr (std::is_same_v<Node, Member>) {
       reference = {Which::MEMBER, member_.size()};
       member_.emplace_back(std::forward<Args>(args)...);
+    } else if constexpr (std::is_same_v<Node, VariantMember>) {
+      reference = {Which::VARIANT_MEMBER, variant_member_.size()};
+      variant_member_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, StructUnion>) {
       reference = {Which::STRUCT_UNION, struct_union_.size()};
       struct_union_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, Enumeration>) {
       reference = {Which::ENUMERATION, enumeration_.size()};
       enumeration_.emplace_back(std::forward<Args>(args)...);
+    } else if constexpr (std::is_same_v<Node, Variant>) {
+      reference = {Which::VARIANT, variant_.size()};
+      variant_.emplace_back(std::forward<Args>(args)...);
     } else if constexpr (std::is_same_v<Node, Function>) {
       reference = {Which::FUNCTION, function_.size()};
       function_.emplace_back(std::forward<Args>(args)...);
@@ -454,8 +484,10 @@ class Graph {
     BASE_CLASS,
     METHOD,
     MEMBER,
+    VARIANT_MEMBER,
     STRUCT_UNION,
     ENUMERATION,
+    VARIANT,
     FUNCTION,
     ELF_SYMBOL,
     INTERFACE,
@@ -473,8 +505,10 @@ class Graph {
   std::vector<BaseClass> base_class_;
   std::vector<Method> method_;
   std::vector<Member> member_;
+  std::vector<VariantMember> variant_member_;
   std::vector<StructUnion> struct_union_;
   std::vector<Enumeration> enumeration_;
+  std::vector<Variant> variant_;
   std::vector<Function> function_;
   std::vector<ElfSymbol> elf_symbol_;
   std::vector<Interface> interface_;
@@ -506,10 +540,14 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
       return function(method_[ix], std::forward<Args>(args)...);
     case Which::MEMBER:
       return function(member_[ix], std::forward<Args>(args)...);
+    case Which::VARIANT_MEMBER:
+      return function(variant_member_[ix], std::forward<Args>(args)...);
     case Which::STRUCT_UNION:
       return function(struct_union_[ix], std::forward<Args>(args)...);
     case Which::ENUMERATION:
       return function(enumeration_[ix], std::forward<Args>(args)...);
+    case Which::VARIANT:
+      return function(variant_[ix], std::forward<Args>(args)...);
     case Which::FUNCTION:
       return function(function_[ix], std::forward<Args>(args)...);
     case Which::ELF_SYMBOL:
@@ -560,11 +598,17 @@ Result Graph::Apply2(
     case Which::MEMBER:
       return function(member_[ix1], member_[ix2],
                       std::forward<Args>(args)...);
+    case Which::VARIANT_MEMBER:
+      return function(variant_member_[ix1], variant_member_[ix2],
+                      std::forward<Args>(args)...);
     case Which::STRUCT_UNION:
       return function(struct_union_[ix1], struct_union_[ix2],
                       std::forward<Args>(args)...);
     case Which::ENUMERATION:
       return function(enumeration_[ix1], enumeration_[ix2],
+                      std::forward<Args>(args)...);
+    case Which::VARIANT:
+      return function(variant_[ix1], variant_[ix2],
                       std::forward<Args>(args)...);
     case Which::FUNCTION:
       return function(function_[ix1], function_[ix2],
@@ -620,6 +664,13 @@ struct InterfaceKey {
       Die() << "anonymous enum interface type";
     }
     return "enum " + x.name;
+  }
+
+  std::string operator()(const stg::Variant& x) const {
+    if (x.name.empty()) {
+      Die() << "anonymous variant interface type";
+    }
+    return "variant " + x.name;
   }
 
   std::string operator()(const stg::ElfSymbol& x) const {
