@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2023 Google LLC
+// Copyright 2023-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -53,8 +53,10 @@ struct Fidelity {
   void operator()(const BaseClass&, Id);
   void operator()(const Method&, Id);
   void operator()(const Member&, Id);
+  void operator()(const VariantMember&, Id);
   void operator()(const StructUnion&, Id);
   void operator()(const Enumeration&, Id);
+  void operator()(const Variant&, Id);
   void operator()(const Function&, Id);
   void operator()(const ElfSymbol&, Id);
   void operator()(const Interface&, Id);
@@ -121,6 +123,10 @@ void Fidelity::operator()(const Member& x, Id) {
   (*this)(x.type_id);
 }
 
+void Fidelity::operator()(const VariantMember& x, Id) {
+  (*this)(x.type_id);
+}
+
 void Fidelity::operator()(const StructUnion& x, Id id) {
   if (!x.name.empty()) {
     auto [it, _] =
@@ -144,6 +150,11 @@ void Fidelity::operator()(const Enumeration& x, Id id) {
       it->second = TypeFidelity::FULLY_DEFINED;
     }
   }
+}
+
+void Fidelity::operator()(const Variant& x, Id id) {
+  types.emplace(describe(id).ToString(), TypeFidelity::FULLY_DEFINED);
+  (*this)(x.members);
 }
 
 void Fidelity::operator()(const Function& x, Id) {

@@ -49,10 +49,11 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(LibElf REQUIRED)
-find_package(LibDw REQUIRED)
-find_package(LibXml2 REQUIRED)
-find_package(Protobuf REQUIRED)
+find_package(LibElf 0.189 REQUIRED)
+find_package(LibDw 0.189 REQUIRED)
+find_package(LibXml2 2.9 REQUIRED)
+find_package(LinuxUAPI 5.19 REQUIRED)
+find_package(Protobuf 3.19 REQUIRED)
 
 if(NOT Protobuf_PROTOC_EXECUTABLE)
   message(FATAL_ERROR "Could NOT find protobuf::protoc.
@@ -66,7 +67,7 @@ set(COMMON_LIBRARIES
     protobuf::libprotobuf)
 
 if(NOT Jemalloc_DISABLE)
-  find_package(Jemalloc)
+  find_package(Jemalloc 5)
   if(Jemalloc_FOUND)
     list(APPEND COMMON_LIBRARIES Jemalloc::Jemalloc)
   else()
@@ -117,11 +118,11 @@ endforeach()
 
 # Testing
 
-find_package(Catch2 QUIET)
+find_package(Catch2 2 QUIET)
 
 if(NOT Catch2_FOUND)
 
-  message(NOTICE "Catch2 testing framework not found. Disabling tests.")
+  message(NOTICE "Catch2 v2 testing framework not found. Disabling tests.")
 
 else()
   enable_testing()

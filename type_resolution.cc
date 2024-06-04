@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -45,7 +45,7 @@ struct NamedTypes {
     seen.Reserve(graph.Limit());
   }
 
-  enum class Tag { STRUCT, UNION, ENUM, TYPEDEF };
+  enum class Tag { STRUCT, UNION, ENUM, TYPEDEF, VARIANT };
   using Type = std::pair<Tag, std::string>;
   struct Info {
     std::vector<Id> definitions;
@@ -121,6 +121,10 @@ struct NamedTypes {
     (*this)(x.type_id);
   }
 
+  void operator()(const VariantMember& x, Id) {
+    (*this)(x.type_id);
+  }
+
   void operator()(const StructUnion& x, Id id) {
     auto tag = x.kind == StructUnion::Kind::STRUCT ? Tag::STRUCT : Tag::UNION;
     const auto& name = x.name;
@@ -154,6 +158,14 @@ struct NamedTypes {
       info.declarations.push_back(id);
       ++declarations;
     }
+  }
+
+  void operator()(const Variant& x, Id id) {
+    const auto& name = x.name;
+    auto& info = GetInfo(Tag::VARIANT, name);
+    info.definitions.push_back(id);
+    ++definitions;
+    (*this)(x.members);
   }
 
   void operator()(const Function& x, Id) {
