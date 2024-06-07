@@ -568,7 +568,7 @@ class Processor {
       // struct or union.
       const Id id =
           AddProcessedNode<Variant>(entry, full_name, GetByteSize(entry),
-                                    variant_and_members->discriminant_type_id,
+                                    variant_and_members->discriminant,
                                     std::move(variant_and_members->members));
       AddNamedTypeNode(id);
       return;
@@ -774,16 +774,17 @@ class Processor {
   }
 
   struct VariantAndMembers {
-    Id discriminant_type_id;
+    std::optional<Id> discriminant;
     std::vector<Id> members;
   };
 
   VariantAndMembers GetVariantAndMembers(Entry& entry) {
     std::vector<Id> members;
-    std::optional<Id> discriminant_type_id = std::nullopt;
+    std::optional<Id> discriminant = std::nullopt;
     auto discriminant_entry = entry.MaybeGetReference(DW_AT_discr);
-    if (!discriminant_entry.has_value()) {
-      Die() << "Variant must have a discriminant: " << EntryToString(entry);
+    if (discriminant_entry.has_value()) {
+      discriminant = GetIdForEntry(*discriminant_entry);
+      ProcessMember(*discriminant_entry);
     }
 
     for (auto& child : entry.GetChildren()) {
@@ -791,13 +792,8 @@ class Processor {
       switch (child_tag) {
         case DW_TAG_member: {
           if (child.GetOffset() != discriminant_entry->GetOffset()) {
-            Die() << "Encountered unexpected member for variant: "
+            Die() << "Encountered rogue member for variant: "
                   << EntryToString(entry);
-          }
-          discriminant_type_id = GetReferredTypeId(GetReferredType(child));
-          if (GetDataBitOffset(child, 0, is_little_endian_binary_) != 0) {
-            Die() << "Unexpected member location for variant discriminant: "
-                  << EntryToString(child);
           }
           if (!child.GetFlag(DW_AT_artificial)) {
             Die() << "Variant discriminant must be an artificial member: "
@@ -814,12 +810,7 @@ class Processor {
                 << ", " << EntryToString(child);
       }
     }
-
-    if (!discriminant_type_id.has_value()) {
-      Die() << "No discriminant member found for variant: "
-            << EntryToString(entry);
-    }
-    return VariantAndMembers{.discriminant_type_id = *discriminant_type_id,
+    return VariantAndMembers{.discriminant = discriminant,
                              .members = std::move(members)};
   }
 
@@ -1007,7 +998,7 @@ class Processor {
           // As per this (rejected) proposal, GCC includes parameters as
           // children of this DIE.
           for (auto& child2 : child.GetChildren()) {
-            if (child2.GetTag() ==  DW_TAG_formal_parameter) {
+            if (child2.GetTag() == DW_TAG_formal_parameter) {
               parameters.push_back(GetReferredTypeId(GetReferredType(child2)));
             }
           }

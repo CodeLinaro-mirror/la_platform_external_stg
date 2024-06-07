@@ -25,6 +25,10 @@ primitive {
   bytesize: 0x00000004
 }
 member {
+  id: 0x288078fc
+  type_id: 0x2d2f93e0  # u8
+}
+member {
   id: 0x976dc47d
   name: "__0"
   type_id: 0xd4bacb77  # u32
@@ -102,25 +106,25 @@ struct_union {
   }
 }
 variant {
-  id: 0x15514ee1
+  id: 0x157ee975
   name: "simple::Foo"
   bytesize: 12
-  discriminant_type_id: 0x2d2f93e0
+  discriminant: 0x288078fc
   member_id: 0xfc632c0e
   member_id: 0xad130615
   member_id: 0xc48d72bf
 }
 function {
-  id: 0xbb043806
+  id: 0xbb0fd1e3
   return_type_id: 0x62aebfd4  # bool
-  parameter_id: 0x15514ee1  # variant simple::Foo
+  parameter_id: 0x157ee975  # variant simple::Foo
 }
 elf_symbol {
   id: 0x4e2f2fc8
   name: "is_unit"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xbb043806  # bool(variant simple::Foo)
+  type_id: 0xbb0fd1e3  # bool(variant simple::Foo)
   full_name: "simple::is_unit"
 }
 interface {
