@@ -205,7 +205,7 @@ message Variant {
   fixed32 id = 1;
   string name = 2;
   uint64 bytesize = 3;
-  fixed32 discriminant_type_id = 4;
+  optional fixed32 discriminant = 4;
   repeated fixed32 member_id = 5;
 }
 

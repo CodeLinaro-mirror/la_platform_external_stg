@@ -139,7 +139,10 @@ struct Hasher {
   }
 
   HashValue operator()(const Variant& x) {
-    auto h = hash('v', x.name, x.bytesize, (*this)(x.discriminant_type_id));
+    auto h = hash('v', x.name, x.bytesize);
+    if (x.discriminant.has_value()) {
+      todo.insert(x.discriminant.value());
+    }
     ToDo(x.members);
     return h;
   }
