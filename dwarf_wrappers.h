@@ -24,6 +24,7 @@
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
 
+#include <compare>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -37,14 +38,7 @@ namespace stg {
 namespace dwarf {
 
 struct Address {
-  // TODO: use auto operator<=>
-  bool operator<(const Address& other) const {
-    return std::tie(value, is_tls) < std::tie(other.value, other.is_tls);
-  }
-
-  bool operator==(const Address& other) const {
-    return value == other.value && is_tls == other.is_tls;
-  }
+  auto operator<=>(const Address&) const = default;
 
   uint64_t value;
   bool is_tls;
