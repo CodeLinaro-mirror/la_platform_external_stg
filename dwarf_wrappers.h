@@ -24,14 +24,12 @@
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
 
-#include <compare>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace stg {

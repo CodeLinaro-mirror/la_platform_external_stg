@@ -20,7 +20,6 @@
 #include "elf_reader.h"
 
 #include <cstddef>
-#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
