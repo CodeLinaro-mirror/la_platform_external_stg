@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& os, const Address& address) {
 
 namespace {
 
-static const Dwfl_Callbacks kDwflCallbacks = {
+const Dwfl_Callbacks kDwflCallbacks = {
     .find_elf = nullptr,
     .find_debuginfo = dwfl_standard_find_debuginfo,
     .section_address = dwfl_offline_section_address,
