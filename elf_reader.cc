@@ -95,7 +95,7 @@ CRCValuesMap GetCRCValuesMap(const SymbolTable& symbols, const ElfLoader& elf) {
   for (const auto& symbol : symbols) {
     const std::string_view name = symbol.name;
     if (name.substr(0, kCRCPrefix.size()) == kCRCPrefix) {
-      std::string_view name_suffix = name.substr(kCRCPrefix.size());
+      const std::string_view name_suffix = name.substr(kCRCPrefix.size());
       if (!crc_values.emplace(name_suffix, elf.GetElfSymbolCRC(symbol))
                .second) {
         Die() << "Multiple CRC values for symbol '" << name_suffix << '\'';
