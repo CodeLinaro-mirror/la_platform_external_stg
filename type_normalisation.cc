@@ -206,7 +206,7 @@ struct RemoveFunctionQualifiers {
     const auto it = resolved.find(id);
     if (it != resolved.end()) {
       id = it->second;
-      Check(!resolved.count(id)) << "qualifier was resolved to qualifier";
+      Check(!resolved.contains(id)) << "qualifier was resolved to qualifier";
     }
   }
 

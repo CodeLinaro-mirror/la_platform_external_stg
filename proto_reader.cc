@@ -461,8 +461,8 @@ Type Transformer::Transform(const Type& x) {
 const std::array<uint32_t, 3> kSupportedFormatVersions = {0, 1, 2};
 
 void CheckFormatVersion(uint32_t version, std::optional<std::string> path) {
-  Check(std::count(kSupportedFormatVersions.begin(),
-                   kSupportedFormatVersions.end(), version) > 0)
+  Check(std::binary_search(kSupportedFormatVersions.begin(),
+                           kSupportedFormatVersions.end(), version))
       << "STG format version " << version
       << " is not supported, minimum supported version: "
       << kSupportedFormatVersions.front();

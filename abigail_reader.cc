@@ -1264,7 +1264,7 @@ Id Abigail::BuildSymbols() {
   //   symbol / alias -> type
   //
   for (const auto& [alias, main] : alias_to_main_) {
-    Check(!alias_to_main_.count(main))
+    Check(!alias_to_main_.contains(main))
         << "found main symbol and alias with id " << main;
   }
   // Build final symbol table, tying symbols to their types.

@@ -150,7 +150,7 @@ class SetFilter : public Filter {
   explicit SetFilter(Items&& items)
       : items_(std::move(items)) {}
   bool operator()(const std::string& item) const final {
-    return items_.count(item) > 0;
+    return items_.contains(item);
   };
 
  private:

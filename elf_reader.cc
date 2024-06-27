@@ -413,7 +413,7 @@ Id Reader::Read() {
   symbols.reserve(all_symbols.size());
   for (const auto& symbol : all_symbols) {
     if (IsPublicFunctionOrVariable(symbol) &&
-        (!is_linux_kernel || ksymtab_symbols.count(symbol.name))) {
+        (!is_linux_kernel || ksymtab_symbols.contains(symbol.name))) {
       const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
       const size_t address = cfi_it != cfi_address_map.end()
                                  ? cfi_it->second
