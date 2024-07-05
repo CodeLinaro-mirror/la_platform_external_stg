@@ -146,7 +146,9 @@ struct FindQualifiedTypesAndFunctions {
   }
 
   void operator()(const Variant& x, Id) {
-    (*this)(x.discriminant_type_id);
+    if (x.discriminant.has_value()) {
+      (*this)(x.discriminant.value());
+    }
     (*this)(x.members);
   }
 
