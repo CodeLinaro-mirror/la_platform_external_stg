@@ -246,9 +246,7 @@ class Reader {
     SymbolIndex address_name_to_index;
     for (size_t i = 0; i < types.symbols.size(); ++i) {
       const auto& symbol = types.symbols[i];
-      const auto& name = symbol.linkage_name.has_value()
-          ? *symbol.linkage_name : symbol.scoped_name;
-      address_name_to_index[std::make_pair(symbol.address, name)].push_back(i);
+      address_name_to_index[{symbol.address, symbol.linkage_name}].push_back(i);
     }
 
     std::map<std::string, Id> symbols_map;
@@ -370,7 +368,7 @@ class Reader {
       if (best_symbol.scoped_name.empty()) {
         Die() << "DWARF symbol (address = " << best_symbol.address
               << ", linkage_name = "
-              << best_symbol.linkage_name.value_or("{missing}")
+              << best_symbol.linkage_name
               << " should have a name";
       }
       // There may be multiple DWARF symbols with same address (zero-length

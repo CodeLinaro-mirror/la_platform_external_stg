@@ -75,9 +75,13 @@ std::string GetNameOrEmpty(Entry& entry) {
   return std::move(*result);
 }
 
-std::optional<std::string> MaybeGetLinkageName(int version, Entry& entry) {
-  return entry.MaybeGetString(
+std::string GetLinkageName(int version, Entry& entry) {
+  auto linkage_name = entry.MaybeGetString(
       version < 4 ? DW_AT_MIPS_linkage_name : DW_AT_linkage_name);
+  if (linkage_name.has_value()) {
+    return std::move(*linkage_name);
+  }
+  return GetNameOrEmpty(entry);
 }
 
 size_t GetBitSize(Entry& entry) {
@@ -665,9 +669,8 @@ class Processor {
               << " shouldn't have specification";
       }
       const auto vtable_offset = entry.MaybeGetVtableOffset().value_or(0);
-      // TODO: proper handling of missing linkage name
       methods.push_back(AddProcessedNode<Method>(
-          entry, subprogram.linkage_name.value_or("{missing}"),
+          entry, subprogram.linkage_name,
           *subprogram.name_with_context.unscoped_name, vtable_offset, id));
     }
   }
@@ -905,7 +908,7 @@ class Processor {
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, name_with_context),
-          .linkage_name = MaybeGetLinkageName(version_, entry),
+          .linkage_name = GetLinkageName(version_, entry),
           .address = *address,
           .type_id = referred_type_id});
     }
@@ -929,7 +932,7 @@ class Processor {
   struct Subprogram {
     Function node;
     NameWithContext name_with_context;
-    std::optional<std::string> linkage_name;
+    std::string linkage_name;
     std::optional<Address> address;
     bool external;
   };
@@ -1012,7 +1015,7 @@ class Processor {
 
     return Subprogram{.node = Function(return_type_id, parameters),
                       .name_with_context = GetNameWithContext(entry),
-                      .linkage_name = MaybeGetLinkageName(version_, entry),
+                      .linkage_name = GetLinkageName(version_, entry),
                       .address = entry.MaybeGetAddress(DW_AT_low_pc),
                       .external = entry.GetFlag(DW_AT_external)};
   }

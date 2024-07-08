@@ -35,7 +35,7 @@ namespace dwarf {
 struct Types {
   struct Symbol {
     std::string scoped_name;
-    std::optional<std::string> linkage_name;
+    std::string linkage_name;
     Address address;
     Id type_id;
   };
