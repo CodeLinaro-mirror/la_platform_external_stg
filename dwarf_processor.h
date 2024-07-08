@@ -34,10 +34,10 @@ namespace dwarf {
 
 struct Types {
   struct Symbol {
-    std::string name;
+    std::string scoped_name;
     std::optional<std::string> linkage_name;
     Address address;
-    Id id;
+    Id type_id;
   };
 
   size_t processed_entries = 0;

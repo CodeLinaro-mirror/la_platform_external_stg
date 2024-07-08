@@ -246,9 +246,8 @@ class Reader {
     SymbolIndex address_name_to_index;
     for (size_t i = 0; i < types.symbols.size(); ++i) {
       const auto& symbol = types.symbols[i];
-
-      const auto& name =
-          symbol.linkage_name.has_value() ? *symbol.linkage_name : symbol.name;
+      const auto& name = symbol.linkage_name.has_value()
+          ? *symbol.linkage_name : symbol.scoped_name;
       address_name_to_index[std::make_pair(symbol.address, name)].push_back(i);
     }
 
@@ -281,7 +280,7 @@ class Reader {
     std::vector<Id> roots;
     roots.reserve(types.named_type_ids.size() + types.symbols.size() + 1);
     for (const auto& symbol : types.symbols) {
-      roots.push_back(symbol.id);
+      roots.push_back(symbol.type_id);
     }
     for (const auto id : types.named_type_ids) {
       roots.push_back(id);
@@ -297,8 +296,10 @@ class Reader {
   static bool IsEqual(Unification& unification,
                       const dwarf::Types::Symbol& lhs,
                       const dwarf::Types::Symbol& rhs) {
-    return lhs.name == rhs.name && lhs.linkage_name == rhs.linkage_name
-        && lhs.address == rhs.address && unification.Unify(lhs.id, rhs.id);
+    return lhs.scoped_name == rhs.scoped_name
+        && lhs.linkage_name == rhs.linkage_name
+        && lhs.address == rhs.address
+        && unification.Unify(lhs.type_id, rhs.type_id);
   }
 
   static ElfSymbol SymbolTableEntryToElfSymbol(
@@ -363,10 +364,10 @@ class Reader {
         // "void foo(int bar)" vs "void foo(const int bar)"
         if (!IsEqual(unification, best_symbol, other)) {
           Die() << "Duplicate DWARF symbol: address="
-                << best_symbol.address << ", name=" << best_symbol.name;
+                << best_symbol.address << ", name=" << best_symbol.scoped_name;
         }
       }
-      if (best_symbol.name.empty()) {
+      if (best_symbol.scoped_name.empty()) {
         Die() << "DWARF symbol (address = " << best_symbol.address
               << ", linkage_name = "
               << best_symbol.linkage_name.value_or("{missing}")
@@ -378,9 +379,9 @@ class Reader {
       // it should be fixed in analysed binary source code.
       Check(matched_by_name || candidates == 1)
           << "multiple candidates without matching names, best_symbol.name="
-          << best_symbol.name;
-      node.type_id = best_symbol.id;
-      node.full_name = best_symbol.name;
+          << best_symbol.scoped_name;
+      node.type_id = best_symbol.type_id;
+      node.full_name = best_symbol.scoped_name;
     }
   }
 

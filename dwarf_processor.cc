@@ -298,7 +298,7 @@ class Processor {
           names_it->first != symbols_it->first) {
         Die() << "Scoped name not found for entry " << Hex(symbols_it->first);
       }
-      result_.symbols[symbols_it->second].name = names_it->second;
+      result_.symbols[symbols_it->second].scoped_name = names_it->second;
       ++symbols_it;
     }
   }
@@ -647,11 +647,11 @@ class Processor {
       // TODO: cover virtual methods
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(
+          .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = subprogram.linkage_name,
           .address = *subprogram.address,
-          .id = id});
+          .type_id = id});
     }
     const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
                                  .value_or(DW_VIRTUALITY_none);
@@ -903,10 +903,11 @@ class Processor {
       // Only external variables with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(new_symbol_idx, name_with_context),
+          .scoped_name = GetScopedNameForSymbol(
+              new_symbol_idx, name_with_context),
           .linkage_name = MaybeGetLinkageName(version_, entry),
           .address = *address,
-          .id = referred_type_id});
+          .type_id = referred_type_id});
     }
   }
 
@@ -917,11 +918,11 @@ class Processor {
       // Only external functions with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(
+          .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = std::move(subprogram.linkage_name),
           .address = *subprogram.address,
-          .id = id});
+          .type_id = id});
     }
   }
 
