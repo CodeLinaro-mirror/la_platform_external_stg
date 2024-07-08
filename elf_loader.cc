@@ -436,12 +436,11 @@ void ElfLoader::InitializeElfInformation() {
 
 std::string_view ElfLoader::GetBtfRawData() const {
   Elf_Scn* btf_section = GetSectionByName(elf_, ".BTF");
-  Check(btf_section != nullptr) << ".BTF section is invalid";
   Elf_Data* elf_data = elf_rawdata(btf_section, nullptr);
   Check(elf_data != nullptr) << ".BTF section data is invalid";
   const char* btf_start = static_cast<char*>(elf_data->d_buf);
   const size_t btf_size = elf_data->d_size;
-  return std::string_view(btf_start, btf_size);
+  return {btf_start, btf_size};
 }
 
 std::vector<SymbolTableEntry> ElfLoader::GetElfSymbols() const {
