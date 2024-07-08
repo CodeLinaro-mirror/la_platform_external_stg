@@ -362,22 +362,23 @@ class Reader {
         // "void foo(int bar)" vs "void foo(const int bar)"
         if (!IsEqual(unification, best_symbol, other)) {
           Die() << "Duplicate DWARF symbol: address="
-                << best_symbol.address << ", name=" << best_symbol.scoped_name;
+                << best_symbols_it->first.first
+                << ", name=" << best_symbols_it->first.second;
         }
       }
       if (best_symbol.scoped_name.empty()) {
-        Die() << "DWARF symbol (address = " << best_symbol.address
-              << ", linkage_name = "
-              << best_symbol.linkage_name
-              << " should have a name";
+        Die() << "Anonymous DWARF symbol: address="
+              << best_symbols_it->first.first
+              << ", name=" << best_symbols_it->first.second;
       }
       // There may be multiple DWARF symbols with same address (zero-length
       // arrays), or ELF symbol has different name from DWARF symbol (aliases).
       // But if we have both situations at once, we can't match ELF to DWARF and
       // it should be fixed in analysed binary source code.
       Check(matched_by_name || candidates == 1)
-          << "multiple candidates without matching names, best_symbol.name="
-          << best_symbol.scoped_name;
+          << "Multiple candidate symbols without matching name: address="
+          << best_symbols_it->first.first
+          << ", name=" << best_symbols_it->first.second;
       node.type_id = best_symbol.type_id;
       node.full_name = best_symbol.scoped_name;
     }
