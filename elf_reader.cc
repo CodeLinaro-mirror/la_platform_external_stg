@@ -186,6 +186,18 @@ bool IsPublicFunctionOrVariable(const SymbolTableEntry& symbol) {
   return true;
 }
 
+bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
+                                     const SymbolTableEntry& symbol) {
+  // We use symbol name extracted from __ksymtab_ symbols as a proxy for the
+  // real symbol in the ksymtab. Such names can still be duplicated by LOCAL
+  // symbols so drop them to avoid false matches.
+  if (symbol.binding == SymbolTableEntry::Binding::LOCAL) {
+    return false;
+  }
+  // TODO: handle undefined ksymtab symbols
+  return ksymtab.contains(symbol.name);
+}
+
 namespace {
 
 class Reader {
@@ -213,6 +225,13 @@ class Reader {
  private:
   using SymbolIndex =
       std::map<std::pair<dwarf::Address, std::string>, std::vector<size_t>>;
+
+  void GetLinuxKernelSymbols(
+      const std::vector<SymbolTableEntry>& all_symbols,
+      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
+  void GetUserspaceSymbols(
+      const std::vector<SymbolTableEntry>& all_symbols,
+      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
 
   Id BuildRoot(const std::vector<std::pair<ElfSymbol, size_t>>& symbols) {
     // On destruction, the unification object will remove or rewrite each graph
@@ -394,34 +413,45 @@ class Reader {
   Runtime& runtime_;
 };
 
-Id Reader::Read() {
-  const auto all_symbols = elf_.GetElfSymbols();
-  const bool is_linux_kernel = elf_.IsLinuxKernelBinary();
-  const SymbolNameList ksymtab_symbols =
-      is_linux_kernel ? GetKsymtabSymbols(all_symbols) : SymbolNameList();
-
-  CRCValuesMap crc_values;
-  NamespacesMap namespaces;
-  if (is_linux_kernel) {
-    crc_values = GetCRCValuesMap(all_symbols, elf_);
-    namespaces = GetNamespacesMap(all_symbols, elf_);
-  }
-
-  const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
-
-  std::vector<std::pair<ElfSymbol, size_t>> symbols;
-  symbols.reserve(all_symbols.size());
+void Reader::GetLinuxKernelSymbols(
+    const std::vector<SymbolTableEntry>& all_symbols,
+    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+  const auto crcs = GetCRCValuesMap(all_symbols, elf_);
+  const auto namespaces = GetNamespacesMap(all_symbols, elf_);
+  const auto ksymtab_symbols = GetKsymtabSymbols(all_symbols);
   for (const auto& symbol : all_symbols) {
-    if (IsPublicFunctionOrVariable(symbol) &&
-        (!is_linux_kernel || ksymtab_symbols.contains(symbol.name))) {
+    if (IsLinuxKernelFunctionOrVariable(ksymtab_symbols, symbol)) {
+      const size_t address = elf_.GetAbsoluteAddress(symbol);
+      symbols.emplace_back(
+          SymbolTableEntryToElfSymbol(crcs, namespaces, symbol), address);
+    }
+  }
+}
+
+void Reader::GetUserspaceSymbols(
+    const std::vector<SymbolTableEntry>& all_symbols,
+    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+  const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
+  for (const auto& symbol : all_symbols) {
+    if (IsPublicFunctionOrVariable(symbol)) {
       const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
       const size_t address = cfi_it != cfi_address_map.end()
                                  ? cfi_it->second
                                  : elf_.GetAbsoluteAddress(symbol);
       symbols.emplace_back(
-          SymbolTableEntryToElfSymbol(crc_values, namespaces, symbol), address);
+          SymbolTableEntryToElfSymbol({}, {}, symbol), address);
     }
   }
+}
+
+Id Reader::Read() {
+  const auto all_symbols = elf_.GetElfSymbols();
+  const auto get_symbols = elf_.IsLinuxKernelBinary()
+                           ? &Reader::GetLinuxKernelSymbols
+                           : &Reader::GetUserspaceSymbols;
+  std::vector<std::pair<ElfSymbol, size_t>> symbols;
+  symbols.reserve(all_symbols.size());
+  (this->*get_symbols)(all_symbols, symbols);
   symbols.shrink_to_fit();
 
   Id root = BuildRoot(symbols);

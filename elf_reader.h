@@ -59,6 +59,8 @@ NamespacesMap GetNamespacesMap(const SymbolTable& symbols,
                                const ElfLoader& elf);
 AddressMap GetCFIAddressMap(const SymbolTable& symbols, const ElfLoader& elf);
 bool IsPublicFunctionOrVariable(const SymbolTableEntry& symbol);
+bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
+                                     const SymbolTableEntry& symbol);
 
 }  // namespace internal
 }  // namespace elf
