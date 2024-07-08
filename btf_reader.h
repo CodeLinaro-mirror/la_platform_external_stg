@@ -60,6 +60,8 @@ class Structs {
   std::unordered_map<uint32_t, Id> btf_type_ids_;
   std::map<std::string, Id> btf_symbols_;
 
+  Id ProcessAligned(std::string_view data);
+
   Id GetVoid();
   Id GetVariadic();
   Id GetIdRaw(uint32_t btf_index);

@@ -102,13 +102,39 @@ Id Structs::GetParameterId(uint32_t btf_index) {
   return btf_index ? GetIdRaw(btf_index) : GetVariadic();
 }
 
+namespace {
+
+bool IsAlignedForBtf(std::string_view btf_data) {
+  return reinterpret_cast<uintptr_t>(btf_data.data()) % alignof(btf_header) ==
+         0;
+}
+
+}  // namespace
+
 Id Structs::Process(std::string_view btf_data) {
   Check(sizeof(btf_header) <= btf_data.size())
       << "BTF section too small for header";
+  if (IsAlignedForBtf(btf_data)) {
+    return ProcessAligned(btf_data);
+  }
+  // Copy the data to aligned memory.
+  // Check that minimum amount of BTF data containing just btf_header will be
+  // heap allocated and will not fit inside the std::string due to small string
+  // optimization.
+  // TODO: Remove this hack once the upstream binaries have proper
+  // alignment.
+  static_assert(
+      sizeof(btf_header) >= sizeof(std::string),
+      "btf_header may hit small string optimization and be misaligned");
+  const std::string aligned_btf_data(btf_data);
+  Check(IsAlignedForBtf(aligned_btf_data))
+      << "std::string with BTF data is misaligned";
+  return ProcessAligned(aligned_btf_data);
+}
+
+Id Structs::ProcessAligned(std::string_view btf_data) {
   const btf_header* header =
       reinterpret_cast<const btf_header*>(btf_data.data());
-  Check(reinterpret_cast<uintptr_t>(header) % alignof(btf_header) == 0)
-      << "misaligned BTF data";
   Check(header->magic == 0xEB9F) << "Magic field must be 0xEB9F for BTF";
 
   const char* header_limit = btf_data.begin() + header->hdr_len;
@@ -418,7 +444,7 @@ Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
   };
   const FileDescriptor fd(path.c_str(), O_RDONLY);
   const std::unique_ptr<Elf, ElfDeleter> elf(
-      elf_begin(fd.Value(), ELF_C_READ, nullptr));
+      elf_begin(fd.Value(), ELF_C_READ_MMAP, nullptr));
   if (!elf) {
     const int error_code = elf_errno();
     const char* error = elf_errmsg(error_code);
