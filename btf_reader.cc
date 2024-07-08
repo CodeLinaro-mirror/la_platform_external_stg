@@ -429,7 +429,7 @@ Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
     }
   }
   const elf::ElfLoader loader(elf.get());
-  return Structs(graph).Process(loader.GetBtfRawData());
+  return Structs(graph).Process(loader.GetSectionRawData(".BTF"));
 }
 
 }  // namespace btf

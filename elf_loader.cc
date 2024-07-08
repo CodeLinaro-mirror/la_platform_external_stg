@@ -245,6 +245,12 @@ size_t GetNumberOfEntries(const GElf_Shdr& section_header) {
   return section_header.sh_size / section_header.sh_entsize;
 }
 
+std::string_view GetRawData(Elf_Scn* section, const char* name) {
+  Elf_Data* data = elf_rawdata(section, nullptr);
+  Check(data != nullptr) << "elf_rawdata failed on section " << name;
+  return {static_cast<char*>(data->d_buf), data->d_size};
+}
+
 std::string_view GetString(Elf* elf, uint32_t section, size_t offset) {
   const auto name = elf_strptr(elf, section, offset);
 
@@ -434,13 +440,8 @@ void ElfLoader::InitializeElfInformation() {
   is_little_endian_binary_ = elf::IsLittleEndianBinary(elf_);
 }
 
-std::string_view ElfLoader::GetBtfRawData() const {
-  Elf_Scn* btf_section = GetSectionByName(elf_, ".BTF");
-  Elf_Data* elf_data = elf_rawdata(btf_section, nullptr);
-  Check(elf_data != nullptr) << ".BTF section data is invalid";
-  const char* btf_start = static_cast<char*>(elf_data->d_buf);
-  const size_t btf_size = elf_data->d_size;
-  return {btf_start, btf_size};
+std::string_view ElfLoader::GetSectionRawData(const char* name) const {
+  return GetRawData(GetSectionByName(elf_, name), name);
 }
 
 std::vector<SymbolTableEntry> ElfLoader::GetElfSymbols() const {
