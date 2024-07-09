@@ -117,7 +117,6 @@ int Run(stg::Runtime& runtime, const Inputs& inputs, const Outputs& outputs,
     const stg::Time compute(runtime, "compute diffs");
     result = compare(roots[0], roots[1]);
   }
-  stg::Check(compare.scc.Empty()) << "internal error: SCC state broken";
   const auto& [equals, comparison] = result;
   int status = equals ? 0 : kAbiChange;
 

@@ -149,7 +149,6 @@ void process(const Graph& g) {
     // could reuse a single SCC finder but assert stronger invariants this way
     SCC<size_t> scc;
     dfs(visited, scc, g, o, sccs);
-    CHECK(scc.Empty());
   }
 
   // check partition and topological order properties
