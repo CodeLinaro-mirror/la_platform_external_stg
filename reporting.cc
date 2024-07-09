@@ -78,7 +78,7 @@ namespace {
 std::string GetResolvedDescription(
     const Graph& graph, NameCache& names, Id id) {
   std::ostringstream os;
-  const auto [resolved, typedefs] = ResolveTypedefs(graph, id);
+  const auto [resolved, typedefs] = diff::ResolveTypedefs(graph, id);
   for (const auto& td : typedefs) {
     os << '\'' << td << "' = ";
   }
@@ -92,9 +92,9 @@ std::string GetResolvedDescription(
 // empty.
 //
 // It returns true if the comparison denotes addition or removal of a node.
-bool PrintComparison(const Reporting& reporting, const Comparison& comparison,
-                     std::ostream& os, size_t indent,
-                     const std::string& prefix) {
+bool PrintComparison(const Reporting& reporting,
+                     const diff::Comparison& comparison, std::ostream& os,
+                     size_t indent, const std::string& prefix) {
   os << std::string(indent, ' ');
   if (!prefix.empty()) {
     os << prefix << ' ';
@@ -139,24 +139,24 @@ static constexpr size_t INDENT_INCREMENT = 2;
 
 class Plain {
   // unvisited (absent) -> started (false) -> finished (true)
-  using Seen = std::unordered_map<Comparison, bool, HashComparison>;
+  using Seen = std::unordered_map<diff::Comparison, bool, diff::HashComparison>;
 
  public:
   Plain(const Reporting& reporting, std::ostream& output)
       : reporting_(reporting), output_(output) {}
 
-  void Report(const Comparison&);
+  void Report(const diff::Comparison&);
 
  private:
   const Reporting& reporting_;
   std::ostream& output_;
   Seen seen_;
 
-  void Print(const Comparison&, size_t, const std::string&);
+  void Print(const diff::Comparison&, size_t, const std::string&);
 };
 
-void Plain::Print(const Comparison& comparison, size_t indent,
-           const std::string& prefix) {
+void Plain::Print(const diff::Comparison& comparison, size_t indent,
+                  const std::string& prefix) {
   if (PrintComparison(reporting_, comparison, output_, indent, prefix)) {
     return;
   }
@@ -196,7 +196,7 @@ void Plain::Print(const Comparison& comparison, size_t indent,
   }
 }
 
-void Plain::Report(const Comparison& comparison) {
+void Plain::Report(const diff::Comparison& comparison) {
   // unpack then print - want symbol diff forest rather than symbols diff tree
   const auto& diff = reporting_.outcomes.at(comparison);
   for (const auto& detail : diff.details) {
@@ -216,21 +216,21 @@ class Flat {
   Flat(const Reporting& reporting, bool full, std::ostream& output)
       : reporting_(reporting), full_(full), output_(output) {}
 
-  void Report(const Comparison&);
+  void Report(const diff::Comparison&);
 
  private:
   const Reporting& reporting_;
   const bool full_;
   std::ostream& output_;
-  std::unordered_set<Comparison, HashComparison> seen_;
-  std::deque<Comparison> todo_;
+  std::unordered_set<diff::Comparison, diff::HashComparison> seen_;
+  std::deque<diff::Comparison> todo_;
 
-  bool Print(const Comparison&, bool, std::ostream&, size_t,
+  bool Print(const diff::Comparison&, bool, std::ostream&, size_t,
              const std::string&);
 };
 
-bool Flat::Print(const Comparison& comparison, bool stop, std::ostream& os,
-                 size_t indent, const std::string& prefix) {
+bool Flat::Print(const diff::Comparison& comparison, bool stop,
+                 std::ostream& os, size_t indent, const std::string& prefix) {
   // Nodes that represent additions or removal are always interesting and no
   // recursion is possible.
   if (PrintComparison(reporting_, comparison, os, indent, prefix)) {
@@ -281,7 +281,7 @@ bool Flat::Print(const Comparison& comparison, bool stop, std::ostream& os,
   return interesting;
 }
 
-void Flat::Report(const Comparison& comparison) {
+void Flat::Report(const diff::Comparison& comparison) {
   // We want a symbol diff forest rather than a symbol table diff tree, so
   // unpack the symbol table and then print the symbols specially.
   const auto& diff = reporting_.outcomes.at(comparison);
@@ -303,15 +303,17 @@ void Flat::Report(const Comparison& comparison) {
   }
 }
 
-size_t VizId(std::unordered_map<Comparison, size_t, HashComparison>& ids,
-             const Comparison& comparison) {
+size_t VizId(
+    std::unordered_map<diff::Comparison, size_t, diff::HashComparison>& ids,
+    const diff::Comparison& comparison) {
   return ids.insert({comparison, ids.size()}).first->second;
 }
 
-void VizPrint(const Reporting& reporting, const Comparison& comparison,
-              std::unordered_set<Comparison, HashComparison>& seen,
-              std::unordered_map<Comparison, size_t, HashComparison>& ids,
-              std::ostream& os) {
+void VizPrint(
+    const Reporting& reporting, const diff::Comparison& comparison,
+    std::unordered_set<diff::Comparison, diff::HashComparison>& seen,
+    std::unordered_map<diff::Comparison, size_t, diff::HashComparison>& ids,
+    std::ostream& os) {
   if (!seen.insert(comparison).second) {
     return;
   }
@@ -373,11 +375,11 @@ void VizPrint(const Reporting& reporting, const Comparison& comparison,
   }
 }
 
-void ReportViz(const Reporting& reporting, const Comparison& comparison,
+void ReportViz(const Reporting& reporting, const diff::Comparison& comparison,
                std::ostream& output) {
   output << "digraph \"ABI diff\" {\n";
-  std::unordered_set<Comparison, HashComparison> seen;
-  std::unordered_map<Comparison, size_t, HashComparison> ids;
+  std::unordered_set<diff::Comparison, diff::HashComparison> seen;
+  std::unordered_map<diff::Comparison, size_t, diff::HashComparison> ids;
   VizPrint(reporting, comparison, seen, ids, output);
   output << "}\n";
 }
@@ -395,7 +397,7 @@ void PrintFidelityReportBucket(T transition,
 
 }  // namespace
 
-void Report(const Reporting& reporting, const Comparison& comparison,
+void Report(const Reporting& reporting, const diff::Comparison& comparison,
             std::ostream& output) {
   switch (reporting.options.format) {
     case OutputFormat::PLAIN: {

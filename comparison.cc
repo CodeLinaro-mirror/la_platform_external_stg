@@ -38,6 +38,7 @@
 #include "order.h"
 
 namespace stg {
+namespace diff {
 
 struct IgnoreDescriptor {
   std::string_view name;
@@ -807,4 +808,5 @@ std::string MatchingKey::operator()(const Node&) {
   return {};
 }
 
+}  // namespace diff
 }  // namespace stg

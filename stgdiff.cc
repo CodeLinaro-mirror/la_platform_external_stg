@@ -104,15 +104,15 @@ int RunExact(stg::Runtime& runtime, const Inputs& inputs,
 }
 
 int Run(stg::Runtime& runtime, const Inputs& inputs, const Outputs& outputs,
-        stg::Ignore ignore, stg::ReadOptions options,
+        stg::diff::Ignore ignore, stg::ReadOptions options,
         std::optional<const char*> fidelity) {
   // Read inputs.
   stg::Graph graph;
   const auto roots = Read(runtime, inputs, graph, options);
 
   // Compute differences.
-  stg::Compare compare{runtime, graph, ignore};
-  std::pair<bool, std::optional<stg::Comparison>> result;
+  stg::diff::Compare compare{runtime, graph, ignore};
+  std::pair<bool, std::optional<stg::diff::Comparison>> result;
   {
     const stg::Time compute(runtime, "compute diffs");
     result = compare(roots[0], roots[1]);
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
   bool opt_exact = false;
   stg::ReadOptions opt_read_options;
   std::optional<const char*> opt_fidelity = std::nullopt;
-  stg::Ignore opt_ignore;
+  stg::diff::Ignore opt_ignore;
   stg::InputFormat opt_input_format = stg::InputFormat::ABI;
   stg::reporting::OutputFormat opt_output_format =
       stg::reporting::OutputFormat::PLAIN;
@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
               << "implicit defaults: --abi --format plain\n"
               << "--exact (node equality) cannot be combined with --output\n"
               << stg::reporting::OutputFormatUsage()
-              << stg::IgnoreUsage();
+              << stg::diff::IgnoreUsage();
     return 1;
   };
   while (true) {
@@ -225,11 +225,11 @@ int main(int argc, char* argv[]) {
         inputs.emplace_back(opt_input_format, argument);
         break;
       case 'i':
-        if (const auto ignore = stg::ParseIgnore(argument)) {
+        if (const auto ignore = stg::diff::ParseIgnore(argument)) {
           opt_ignore.Set(ignore.value());
         } else {
           std::cerr << "unknown ignore option: " << argument << '\n'
-                    << stg::IgnoreUsage();
+                    << stg::diff::IgnoreUsage();
           return 1;
         }
         break;
