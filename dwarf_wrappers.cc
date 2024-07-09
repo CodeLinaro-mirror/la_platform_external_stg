@@ -169,13 +169,13 @@ void Handler::InitialiseDwarf() {
                    "dwfl_report_end");
   GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
   dwarf_ = dwfl_module_getdwarf(dwfl_module_, &loadbase);
-  CheckOrDwflError(dwarf_, "dwfl_module_getdwarf");
+  CheckOrDwflError(dwarf_ != nullptr, "dwfl_module_getdwarf");
 }
 
 Elf* Handler::GetElf() {
   GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
   Elf* elf = dwfl_module_getelf(dwfl_module_, &loadbase);
-  CheckOrDwflError(elf, "dwfl_module_getelf");
+  CheckOrDwflError(elf != nullptr, "dwfl_module_getelf");
   return elf;
 }
 
@@ -195,7 +195,8 @@ std::vector<CompilationUnit> Handler::GetCompilationUnits() {
       break;
     }
     result.push_back({version, {}});
-    Check(dwarf_offdie(dwarf_, offset + header_size, &result.back().entry.die))
+    Check(dwarf_offdie(dwarf_, offset + header_size,
+                       &result.back().entry.die) != nullptr)
         << "dwarf_offdie returned error";
 
     offset = next_offset;
