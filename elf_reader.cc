@@ -322,7 +322,7 @@ class Reader {
   static ElfSymbol SymbolTableEntryToElfSymbol(
       const CRCValuesMap& crc_values, const NamespacesMap& namespaces,
       const SymbolTableEntry& symbol) {
-    return ElfSymbol(
+    return {
         /* symbol_name = */ std::string(symbol.name),
         /* version_info = */ std::nullopt,
         /* is_defined = */
@@ -333,7 +333,7 @@ class Reader {
         /* crc = */ MaybeGet(crc_values, std::string(symbol.name)),
         /* ns = */ MaybeGet(namespaces, std::string(symbol.name)),
         /* type_id = */ std::nullopt,
-        /* full_name = */ std::nullopt);
+        /* full_name = */ std::nullopt};
   }
 
   static void MaybeAddTypeInfo(

@@ -833,7 +833,7 @@ Function Abigail::MakeFunctionType(xmlNodePtr function) {
   if (!return_type) {
     Die() << "missing return-type";
   }
-  return Function(*return_type, parameters);
+  return {*return_type, parameters};
 }
 
 Id Abigail::ProcessRoot(xmlNodePtr root) {

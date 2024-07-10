@@ -70,7 +70,7 @@ std::string GetName(Entry& entry) {
 std::string GetNameOrEmpty(Entry& entry) {
   auto result = MaybeGetName(entry);
   if (!result.has_value()) {
-    return std::string();
+    return {};
   }
   return std::move(*result);
 }

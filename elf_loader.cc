@@ -515,7 +515,7 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
   Check(offset + length < data->d_size)
       << "Namespace string should be null-terminated";
 
-  return std::string_view(begin, length);
+  return {begin, length};
 }
 
 size_t ElfLoader::GetAbsoluteAddress(const SymbolTableEntry& symbol) const {
