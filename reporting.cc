@@ -269,7 +269,7 @@ bool Flat::Print(const diff::Comparison& comparison, bool stop,
       // Edge changes are interesting if the target diff node is.
       std::ostringstream sub_os;
       // Set the stop flag to prevent recursion past diff-holding nodes.
-      bool sub_interesting =
+      const bool sub_interesting =
           Print(*detail.edge_, true, sub_os, indent, detail.text_);
       // If the sub-tree was interesting, add it.
       if (sub_interesting || full_) {
@@ -406,7 +406,7 @@ void Report(const Reporting& reporting, const diff::Comparison& comparison,
     }
     case OutputFormat::FLAT:
     case OutputFormat::SMALL: {
-      bool full = reporting.options.format == OutputFormat::FLAT;
+      const bool full = reporting.options.format == OutputFormat::FLAT;
       Flat(reporting, full, output).Report(comparison);
       break;
     }

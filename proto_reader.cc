@@ -244,7 +244,7 @@ void Transformer::AddNode(const ElfSymbol& x) {
     return std::make_optional(
         stg::ElfSymbol::VersionInfo{x.is_default(), x.name()});
   };
-  std::optional<stg::ElfSymbol::VersionInfo> version_info =
+  const std::optional<stg::ElfSymbol::VersionInfo> version_info =
       x.has_version_info() ? make_version_info(x.version_info()) : std::nullopt;
   const auto& crc = x.has_crc()
                         ? std::make_optional<stg::ElfSymbol::CRC>(x.crc())
@@ -283,7 +283,7 @@ std::vector<Id> Transformer::Transform(
     const google::protobuf::RepeatedField<uint32_t>& ids) {
   std::vector<Id> result;
   result.reserve(ids.size());
-  for (uint32_t id : ids) {
+  for (const uint32_t id : ids) {
     result.push_back(GetId(id));
   }
   return result;

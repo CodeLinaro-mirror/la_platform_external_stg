@@ -85,7 +85,7 @@ std::optional<Dwarf_Attribute> GetDirectAttribute(Dwarf_Die* die,
 
 void CheckOrDwflError(bool condition, const char* caller) {
   if (!condition) {
-    int dwfl_error = dwfl_errno();
+    const int dwfl_error = dwfl_errno();
     const char* errmsg = dwfl_errmsg(dwfl_error);
     if (errmsg == nullptr) {
       // There are some cases when DWFL fails to produce an error message.
@@ -188,7 +188,7 @@ std::vector<CompilationUnit> Handler::GetCompilationUnits() {
     Dwarf_Off next_offset;
     size_t header_size = 0;
     Dwarf_Half version = 0;
-    int return_code =
+    const int return_code =
         dwarf_next_unit(dwarf_, offset, &next_offset, &header_size, &version,
                         nullptr, nullptr, nullptr, nullptr, nullptr);
     Check(return_code == kReturnOk || return_code == kReturnNoEntry)

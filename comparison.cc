@@ -591,7 +591,7 @@ Result Compare::operator()(const Function& x1, const Function& x2) {
 
   const auto& parameters1 = x1.parameters;
   const auto& parameters2 = x2.parameters;
-  size_t min = std::min(parameters1.size(), parameters2.size());
+  const size_t min = std::min(parameters1.size(), parameters2.size());
   for (size_t i = 0; i < min; ++i) {
     const Id p1 = parameters1.at(i);
     const Id p2 = parameters2.at(i);
@@ -602,7 +602,7 @@ Result Compare::operator()(const Function& x1, const Function& x2) {
         (*this)(p1, p2));
   }
 
-  bool added = parameters1.size() < parameters2.size();
+  const bool added = parameters1.size() < parameters2.size();
   const auto& which = added ? x2 : x1;
   const auto& parameters = which.parameters;
   for (size_t i = min; i < parameters.size(); ++i) {

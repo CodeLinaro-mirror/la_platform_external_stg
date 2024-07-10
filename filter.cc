@@ -71,7 +71,7 @@ Items ReadAbigail(const std::string& filename) {
     }
     // See if we are entering a filter list section.
     if (line[start] == '[' && line[limit - 1] == ']') {
-      std::string_view section(&line[start + 1], limit - start - 2);
+      const std::string_view section(&line[start + 1], limit - start - 2);
       // TODO: use std::string_view::ends_with
       const auto section_size = section.size();
       const auto suffix_size = kSectionSuffix.size();
