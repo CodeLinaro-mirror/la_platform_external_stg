@@ -95,7 +95,7 @@ class Handler {
   explicit Handler(const std::string& path);
   Handler(char* data, size_t size);
 
-  Elf* GetElf();
+  Elf& GetElf();
   std::vector<CompilationUnit> GetCompilationUnits();
 
  private:

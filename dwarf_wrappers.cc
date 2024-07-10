@@ -174,11 +174,11 @@ void Handler::InitialiseDwarf() {
   CheckOrDwflError(dwarf_ != nullptr, "dwfl_module_getdwarf");
 }
 
-Elf* Handler::GetElf() {
+Elf& Handler::GetElf() {
   GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
   Elf* elf = dwfl_module_getelf(dwfl_module_, &loadbase);
   CheckOrDwflError(elf != nullptr, "dwfl_module_getelf");
-  return elf;
+  return *elf;
 }
 
 std::vector<CompilationUnit> Handler::GetCompilationUnits() {

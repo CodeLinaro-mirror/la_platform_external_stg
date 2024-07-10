@@ -428,9 +428,8 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-ElfLoader::ElfLoader(Elf* elf)
-    : elf_(elf) {
-  Check(elf_ != nullptr) << "No ELF was provided";
+ElfLoader::ElfLoader(Elf& elf)
+    : elf_(&elf) {
   InitializeElfInformation();
 }
 

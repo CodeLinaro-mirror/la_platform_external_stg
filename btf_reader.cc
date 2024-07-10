@@ -454,7 +454,7 @@ Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
       Die() << "elf_begin returned error: " << error_code;
     }
   }
-  const elf::ElfLoader loader(elf.get());
+  const elf::ElfLoader loader(*elf);
   return Structs(graph).Process(loader.GetSectionRawData(".BTF"));
 }
 
