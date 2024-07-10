@@ -20,6 +20,8 @@
 #ifndef STG_DWARF_PROCESSOR_H_
 #define STG_DWARF_PROCESSOR_H_
 
+#include <elfutils/libdw.h>
+
 #include <cstddef>
 #include <optional>
 #include <string>
@@ -48,7 +50,7 @@ struct Types {
 
 // Process every compilation unit from DWARF and returns processed STG along
 // with information needed for matching to ELF symbols.
-Types Process(Handler& dwarf, bool is_little_endian_binary,
+Types Process(Dwarf& dwarf, bool is_little_endian_binary,
               const std::unique_ptr<Filter>& file_filter, Graph& graph);
 
 }  // namespace dwarf

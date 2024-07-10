@@ -244,7 +244,7 @@ class Reader {
     Unification unification(runtime_, graph_, graph_.Limit());
 
     const dwarf::Types types = dwarf::Process(
-        dwarf_, elf_.IsLittleEndianBinary(), file_filter_, graph_);
+        dwarf_.GetDwarf(), elf_.IsLittleEndianBinary(), file_filter_, graph_);
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.
