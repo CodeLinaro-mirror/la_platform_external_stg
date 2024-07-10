@@ -97,7 +97,6 @@ class Handler {
 
   Elf& GetElf();
   Dwarf& GetDwarf();
-  std::vector<CompilationUnit> GetCompilationUnits();
 
  private:
   struct DwflDeleter {
@@ -112,6 +111,8 @@ class Handler {
   // Lifetime of Dwfl_Module is controlled by Dwfl.
   Dwfl_Module* dwfl_module_ = nullptr;
 };
+
+std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf);
 
 class Files {
  public:

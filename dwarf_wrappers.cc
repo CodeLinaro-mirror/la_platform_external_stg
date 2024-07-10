@@ -185,8 +185,7 @@ Dwarf& Handler::GetDwarf() {
   return *dwarf;
 }
 
-std::vector<CompilationUnit> Handler::GetCompilationUnits() {
-  Dwarf& dwarf = GetDwarf();
+std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf) {
   std::vector<CompilationUnit> result;
   Dwarf_Off offset = 0;
   while (true) {

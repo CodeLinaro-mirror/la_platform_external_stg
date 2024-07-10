@@ -1078,7 +1078,7 @@ Types Process(Handler& dwarf, bool is_little_endian_binary,
   // TODO: Scope Processor to compilation units?
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
                       file_filter, result);
-  for (auto& compilation_unit : dwarf.GetCompilationUnits()) {
+  for (auto& compilation_unit : GetCompilationUnits(dwarf.GetDwarf())) {
     // Could fetch top-level attributes like compiler here.
     processor.ProcessCompilationUnit(compilation_unit);
   }
