@@ -169,9 +169,6 @@ void Handler::InitialiseDwarf() {
   // Finish adding files to dwfl and process them
   CheckOrDwflError(dwfl_report_end(dwfl_.get(), nullptr, nullptr) == kReturnOk,
                    "dwfl_report_end");
-  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
-  dwarf_ = dwfl_module_getdwarf(dwfl_module_, &loadbase);
-  CheckOrDwflError(dwarf_ != nullptr, "dwfl_module_getdwarf");
 }
 
 Elf& Handler::GetElf() {
@@ -181,7 +178,15 @@ Elf& Handler::GetElf() {
   return *elf;
 }
 
+Dwarf& Handler::GetDwarf() {
+  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
+  Dwarf* dwarf = dwfl_module_getdwarf(dwfl_module_, &loadbase);
+  CheckOrDwflError(dwarf != nullptr, "dwfl_module_getdwarf");
+  return *dwarf;
+}
+
 std::vector<CompilationUnit> Handler::GetCompilationUnits() {
+  Dwarf& dwarf = GetDwarf();
   std::vector<CompilationUnit> result;
   Dwarf_Off offset = 0;
   while (true) {
@@ -189,7 +194,7 @@ std::vector<CompilationUnit> Handler::GetCompilationUnits() {
     size_t header_size = 0;
     Dwarf_Half version = 0;
     const int return_code =
-        dwarf_next_unit(dwarf_, offset, &next_offset, &header_size, &version,
+        dwarf_next_unit(&dwarf, offset, &next_offset, &header_size, &version,
                         nullptr, nullptr, nullptr, nullptr, nullptr);
     Check(return_code == kReturnOk || return_code == kReturnNoEntry)
         << "dwarf_next_unit returned error";
@@ -197,7 +202,7 @@ std::vector<CompilationUnit> Handler::GetCompilationUnits() {
       break;
     }
     result.push_back({version, {}});
-    Check(dwarf_offdie(dwarf_, offset + header_size,
+    Check(dwarf_offdie(&dwarf, offset + header_size,
                        &result.back().entry.die) != nullptr)
         << "dwarf_offdie returned error";
 

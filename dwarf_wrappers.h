@@ -96,6 +96,7 @@ class Handler {
   Handler(char* data, size_t size);
 
   Elf& GetElf();
+  Dwarf& GetDwarf();
   std::vector<CompilationUnit> GetCompilationUnits();
 
  private:
@@ -108,9 +109,8 @@ class Handler {
   void InitialiseDwarf();
 
   std::unique_ptr<Dwfl, DwflDeleter> dwfl_;
-  // Lifetime of Dwfl_Module and Dwarf is controlled by Dwfl.
+  // Lifetime of Dwfl_Module is controlled by Dwfl.
   Dwfl_Module* dwfl_module_ = nullptr;
-  Dwarf* dwarf_ = nullptr;
 };
 
 class Files {
