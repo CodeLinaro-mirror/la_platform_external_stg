@@ -24,12 +24,9 @@
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
 #include <fcntl.h>
-#include <gelf.h>
-#include <libelf.h>
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -46,12 +43,6 @@ std::ostream& operator<<(std::ostream& os, const Address& address) {
 }
 
 namespace {
-
-const Dwfl_Callbacks kDwflCallbacks = {
-    .find_elf = nullptr,
-    .find_debuginfo = dwfl_standard_find_debuginfo,
-    .section_address = dwfl_offline_section_address,
-    .debuginfo_path = nullptr};
 
 constexpr int kReturnOk = 0;
 constexpr int kReturnNoEntry = 1;
@@ -81,18 +72,6 @@ std::optional<Dwarf_Attribute> GetDirectAttribute(Dwarf_Die* die,
     result.reset();
   }
   return result;
-}
-
-void CheckOrDwflError(bool condition, const char* caller) {
-  if (!condition) {
-    const int dwfl_error = dwfl_errno();
-    const char* errmsg = dwfl_errmsg(dwfl_error);
-    if (errmsg == nullptr) {
-      // There are some cases when DWFL fails to produce an error message.
-      Die() << caller << " returned error code " << Hex(dwfl_error);
-    }
-    Die() << caller << " returned error: " << errmsg;
-  }
 }
 
 std::optional<uint64_t> MaybeGetUnsignedOperand(const Dwarf_Op& operand) {
@@ -147,43 +126,6 @@ std::optional<Expression> MaybeGetExpression(Dwarf_Attribute& attribute) {
 }
 
 }  // namespace
-
-Handler::Handler(const std::string& path) : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
-  // Add data to process to dwfl
-  dwfl_module_ =
-      dwfl_report_offline(dwfl_.get(), path.c_str(), path.c_str(), -1);
-  InitialiseDwarf();
-}
-
-Handler::Handler(char* data, size_t size) : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
-  // Add data to process to dwfl
-  dwfl_module_ = dwfl_report_offline_memory(dwfl_.get(), "<memory>", "<memory>",
-                                            data, size);
-  InitialiseDwarf();
-}
-
-void Handler::InitialiseDwarf() {
-  CheckOrDwflError(dwfl_.get(), "dwfl_report_offline");
-  // Finish adding files to dwfl and process them
-  CheckOrDwflError(dwfl_report_end(dwfl_.get(), nullptr, nullptr) == kReturnOk,
-                   "dwfl_report_end");
-}
-
-Elf& Handler::GetElf() {
-  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
-  Elf* elf = dwfl_module_getelf(dwfl_module_, &loadbase);
-  CheckOrDwflError(elf != nullptr, "dwfl_module_getelf");
-  return *elf;
-}
-
-Dwarf& Handler::GetDwarf() {
-  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
-  Dwarf* dwarf = dwfl_module_getdwarf(dwfl_module_, &loadbase);
-  CheckOrDwflError(dwarf != nullptr, "dwfl_module_getdwarf");
-  return *dwarf;
-}
 
 std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf) {
   std::vector<CompilationUnit> result;

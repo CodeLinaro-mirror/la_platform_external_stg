@@ -22,11 +22,9 @@
 
 #include <elf.h>
 #include <elfutils/libdw.h>
-#include <elfutils/libdwfl.h>
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -84,32 +82,6 @@ struct Entry {
 struct CompilationUnit {
   int version;
   Entry entry;
-};
-
-// C++ wrapper over libdw (DWARF library).
-//
-// Creates a "Dwarf" object from an ELF file or a memory and controls the life
-// cycle of the created objects.
-class Handler {
- public:
-  explicit Handler(const std::string& path);
-  Handler(char* data, size_t size);
-
-  Elf& GetElf();
-  Dwarf& GetDwarf();
-
- private:
-  struct DwflDeleter {
-    void operator()(Dwfl* dwfl) {
-      dwfl_end(dwfl);
-    }
-  };
-
-  void InitialiseDwarf();
-
-  std::unique_ptr<Dwfl, DwflDeleter> dwfl_;
-  // Lifetime of Dwfl_Module is controlled by Dwfl.
-  Dwfl_Module* dwfl_module_ = nullptr;
 };
 
 std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf);

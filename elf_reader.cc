@@ -29,7 +29,7 @@
 #include <vector>
 
 #include "dwarf_processor.h"
-#include "dwarf_wrappers.h"
+#include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"
 #include "filter.h"
@@ -205,8 +205,8 @@ class Reader {
   Reader(Runtime& runtime, Graph& graph, const std::string& path,
          ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
-        dwarf_(path),
-        elf_(dwarf_.GetElf()),
+        elf_dwarf_handle_(path),
+        elf_(elf_dwarf_handle_.GetElf()),
         options_(options),
         file_filter_(file_filter),
         runtime_(runtime) {}
@@ -214,8 +214,8 @@ class Reader {
   Reader(Runtime& runtime, Graph& graph, char* data, size_t size,
          ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
-        dwarf_(data, size),
-        elf_(dwarf_.GetElf()),
+        elf_dwarf_handle_(data, size),
+        elf_(elf_dwarf_handle_.GetElf()),
         options_(options),
         file_filter_(file_filter),
         runtime_(runtime) {}
@@ -243,8 +243,9 @@ class Reader {
     // the starting node ID to be the current graph limit.
     Unification unification(runtime_, graph_, graph_.Limit());
 
-    const dwarf::Types types = dwarf::Process(
-        dwarf_.GetDwarf(), elf_.IsLittleEndianBinary(), file_filter_, graph_);
+    const dwarf::Types types =
+        dwarf::Process(elf_dwarf_handle_.GetDwarf(),
+                       elf_.IsLittleEndianBinary(), file_filter_, graph_);
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.
@@ -405,8 +406,8 @@ class Reader {
 
   Graph& graph_;
   // The order of the following two fields is important because ElfLoader uses
-  // an Elf* from dwarf::Handler without owning it.
-  dwarf::Handler dwarf_;
+  // an Elf* from ElfDwarfHandlewithout owning it.
+  ElfDwarfHandle elf_dwarf_handle_;
   elf::ElfLoader elf_;
   ReadOptions options_;
   const std::unique_ptr<Filter>& file_filter_;
