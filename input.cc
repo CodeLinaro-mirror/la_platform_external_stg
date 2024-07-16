@@ -24,6 +24,7 @@
 
 #include "abigail_reader.h"
 #include "btf_reader.h"
+#include "elf_dwarf_handle.h"
 #include "elf_reader.h"
 #include "error.h"
 #include "filter.h"
@@ -50,7 +51,8 @@ Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
     }
     case InputFormat::ELF: {
       const Time read(runtime, "read ELF");
-      return elf::Read(runtime, graph, input, options, file_filter);
+      ElfDwarfHandle elf_dwarf_handle(input);
+      return elf::Read(runtime, graph, elf_dwarf_handle, options, file_filter);
     }
     case InputFormat::STG: {
       const Time read(runtime, "read STG");

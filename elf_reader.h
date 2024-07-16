@@ -28,6 +28,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "filter.h"
 #include "graph.h"
@@ -37,9 +38,7 @@
 namespace stg {
 namespace elf {
 
-Id Read(Runtime& runtime, Graph& graph, const std::string& path,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
-Id Read(Runtime& runtime, Graph& graph, char* data, size_t size,
+Id Read(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
         ReadOptions options, const std::unique_ptr<Filter>& file_filter);
 
 // For unit tests only

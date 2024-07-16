@@ -202,19 +202,10 @@ namespace {
 
 class Reader {
  public:
-  Reader(Runtime& runtime, Graph& graph, const std::string& path,
+  Reader(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
          ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
-        elf_dwarf_handle_(path),
-        elf_(elf_dwarf_handle_.GetElf()),
-        options_(options),
-        file_filter_(file_filter),
-        runtime_(runtime) {}
-
-  Reader(Runtime& runtime, Graph& graph, char* data, size_t size,
-         ReadOptions options, const std::unique_ptr<Filter>& file_filter)
-      : graph_(graph),
-        elf_dwarf_handle_(data, size),
+        elf_dwarf_handle_(elf_dwarf_handle),
         elf_(elf_dwarf_handle_.GetElf()),
         options_(options),
         file_filter_(file_filter),
@@ -405,10 +396,8 @@ class Reader {
   }
 
   Graph& graph_;
-  // The order of the following two fields is important because ElfLoader uses
-  // an Elf* from ElfDwarfHandlewithout owning it.
-  ElfDwarfHandle elf_dwarf_handle_;
-  elf::ElfLoader elf_;
+  ElfDwarfHandle& elf_dwarf_handle_;
+  ElfLoader elf_;
   ReadOptions options_;
   const std::unique_ptr<Filter>& file_filter_;
   Runtime& runtime_;
@@ -467,14 +456,10 @@ Id Reader::Read() {
 }  // namespace
 }  // namespace internal
 
-Id Read(Runtime& runtime, Graph& graph, const std::string& path,
+Id Read(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
         ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
-  return internal::Reader(runtime, graph, path, options, file_filter).Read();
-}
-
-Id Read(Runtime& runtime, Graph& graph, char* data, size_t size,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
-  return internal::Reader(runtime, graph, data, size, options, file_filter)
+  return internal::Reader(runtime, graph, elf_dwarf_handle, options,
+                          file_filter)
       .Read();
 }
 
