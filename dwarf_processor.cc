@@ -1070,15 +1070,20 @@ class Processor {
   uint64_t language_;
 };
 
-Types Process(Dwarf& dwarf, bool is_little_endian_binary,
+Types Process(Dwarf* dwarf, bool is_little_endian_binary,
               const std::unique_ptr<Filter>& file_filter, Graph& graph) {
   Types result;
+
+  if (dwarf == nullptr) {
+    return result;
+  }
+
   const Id void_id = graph.Add<Special>(Special::Kind::VOID);
   const Id variadic_id = graph.Add<Special>(Special::Kind::VARIADIC);
   // TODO: Scope Processor to compilation units?
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
                       file_filter, result);
-  for (auto& compilation_unit : GetCompilationUnits(dwarf)) {
+  for (auto& compilation_unit : GetCompilationUnits(*dwarf)) {
     // Could fetch top-level attributes like compiler here.
     processor.ProcessCompilationUnit(compilation_unit);
   }

@@ -95,11 +95,13 @@ Elf& ElfDwarfHandle::GetElf() {
   return *elf;
 }
 
-Dwarf& ElfDwarfHandle::GetDwarf() {
+Dwarf* ElfDwarfHandle::GetDwarf() {
   GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
   Dwarf* dwarf = dwfl_module_getdwarf(dwfl_module_, &loadbase);
-  CheckOrDwflError(dwarf != nullptr, "dwfl_module_getdwarf");
-  return *dwarf;
+  if (dwarf == nullptr) {
+    Warn() << "No DWARF found: " << GetDwflError("dwfl_module_getdwarf");
+  }
+  return dwarf;
 }
 
 }  // namespace stg

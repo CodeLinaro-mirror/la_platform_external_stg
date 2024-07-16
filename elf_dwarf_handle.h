@@ -37,7 +37,7 @@ class ElfDwarfHandle {
   ElfDwarfHandle(char* data, size_t size);
 
   Elf& GetElf();
-  Dwarf& GetDwarf();
+  Dwarf* GetDwarf();  // Returns nullptr if DWARF is not available.
 
  private:
   struct DwflDeleter {
