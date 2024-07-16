@@ -39,6 +39,7 @@
 #include <vector>
 
 #include <linux/btf.h>
+#include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"
 #include "file_descriptor.h"
@@ -436,25 +437,8 @@ Id Structs::BuildSymbols() {
 }
 
 Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
-  Check(elf_version(EV_CURRENT) != EV_NONE) << "ELF version mismatch";
-  struct ElfDeleter {
-    void operator()(Elf* elf) {
-      elf_end(elf);
-    }
-  };
-  const FileDescriptor fd(path.c_str(), O_RDONLY);
-  const std::unique_ptr<Elf, ElfDeleter> elf(
-      elf_begin(fd.Value(), ELF_C_READ_MMAP, nullptr));
-  if (!elf) {
-    const int error_code = elf_errno();
-    const char* error = elf_errmsg(error_code);
-    if (error != nullptr) {
-      Die() << "elf_begin returned error: " << error;
-    } else {
-      Die() << "elf_begin returned error: " << error_code;
-    }
-  }
-  const elf::ElfLoader loader(*elf);
+  ElfDwarfHandle handle(path);
+  const elf::ElfLoader loader(handle.GetElf());
   return Structs(graph).Process(loader.GetSectionRawData(".BTF"));
 }
 
