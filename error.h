@@ -55,7 +55,7 @@ class Check {
                : std::make_optional<std::ostringstream>()) {}
   ~Check() noexcept(false) {
     if (os_) {
-      throw Exception(os_->str());
+      Throw(*os_);
     }
   }
 
@@ -69,6 +69,10 @@ class Check {
 
  private:
   std::optional<std::ostringstream> os_;
+
+  [[noreturn]] static void Throw(const std::ostringstream& os) {
+    throw Exception(os.str());
+  }
 };
 
 class Die {
