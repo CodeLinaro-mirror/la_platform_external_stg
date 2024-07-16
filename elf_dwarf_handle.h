@@ -25,6 +25,7 @@
 #include <elfutils/libdwfl.h>
 
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -44,10 +45,12 @@ class ElfDwarfHandle {
       dwfl_end(dwfl);
     }
   };
+  using DwflUniquePtr = std::unique_ptr<Dwfl, DwflDeleter>;
 
-  void InitialiseDwarf();
+  ElfDwarfHandle(const char* module_name,
+                 const std::function<Dwfl_Module*()>& add_module);
 
-  std::unique_ptr<Dwfl, DwflDeleter> dwfl_;
+  DwflUniquePtr dwfl_;
   // Lifetime of Dwfl_Module is controlled by Dwfl.
   Dwfl_Module* dwfl_module_ = nullptr;
 };

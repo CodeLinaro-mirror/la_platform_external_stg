@@ -26,6 +26,7 @@
 #include <libelf.h>
 
 #include <cstddef>
+#include <functional>
 #include <string>
 
 #include "error.h"
@@ -56,30 +57,28 @@ void CheckOrDwflError(bool condition, const char* caller) {
 
 }  // namespace
 
-ElfDwarfHandle::ElfDwarfHandle(const std::string& path)
-    : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
+ElfDwarfHandle::ElfDwarfHandle(
+    const char* module_name, const std::function<Dwfl_Module*()>& add_module) {
+  dwfl_ = DwflUniquePtr(dwfl_begin(&kDwflCallbacks));
+  CheckOrDwflError(dwfl_ != nullptr, "dwfl_begin");
   // Add data to process to dwfl
-  dwfl_module_ =
-      dwfl_report_offline(dwfl_.get(), path.c_str(), path.c_str(), -1);
-  InitialiseDwarf();
-}
-
-ElfDwarfHandle::ElfDwarfHandle(char* data, size_t size)
-    : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
-  // Add data to process to dwfl
-  dwfl_module_ = dwfl_report_offline_memory(dwfl_.get(), "<memory>", "<memory>",
-                                            data, size);
-  InitialiseDwarf();
-}
-
-void ElfDwarfHandle::InitialiseDwarf() {
-  CheckOrDwflError(dwfl_.get(), "dwfl_report_offline");
+  dwfl_module_ = add_module();
+  CheckOrDwflError(dwfl_module_ != nullptr, module_name);
   // Finish adding files to dwfl and process them
   CheckOrDwflError(dwfl_report_end(dwfl_.get(), nullptr, nullptr) == kReturnOk,
                    "dwfl_report_end");
 }
+
+ElfDwarfHandle::ElfDwarfHandle(const std::string& path)
+    : ElfDwarfHandle("dwfl_report_offline", [&] {
+        return dwfl_report_offline(dwfl_.get(), path.c_str(), path.c_str(), -1);
+      }) {}
+
+ElfDwarfHandle::ElfDwarfHandle(char* data, size_t size)
+    : ElfDwarfHandle("dwfl_report_offline_memory", [&] {
+        return dwfl_report_offline_memory(dwfl_.get(), "<memory>", "<memory>",
+                                          data, size);
+      }) {}
 
 Elf& ElfDwarfHandle::GetElf() {
   GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
