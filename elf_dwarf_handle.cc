@@ -27,6 +27,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <sstream>
 #include <string>
 
 #include "error.h"
@@ -43,15 +44,22 @@ const Dwfl_Callbacks kDwflCallbacks = {
 
 constexpr int kReturnOk = 0;
 
+std::string GetDwflError(const char* caller) {
+  std::ostringstream result;
+  const int dwfl_error = dwfl_errno();
+  const char* errmsg = dwfl_errmsg(dwfl_error);
+  if (errmsg == nullptr) {
+    // There are some cases when DWFL fails to produce an error message.
+    result << caller << " returned error code " << Hex(dwfl_error);
+  } else {
+    result << caller << " returned error: " << errmsg;
+  }
+  return result.str();
+}
+
 void CheckOrDwflError(bool condition, const char* caller) {
   if (!condition) {
-    const int dwfl_error = dwfl_errno();
-    const char* errmsg = dwfl_errmsg(dwfl_error);
-    if (errmsg == nullptr) {
-      // There are some cases when DWFL fails to produce an error message.
-      Die() << caller << " returned error code " << Hex(dwfl_error);
-    }
-    Die() << caller << " returned error: " << errmsg;
+    Die() << GetDwflError(caller);
   }
 }
 
