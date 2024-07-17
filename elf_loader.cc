@@ -291,17 +291,14 @@ Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary) {
 constexpr std::string_view kCFISuffix = ".cfi";
 
 bool IsCFISymbolName(std::string_view name) {
-  // Check if symbol name ends with ".cfi"
-  // TODO: use std::string_view::ends_with
-  return (name.size() >= kCFISuffix.size() &&
-          name.substr(name.size() - kCFISuffix.size()) == kCFISuffix);
+  return name.ends_with(kCFISuffix);
 }
 
 }  // namespace
 
 std::string_view UnwrapCFISymbolName(std::string_view cfi_name) {
   Check(IsCFISymbolName(cfi_name))
-      << "CFI symbol " << cfi_name << " doesn't end with .cfi";
+      << "CFI symbol " << cfi_name << " doesn't end with " << kCFISuffix;
   return cfi_name.substr(0, cfi_name.size() - kCFISuffix.size());
 }
 

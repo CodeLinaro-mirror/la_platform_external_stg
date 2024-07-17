@@ -482,8 +482,7 @@ class Processor {
     if (!file) {
       // Built in types that do not have DW_AT_decl_file should be preserved.
       static constexpr std::string_view kBuiltinPrefix = "__";
-      // TODO: use std::string_view::starts_with
-      if (name.substr(0, kBuiltinPrefix.size()) == kBuiltinPrefix) {
+      if (name.starts_with(kBuiltinPrefix)) {
         return true;
       }
       Die() << "File filter is provided, but " << name << " ("
