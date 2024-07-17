@@ -48,8 +48,11 @@ class Exception : public std::exception {
   std::string message_;
 };
 
+// Coded to give compilers a chance of making `Check(ok) << foo;` as efficient
+// as `if (!ok) { Die() << foo; }`.
 class Check {
  public:
+  // These functions are all small and inlinable.
   explicit Check(bool ok)
       : os_(ok ? std::optional<std::ostringstream>()
                : std::make_optional<std::ostringstream>()) {}
@@ -70,6 +73,7 @@ class Check {
  private:
   std::optional<std::ostringstream> os_;
 
+  // This helper is too large to inline.
   [[noreturn]] static void Throw(const std::ostringstream& os) {
     throw Exception(os.str());
   }
