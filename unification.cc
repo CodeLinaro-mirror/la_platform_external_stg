@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,6 +20,7 @@
 #include "unification.h"
 
 #include <cstddef>
+#include <optional>
 #include <utility>
 
 #include "graph.h"
@@ -77,6 +78,14 @@ struct Unifier {
     mapping.insert({fid1, fid2});
 
     return true;
+  }
+
+  bool operator()(const std::optional<Id>& opt1,
+                  const std::optional<Id>& opt2) {
+    if (opt1.has_value() && opt2.has_value()) {
+      return (*this)(opt1.value(), opt2.value());
+    }
+    return opt1.has_value() == opt2.has_value();
   }
 
   bool operator()(const std::vector<Id>& ids1, const std::vector<Id>& ids2) {
@@ -170,6 +179,13 @@ struct Unifier {
         ? Right : Neither;
   }
 
+  Winner operator()(const VariantMember& x1, const VariantMember& x2) {
+    return x1.name == x2.name
+        && x1.discriminant_value == x2.discriminant_value
+        && (*this)(x1.type_id, x2.type_id)
+        ? Right : Neither;
+  }
+
   Winner operator()(const StructUnion& x1, const StructUnion& x2) {
     const auto& definition1 = x1.definition;
     const auto& definition2 = x2.definition;
@@ -196,6 +212,14 @@ struct Unifier {
                && definition1->enumerators == definition2->enumerators;
     }
     return result ? definition2.has_value() ? Right : Left : Neither;
+  }
+
+  Winner operator()(const Variant& x1, const Variant& x2) {
+    return x1.name == x2.name
+        && x1.bytesize == x2.bytesize
+        && (*this)(x1.discriminant, x2.discriminant)
+        && (*this)(x1.members, x2.members)
+        ? Right : Neither;
   }
 
   Winner operator()(const Function& x1, const Function& x2) {

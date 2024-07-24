@@ -45,6 +45,10 @@ namespace dwarf {
 
 namespace {
 
+bool HasIncompleteTypes(uint64_t language) {
+  return language != DW_LANG_Rust;
+}
+
 std::string EntryToString(Entry& entry) {
   std::ostringstream os;
   os << "DWARF entry <" << Hex(entry.GetOffset()) << ">";
@@ -352,6 +356,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
+        language_ = entry.MustGetUnsignedConstant(DW_AT_language);
         ProcessAllChildren(entry);
         break;
       case DW_TAG_typedef:
@@ -466,7 +471,7 @@ class Processor {
   }
 
   bool ShouldKeepDefinition(Entry& entry, const std::string& name) const {
-    if (file_filter_ == nullptr) {
+    if (!HasIncompleteTypes(language_) || file_filter_ == nullptr) {
       return true;
     }
     const auto file = files_.MaybeGetFile(entry, DW_AT_decl_file);
@@ -491,6 +496,7 @@ class Processor {
     std::vector<Id> base_classes;
     std::vector<Id> members;
     std::vector<Id> methods;
+    std::optional<VariantAndMembers> variant_and_members = std::nullopt;
 
     for (auto& child : entry.GetChildren()) {
       auto child_tag = child.GetTag();
@@ -545,12 +551,27 @@ class Processor {
           // properly (resulting in no references to such DIEs).
           break;
         case DW_TAG_variant_part:
-          // TODO: Add a DWARF processor to process variants.
+          if (full_name.empty()) {
+            Die() << "Variant name should not be empty: "
+                  << EntryToString(entry);
+          }
+          variant_and_members = GetVariantAndMembers(child);
           break;
         default:
           Die() << "Unexpected tag for child of struct/class/union: "
                 << Hex(child_tag) << ", " << EntryToString(child);
       }
+    }
+
+    if (variant_and_members.has_value()) {
+      // Add a Variant node since this entry represents a variant rather than a
+      // struct or union.
+      const Id id =
+          AddProcessedNode<Variant>(entry, full_name, GetByteSize(entry),
+                                    variant_and_members->discriminant,
+                                    std::move(variant_and_members->members));
+      AddNamedTypeNode(id);
+      return;
     }
 
     if (entry.GetFlag(DW_AT_declaration) ||
@@ -570,6 +591,37 @@ class Processor {
     if (!full_name.empty()) {
       AddNamedTypeNode(id);
     }
+  }
+
+  void ProcessVariantMember(Entry& entry) {
+    // TODO: Process signed discriminant values.
+    auto dw_discriminant_value =
+        entry.MaybeGetUnsignedConstant(DW_AT_discr_value);
+    auto discriminant_value =
+        dw_discriminant_value
+            ? std::optional(static_cast<int64_t>(*dw_discriminant_value))
+            : std::nullopt;
+
+    auto children = entry.GetChildren();
+    if (children.size() != 1) {
+      Die() << "Unexpected number of children for variant member: "
+            << EntryToString(entry);
+    }
+
+    auto child = children[0];
+    if (child.GetTag() != DW_TAG_member) {
+      Die() << "Unexpected tag for variant member child: "
+            << Hex(child.GetTag()) << ", " << EntryToString(child);
+    }
+    if (GetDataBitOffset(child, 0, is_little_endian_binary_) != 0) {
+      Die() << "Unexpected data member location for variant member: "
+            << EntryToString(child);
+    }
+
+    const std::string name = GetNameOrEmpty(child);
+    auto referred_type_id = GetReferredTypeId(GetReferredType(child));
+    AddProcessedNode<VariantMember>(entry, name, discriminant_value,
+                                    referred_type_id);
   }
 
   void ProcessMember(Entry& entry) {
@@ -719,6 +771,47 @@ class Processor {
     if (!full_name.empty()) {
       AddNamedTypeNode(id);
     }
+  }
+
+  struct VariantAndMembers {
+    std::optional<Id> discriminant;
+    std::vector<Id> members;
+  };
+
+  VariantAndMembers GetVariantAndMembers(Entry& entry) {
+    std::vector<Id> members;
+    std::optional<Id> discriminant = std::nullopt;
+    auto discriminant_entry = entry.MaybeGetReference(DW_AT_discr);
+    if (discriminant_entry.has_value()) {
+      discriminant = GetIdForEntry(*discriminant_entry);
+      ProcessMember(*discriminant_entry);
+    }
+
+    for (auto& child : entry.GetChildren()) {
+      auto child_tag = child.GetTag();
+      switch (child_tag) {
+        case DW_TAG_member: {
+          if (child.GetOffset() != discriminant_entry->GetOffset()) {
+            Die() << "Encountered rogue member for variant: "
+                  << EntryToString(entry);
+          }
+          if (!child.GetFlag(DW_AT_artificial)) {
+            Die() << "Variant discriminant must be an artificial member: "
+                  << EntryToString(child);
+          }
+          break;
+        }
+        case DW_TAG_variant:
+          members.push_back(GetIdForEntry(child));
+          ProcessVariantMember(child);
+          break;
+        default:
+          Die() << "Unexpected tag for child of variant: " << Hex(child_tag)
+                << ", " << EntryToString(child);
+      }
+    }
+    return VariantAndMembers{.discriminant = discriminant,
+                             .members = std::move(members)};
   }
 
   struct NameWithContext {
@@ -896,9 +989,19 @@ class Processor {
         case DW_TAG_template_value_parameter:
         case DW_TAG_GNU_template_template_param:
         case DW_TAG_GNU_template_parameter_pack:
-        case DW_TAG_GNU_formal_parameter_pack:
           // We just skip these as neither GCC nor Clang seem to use them
           // properly (resulting in no references to such DIEs).
+          break;
+        case DW_TAG_GNU_formal_parameter_pack:
+          // https://wiki.dwarfstd.org/C++0x_Variadic_templates.md
+          //
+          // As per this (rejected) proposal, GCC includes parameters as
+          // children of this DIE.
+          for (auto& child2 : child.GetChildren()) {
+            if (child2.GetTag() == DW_TAG_formal_parameter) {
+              parameters.push_back(GetReferredTypeId(GetReferredType(child2)));
+            }
+          }
           break;
         default:
           Die() << "Unexpected tag for child of function: " << Hex(child_tag)
@@ -960,6 +1063,7 @@ class Processor {
   Scope scope_;
   int version_;
   dwarf::Files files_;
+  uint64_t language_;
 };
 
 Types Process(Handler& dwarf, bool is_little_endian_binary,

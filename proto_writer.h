@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,8 +20,7 @@
 #ifndef STG_PROTO_WRITER_H_
 #define STG_PROTO_WRITER_H_
 
-#include <ostream>
-
+#include <google/protobuf/io/zero_copy_stream.h>
 #include "graph.h"
 
 namespace stg {
@@ -29,9 +28,8 @@ namespace proto {
 
 class Writer {
  public:
-  explicit Writer(const stg::Graph& graph)
-      : graph_(graph) {}
-  void Write(const Id&, std::ostream&);
+  explicit Writer(const stg::Graph& graph) : graph_(graph) {}
+  void Write(const Id&, google::protobuf::io::ZeroCopyOutputStream&, bool);
 
  private:
   const stg::Graph& graph_;

@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 elf_symbol {
   id: 0xa49e03a0
   name: "func"
@@ -8,5 +8,5 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xa49e03a0
+  symbol_id: 0xa49e03a0  # func
 }

@@ -32,7 +32,7 @@ digraph "ABI diff" {
   "16" [color=red, shape=rectangle, label="'struct StaticToVirtual'"]
   "16" -> "16:0"
   "16:0" [color=red, label="byte size changed from 4 to 16"]
-  "17" [color=red, label="added(print {_ZN15StaticToVirtual5printEv})"]
+  "17" [color=red, label="added(int print(struct StaticToVirtual*))"]
   "16" -> "17" [label=""]
   "18" [color=red, label="added(int(** _vptr$StaticToVirtual)())"]
   "16" -> "18" [label=""]
@@ -46,7 +46,7 @@ digraph "ABI diff" {
   "21" [color=red, shape=rectangle, label="'struct VirtualToStatic'"]
   "21" -> "21:0"
   "21:0" [color=red, label="byte size changed from 16 to 4"]
-  "22" [color=red, label="removed(print {_ZN15VirtualToStatic5printEv})"]
+  "22" [color=red, label="removed(int print(struct VirtualToStatic*))"]
   "21" -> "22" [label=""]
   "23" [color=red, label="removed(int(** _vptr$VirtualToStatic)())"]
   "21" -> "23" [label=""]

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -99,6 +99,10 @@ struct Substitute {
     Update(x.type_id);
   }
 
+  void operator()(VariantMember& x) {
+    Update(x.type_id);
+  }
+
   void operator()(StructUnion& x) {
     if (x.definition.has_value()) {
       auto& definition = x.definition.value();
@@ -113,6 +117,13 @@ struct Substitute {
       auto& definition = x.definition.value();
       Update(definition.underlying_type_id);
     }
+  }
+
+  void operator()(Variant& x) {
+    if (x.discriminant.has_value()) {
+      Update(x.discriminant.value());
+    }
+    Update(x.members);
   }
 
   void operator()(Function& x) {

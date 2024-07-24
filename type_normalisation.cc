@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2023 Google LLC
+// Copyright 2023-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -126,6 +126,10 @@ struct FindQualifiedTypesAndFunctions {
     (*this)(x.type_id);
   }
 
+  void operator()(const VariantMember& x, Id) {
+    (*this)(x.type_id);
+  }
+
   void operator()(const StructUnion& x, Id) {
     if (x.definition.has_value()) {
       auto& definition = x.definition.value();
@@ -139,6 +143,13 @@ struct FindQualifiedTypesAndFunctions {
     if (x.definition.has_value()) {
       (*this)(x.definition->underlying_type_id);
     }
+  }
+
+  void operator()(const Variant& x, Id) {
+    if (x.discriminant.has_value()) {
+      (*this)(x.discriminant.value());
+    }
+    (*this)(x.members);
   }
 
   void operator()(const Function& x, Id node_id) {

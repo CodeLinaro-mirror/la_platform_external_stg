@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,8 +20,8 @@
 #include "proto_writer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
-#include <functional>
 #include <iomanip>
 #include <ios>
 #include <ostream>
@@ -29,11 +29,14 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
+#include <google/protobuf/descriptor.h>
+#include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/repeated_ptr_field.h>
 #include <google/protobuf/text_format.h>
+#include "error.h"
 #include "graph.h"
+#include "naming.h"
 #include "stable_hash.h"
 #include "stg.pb.h"
 
@@ -71,8 +74,10 @@ struct Transform {
   void operator()(const stg::BaseClass&, uint32_t);
   void operator()(const stg::Method&, uint32_t);
   void operator()(const stg::Member&, uint32_t);
+  void operator()(const stg::VariantMember&, uint32_t);
   void operator()(const stg::StructUnion&, uint32_t);
   void operator()(const stg::Enumeration&, uint32_t);
+  void operator()(const stg::Variant&, uint32_t);
   void operator()(const stg::Function&, uint32_t);
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
@@ -87,9 +92,17 @@ struct Transform {
   ElfSymbol::Binding operator()(stg::ElfSymbol::Binding);
   ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility);
 
+  std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
+    std::unordered_map<uint32_t, Id> internal_id_map;
+    for (const auto& [id, ext_id] : external_id_by_internal_id) {
+      internal_id_map.emplace(ext_id, id);
+    }
+    return internal_id_map;
+  }
+
   const Graph& graph;
   proto::STG& stg;
-  std::unordered_map<Id, uint32_t> external_id;
+  std::unordered_map<Id, uint32_t> external_id_by_internal_id;
   std::unordered_set<uint32_t> used_ids;
 
   // Function object: Id -> uint32_t
@@ -98,7 +111,7 @@ struct Transform {
 
 template <typename MapId>
 uint32_t Transform<MapId>::operator()(Id id) {
-  auto [it, inserted] = external_id.emplace(id, 0);
+  auto [it, inserted] = external_id_by_internal_id.emplace(id, 0);
   if (inserted) {
     uint32_t mapped_id = map_id(id);
 
@@ -202,6 +215,17 @@ void Transform<MapId>::operator()(const stg::Member& x, uint32_t id) {
 }
 
 template <typename MapId>
+void Transform<MapId>::operator()(const stg::VariantMember& x, uint32_t id) {
+  auto& variant_member = *stg.add_variant_member();
+  variant_member.set_id(id);
+  variant_member.set_name(x.name);
+  if (x.discriminant_value) {
+    variant_member.set_discriminant_value(*x.discriminant_value);
+  }
+  variant_member.set_type_id((*this)(x.type_id));
+}
+
+template <typename MapId>
 void Transform<MapId>::operator()(const stg::StructUnion& x, uint32_t id) {
   auto& struct_union = *stg.add_struct_union();
   struct_union.set_id(id);
@@ -236,6 +260,20 @@ void Transform<MapId>::operator()(const stg::Enumeration& x, uint32_t id) {
       enumerator.set_name(name);
       enumerator.set_value(value);
     }
+  }
+}
+
+template <typename MapId>
+void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
+  auto& variant = *stg.add_variant();
+  variant.set_id(id);
+  variant.set_name(x.name);
+  variant.set_bytesize(x.bytesize);
+  if (x.discriminant.has_value()) {
+    variant.set_discriminant((*this)(x.discriminant.value()));
+  }
+  for (const auto id : x.members) {
+    variant.add_member_id((*this)(id));
   }
 }
 
@@ -494,7 +532,7 @@ void SortNodes(STG& stg) {
 class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
   void PrintUInt32(
       uint32_t value,
-      google::protobuf::TextFormat::BaseTextGenerator* generator) const override {
+      google::protobuf::TextFormat::BaseTextGenerator* generator) const final {
     std::ostringstream os;
     // 0x01234567
     os << "0x" << std::hex << std::setfill('0') << std::setw(8) << value;
@@ -502,25 +540,86 @@ class HexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
   }
 };
 
+class AnnotationHexPrinter : public google::protobuf::TextFormat::FastFieldValuePrinter {
+ public:
+  AnnotationHexPrinter(
+      Describe& describe,
+      const std::unordered_map<uint32_t, Id>& internal_id_by_external_id)
+      : describe_(describe),
+        internal_id_by_external_id_(internal_id_by_external_id) {}
+
+ private:
+  void PrintUInt32(
+      uint32_t value,
+      google::protobuf::TextFormat::BaseTextGenerator* generator) const final {
+    std::ostringstream os;
+    // 0x01234567  # Describe(0x01234567)
+    os << "0x" << std::hex << std::setfill('0') << std::setw(8) << value
+       << "  # " << describe_(internal_id_by_external_id_.at(value));
+    generator->PrintString(os.str());
+  }
+
+  Describe& describe_;
+  const std::unordered_map<uint32_t, Id>& internal_id_by_external_id_;
+};
+
 const uint32_t kWrittenFormatVersion = 2;
+
+// Collection of fields which represent edges in the STG proto.
+//
+// This collection is used to register the AnnotationHexPrinter for each of the
+// fields, which will print a description of the node in STG to which the edge
+// points.
+const std::array<const google::protobuf::FieldDescriptor*, 18> edge_descriptors = {
+    PointerReference::descriptor()->FindFieldByNumber(3),
+    PointerToMember::descriptor()->FindFieldByNumber(3),
+    Typedef::descriptor()->FindFieldByNumber(3),
+    Qualified::descriptor()->FindFieldByNumber(3),
+    Array::descriptor()->FindFieldByNumber(3),
+    BaseClass::descriptor()->FindFieldByNumber(2),
+    Method::descriptor()->FindFieldByNumber(5),
+    Member::descriptor()->FindFieldByNumber(3),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(2),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(3),
+    StructUnion::Definition::descriptor()->FindFieldByNumber(4),
+    Enumeration::Definition::descriptor()->FindFieldByNumber(1),
+    Function::descriptor()->FindFieldByNumber(2),
+    Function::descriptor()->FindFieldByNumber(3),
+    ElfSymbol::descriptor()->FindFieldByNumber(10),
+    Interface::descriptor()->FindFieldByNumber(2),
+    Interface::descriptor()->FindFieldByNumber(3),
+    STG::descriptor()->FindFieldByNumber(2),
+};
 
 }  // namespace
 
-void Print(const STG& stg, std::ostream& os) {
-  google::protobuf::TextFormat::Printer printer;
-  printer.SetDefaultFieldValuePrinter(new HexPrinter());
-  std::string output;
-  printer.PrintToString(stg, &output);
-  os << output;
-}
-
-void Writer::Write(const Id& root, std::ostream& os) {
+void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os,
+                   bool annotate) {
   proto::STG stg;
   StableId stable_id(graph_);
-  stg.set_root_id(Transform<StableId>(graph_, stg, stable_id)(root));
+  Transform<StableId> transform(graph_, stg, stable_id);
+  stg.set_root_id(transform(root));
   SortNodes(stg);
   stg.set_version(kWrittenFormatVersion);
-  Print(stg, os);
+
+  // Print
+  google::protobuf::TextFormat::Printer printer;
+  printer.SetDefaultFieldValuePrinter(new HexPrinter());
+  if (annotate) {
+    NameCache names;
+    Describe describe(graph_, names);
+    auto internal_id_by_external_id = transform.GetInternalIdByExternalIdMap();
+    for (const auto* descriptor : edge_descriptors) {
+      Check(printer.RegisterFieldValuePrinter(
+          descriptor,
+          new AnnotationHexPrinter(describe, internal_id_by_external_id)))
+          << "Failed to register annotation printer for descriptor: "
+          << descriptor->name();
+    }
+    Check(printer.Print(stg, &os)) << "Failed to write STG";
+  } else {
+    Check(printer.Print(stg, &os)) << "Failed to write STG";
+  }
 }
 
 }  // namespace proto

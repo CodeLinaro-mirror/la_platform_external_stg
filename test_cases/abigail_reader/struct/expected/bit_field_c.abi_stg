@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0xb0312d5a
   name: "short"
@@ -8,24 +8,24 @@ primitive {
 member {
   id: 0x6203902d
   name: "rest_of_the_struct"
-  type_id: 0xb0312d5a
+  type_id: 0xb0312d5a  # short
 }
 member {
   id: 0xa0025445
   name: "x"
-  type_id: 0xb0312d5a
+  type_id: 0xb0312d5a  # short
   offset: 16
 }
 member {
   id: 0xffc331b7
   name: "y"
-  type_id: 0xb0312d5a
+  type_id: 0xb0312d5a  # short
   offset: 21
 }
 member {
   id: 0x218540ba
   name: "z"
-  type_id: 0xb0312d5a
+  type_id: 0xb0312d5a  # short
   offset: 27
 }
 struct_union {
@@ -34,10 +34,10 @@ struct_union {
   name: "Foo"
   definition {
     bytesize: 4
-    member_id: 0x6203902d
-    member_id: 0xa0025445
-    member_id: 0xffc331b7
-    member_id: 0x218540ba
+    member_id: 0x6203902d  # short rest_of_the_struct
+    member_id: 0xa0025445  # short x
+    member_id: 0xffc331b7  # short y
+    member_id: 0x218540ba  # short z
   }
 }
 elf_symbol {
@@ -45,10 +45,10 @@ elf_symbol {
   name: "var"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0xf6f304f7
+  type_id: 0xf6f304f7  # struct Foo
   full_name: "var"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x3997c6eb
+  symbol_id: 0x3997c6eb  # struct Foo var
 }

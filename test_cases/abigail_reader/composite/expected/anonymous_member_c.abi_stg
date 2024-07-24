@@ -1,5 +1,5 @@
 version: 0x00000002
-root_id: 0x84ea5130
+root_id: 0x84ea5130  # interface
 primitive {
   id: 0x6720d32f
   name: "int"
@@ -7,52 +7,52 @@ primitive {
 }
 member {
   id: 0x26e14ed5
-  type_id: 0x14ab7fa8
+  type_id: 0x14ab7fa8  # struct { int two; }
   offset: 32
 }
 member {
   id: 0x2738f5df
-  type_id: 0x13cda76e
+  type_id: 0x13cda76e  # struct { int one; }
 }
 member {
   id: 0x29b68d56
-  type_id: 0x29f46346
+  type_id: 0x29f46346  # struct { int eight; }
   offset: 96
 }
 member {
   id: 0x2aee20bc
-  type_id: 0x2496e164
+  type_id: 0x2496e164  # struct { int four; }
   offset: 64
 }
 member {
   id: 0xc6609e76
   name: "eight"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0xf3ea96ff
   name: "four"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x2e878ed7
   name: "one"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 member {
   id: 0x331cedce
   name: "two"
-  type_id: 0x6720d32f
+  type_id: 0x6720d32f  # int
 }
 struct_union {
   id: 0x11abcb4e
   kind: STRUCT
   definition {
     bytesize: 16
-    member_id: 0x2738f5df
-    member_id: 0x26e14ed5
-    member_id: 0x2aee20bc
-    member_id: 0x29b68d56
+    member_id: 0x2738f5df  # struct { int one; }
+    member_id: 0x26e14ed5  # struct { int two; }
+    member_id: 0x2aee20bc  # struct { int four; }
+    member_id: 0x29b68d56  # struct { int eight; }
   }
 }
 struct_union {
@@ -60,7 +60,7 @@ struct_union {
   kind: STRUCT
   definition {
     bytesize: 4
-    member_id: 0x2e878ed7
+    member_id: 0x2e878ed7  # int one
   }
 }
 struct_union {
@@ -68,7 +68,7 @@ struct_union {
   kind: STRUCT
   definition {
     bytesize: 4
-    member_id: 0x331cedce
+    member_id: 0x331cedce  # int two
   }
 }
 struct_union {
@@ -76,7 +76,7 @@ struct_union {
   kind: STRUCT
   definition {
     bytesize: 4
-    member_id: 0xf3ea96ff
+    member_id: 0xf3ea96ff  # int four
   }
 }
 struct_union {
@@ -84,7 +84,7 @@ struct_union {
   kind: STRUCT
   definition {
     bytesize: 4
-    member_id: 0xc6609e76
+    member_id: 0xc6609e76  # int eight
   }
 }
 elf_symbol {
@@ -92,10 +92,10 @@ elf_symbol {
   name: "v"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x11abcb4e
+  type_id: 0x11abcb4e  # struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; }
   full_name: "v"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xf48dba91
+  symbol_id: 0xf48dba91  # struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; } v
 }
