@@ -1285,6 +1285,7 @@ Id Abigail::BuildSymbols() {
   return graph_.Add<Interface>(symbols);
 }
 
+// TODO: refactor Read* to eliminate code duplication
 Document Read(Runtime& runtime, const std::string& path) {
   // Open input for reading.
   const FileDescriptor fd(path.c_str(), O_RDONLY);
@@ -1308,6 +1309,23 @@ Document Read(Runtime& runtime, const std::string& path) {
 Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   const Document document = Read(runtime, path);
   const xmlNodePtr root = xmlDocGetRootElement(document.get());
+  Check(root != nullptr) << "XML document has no root element";
+  return Abigail(graph).ProcessRoot(root);
+}
+
+Id ReadFromString(Graph& graph, const std::string_view xml) {
+  // Read the XML.
+  Document document(nullptr, xmlFreeDoc);
+  const std::unique_ptr<std::remove_pointer_t<xmlParserCtxtPtr>,
+                        void (*)(xmlParserCtxtPtr)>
+      context(xmlNewParserCtxt(), xmlFreeParserCtxt);
+  document.reset(xmlCtxtReadMemory(context.get(), xml.data(),
+                                   static_cast<int>(xml.size()), nullptr,
+                                   nullptr, XML_PARSE_NONET));
+  Check(document != nullptr) << "failed to parse input as XML";
+
+  // Process the XML.
+  xmlNodePtr root = xmlDocGetRootElement(document.get());
   Check(root != nullptr) << "XML document has no root element";
   return Abigail(graph).ProcessRoot(root);
 }

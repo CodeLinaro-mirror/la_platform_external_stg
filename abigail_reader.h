@@ -147,6 +147,7 @@ class Abigail {
 };
 
 Id Read(Runtime& runtime, Graph& graph, const std::string& path);
+Id ReadFromString(Graph& graph, std::string_view xml);
 
 // Exposed for testing.
 void Clean(xmlNodePtr root);
