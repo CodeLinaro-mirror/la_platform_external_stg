@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -436,10 +436,14 @@ Id Structs::BuildSymbols() {
   return graph_.Add<Interface>(btf_symbols_);
 }
 
+Id ReadSection(Graph& graph, std::string_view data) {
+  return Structs(graph).Process(data);
+}
+
 Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
   ElfDwarfHandle handle(path);
   const elf::ElfLoader loader(handle.GetElf());
-  return Structs(graph).Process(loader.GetSectionRawData(".BTF"));
+  return ReadSection(graph, loader.GetSectionRawData(".BTF"));
 }
 
 }  // namespace btf

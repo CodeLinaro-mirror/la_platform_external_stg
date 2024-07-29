@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2023 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -83,6 +83,7 @@ class Structs {
   std::string GetName(uint32_t name_off);
 };
 
+Id ReadSection(Graph& graph, std::string_view data);
 Id ReadFile(Graph& graph, const std::string& path, ReadOptions options);
 
 }  // namespace btf
