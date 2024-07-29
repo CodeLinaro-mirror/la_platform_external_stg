@@ -74,7 +74,7 @@ struct Transformer {
   void AddNode(const Symbols&);
   void AddNode(const Interface&);
   template <typename STGType, typename... Args>
-  void AddNode(Args&&...);
+  void AddNode(uint32_t, Args&&...);
 
   std::vector<Id> Transform(const google::protobuf::RepeatedField<uint32_t>&);
   template <typename GetKey>
@@ -140,59 +140,57 @@ void Transformer::AddNodes(const google::protobuf::RepeatedPtrField<ProtoType>& 
 }
 
 void Transformer::AddNode(const Void& x) {
-  AddNode<stg::Special>(GetId(x.id()), stg::Special::Kind::VOID);
+  AddNode<stg::Special>(x.id(), stg::Special::Kind::VOID);
 }
 
 void Transformer::AddNode(const Variadic& x) {
-  AddNode<stg::Special>(GetId(x.id()), stg::Special::Kind::VARIADIC);
+  AddNode<stg::Special>(x.id(), stg::Special::Kind::VARIADIC);
 }
 
 void Transformer::AddNode(const Special& x) {
-  AddNode<stg::Special>(GetId(x.id()), x.kind());
+  AddNode<stg::Special>(x.id(), x.kind());
 }
 
 void Transformer::AddNode(const PointerReference& x) {
-  AddNode<stg::PointerReference>(GetId(x.id()), x.kind(),
-                                 GetId(x.pointee_type_id()));
+  AddNode<stg::PointerReference>(x.id(), x.kind(), GetId(x.pointee_type_id()));
 }
 
 void Transformer::AddNode(const PointerToMember& x) {
-  AddNode<stg::PointerToMember>(GetId(x.id()), GetId(x.containing_type_id()),
+  AddNode<stg::PointerToMember>(x.id(), GetId(x.containing_type_id()),
                                 GetId(x.pointee_type_id()));
 }
 
 void Transformer::AddNode(const Typedef& x) {
-  AddNode<stg::Typedef>(GetId(x.id()), x.name(), GetId(x.referred_type_id()));
+  AddNode<stg::Typedef>(x.id(), x.name(), GetId(x.referred_type_id()));
 }
 
 void Transformer::AddNode(const Qualified& x) {
-  AddNode<stg::Qualified>(GetId(x.id()), x.qualifier(),
-                          GetId(x.qualified_type_id()));
+  AddNode<stg::Qualified>(x.id(), x.qualifier(), GetId(x.qualified_type_id()));
 }
 
 void Transformer::AddNode(const Primitive& x) {
   const auto& encoding =
       Transform<stg::Primitive::Encoding>(x.has_encoding(), x.encoding());
-  AddNode<stg::Primitive>(GetId(x.id()), x.name(), encoding, x.bytesize());
+  AddNode<stg::Primitive>(x.id(), x.name(), encoding, x.bytesize());
 }
 
 void Transformer::AddNode(const Array& x) {
-  AddNode<stg::Array>(GetId(x.id()), x.number_of_elements(),
+  AddNode<stg::Array>(x.id(), x.number_of_elements(),
                       GetId(x.element_type_id()));
 }
 
 void Transformer::AddNode(const BaseClass& x) {
-  AddNode<stg::BaseClass>(GetId(x.id()), GetId(x.type_id()), x.offset(),
+  AddNode<stg::BaseClass>(x.id(), GetId(x.type_id()), x.offset(),
                           x.inheritance());
 }
 
 void Transformer::AddNode(const Method& x) {
-  AddNode<stg::Method>(GetId(x.id()), x.mangled_name(), x.name(),
-                       x.vtable_offset(), GetId(x.type_id()));
+  AddNode<stg::Method>(x.id(), x.mangled_name(), x.name(), x.vtable_offset(),
+                       GetId(x.type_id()));
 }
 
 void Transformer::AddNode(const Member& x) {
-  AddNode<stg::Member>(GetId(x.id()), x.name(), GetId(x.type_id()), x.offset(),
+  AddNode<stg::Member>(x.id(), x.name(), GetId(x.type_id()), x.offset(),
                        x.bitsize());
 }
 
@@ -200,29 +198,29 @@ void Transformer::AddNode(const VariantMember& x) {
   const auto& discr_value = x.has_discriminant_value()
                                 ? std::make_optional(x.discriminant_value())
                                 : std::nullopt;
-  AddNode<stg::VariantMember>(GetId(x.id()), x.name(), discr_value,
+  AddNode<stg::VariantMember>(x.id(), x.name(), discr_value,
                               GetId(x.type_id()));
 }
 
 void Transformer::AddNode(const StructUnion& x) {
   if (x.has_definition()) {
     AddNode<stg::StructUnion>(
-        GetId(x.id()), x.kind(), x.name(), x.definition().bytesize(),
+        x.id(), x.kind(), x.name(), x.definition().bytesize(),
         x.definition().base_class_id(), x.definition().method_id(),
         x.definition().member_id());
   } else {
-    AddNode<stg::StructUnion>(GetId(x.id()), x.kind(), x.name());
+    AddNode<stg::StructUnion>(x.id(), x.kind(), x.name());
   }
 }
 
 void Transformer::AddNode(const Enumeration& x) {
   if (x.has_definition()) {
-    AddNode<stg::Enumeration>(GetId(x.id()), x.name(),
+    AddNode<stg::Enumeration>(x.id(), x.name(),
                               GetId(x.definition().underlying_type_id()),
                               x.definition().enumerator());
     return;
   } else {
-    AddNode<stg::Enumeration>(GetId(x.id()), x.name());
+    AddNode<stg::Enumeration>(x.id(), x.name());
   }
 }
 
@@ -230,13 +228,12 @@ void Transformer::AddNode(const Variant& x) {
   const auto& discriminant = x.has_discriminant()
                                  ? std::make_optional(GetId(x.discriminant()))
                                  : std::nullopt;
-  AddNode<stg::Variant>(GetId(x.id()), x.name(), x.bytesize(), discriminant,
+  AddNode<stg::Variant>(x.id(), x.name(), x.bytesize(), discriminant,
                         x.member_id());
 }
 
 void Transformer::AddNode(const Function& x) {
-  AddNode<stg::Function>(GetId(x.id()), GetId(x.return_type_id()),
-                         x.parameter_id());
+  AddNode<stg::Function>(x.id(), GetId(x.return_type_id()), x.parameter_id());
 }
 
 void Transformer::AddNode(const ElfSymbol& x) {
@@ -255,7 +252,7 @@ void Transformer::AddNode(const ElfSymbol& x) {
   const auto& full_name =
       Transform<std::string>(x.has_full_name(), x.full_name());
 
-  AddNode<stg::ElfSymbol>(GetId(x.id()), x.name(), version_info, x.is_defined(),
+  AddNode<stg::ElfSymbol>(x.id(), x.name(), version_info, x.is_defined(),
                           x.symbol_type(), x.binding(), x.visibility(), crc, ns,
                           type_id, full_name);
 }
@@ -265,18 +262,18 @@ void Transformer::AddNode(const Symbols& x) {
   for (const auto& [symbol, id] : x.symbol()) {
     symbols.emplace(symbol, GetId(id));
   }
-  AddNode<stg::Interface>(GetId(x.id()), symbols);
+  AddNode<stg::Interface>(x.id(), symbols);
 }
 
 void Transformer::AddNode(const Interface& x) {
   const InterfaceKey get_key(graph);
-  AddNode<stg::Interface>(GetId(x.id()), Transform(get_key, x.symbol_id()),
+  AddNode<stg::Interface>(x.id(), Transform(get_key, x.symbol_id()),
                           Transform(get_key, x.type_id()));
 }
 
 template <typename STGType, typename... Args>
-void Transformer::AddNode(Args&&... args) {
-  graph.Set<STGType>(Transform(args)...);
+void Transformer::AddNode(uint32_t id, Args&&... args) {
+  graph.Set<STGType>(GetId(id), Transform(args)...);
 }
 
 std::vector<Id> Transformer::Transform(
