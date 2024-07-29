@@ -28,7 +28,7 @@ namespace stg {
 template <typename T>
 struct Hex {
   explicit Hex(const T& value) : value(value) {}
-  const T& value;
+  T value;
 };
 
 template <typename T> Hex(const T&) -> Hex<T>;
