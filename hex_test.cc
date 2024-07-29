@@ -45,4 +45,25 @@ TEST_CASE("Hex<uint32_t>") {
   CHECK(os.str() == test.formatted);
 }
 
+TEST_CASE("self comparison") {
+  const stg::Hex<uint8_t> a(0);
+  CHECK(a == a);
+  CHECK(!(a != a));
+  CHECK(!(a < a));
+  CHECK(a <= a);
+  CHECK(!(a > a));
+  CHECK(a >= a);
+}
+
+TEST_CASE("distinct comparison") {
+  const stg::Hex<uint8_t> a(0);
+  const stg::Hex<uint8_t> b(1);
+  CHECK(!(a == b));
+  CHECK(a != b);
+  CHECK(a < b);
+  CHECK(a <= b);
+  CHECK(!(a > b));
+  CHECK(!(a >= b));
+}
+
 }  // namespace Test

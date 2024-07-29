@@ -28,6 +28,7 @@ namespace stg {
 template <typename T>
 struct Hex {
   explicit Hex(const T& value) : value(value) {}
+  auto operator<=>(const Hex<T>& other) const = default;
   T value;
 };
 
