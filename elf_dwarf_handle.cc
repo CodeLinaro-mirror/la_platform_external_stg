@@ -31,6 +31,7 @@
 #include <string>
 
 #include "error.h"
+#include "hex.h"
 
 namespace stg {
 

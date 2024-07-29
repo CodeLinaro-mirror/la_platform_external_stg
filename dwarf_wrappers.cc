@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "error.h"
+#include "hex.h"
 
 namespace stg {
 namespace dwarf {

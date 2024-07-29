@@ -37,6 +37,7 @@
 #include "dwarf_wrappers.h"
 #include "error.h"
 #include "filter.h"
+#include "hex.h"
 #include "graph.h"
 #include "scope.h"
 

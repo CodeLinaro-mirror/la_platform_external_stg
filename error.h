@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -21,7 +21,6 @@
 #define STG_ERROR_H_
 
 #include <exception>
-#include <ios>
 #include <iostream>
 #include <optional>
 #include <ostream>
@@ -118,23 +117,6 @@ struct Error {
 
 inline std::ostream& operator<<(std::ostream& os, Error error) {
   return os << std::system_error(error.number, std::generic_category()).what();
-}
-
-template <typename T>
-struct Hex {
-  explicit Hex(const T& value) : value(value) {}
-  const T& value;
-};
-
-template <typename T> Hex(const T&) -> Hex<T>;
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Hex<T>& hex_value) {
-  // not quite right if an exception is thrown
-  const auto flags = os.flags();
-  os << "0x" << std::hex << hex_value.value;
-  os.flags(flags);
-  return os;
 }
 
 }  // namespace stg
