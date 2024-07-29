@@ -20,6 +20,8 @@
 #ifndef STG_HEX_H_
 #define STG_HEX_H_
 
+#include <cstddef>  // for std::size_t
+#include <functional>  // for std::hash
 #include <ios>
 #include <ostream>
 
@@ -44,5 +46,12 @@ std::ostream& operator<<(std::ostream& os, const Hex<T>& hex_value) {
 }
 
 }  // namespace stg
+
+template <typename T>
+struct std::hash<stg::Hex<T>> {
+  std::size_t operator()(const stg::Hex<T>& hex) const noexcept {
+    return std::hash<T>{}(hex.value);
+  }
+};
 
 #endif  // STG_HEX_H_
