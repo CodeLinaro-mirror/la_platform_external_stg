@@ -728,6 +728,67 @@ class DenseIdMapping {
   std::vector<Id> ids_;
 };
 
+template <typename ExternalId>
+class Maker {
+ public:
+  explicit Maker(Graph& graph) : graph_(graph) {}
+
+  ~Maker() noexcept(false) {
+    if (std::uncaught_exceptions() == 0) {
+      if (undefined_ > 0) {
+        Die die;
+        die << "undefined nodes:";
+        for (const auto& [external_id, id] : map_) {
+          if (!graph_.Is(id)) {
+            die << ' ' << external_id;
+          }
+        }
+      }
+    }
+  }
+
+  Id Get(ExternalId external_id) {
+    auto [it, inserted] = map_.emplace(external_id, 0);
+    if (inserted) {
+      it->second = graph_.Allocate();
+      ++undefined_;
+    }
+    return it->second;
+  }
+
+  template<typename Node, typename... Args>
+  Id Set(ExternalId external_id, Args&&... args) {
+    const Id id = Define(external_id);
+    graph_.Set<Node>(id, std::forward<Args>(args)...);
+    return id;
+  }
+
+  template <typename Node, typename... Args>
+  Id Add(Args&&... args) {
+    return graph_.Add<Node>(std::forward<Args>(args)...);
+  }
+
+ private:
+  Graph& graph_;
+  size_t undefined_ = 0;
+  std::unordered_map<ExternalId, Id> map_;
+
+  // This helper may be small enough to inline.
+  Id Define(ExternalId external_id) {
+    const Id id = Get(external_id);
+    if (graph_.Is(id)) {
+      Duplicate(external_id);
+    }
+    --undefined_;
+    return id;
+  }
+
+  // This helper should probably not be inlined.
+  [[noreturn]] static void Duplicate(ExternalId external_id) {
+    Die() << "duplicate definition of node: " << external_id;
+  }
+};
+
 }  // namespace stg
 
 #endif  // STG_GRAPH_H_
