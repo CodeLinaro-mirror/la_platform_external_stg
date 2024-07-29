@@ -84,7 +84,7 @@ namespace stg {
 template <typename Node, typename Hash = std::hash<Node>>
 class SCC {
  public:
-  ~SCC() {
+  ~SCC() noexcept(false) {
     if (std::uncaught_exceptions() == 0) {
       Check(open_.empty() && is_open_.empty() && root_index_.empty())
           << "internal error: SCC state broken";
