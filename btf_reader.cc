@@ -30,11 +30,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <memory>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -49,6 +51,54 @@
 namespace stg {
 
 namespace btf {
+
+namespace {
+
+// BTF Specification: https://www.kernel.org/doc/html/latest/bpf/btf.html
+class Structs {
+ public:
+  explicit Structs(Graph& graph);
+  Id Process(std::string_view data);
+
+ private:
+  struct MemoryRange {
+    const char* start;
+    const char* limit;
+    bool Empty() const;
+    template <typename T> const T* Pull(size_t count = 1);
+  };
+
+  Graph& graph_;
+
+  MemoryRange string_section_;
+
+  std::optional<Id> void_;
+  std::optional<Id> variadic_;
+  std::unordered_map<uint32_t, Id> btf_type_ids_;
+  std::map<std::string, Id> btf_symbols_;
+
+  Id ProcessAligned(std::string_view data);
+
+  Id GetVoid();
+  Id GetVariadic();
+  Id GetIdRaw(uint32_t btf_index);
+  Id GetId(uint32_t btf_index);
+  Id GetParameterId(uint32_t btf_index);
+
+  Id BuildTypes(MemoryRange memory);
+  void BuildOneType(const btf_type* t, uint32_t btf_index,
+                    MemoryRange& memory);
+  Id BuildSymbols();
+  std::vector<Id> BuildMembers(
+      bool kflag, const btf_member* members, size_t vlen);
+  Enumeration::Enumerators BuildEnums(
+      bool is_signed, const struct btf_enum* enums, size_t vlen);
+  Enumeration::Enumerators BuildEnums64(
+      bool is_signed, const struct btf_enum64* enums, size_t vlen);
+  std::vector<Id> BuildParams(const struct btf_param* params, size_t vlen);
+  Id BuildEnumUnderlyingType(size_t size, bool is_signed);
+  std::string GetName(uint32_t name_off);
+};
 
 bool Structs::MemoryRange::Empty() const {
   return start == limit;
@@ -103,14 +153,10 @@ Id Structs::GetParameterId(uint32_t btf_index) {
   return btf_index ? GetIdRaw(btf_index) : GetVariadic();
 }
 
-namespace {
-
 bool IsAlignedForBtf(std::string_view btf_data) {
   return reinterpret_cast<uintptr_t>(btf_data.data()) % alignof(btf_header) ==
          0;
 }
-
-}  // namespace
 
 Id Structs::Process(std::string_view btf_data) {
   Check(sizeof(btf_header) <= btf_data.size())
@@ -435,6 +481,8 @@ std::string Structs::GetName(uint32_t name_off) {
 Id Structs::BuildSymbols() {
   return graph_.Add<Interface>(btf_symbols_);
 }
+
+}  // namespace
 
 Id ReadSection(Graph& graph, std::string_view data) {
   return Structs(graph).Process(data);
