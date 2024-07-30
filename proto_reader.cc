@@ -36,6 +36,7 @@
 #include <google/protobuf/text_format.h>
 #include "error.h"
 #include "graph.h"
+#include "hex.h"
 #include "stg.pb.h"
 
 namespace stg {
@@ -96,7 +97,7 @@ struct Transformer {
   Type Transform(const Type&);
 
   Graph& graph;
-  Maker<uint32_t> maker;
+  Maker<Hex<uint32_t>> maker;
 };
 
 Id Transformer::Transform(const proto::STG& x) {
@@ -124,7 +125,7 @@ Id Transformer::Transform(const proto::STG& x) {
 }
 
 Id Transformer::GetId(uint32_t id) {
-  return maker.Get(id);
+  return maker.Get(Hex(id));
 }
 
 template <typename ProtoType>
@@ -268,7 +269,7 @@ void Transformer::AddNode(const Interface& x) {
 
 template <typename STGType, typename... Args>
 void Transformer::AddNode(uint32_t id, Args&&... args) {
-  maker.Set<STGType>(id, Transform(args)...);
+  maker.Set<STGType>(Hex(id), Transform(args)...);
 }
 
 std::vector<Id> Transformer::Transform(
