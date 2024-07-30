@@ -28,7 +28,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
@@ -45,7 +44,7 @@ namespace proto {
 namespace {
 
 struct Transformer {
-  explicit Transformer(Graph& graph) : graph(graph) {}
+  explicit Transformer(Graph& graph) : graph(graph), maker(graph) {}
 
   Id Transform(const proto::STG&);
 
@@ -97,7 +96,7 @@ struct Transformer {
   Type Transform(const Type&);
 
   Graph& graph;
-  std::unordered_map<uint32_t, Id> id_map;
+  Maker<uint32_t> maker;
 };
 
 Id Transformer::Transform(const proto::STG& x) {
@@ -125,11 +124,7 @@ Id Transformer::Transform(const proto::STG& x) {
 }
 
 Id Transformer::GetId(uint32_t id) {
-  auto [it, inserted] = id_map.emplace(id, 0);
-  if (inserted) {
-    it->second = graph.Allocate();
-  }
-  return it->second;
+  return maker.Get(id);
 }
 
 template <typename ProtoType>
@@ -273,7 +268,7 @@ void Transformer::AddNode(const Interface& x) {
 
 template <typename STGType, typename... Args>
 void Transformer::AddNode(uint32_t id, Args&&... args) {
-  graph.Set<STGType>(GetId(id), Transform(args)...);
+  maker.Set<STGType>(id, Transform(args)...);
 }
 
 std::vector<Id> Transformer::Transform(
