@@ -265,7 +265,7 @@ class Processor {
   Processor(Graph& graph, Id void_id, Id variadic_id,
             bool is_little_endian_binary,
             const std::unique_ptr<Filter>& file_filter, Types& result)
-      : graph_(graph),
+      : maker_(graph),
         void_id_(void_id),
         variadic_id_(variadic_id),
         is_little_endian_binary_(is_little_endian_binary),
@@ -278,14 +278,6 @@ class Processor {
       files_ = dwarf::Files(compilation_unit.entry);
     }
     Process(compilation_unit.entry);
-  }
-
-  void CheckUnresolvedIds() const {
-    for (const auto& [offset, id] : id_map_) {
-      if (!graph_.Is(id)) {
-        Die() << "unresolved id " << id << ", DWARF offset " << Hex(offset);
-      }
-    }
   }
 
   void ResolveSymbolSpecifications() {
@@ -645,7 +637,7 @@ class Processor {
 
   void ProcessMethod(std::vector<Id>& methods, Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
-    auto id = graph_.Add<Function>(std::move(subprogram.node));
+    auto id = maker_.Add<Function>(std::move(subprogram.node));
     if (subprogram.external && subprogram.address) {
       // Only external functions with address are useful for ABI monitoring
       // TODO: cover virtual methods
@@ -1022,12 +1014,7 @@ class Processor {
 
   // Allocate or get already allocated STG Id for Entry.
   Id GetIdForEntry(Entry& entry) {
-    const auto offset = entry.GetOffset();
-    const auto [it, emplaced] = id_map_.emplace(offset, Id(-1));
-    if (emplaced) {
-      it->second = graph_.Allocate();
-    }
-    return it->second;
+    return maker_.Get(entry.GetOffset());
   }
 
   // Same as GetIdForEntry, but returns "void_id_" for "unspecified" references,
@@ -1044,22 +1031,19 @@ class Processor {
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
-    const Id id = GetIdForEntry(entry);
-    graph_.Set<Node>(id, std::forward<Args>(args)...);
-    return id;
+    return maker_.Set<Node>(entry.GetOffset(), std::forward<Args>(args)...);
   }
 
   void AddNamedTypeNode(Id id) {
     result_.named_type_ids.push_back(id);
   }
 
-  Graph& graph_;
+  Maker<Dwarf_Off> maker_;
   Id void_id_;
   Id variadic_id_;
   bool is_little_endian_binary_;
   const std::unique_ptr<Filter>& file_filter_;
   Types& result_;
-  std::unordered_map<Dwarf_Off, Id> id_map_;
   std::vector<std::pair<Dwarf_Off, std::string>> scoped_names_;
   std::vector<std::pair<Dwarf_Off, size_t>> unresolved_symbol_specifications_;
 
@@ -1087,7 +1071,6 @@ Types Process(Dwarf* dwarf, bool is_little_endian_binary,
     // Could fetch top-level attributes like compiler here.
     processor.ProcessCompilationUnit(compilation_unit);
   }
-  processor.CheckUnresolvedIds();
   processor.ResolveSymbolSpecifications();
 
   return result;
