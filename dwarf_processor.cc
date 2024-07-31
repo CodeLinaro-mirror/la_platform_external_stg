@@ -1014,7 +1014,7 @@ class Processor {
 
   // Allocate or get already allocated STG Id for Entry.
   Id GetIdForEntry(Entry& entry) {
-    return maker_.Get(entry.GetOffset());
+    return maker_.Get(Hex(entry.GetOffset()));
   }
 
   // Same as GetIdForEntry, but returns "void_id_" for "unspecified" references,
@@ -1031,14 +1031,15 @@ class Processor {
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
-    return maker_.Set<Node>(entry.GetOffset(), std::forward<Args>(args)...);
+    return maker_.Set<Node>(Hex(entry.GetOffset()),
+                            std::forward<Args>(args)...);
   }
 
   void AddNamedTypeNode(Id id) {
     result_.named_type_ids.push_back(id);
   }
 
-  Maker<Dwarf_Off> maker_;
+  Maker<Hex<Dwarf_Off>> maker_;
   Id void_id_;
   Id variadic_id_;
   bool is_little_endian_binary_;
