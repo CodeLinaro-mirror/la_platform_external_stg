@@ -1285,6 +1285,12 @@ Id Abigail::BuildSymbols() {
   return graph_.Add<Interface>(symbols);
 }
 
+Id ProcessDocument(Graph& graph, xmlDocPtr document) {
+  xmlNodePtr root = xmlDocGetRootElement(document);
+  Check(root != nullptr) << "XML document has no root element";
+  return Abigail(graph).ProcessRoot(root);
+}
+
 // TODO: refactor Read* to eliminate code duplication
 Document Read(Runtime& runtime, const std::string& path) {
   // Open input for reading.
@@ -1308,9 +1314,7 @@ Document Read(Runtime& runtime, const std::string& path) {
 
 Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   const Document document = Read(runtime, path);
-  const xmlNodePtr root = xmlDocGetRootElement(document.get());
-  Check(root != nullptr) << "XML document has no root element";
-  return Abigail(graph).ProcessRoot(root);
+  return ProcessDocument(graph, document.get());
 }
 
 Id ReadFromString(Graph& graph, const std::string_view xml) {
@@ -1325,9 +1329,7 @@ Id ReadFromString(Graph& graph, const std::string_view xml) {
   Check(document != nullptr) << "failed to parse input as XML";
 
   // Process the XML.
-  xmlNodePtr root = xmlDocGetRootElement(document.get());
-  Check(root != nullptr) << "XML document has no root element";
-  return Abigail(graph).ProcessRoot(root);
+  return ProcessDocument(graph, document.get());
 }
 
 }  // namespace abixml

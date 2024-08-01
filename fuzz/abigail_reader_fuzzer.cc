@@ -41,14 +41,11 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
     return 0;
   }
 
-  xmlNodePtr root = xmlDocGetRootElement(document);
-  if (root) {
-    try {
-      stg::Graph graph;
-      stg::abixml::Abigail(graph).ProcessRoot(root);
-    } catch (const stg::Exception&) {
-      // Pass as this is us catching invalid XML properly.
-    }
+  try {
+    stg::Graph graph;
+    stg::abixml::ProcessDocument(graph, document);
+  } catch (const stg::Exception&) {
+    // Pass as this is us catching invalid XML properly.
   }
 
   xmlFreeDoc(document);

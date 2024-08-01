@@ -146,6 +146,7 @@ class Abigail {
   Id BuildSymbols();
 };
 
+Id ProcessDocument(Graph& graph, xmlDocPtr document);
 Id Read(Runtime& runtime, Graph& graph, const std::string& path);
 Id ReadFromString(Graph& graph, std::string_view xml);
 
