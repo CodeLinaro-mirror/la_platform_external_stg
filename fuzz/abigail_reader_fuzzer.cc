@@ -31,17 +31,17 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
   xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
   // Suppress libxml error messages.
   xmlSetGenericErrorFunc(ctxt, (xmlGenericErrorFunc) DoNothing);
-  xmlDocPtr doc = xmlCtxtReadMemory(
+  xmlDocPtr document = xmlCtxtReadMemory(
       ctxt, data, size, nullptr, nullptr,
       XML_PARSE_NOERROR | XML_PARSE_NONET | XML_PARSE_NOWARNING);
   xmlFreeParserCtxt(ctxt);
 
-  // Bail out if the doc XML is invalid.
-  if (!doc) {
+  // Bail out if the document XML is invalid.
+  if (document == nullptr) {
     return 0;
   }
 
-  xmlNodePtr root = xmlDocGetRootElement(doc);
+  xmlNodePtr root = xmlDocGetRootElement(document);
   if (root) {
     try {
       stg::Graph graph;
@@ -51,7 +51,7 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
     }
   }
 
-  xmlFreeDoc(doc);
+  xmlFreeDoc(document);
 
   return 0;
 }
