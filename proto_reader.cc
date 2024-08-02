@@ -483,8 +483,9 @@ Id Read(Graph& graph, const std::string& path) {
   return Transformer(graph).Transform(stg);
 }
 
-Id ReadFromString(Graph& graph, const std::string_view input) {
+Id ReadFromString(Graph& graph, std::string_view input) {
   proto::STG stg;
+  // TODO: Pass string_view once AOSP Protobuf supports this.
   google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);
   CheckFormatVersion(stg.version(), std::nullopt);
   return Transformer(graph).Transform(stg);
