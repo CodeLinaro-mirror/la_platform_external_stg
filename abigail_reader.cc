@@ -960,8 +960,7 @@ Id Abigail::ProcessRoot(xmlNodePtr root) {
     }
   }
   const Id id = BuildSymbols();
-  RemoveUselessQualifiers(graph_, id);
-  return id;
+  return RemoveUselessQualifiers(graph_, id);
 }
 
 void Abigail::ProcessCorpusGroup(xmlNodePtr group) {

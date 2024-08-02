@@ -448,9 +448,7 @@ Id Reader::Read() {
 
   // Types produced by ELF/DWARF readers may require removing useless
   // qualifiers.
-  RemoveUselessQualifiers(graph_, root);
-
-  return root;
+  return RemoveUselessQualifiers(graph_, root);
 }
 
 }  // namespace

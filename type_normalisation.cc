@@ -216,7 +216,7 @@ struct RemoveFunctionQualifiers {
 
 }  // namespace
 
-void RemoveUselessQualifiers(Graph& graph, Id root) {
+Id RemoveUselessQualifiers(Graph& graph, Id root) {
   std::unordered_map<Id, Id> resolved;
   std::unordered_set<Id> functions;
   FindQualifiedTypesAndFunctions(graph, resolved, functions)(root);
@@ -225,6 +225,7 @@ void RemoveUselessQualifiers(Graph& graph, Id root) {
   for (const auto& id : functions) {
     remove_qualifiers(id);
   }
+  return root;
 }
 
 }  // namespace stg
