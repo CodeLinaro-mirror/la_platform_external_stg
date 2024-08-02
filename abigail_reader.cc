@@ -959,8 +959,7 @@ Id Abigail::ProcessRoot(xmlNodePtr root) {
       Warn() << "no definition found for type '" << type_id << "'";
     }
   }
-  const Id id = BuildSymbols();
-  return RemoveUselessQualifiers(graph_, id);
+  return BuildSymbols();
 }
 
 void Abigail::ProcessCorpusGroup(xmlNodePtr group) {
@@ -1412,7 +1411,8 @@ Document Parse(Runtime& runtime, const std::function<Parser>& parser) {
 Id ProcessDocument(Graph& graph, xmlDocPtr document) {
   xmlNodePtr root = xmlDocGetRootElement(document);
   Check(root != nullptr) << "XML document has no root element";
-  return Abigail(graph).ProcessRoot(root);
+  const Id id = Abigail(graph).ProcessRoot(root);
+  return RemoveUselessQualifiers(graph, id);
 }
 
 Document Read(Runtime& runtime, const std::string& path) {
