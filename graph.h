@@ -760,7 +760,7 @@ class Maker {
   Id Set(ExternalId external_id, Args&&... args) {
     const Id id = Get(external_id);
     if (graph_.Is(id)) {
-      Duplicate(external_id);
+      DieDuplicate(external_id);
     }
     graph_.Set<Node>(id, std::forward<Args>(args)...);
     --undefined_;
@@ -778,7 +778,7 @@ class Maker {
   std::unordered_map<ExternalId, Id> map_;
 
   // This helper should probably not be inlined.
-  [[noreturn]] static void Duplicate(ExternalId external_id) {
+  [[noreturn]] static void DieDuplicate(ExternalId external_id) {
     Die() << "duplicate definition of node: " << external_id;
   }
 };
