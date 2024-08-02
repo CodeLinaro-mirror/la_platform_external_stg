@@ -1426,15 +1426,18 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   return ProcessDocument(graph, document.get());
 }
 
-Id ReadFromString(Runtime&, Graph& graph, const std::string_view xml) {
+Id ReadFromString(Runtime& runtime, Graph& graph, const std::string_view xml) {
   // Read the XML.
   Document document(nullptr, xmlFreeDoc);
-  const std::unique_ptr<std::remove_pointer_t<xmlParserCtxtPtr>,
-                        void (*)(xmlParserCtxtPtr)>
-      context(xmlNewParserCtxt(), xmlFreeParserCtxt);
-  document.reset(xmlCtxtReadMemory(context.get(), xml.data(),
-                                   static_cast<int>(xml.size()), nullptr,
-                                   nullptr, XML_PARSE_NONET));
+  {
+    const Time t(runtime, "abigail.libxml_parse");
+    const std::unique_ptr<std::remove_pointer_t<xmlParserCtxtPtr>,
+        void (*)(xmlParserCtxtPtr)>
+        context(xmlNewParserCtxt(), xmlFreeParserCtxt);
+    document.reset(xmlCtxtReadMemory(context.get(), xml.data(),
+                                     static_cast<int>(xml.size()), nullptr,
+                                     nullptr, XML_PARSE_NONET));
+  }
   Check(document != nullptr) << "failed to parse input as XML";
 
   // Process the XML.
