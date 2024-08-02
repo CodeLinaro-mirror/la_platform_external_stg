@@ -758,8 +758,12 @@ class Maker {
 
   template<typename Node, typename... Args>
   Id Set(ExternalId external_id, Args&&... args) {
-    const Id id = Define(external_id);
+    const Id id = Get(external_id);
+    if (graph_.Is(id)) {
+      Duplicate(external_id);
+    }
     graph_.Set<Node>(id, std::forward<Args>(args)...);
+    --undefined_;
     return id;
   }
 
@@ -772,16 +776,6 @@ class Maker {
   Graph& graph_;
   size_t undefined_ = 0;
   std::unordered_map<ExternalId, Id> map_;
-
-  // This helper may be small enough to inline.
-  Id Define(ExternalId external_id) {
-    const Id id = Get(external_id);
-    if (graph_.Is(id)) {
-      Duplicate(external_id);
-    }
-    --undefined_;
-    return id;
-  }
 
   // This helper should probably not be inlined.
   [[noreturn]] static void Duplicate(ExternalId external_id) {
