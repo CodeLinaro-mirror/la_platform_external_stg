@@ -747,7 +747,7 @@ class Maker {
     }
   }
 
-  Id Get(ExternalId external_id) {
+  Id Get(const ExternalId& external_id) {
     auto [it, inserted] = map_.emplace(external_id, 0);
     if (inserted) {
       it->second = graph_.Allocate();
@@ -757,7 +757,7 @@ class Maker {
   }
 
   template<typename Node, typename... Args>
-  Id Set(ExternalId external_id, Args&&... args) {
+  Id Set(const ExternalId& external_id, Args&&... args) {
     const Id id = Get(external_id);
     if (graph_.Is(id)) {
       DieDuplicate(external_id);
@@ -778,7 +778,7 @@ class Maker {
   std::unordered_map<ExternalId, Id> map_;
 
   // This helper should probably not be inlined.
-  [[noreturn]] static void DieDuplicate(ExternalId external_id) {
+  [[noreturn]] static void DieDuplicate(const ExternalId& external_id) {
     Die() << "duplicate definition of node: " << external_id;
   }
 };
