@@ -76,11 +76,8 @@ int RunFidelity(const char* filename, const stg::Graph& graph,
   return diffs_reported ? kFidelityChange : 0;
 }
 
-int RunExact(stg::Runtime& runtime, const Inputs& inputs,
-             stg::ReadOptions options) {
-  stg::Graph graph;
-  const auto roots = Read(runtime, inputs, graph, options);
-
+int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
+             const std::vector<stg::Id>& roots) {
   struct PairCache {
     std::optional<bool> Query(const stg::Pair& comparison) const {
       return equalities.find(comparison) != equalities.end()
@@ -103,13 +100,9 @@ int RunExact(stg::Runtime& runtime, const Inputs& inputs,
              : kAbiChange;
 }
 
-int Run(stg::Runtime& runtime, const Inputs& inputs, const Outputs& outputs,
-        stg::diff::Ignore ignore, stg::ReadOptions options,
-        std::optional<const char*> fidelity) {
-  // Read inputs.
-  stg::Graph graph;
-  const auto roots = Read(runtime, inputs, graph, options);
-
+int Run(stg::Runtime& runtime, const stg::Graph& graph,
+        const std::vector<stg::Id>& roots, const Outputs& outputs,
+        stg::diff::Ignore ignore, std::optional<const char*> fidelity) {
   // Compute differences.
   stg::diff::Compare compare{runtime, graph, ignore};
   std::pair<bool, std::optional<stg::diff::Comparison>> result;
@@ -263,9 +256,11 @@ int main(int argc, char* argv[]) {
 
   try {
     stg::Runtime runtime(std::cerr, opt_metrics);
-    return opt_exact ? RunExact(runtime, inputs, opt_read_options)
-                     : Run(runtime, inputs, outputs, opt_ignore,
-                           opt_read_options, opt_fidelity);
+    stg::Graph graph;
+    const auto roots = Read(runtime, inputs, graph, opt_read_options);
+    return opt_exact ? RunExact(runtime, graph, roots)
+                     : Run(runtime, graph, roots, outputs, opt_ignore,
+                           opt_fidelity);
   } catch (const stg::Exception& e) {
     std::cerr << e.what();
     return 1;
