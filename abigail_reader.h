@@ -42,14 +42,15 @@ namespace abixml {
 //
 // On construction Abigail consumes a libxml node tree and builds a graph.
 //
-// The parser supports C types only, with C++ types to be added later.
+// Note that the core parser sees a "clean and tidy" XML document due to
+// preprocessing that simplifies the XML and resolves several issues. One
+// notable exception is that duplicate nodes may still remain.
 //
 // The main producer of ABI XML is abidw. The format has no formal specification
 // and has very limited semantic versioning. This parser makes no attempt to
 // support or correct for deficiencies in older versions of the format.
 //
-// The parser detects unexpected elements and will abort on the presence of at
-// least: namespace, base class and member function information.
+// The parser detects and will abort on the presence of unexpected elements.
 //
 // The parser ignores attributes it doesn't care about, including member access
 // specifiers and (meaningless) type ids on array dimensions.
@@ -74,7 +75,7 @@ namespace abixml {
 // represented as comma-separated attribute values. Aliases are resolved in a
 // post-processing phase.
 //
-// 4. XML anonymous types also have unhelpful names, these are ignored.
+// 4. XML anonymous types may also have names, these are ignored.
 class Abigail {
  public:
   explicit Abigail(Graph& graph);

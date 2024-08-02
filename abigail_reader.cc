@@ -526,10 +526,10 @@ void FixBadDwarfElfLinks(xmlNodePtr root) {
 //
 // 2. Reanonymise anonymous types that have been given names.
 //
-// At some point abidw changed its behaviour given an anonymous with a naming
-// typedef. In addition to linking the typedef and type in both directions, the
-// code now gives (some) anonymous types the same name as the typedef. This
-// misrepresents the original types.
+// At some point abidw changed its behaviour given an anonymous type with a
+// naming typedef. In addition to linking the typedef and type in both
+// directions, the code now gives (some) anonymous types the same name as the
+// typedef. This misrepresents the original types.
 //
 // Such types should be anonymous. We set is-anonymous and drop the name.
 //
