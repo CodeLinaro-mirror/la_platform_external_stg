@@ -56,7 +56,7 @@ Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
     }
     case InputFormat::STG: {
       const Time read(runtime, "read STG");
-      return proto::Read(graph, input);
+      return proto::Read(runtime, graph, input);
     }
   }
 }

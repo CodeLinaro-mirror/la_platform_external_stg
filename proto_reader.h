@@ -24,11 +24,12 @@
 #include <string_view>
 
 #include "graph.h"
+#include "runtime.h"
 
 namespace stg {
 namespace proto {
 
-Id Read(Graph&, const std::string&);
+Id Read(Runtime&, Graph&, const std::string&);
 Id ReadFromString(Graph&, std::string_view);
 
 }  // namespace proto

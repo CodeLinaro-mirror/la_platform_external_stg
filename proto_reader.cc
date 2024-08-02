@@ -37,6 +37,7 @@
 #include "error.h"
 #include "graph.h"
 #include "hex.h"
+#include "runtime.h"
 #include "stg.pb.h"
 
 namespace stg {
@@ -472,15 +473,21 @@ void CheckFormatVersion(uint32_t version, std::optional<std::string> path) {
 
 }  // namespace
 
-Id Read(Graph& graph, const std::string& path) {
-  std::ifstream ifs(path);
-  Check(ifs.good()) << "error opening file '" << path
-                    << "' for reading: " << Error(errno);
-  google::protobuf::io::IstreamInputStream is(&ifs);
+Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   proto::STG stg;
-  google::protobuf::TextFormat::Parse(&is, &stg);
-  CheckFormatVersion(stg.version(), path);
-  return Transformer(graph).Transform(stg);
+  {
+    const Time t(runtime, "proto.Parse");
+    std::ifstream ifs(path);
+    Check(ifs.good()) << "error opening file '" << path
+                      << "' for reading: " << Error(errno);
+    google::protobuf::io::IstreamInputStream is(&ifs);
+    google::protobuf::TextFormat::Parse(&is, &stg);
+  }
+  {
+    const Time t(runtime, "proto.Transform");
+    CheckFormatVersion(stg.version(), path);
+    return Transformer(graph).Transform(stg);
+  }
 }
 
 Id ReadFromString(Graph& graph, std::string_view input) {
