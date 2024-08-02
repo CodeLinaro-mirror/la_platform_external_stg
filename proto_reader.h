@@ -30,7 +30,7 @@ namespace stg {
 namespace proto {
 
 Id Read(Runtime&, Graph&, const std::string&);
-Id ReadFromString(Graph&, std::string_view);
+Id ReadFromString(Runtime&, Graph&, std::string_view);
 
 }  // namespace proto
 }  // namespace stg

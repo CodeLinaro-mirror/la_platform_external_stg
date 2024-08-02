@@ -1426,7 +1426,7 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   return ProcessDocument(graph, document.get());
 }
 
-Id ReadFromString(Graph& graph, const std::string_view xml) {
+Id ReadFromString(Runtime&, Graph& graph, const std::string_view xml) {
   // Read the XML.
   Document document(nullptr, xmlFreeDoc);
   const std::unique_ptr<std::remove_pointer_t<xmlParserCtxtPtr>,

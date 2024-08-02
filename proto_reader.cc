@@ -490,7 +490,7 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   }
 }
 
-Id ReadFromString(Graph& graph, std::string_view input) {
+Id ReadFromString(Runtime&, Graph& graph, std::string_view input) {
   proto::STG stg;
   // TODO: Pass string_view once AOSP Protobuf supports this.
   google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);

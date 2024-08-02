@@ -35,7 +35,7 @@ namespace abixml {
 
 Id ProcessDocument(Graph& graph, xmlDocPtr document);
 Id Read(Runtime& runtime, Graph& graph, const std::string& path);
-Id ReadFromString(Graph& graph, std::string_view xml);
+Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view xml);
 
 // Exposed for testing.
 void Clean(xmlNodePtr root);
