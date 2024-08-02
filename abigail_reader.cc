@@ -1392,6 +1392,22 @@ Id Abigail::BuildSymbols() {
   return graph_.Add<Interface>(symbols);
 }
 
+using Parser = xmlDocPtr(xmlParserCtxtPtr context, const char* url,
+                         const char* encoding, int options);
+
+Document Parse(Runtime& runtime, const std::function<Parser>& parser) {
+  const std::unique_ptr<
+      std::remove_pointer_t<xmlParserCtxtPtr>, void(*)(xmlParserCtxtPtr)>
+      context(xmlNewParserCtxt(), xmlFreeParserCtxt);
+  Document document(nullptr, xmlFreeDoc);
+  {
+    const Time t(runtime, "abigail.libxml_parse");
+    document.reset(parser(context.get(), nullptr, nullptr, XML_PARSE_NONET));
+  }
+  Check(document != nullptr) << "failed to parse input as XML";
+  return document;
+}
+
 }  // namespace
 
 Id ProcessDocument(Graph& graph, xmlDocPtr document) {
@@ -1400,46 +1416,29 @@ Id ProcessDocument(Graph& graph, xmlDocPtr document) {
   return Abigail(graph).ProcessRoot(root);
 }
 
-// TODO: refactor Read* to eliminate code duplication
 Document Read(Runtime& runtime, const std::string& path) {
-  // Open input for reading.
   const FileDescriptor fd(path.c_str(), O_RDONLY);
-
-  // Read the XML.
-  Document document(nullptr, xmlFreeDoc);
-  {
-    const Time t(runtime, "abigail.libxml_parse");
-    const std::unique_ptr<
-        std::remove_pointer_t<xmlParserCtxtPtr>, void(*)(xmlParserCtxtPtr)>
-        context(xmlNewParserCtxt(), xmlFreeParserCtxt);
-    document.reset(
-        xmlCtxtReadFd(context.get(), fd.Value(), nullptr, nullptr,
-                      XML_PARSE_NONET));
-  }
-  Check(document != nullptr) << "failed to parse input as XML";
-
-  return document;
+  return Parse(runtime, [&](xmlParserCtxtPtr context, const char* url,
+                            const char* encoding, int options) {
+    return xmlCtxtReadFd(context, fd.Value(), url, encoding, options);
+  });
 }
 
 Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
+  // Read the XML.
   const Document document = Read(runtime, path);
+  // Process the XML.
   return ProcessDocument(graph, document.get());
 }
 
 Id ReadFromString(Runtime& runtime, Graph& graph, const std::string_view xml) {
   // Read the XML.
-  Document document(nullptr, xmlFreeDoc);
-  {
-    const Time t(runtime, "abigail.libxml_parse");
-    const std::unique_ptr<std::remove_pointer_t<xmlParserCtxtPtr>,
-        void (*)(xmlParserCtxtPtr)>
-        context(xmlNewParserCtxt(), xmlFreeParserCtxt);
-    document.reset(xmlCtxtReadMemory(context.get(), xml.data(),
-                                     static_cast<int>(xml.size()), nullptr,
-                                     nullptr, XML_PARSE_NONET));
-  }
-  Check(document != nullptr) << "failed to parse input as XML";
-
+  const Document document =
+      Parse(runtime, [&](xmlParserCtxtPtr context, const char* url,
+                         const char* encoding, int options) {
+    return xmlCtxtReadMemory(context, xml.data(), static_cast<int>(xml.size()),
+                             url, encoding, options);
+  });
   // Process the XML.
   return ProcessDocument(graph, document.get());
 }
