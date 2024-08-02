@@ -490,12 +490,18 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   }
 }
 
-Id ReadFromString(Runtime&, Graph& graph, std::string_view input) {
+Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
   proto::STG stg;
-  // TODO: Pass string_view once AOSP Protobuf supports this.
-  google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);
-  CheckFormatVersion(stg.version(), std::nullopt);
-  return Transformer(graph).Transform(stg);
+  {
+    const Time t(runtime, "proto.Parse");
+    // TODO: Pass string_view once AOSP Protobuf supports this.
+    google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);
+  }
+  {
+    const Time t(runtime, "proto.Transform");
+    CheckFormatVersion(stg.version(), std::nullopt);
+    return Transformer(graph).Transform(stg);
+  }
 }
 
 }  // namespace proto
