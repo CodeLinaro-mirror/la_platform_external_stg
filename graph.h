@@ -756,15 +756,14 @@ class Maker {
     return it->second;
   }
 
-  template<typename Node, typename... Args>
+  template <typename Node, typename... Args>
   Id Set(const ExternalId& external_id, Args&&... args) {
-    const Id id = Get(external_id);
-    if (graph_.Is(id)) {
-      DieDuplicate(external_id);
-    }
-    graph_.Set<Node>(id, std::forward<Args>(args)...);
-    --undefined_;
-    return id;
+    return Set<Node>(DieDuplicate, external_id, std::forward<Args>(args)...);
+  }
+
+  template <typename Node, typename... Args>
+  Id MaybeSet(const ExternalId& external_id, Args&&... args) {
+    return Set<Node>(WarnDuplicate, external_id, std::forward<Args>(args)...);
   }
 
   template <typename Node, typename... Args>
@@ -777,9 +776,25 @@ class Maker {
   size_t undefined_ = 0;
   std::unordered_map<ExternalId, Id> map_;
 
-  // This helper should probably not be inlined.
+  template <typename Node, typename... Args>
+  Id Set(void(& fail)(const ExternalId&), const ExternalId& external_id,
+         Args&&... args) {
+    const Id id = Get(external_id);
+    if (graph_.Is(id)) {
+      fail(external_id);
+    } else {
+      graph_.Set<Node>(id, std::forward<Args>(args)...);
+      --undefined_;
+    }
+    return id;
+  }
+
+  // These helpers should probably not be inlined.
   [[noreturn]] static void DieDuplicate(const ExternalId& external_id) {
     Die() << "duplicate definition of node: " << external_id;
+  }
+  static void WarnDuplicate(const ExternalId& external_id) {
+    Warn() << "ignoring duplicate definition of node: " << external_id;
   }
 };
 
