@@ -27,6 +27,8 @@
 #include <string>
 #include <string_view>
 
+#include "hex.h"
+
 namespace stg {
 
 const Id Id::kInvalid(std::numeric_limits<decltype(Id::ix_)>::max());

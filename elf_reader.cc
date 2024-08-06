@@ -20,7 +20,6 @@
 #include "elf_reader.h"
 
 #include <cstddef>
-#include <functional>
 #include <map>
 #include <memory>
 #include <optional>
@@ -30,7 +29,7 @@
 #include <vector>
 
 #include "dwarf_processor.h"
-#include "dwarf_wrappers.h"
+#include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"
 #include "filter.h"
@@ -96,7 +95,7 @@ CRCValuesMap GetCRCValuesMap(const SymbolTable& symbols, const ElfLoader& elf) {
   for (const auto& symbol : symbols) {
     const std::string_view name = symbol.name;
     if (name.substr(0, kCRCPrefix.size()) == kCRCPrefix) {
-      std::string_view name_suffix = name.substr(kCRCPrefix.size());
+      const std::string_view name_suffix = name.substr(kCRCPrefix.size());
       if (!crc_values.emplace(name_suffix, elf.GetElfSymbolCRC(symbol))
                .second) {
         Die() << "Multiple CRC values for symbol '" << name_suffix << '\'';
@@ -187,24 +186,27 @@ bool IsPublicFunctionOrVariable(const SymbolTableEntry& symbol) {
   return true;
 }
 
+bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
+                                     const SymbolTableEntry& symbol) {
+  // We use symbol name extracted from __ksymtab_ symbols as a proxy for the
+  // real symbol in the ksymtab. Such names can still be duplicated by LOCAL
+  // symbols so drop them to avoid false matches.
+  if (symbol.binding == SymbolTableEntry::Binding::LOCAL) {
+    return false;
+  }
+  // TODO: handle undefined ksymtab symbols
+  return ksymtab.contains(symbol.name);
+}
+
 namespace {
 
 class Reader {
  public:
-  Reader(Runtime& runtime, Graph& graph, const std::string& path,
+  Reader(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
          ReadOptions options, const std::unique_ptr<Filter>& file_filter)
       : graph_(graph),
-        dwarf_(path),
-        elf_(dwarf_.GetElf()),
-        options_(options),
-        file_filter_(file_filter),
-        runtime_(runtime) {}
-
-  Reader(Runtime& runtime, Graph& graph, char* data, size_t size,
-         ReadOptions options, const std::unique_ptr<Filter>& file_filter)
-      : graph_(graph),
-        dwarf_(data, size),
-        elf_(dwarf_.GetElf()),
+        elf_dwarf_handle_(elf_dwarf_handle),
+        elf_(elf_dwarf_handle_.GetElf()),
         options_(options),
         file_filter_(file_filter),
         runtime_(runtime) {}
@@ -214,6 +216,13 @@ class Reader {
  private:
   using SymbolIndex =
       std::map<std::pair<dwarf::Address, std::string>, std::vector<size_t>>;
+
+  void GetLinuxKernelSymbols(
+      const std::vector<SymbolTableEntry>& all_symbols,
+      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
+  void GetUserspaceSymbols(
+      const std::vector<SymbolTableEntry>& all_symbols,
+      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
 
   Id BuildRoot(const std::vector<std::pair<ElfSymbol, size_t>>& symbols) {
     // On destruction, the unification object will remove or rewrite each graph
@@ -225,8 +234,9 @@ class Reader {
     // the starting node ID to be the current graph limit.
     Unification unification(runtime_, graph_, graph_.Limit());
 
-    const dwarf::Types types = dwarf::Process(
-        dwarf_, elf_.IsLittleEndianBinary(), file_filter_, graph_);
+    const dwarf::Types types =
+        dwarf::Process(elf_dwarf_handle_.GetDwarf(),
+                       elf_.IsLittleEndianBinary(), file_filter_, graph_);
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.
@@ -247,10 +257,7 @@ class Reader {
     SymbolIndex address_name_to_index;
     for (size_t i = 0; i < types.symbols.size(); ++i) {
       const auto& symbol = types.symbols[i];
-
-      const auto& name =
-          symbol.linkage_name.has_value() ? *symbol.linkage_name : symbol.name;
-      address_name_to_index[std::make_pair(symbol.address, name)].push_back(i);
+      address_name_to_index[{symbol.address, symbol.linkage_name}].push_back(i);
     }
 
     std::map<std::string, Id> symbols_map;
@@ -282,7 +289,7 @@ class Reader {
     std::vector<Id> roots;
     roots.reserve(types.named_type_ids.size() + types.symbols.size() + 1);
     for (const auto& symbol : types.symbols) {
-      roots.push_back(symbol.id);
+      roots.push_back(symbol.type_id);
     }
     for (const auto id : types.named_type_ids) {
       roots.push_back(id);
@@ -298,14 +305,16 @@ class Reader {
   static bool IsEqual(Unification& unification,
                       const dwarf::Types::Symbol& lhs,
                       const dwarf::Types::Symbol& rhs) {
-    return lhs.name == rhs.name && lhs.linkage_name == rhs.linkage_name
-        && lhs.address == rhs.address && unification.Unify(lhs.id, rhs.id);
+    return lhs.scoped_name == rhs.scoped_name
+        && lhs.linkage_name == rhs.linkage_name
+        && lhs.address == rhs.address
+        && unification.Unify(lhs.type_id, rhs.type_id);
   }
 
   static ElfSymbol SymbolTableEntryToElfSymbol(
       const CRCValuesMap& crc_values, const NamespacesMap& namespaces,
       const SymbolTableEntry& symbol) {
-    return ElfSymbol(
+    return {
         /* symbol_name = */ std::string(symbol.name),
         /* version_info = */ std::nullopt,
         /* is_defined = */
@@ -316,7 +325,7 @@ class Reader {
         /* crc = */ MaybeGet(crc_values, std::string(symbol.name)),
         /* ns = */ MaybeGet(namespaces, std::string(symbol.name)),
         /* type_id = */ std::nullopt,
-        /* full_name = */ std::nullopt);
+        /* full_name = */ std::nullopt};
   }
 
   static void MaybeAddTypeInfo(
@@ -364,87 +373,91 @@ class Reader {
         // "void foo(int bar)" vs "void foo(const int bar)"
         if (!IsEqual(unification, best_symbol, other)) {
           Die() << "Duplicate DWARF symbol: address="
-                << best_symbol.address << ", name=" << best_symbol.name;
+                << best_symbols_it->first.first
+                << ", name=" << best_symbols_it->first.second;
         }
       }
-      if (best_symbol.name.empty()) {
-        Die() << "DWARF symbol (address = " << best_symbol.address
-              << ", linkage_name = "
-              << best_symbol.linkage_name.value_or("{missing}")
-              << " should have a name";
+      if (best_symbol.scoped_name.empty()) {
+        Die() << "Anonymous DWARF symbol: address="
+              << best_symbols_it->first.first
+              << ", name=" << best_symbols_it->first.second;
       }
       // There may be multiple DWARF symbols with same address (zero-length
       // arrays), or ELF symbol has different name from DWARF symbol (aliases).
       // But if we have both situations at once, we can't match ELF to DWARF and
       // it should be fixed in analysed binary source code.
       Check(matched_by_name || candidates == 1)
-          << "multiple candidates without matching names, best_symbol.name="
-          << best_symbol.name;
-      node.type_id = best_symbol.id;
-      node.full_name = best_symbol.name;
+          << "Multiple candidate symbols without matching name: address="
+          << best_symbols_it->first.first
+          << ", name=" << best_symbols_it->first.second;
+      node.type_id = best_symbol.type_id;
+      node.full_name = best_symbol.scoped_name;
     }
   }
 
   Graph& graph_;
-  // The order of the following two fields is important because ElfLoader uses
-  // an Elf* from dwarf::Handler without owning it.
-  dwarf::Handler dwarf_;
-  elf::ElfLoader elf_;
+  ElfDwarfHandle& elf_dwarf_handle_;
+  ElfLoader elf_;
   ReadOptions options_;
   const std::unique_ptr<Filter>& file_filter_;
   Runtime& runtime_;
 };
 
-Id Reader::Read() {
-  const auto all_symbols = elf_.GetElfSymbols();
-  const bool is_linux_kernel = elf_.IsLinuxKernelBinary();
-  const SymbolNameList ksymtab_symbols =
-      is_linux_kernel ? GetKsymtabSymbols(all_symbols) : SymbolNameList();
-
-  CRCValuesMap crc_values;
-  NamespacesMap namespaces;
-  if (is_linux_kernel) {
-    crc_values = GetCRCValuesMap(all_symbols, elf_);
-    namespaces = GetNamespacesMap(all_symbols, elf_);
-  }
-
-  const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
-
-  std::vector<std::pair<ElfSymbol, size_t>> symbols;
-  symbols.reserve(all_symbols.size());
+void Reader::GetLinuxKernelSymbols(
+    const std::vector<SymbolTableEntry>& all_symbols,
+    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+  const auto crcs = GetCRCValuesMap(all_symbols, elf_);
+  const auto namespaces = GetNamespacesMap(all_symbols, elf_);
+  const auto ksymtab_symbols = GetKsymtabSymbols(all_symbols);
   for (const auto& symbol : all_symbols) {
-    if (IsPublicFunctionOrVariable(symbol) &&
-        (!is_linux_kernel || ksymtab_symbols.count(symbol.name))) {
+    if (IsLinuxKernelFunctionOrVariable(ksymtab_symbols, symbol)) {
+      const size_t address = elf_.GetAbsoluteAddress(symbol);
+      symbols.emplace_back(
+          SymbolTableEntryToElfSymbol(crcs, namespaces, symbol), address);
+    }
+  }
+}
+
+void Reader::GetUserspaceSymbols(
+    const std::vector<SymbolTableEntry>& all_symbols,
+    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+  const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
+  for (const auto& symbol : all_symbols) {
+    if (IsPublicFunctionOrVariable(symbol)) {
       const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
       const size_t address = cfi_it != cfi_address_map.end()
                                  ? cfi_it->second
                                  : elf_.GetAbsoluteAddress(symbol);
       symbols.emplace_back(
-          SymbolTableEntryToElfSymbol(crc_values, namespaces, symbol), address);
+          SymbolTableEntryToElfSymbol({}, {}, symbol), address);
     }
   }
+}
+
+Id Reader::Read() {
+  const auto all_symbols = elf_.GetElfSymbols();
+  const auto get_symbols = elf_.IsLinuxKernelBinary()
+                           ? &Reader::GetLinuxKernelSymbols
+                           : &Reader::GetUserspaceSymbols;
+  std::vector<std::pair<ElfSymbol, size_t>> symbols;
+  symbols.reserve(all_symbols.size());
+  (this->*get_symbols)(all_symbols, symbols);
   symbols.shrink_to_fit();
 
   Id root = BuildRoot(symbols);
 
   // Types produced by ELF/DWARF readers may require removing useless
   // qualifiers.
-  RemoveUselessQualifiers(graph_, root);
-
-  return root;
+  return RemoveUselessQualifiers(graph_, root);
 }
 
 }  // namespace
 }  // namespace internal
 
-Id Read(Runtime& runtime, Graph& graph, const std::string& path,
+Id Read(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
         ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
-  return internal::Reader(runtime, graph, path, options, file_filter).Read();
-}
-
-Id Read(Runtime& runtime, Graph& graph, char* data, size_t size,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
-  return internal::Reader(runtime, graph, data, size, options, file_filter)
+  return internal::Reader(runtime, graph, elf_dwarf_handle, options,
+                          file_filter)
       .Read();
 }
 

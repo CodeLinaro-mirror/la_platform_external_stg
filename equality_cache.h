@@ -240,7 +240,7 @@ struct SimpleEqualityCache {
       ++query_equal_ids;
       return {true};
     }
-    if (known_equalities.count(comparison)) {
+    if (known_equalities.contains(comparison)) {
       ++query_known_equality;
       return {true};
     }
