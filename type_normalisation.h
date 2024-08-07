@@ -24,7 +24,7 @@
 
 namespace stg {
 
-void RemoveUselessQualifiers(Graph& graph, Id root);
+Id RemoveUselessQualifiers(Graph& graph, Id root);
 
 }  // namespace stg
 
