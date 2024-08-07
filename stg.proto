@@ -223,11 +223,12 @@ message ElfSymbol {
 
   enum SymbolType {
     SYMBOL_TYPE_UNSPECIFIED = 0;
-    OBJECT = 1;
-    FUNCTION = 2;
-    COMMON = 3;
-    TLS = 4;
-    GNU_IFUNC = 5;
+    NOTYPE = 1;
+    OBJECT = 2;
+    FUNCTION = 3;
+    COMMON = 4;
+    TLS = 5;
+    GNU_IFUNC = 6;
   }
 
   enum Binding {

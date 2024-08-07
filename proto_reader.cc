@@ -385,6 +385,8 @@ stg::StructUnion::Kind Transformer::Transform(StructUnion::Kind x) {
 
 stg::ElfSymbol::SymbolType Transformer::Transform(ElfSymbol::SymbolType x) {
   switch (x) {
+    case ElfSymbol::NOTYPE:
+      return stg::ElfSymbol::SymbolType::NOTYPE;
     case ElfSymbol::OBJECT:
       return stg::ElfSymbol::SymbolType::OBJECT;
     case ElfSymbol::FUNCTION:

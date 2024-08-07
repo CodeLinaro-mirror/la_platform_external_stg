@@ -60,6 +60,8 @@ std::optional<typename M::mapped_type> MaybeGet(const M& map, const K& key) {
 ElfSymbol::SymbolType ConvertSymbolType(
     SymbolTableEntry::SymbolType symbol_type) {
   switch (symbol_type) {
+    case SymbolTableEntry::SymbolType::NOTYPE:
+      return ElfSymbol::SymbolType::NOTYPE;
     case SymbolTableEntry::SymbolType::OBJECT:
       return ElfSymbol::SymbolType::OBJECT;
     case SymbolTableEntry::SymbolType::FUNCTION:
