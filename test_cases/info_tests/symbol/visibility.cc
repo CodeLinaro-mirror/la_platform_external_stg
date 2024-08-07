@@ -1,5 +1,4 @@
-void tweak(int);
-__attribute__ ((visibility ("default"))) void a() { tweak(0); }
-__attribute__ ((visibility ("protected"))) void b() { tweak(1); }
-__attribute__ ((visibility ("hidden"))) void c() { tweak(2); }
-__attribute__ ((visibility ("internal"))) void d() { tweak(3); }
+__attribute__ ((visibility ("default"))) int a() { return 0; }
+__attribute__ ((visibility ("protected"))) int b() { return 1; }
+__attribute__ ((visibility ("hidden"))) int c() { return 2; }
+__attribute__ ((visibility ("internal"))) int d() { return 3; }
