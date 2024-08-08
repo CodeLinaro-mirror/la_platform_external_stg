@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2022 Google LLC
+// Copyright 2021-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -21,7 +21,6 @@
 #define STG_ERROR_H_
 
 #include <exception>
-#include <ios>
 #include <iostream>
 #include <optional>
 #include <ostream>
@@ -48,14 +47,17 @@ class Exception : public std::exception {
   std::string message_;
 };
 
+// Coded to give compilers a chance of making `Check(ok) << foo;` as efficient
+// as `if (!ok) { Die() << foo; }`.
 class Check {
  public:
+  // These functions are all small and inlinable.
   explicit Check(bool ok)
       : os_(ok ? std::optional<std::ostringstream>()
                : std::make_optional<std::ostringstream>()) {}
   ~Check() noexcept(false) {
     if (os_) {
-      throw Exception(os_->str());
+      Throw(*os_);
     }
   }
 
@@ -69,6 +71,11 @@ class Check {
 
  private:
   std::optional<std::ostringstream> os_;
+
+  // This helper is too large to inline.
+  [[noreturn]] static void Throw(const std::ostringstream& os) {
+    throw Exception(os.str());
+  }
 };
 
 class Die {
@@ -110,23 +117,6 @@ struct Error {
 
 inline std::ostream& operator<<(std::ostream& os, Error error) {
   return os << std::system_error(error.number, std::generic_category()).what();
-}
-
-template <typename T>
-struct Hex {
-  explicit Hex(const T& value) : value(value) {}
-  const T& value;
-};
-
-template <typename T> Hex(const T&) -> Hex<T>;
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Hex<T>& hex_value) {
-  // not quite right if an exception is thrown
-  const auto flags = os.flags();
-  os << "0x" << std::hex << hex_value.value;
-  os.flags(flags);
-  return os;
 }
 
 }  // namespace stg
