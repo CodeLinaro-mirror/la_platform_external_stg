@@ -245,6 +245,12 @@ size_t GetNumberOfEntries(const GElf_Shdr& section_header) {
   return section_header.sh_size / section_header.sh_entsize;
 }
 
+std::string_view GetRawData(Elf_Scn* section, const char* name) {
+  Elf_Data* data = elf_rawdata(section, nullptr);
+  Check(data != nullptr) << "elf_rawdata failed on section " << name;
+  return {static_cast<char*>(data->d_buf), data->d_size};
+}
+
 std::string_view GetString(Elf* elf, uint32_t section, size_t offset) {
   const auto name = elf_strptr(elf, section, offset);
 
@@ -285,17 +291,14 @@ Elf_Scn* GetSymbolTableSection(Elf* elf, bool is_linux_kernel_binary) {
 constexpr std::string_view kCFISuffix = ".cfi";
 
 bool IsCFISymbolName(std::string_view name) {
-  // Check if symbol name ends with ".cfi"
-  // TODO: use std::string_view::ends_with
-  return (name.size() >= kCFISuffix.size() &&
-          name.substr(name.size() - kCFISuffix.size()) == kCFISuffix);
+  return name.ends_with(kCFISuffix);
 }
 
 }  // namespace
 
 std::string_view UnwrapCFISymbolName(std::string_view cfi_name) {
   Check(IsCFISymbolName(cfi_name))
-      << "CFI symbol " << cfi_name << " doesn't end with .cfi";
+      << "CFI symbol " << cfi_name << " doesn't end with " << kCFISuffix;
   return cfi_name.substr(0, cfi_name.size() - kCFISuffix.size());
 }
 
@@ -422,9 +425,8 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-ElfLoader::ElfLoader(Elf* elf)
-    : elf_(elf) {
-  Check(elf_ != nullptr) << "No ELF was provided";
+ElfLoader::ElfLoader(Elf& elf)
+    : elf_(&elf) {
   InitializeElfInformation();
 }
 
@@ -434,14 +436,8 @@ void ElfLoader::InitializeElfInformation() {
   is_little_endian_binary_ = elf::IsLittleEndianBinary(elf_);
 }
 
-std::string_view ElfLoader::GetBtfRawData() const {
-  Elf_Scn* btf_section = GetSectionByName(elf_, ".BTF");
-  Check(btf_section != nullptr) << ".BTF section is invalid";
-  Elf_Data* elf_data = elf_rawdata(btf_section, nullptr);
-  Check(elf_data != nullptr) << ".BTF section data is invalid";
-  const char* btf_start = static_cast<char*>(elf_data->d_buf);
-  const size_t btf_size = elf_data->d_size;
-  return std::string_view(btf_start, btf_size);
+std::string_view ElfLoader::GetSectionRawData(const char* name) const {
+  return GetRawData(GetSectionByName(elf_, name), name);
 }
 
 std::vector<SymbolTableEntry> ElfLoader::GetElfSymbols() const {
@@ -515,7 +511,7 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
   Check(offset + length < data->d_size)
       << "Namespace string should be null-terminated";
 
-  return std::string_view(begin, length);
+  return {begin, length};
 }
 
 size_t ElfLoader::GetAbsoluteAddress(const SymbolTableEntry& symbol) const {

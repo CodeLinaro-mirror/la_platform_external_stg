@@ -27,6 +27,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -414,6 +415,8 @@ template <typename MapId>
 ElfSymbol::SymbolType Transform<MapId>::operator()(
     stg::ElfSymbol::SymbolType x) {
   switch (x) {
+    case stg::ElfSymbol::SymbolType::NOTYPE:
+      return ElfSymbol::NOTYPE;
     case stg::ElfSymbol::SymbolType::OBJECT:
       return ElfSymbol::OBJECT;
     case stg::ElfSymbol::SymbolType::FUNCTION:
@@ -458,55 +461,44 @@ ElfSymbol::Visibility Transform<MapId>::operator()(
 
 template <typename ProtoNode>
 void SortNodesById(google::protobuf::RepeatedPtrField<ProtoNode>& nodes) {
-  std::sort(
-      nodes.pointer_begin(), nodes.pointer_end(),
-      [](const auto* lhs, const auto* rhs) { return lhs->id() < rhs->id(); });
+  const auto compare = [](const auto* lhs, const auto* rhs) {
+    return lhs->id() < rhs->id();
+  };
+  std::sort(nodes.pointer_begin(), nodes.pointer_end(), compare);
 }
 
 template <typename ProtoNode>
 void SortNodesByName(google::protobuf::RepeatedPtrField<ProtoNode>& nodes) {
   const auto compare = [](const auto* lhs, const auto* rhs) {
-    const int comparison = lhs->name().compare(rhs->name());
-    return comparison < 0 || (comparison == 0 && lhs->id() < rhs->id());
+    return std::forward_as_tuple(lhs->name(), lhs->id())
+        < std::forward_as_tuple(rhs->name(), rhs->id());
   };
   std::sort(nodes.pointer_begin(), nodes.pointer_end(), compare);
 }
 
 void SortMethodsByMangledName(google::protobuf::RepeatedPtrField<Method>& methods) {
   const auto compare = [](const Method* lhs, const Method* rhs) {
-    const int comparison = lhs->mangled_name().compare(rhs->mangled_name());
-    return comparison < 0 || (comparison == 0 && lhs->id() < rhs->id());
+    return std::forward_as_tuple(lhs->mangled_name(), lhs->id())
+        < std::forward_as_tuple(rhs->mangled_name(), rhs->id());
   };
   std::sort(methods.pointer_begin(), methods.pointer_end(), compare);
 }
 
 void SortElfSymbolsByVersionedName(
     google::protobuf::RepeatedPtrField<ElfSymbol>& elf_symbols) {
-  // TODO: use spaceship operator <=>
   const auto compare = [](const ElfSymbol* lhs, const ElfSymbol* rhs) {
-    if (const int c = lhs->name().compare(rhs->name()); c != 0) {
-      return c < 0;
-    }
-
-    // Put symbols with version info after those without version info.
-    if (lhs->has_version_info() != rhs->has_version_info()) {
-      return rhs->has_version_info();
-    }
-
-    if (lhs->has_version_info()) {
-      const auto& l_version = lhs->version_info();
-      const auto& r_version = rhs->version_info();
-      if (const int c = l_version.name().compare(r_version.name()); c != 0) {
-        return c < 0;
-      }
-
-      // Put symbols with default version before those with non-default version.
-      if (l_version.is_default() != r_version.is_default()) {
-        return r_version.is_default();
-      }
-    }
-
-    return lhs->id() < rhs->id();
+    // Sorting by:
+    //
+    // name
+    // version name
+    // ID as tie-breaker
+    //
+    // Note: symbols without version information will be ordered before
+    // versioned symbols of the same name.
+    return std::forward_as_tuple(lhs->name(), lhs->version_info().name(),
+                                 lhs->id())
+        < std::forward_as_tuple(rhs->name(), rhs->version_info().name(),
+                                rhs->id());
   };
   std::sort(elf_symbols.pointer_begin(), elf_symbols.pointer_end(), compare);
 }
