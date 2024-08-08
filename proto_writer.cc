@@ -415,6 +415,8 @@ template <typename MapId>
 ElfSymbol::SymbolType Transform<MapId>::operator()(
     stg::ElfSymbol::SymbolType x) {
   switch (x) {
+    case stg::ElfSymbol::SymbolType::NOTYPE:
+      return ElfSymbol::NOTYPE;
     case stg::ElfSymbol::SymbolType::OBJECT:
       return ElfSymbol::OBJECT;
     case stg::ElfSymbol::SymbolType::FUNCTION:
