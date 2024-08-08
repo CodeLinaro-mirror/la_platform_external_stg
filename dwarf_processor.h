@@ -20,6 +20,8 @@
 #ifndef STG_DWARF_PROCESSOR_H_
 #define STG_DWARF_PROCESSOR_H_
 
+#include <elfutils/libdw.h>
+
 #include <cstddef>
 #include <optional>
 #include <string>
@@ -34,10 +36,10 @@ namespace dwarf {
 
 struct Types {
   struct Symbol {
-    std::string name;
-    std::optional<std::string> linkage_name;
+    std::string scoped_name;
+    std::string linkage_name;
     Address address;
-    Id id;
+    Id type_id;
   };
 
   size_t processed_entries = 0;
@@ -48,7 +50,8 @@ struct Types {
 
 // Process every compilation unit from DWARF and returns processed STG along
 // with information needed for matching to ELF symbols.
-Types Process(Handler& dwarf, bool is_little_endian_binary,
+// If DWARF is missing, returns empty result.
+Types Process(Dwarf* dwarf, bool is_little_endian_binary,
               const std::unique_ptr<Filter>& file_filter, Graph& graph);
 
 }  // namespace dwarf
