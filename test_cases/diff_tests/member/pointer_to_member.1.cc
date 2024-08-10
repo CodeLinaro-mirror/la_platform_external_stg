@@ -26,7 +26,7 @@ int s10(int S::*);
 int s10(int S::*) { return 0; }
 
 struct X {
-  void f(int);
+  void f(int) {}
   int a;
 };
 struct Y;
