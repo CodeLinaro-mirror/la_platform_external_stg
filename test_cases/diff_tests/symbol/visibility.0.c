@@ -1,5 +1,4 @@
-void tweak(int);
-void a() { tweak(0); }
-void b() { tweak(1); }
-void c() { tweak(2); }
-void d() { tweak(3); }
+int a() { return 0; }
+int b() { return 1; }
+int c() { return 2; }
+int d() { return 3; }

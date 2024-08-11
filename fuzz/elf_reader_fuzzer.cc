@@ -21,6 +21,7 @@
 #include <sstream>
 #include <vector>
 
+#include "elf_dwarf_handle.h"
 #include "elf_reader.h"
 #include "error.h"
 #include "graph.h"
@@ -36,7 +37,8 @@ extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
     stg::Runtime runtime(os, false);
     stg::Graph graph;
     std::vector<char> data_copy(data, data + size);
-    stg::elf::Read(runtime, graph, data_copy.data(), size, stg::ReadOptions(),
+    stg::ElfDwarfHandle elf_dwarf_handle(data_copy.data(), size);
+    stg::elf::Read(runtime, graph, elf_dwarf_handle, stg::ReadOptions(),
                    nullptr);
   } catch (const stg::Exception&) {
     // Pass as this is us catching invalid ELF properly.
