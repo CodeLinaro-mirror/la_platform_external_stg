@@ -266,7 +266,7 @@ struct Function {
 };
 
 struct ElfSymbol {
-  enum class SymbolType { OBJECT, FUNCTION, COMMON, TLS, GNU_IFUNC };
+  enum class SymbolType { NOTYPE, OBJECT, FUNCTION, COMMON, TLS, GNU_IFUNC };
   enum class Binding { GLOBAL, LOCAL, WEAK, GNU_UNIQUE };
   enum class Visibility { DEFAULT, PROTECTED, HIDDEN, INTERNAL };
   struct VersionInfo {
@@ -726,6 +726,76 @@ class DenseIdMapping {
 
   size_t offset_;
   std::vector<Id> ids_;
+};
+
+template <typename ExternalId>
+class Maker {
+ public:
+  explicit Maker(Graph& graph) : graph_(graph) {}
+
+  ~Maker() noexcept(false) {
+    if (std::uncaught_exceptions() == 0) {
+      if (undefined_ > 0) {
+        Die die;
+        die << "undefined nodes:";
+        for (const auto& [external_id, id] : map_) {
+          if (!graph_.Is(id)) {
+            die << ' ' << external_id;
+          }
+        }
+      }
+    }
+  }
+
+  Id Get(const ExternalId& external_id) {
+    auto [it, inserted] = map_.emplace(external_id, 0);
+    if (inserted) {
+      it->second = graph_.Allocate();
+      ++undefined_;
+    }
+    return it->second;
+  }
+
+  template <typename Node, typename... Args>
+  Id Set(const ExternalId& external_id, Args&&... args) {
+    return Set<Node>(DieDuplicate, external_id, std::forward<Args>(args)...);
+  }
+
+  template <typename Node, typename... Args>
+  Id MaybeSet(const ExternalId& external_id, Args&&... args) {
+    return Set<Node>(WarnDuplicate, external_id, std::forward<Args>(args)...);
+  }
+
+  template <typename Node, typename... Args>
+  Id Add(Args&&... args) {
+    return graph_.Add<Node>(std::forward<Args>(args)...);
+  }
+
+ private:
+  Graph& graph_;
+  size_t undefined_ = 0;
+  std::unordered_map<ExternalId, Id> map_;
+
+  template <typename Node, typename... Args>
+  Id Set(void(& fail)(const ExternalId&), const ExternalId& external_id,
+         Args&&... args) {
+    const Id id = Get(external_id);
+    if (graph_.Is(id)) {
+      fail(external_id);
+    } else {
+      graph_.Set<Node>(id, std::forward<Args>(args)...);
+      --undefined_;
+    }
+    return id;
+  }
+
+  // These helpers should probably not be inlined.
+  [[noreturn]] static void DieDuplicate(const ExternalId& external_id) {
+    Die() << "duplicate definition of node: " << external_id;
+  }
+  static void WarnDuplicate(const ExternalId& external_id) {
+    Warn() << "ignoring duplicate definition of node: " << external_id;
+  }
 };
 
 }  // namespace stg
