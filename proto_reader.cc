@@ -483,7 +483,8 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
     Check(ifs.good()) << "error opening file '" << path
                       << "' for reading: " << Error(errno);
     google::protobuf::io::IstreamInputStream is(&ifs);
-    google::protobuf::TextFormat::Parse(&is, &stg);
+    Check(google::protobuf::TextFormat::Parse(&is, &stg))
+        << "failed to parse input as STG";
   }
   {
     const Time t(runtime, "proto.Transform");
@@ -496,8 +497,10 @@ Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
   proto::STG stg;
   {
     const Time t(runtime, "proto.Parse");
-    // TODO: Pass string_view once AOSP Protobuf supports this.
-    google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);
+    // TODO: Pass input once AOSP Protobuf supports string_view.
+    const std::string copy(input);
+    Check(google::protobuf::TextFormat::ParseFromString(copy, &stg))
+        << "failed to parse input as STG";
   }
   {
     const Time t(runtime, "proto.Transform");
