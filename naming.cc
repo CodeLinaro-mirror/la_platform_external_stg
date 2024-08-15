@@ -30,7 +30,7 @@ namespace stg {
 
 Name Name::Add(Side side, Precedence precedence,
                const std::string& text) const {
-  bool bracket = precedence < precedence_;
+  const bool bracket = precedence < precedence_;
   std::ostringstream left;
   std::ostringstream right;
 
