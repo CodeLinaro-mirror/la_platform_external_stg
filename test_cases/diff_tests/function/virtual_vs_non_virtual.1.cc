@@ -1,11 +1,11 @@
-void tweak(int);
-
 struct VirtualToNormal {
-  void print();
+  int print();
 } virtual_to_normal;
-void VirtualToNormal::print() { tweak(0); }
+
+int VirtualToNormal::print() { return 0; }
 
 struct NormalToVirtual {
-  virtual void print();
+  virtual int print();
 } normal_to_virtual;
-void NormalToVirtual::print() { tweak(1); }
+
+int NormalToVirtual::print() { return 1; }

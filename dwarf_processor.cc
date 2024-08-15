@@ -37,6 +37,7 @@
 #include "dwarf_wrappers.h"
 #include "error.h"
 #include "filter.h"
+#include "hex.h"
 #include "graph.h"
 #include "scope.h"
 
@@ -70,14 +71,18 @@ std::string GetName(Entry& entry) {
 std::string GetNameOrEmpty(Entry& entry) {
   auto result = MaybeGetName(entry);
   if (!result.has_value()) {
-    return std::string();
+    return {};
   }
   return std::move(*result);
 }
 
-std::optional<std::string> MaybeGetLinkageName(int version, Entry& entry) {
-  return entry.MaybeGetString(
+std::string GetLinkageName(int version, Entry& entry) {
+  auto linkage_name = entry.MaybeGetString(
       version < 4 ? DW_AT_MIPS_linkage_name : DW_AT_linkage_name);
+  if (linkage_name.has_value()) {
+    return std::move(*linkage_name);
+  }
+  return GetNameOrEmpty(entry);
 }
 
 size_t GetBitSize(Entry& entry) {
@@ -260,7 +265,7 @@ class Processor {
   Processor(Graph& graph, Id void_id, Id variadic_id,
             bool is_little_endian_binary,
             const std::unique_ptr<Filter>& file_filter, Types& result)
-      : graph_(graph),
+      : maker_(graph),
         void_id_(void_id),
         variadic_id_(variadic_id),
         is_little_endian_binary_(is_little_endian_binary),
@@ -273,14 +278,6 @@ class Processor {
       files_ = dwarf::Files(compilation_unit.entry);
     }
     Process(compilation_unit.entry);
-  }
-
-  void CheckUnresolvedIds() const {
-    for (const auto& [offset, id] : id_map_) {
-      if (!graph_.Is(id)) {
-        Die() << "unresolved id " << id << ", DWARF offset " << Hex(offset);
-      }
-    }
   }
 
   void ResolveSymbolSpecifications() {
@@ -298,7 +295,7 @@ class Processor {
           names_it->first != symbols_it->first) {
         Die() << "Scoped name not found for entry " << Hex(symbols_it->first);
       }
-      result_.symbols[symbols_it->second].name = names_it->second;
+      result_.symbols[symbols_it->second].scoped_name = names_it->second;
       ++symbols_it;
     }
   }
@@ -478,8 +475,7 @@ class Processor {
     if (!file) {
       // Built in types that do not have DW_AT_decl_file should be preserved.
       static constexpr std::string_view kBuiltinPrefix = "__";
-      // TODO: use std::string_view::starts_with
-      if (name.substr(0, kBuiltinPrefix.size()) == kBuiltinPrefix) {
+      if (name.starts_with(kBuiltinPrefix)) {
         return true;
       }
       Die() << "File filter is provided, but " << name << " ("
@@ -641,17 +637,17 @@ class Processor {
 
   void ProcessMethod(std::vector<Id>& methods, Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
-    auto id = graph_.Add<Function>(std::move(subprogram.node));
+    auto id = maker_.Add<Function>(std::move(subprogram.node));
     if (subprogram.external && subprogram.address) {
       // Only external functions with address are useful for ABI monitoring
       // TODO: cover virtual methods
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(
+          .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = subprogram.linkage_name,
           .address = *subprogram.address,
-          .id = id});
+          .type_id = id});
     }
     const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
                                  .value_or(DW_VIRTUALITY_none);
@@ -665,9 +661,8 @@ class Processor {
               << " shouldn't have specification";
       }
       const auto vtable_offset = entry.MaybeGetVtableOffset().value_or(0);
-      // TODO: proper handling of missing linkage name
       methods.push_back(AddProcessedNode<Method>(
-          entry, subprogram.linkage_name.value_or("{missing}"),
+          entry, subprogram.linkage_name,
           *subprogram.name_with_context.unscoped_name, vtable_offset, id));
     }
   }
@@ -903,10 +898,11 @@ class Processor {
       // Only external variables with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(new_symbol_idx, name_with_context),
-          .linkage_name = MaybeGetLinkageName(version_, entry),
+          .scoped_name = GetScopedNameForSymbol(
+              new_symbol_idx, name_with_context),
+          .linkage_name = GetLinkageName(version_, entry),
           .address = *address,
-          .id = referred_type_id});
+          .type_id = referred_type_id});
     }
   }
 
@@ -917,18 +913,18 @@ class Processor {
       // Only external functions with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
-          .name = GetScopedNameForSymbol(
+          .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = std::move(subprogram.linkage_name),
           .address = *subprogram.address,
-          .id = id});
+          .type_id = id});
     }
   }
 
   struct Subprogram {
     Function node;
     NameWithContext name_with_context;
-    std::optional<std::string> linkage_name;
+    std::string linkage_name;
     std::optional<Address> address;
     bool external;
   };
@@ -1011,19 +1007,14 @@ class Processor {
 
     return Subprogram{.node = Function(return_type_id, parameters),
                       .name_with_context = GetNameWithContext(entry),
-                      .linkage_name = MaybeGetLinkageName(version_, entry),
+                      .linkage_name = GetLinkageName(version_, entry),
                       .address = entry.MaybeGetAddress(DW_AT_low_pc),
                       .external = entry.GetFlag(DW_AT_external)};
   }
 
   // Allocate or get already allocated STG Id for Entry.
   Id GetIdForEntry(Entry& entry) {
-    const auto offset = entry.GetOffset();
-    const auto [it, emplaced] = id_map_.emplace(offset, Id(-1));
-    if (emplaced) {
-      it->second = graph_.Allocate();
-    }
-    return it->second;
+    return maker_.Get(Hex(entry.GetOffset()));
   }
 
   // Same as GetIdForEntry, but returns "void_id_" for "unspecified" references,
@@ -1040,22 +1031,20 @@ class Processor {
   // Populate Id from method above with processed Node.
   template <typename Node, typename... Args>
   Id AddProcessedNode(Entry& entry, Args&&... args) {
-    const Id id = GetIdForEntry(entry);
-    graph_.Set<Node>(id, std::forward<Args>(args)...);
-    return id;
+    return maker_.Set<Node>(Hex(entry.GetOffset()),
+                            std::forward<Args>(args)...);
   }
 
   void AddNamedTypeNode(Id id) {
     result_.named_type_ids.push_back(id);
   }
 
-  Graph& graph_;
+  Maker<Hex<Dwarf_Off>> maker_;
   Id void_id_;
   Id variadic_id_;
   bool is_little_endian_binary_;
   const std::unique_ptr<Filter>& file_filter_;
   Types& result_;
-  std::unordered_map<Dwarf_Off, Id> id_map_;
   std::vector<std::pair<Dwarf_Off, std::string>> scoped_names_;
   std::vector<std::pair<Dwarf_Off, size_t>> unresolved_symbol_specifications_;
 
@@ -1066,19 +1055,23 @@ class Processor {
   uint64_t language_;
 };
 
-Types Process(Handler& dwarf, bool is_little_endian_binary,
+Types Process(Dwarf* dwarf, bool is_little_endian_binary,
               const std::unique_ptr<Filter>& file_filter, Graph& graph) {
   Types result;
+
+  if (dwarf == nullptr) {
+    return result;
+  }
+
   const Id void_id = graph.Add<Special>(Special::Kind::VOID);
   const Id variadic_id = graph.Add<Special>(Special::Kind::VARIADIC);
   // TODO: Scope Processor to compilation units?
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
                       file_filter, result);
-  for (auto& compilation_unit : dwarf.GetCompilationUnits()) {
+  for (auto& compilation_unit : GetCompilationUnits(*dwarf)) {
     // Could fetch top-level attributes like compiler here.
     processor.ProcessCompilationUnit(compilation_unit);
   }
-  processor.CheckUnresolvedIds();
   processor.ResolveSymbolSpecifications();
 
   return result;
