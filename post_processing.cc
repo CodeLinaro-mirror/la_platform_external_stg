@@ -124,7 +124,7 @@ std::vector<std::string> SummariseOffsetChanges(
       const size_t indent3 = match3[1].length();
       if (indent1 + 2 == indent2 && indent1 >= indent3) {
         const auto new_indent = indent1;
-        int64_t new_offset =
+        const int64_t new_offset =
             std::stoll(match2[3].str()) - std::stoll(match2[2].str());
         if (new_indent != indent || new_offset != offset) {
           emit_pending();

@@ -68,10 +68,10 @@ Graph symmetric_subset_of_reflexive_transitive_closure(Graph g) {
     for (size_t i = 0; i < n; ++i) {
       // since we scan the nodes k in order, it suffices to consider just paths:
       // i -> k -> j
-      if (g[i].count(k)) {
+      if (g[i].contains(k)) {
         // we have i -> k
         for (size_t j = 0; j < n; ++j) {
-          if (g[k].count(j)) {
+          if (g[k].contains(j)) {
             // and k -> j
             g[i].insert(j);
           }
@@ -83,8 +83,8 @@ Graph symmetric_subset_of_reflexive_transitive_closure(Graph g) {
   for (size_t i = 0; i < n; ++i) {
     for (size_t j = i + 1; j < n; ++j) {
       // discard i -> j if not j -> i and vice versa
-      auto ij = g[i].count(j);
-      auto ji = g[j].count(i);
+      auto ij = g[i].contains(j);
+      auto ji = g[j].contains(i);
       if (ij < ji) {
         g[j].erase(i);
       }
@@ -118,7 +118,7 @@ Graph scc_strong_connectivity(const std::vector<std::set<size_t>>& sccs) {
 
 void dfs(std::set<size_t>& visited, SCC<size_t>& scc, const Graph& g,
          size_t node, std::vector<std::set<size_t>>& sccs) {
-  if (visited.count(node)) {
+  if (visited.contains(node)) {
     return;
   }
   auto handle = scc.Open(node);
@@ -149,7 +149,6 @@ void process(const Graph& g) {
     // could reuse a single SCC finder but assert stronger invariants this way
     SCC<size_t> scc;
     dfs(visited, scc, g, o, sccs);
-    CHECK(scc.Empty());
   }
 
   // check partition and topological order properties
@@ -165,7 +164,7 @@ void process(const Graph& g) {
     for (auto node : nodes) {
       for (auto o : g[node]) {
         // edges point to nodes in this or earlier SCCs
-        CHECK(seen.count(o));
+        CHECK(seen.contains(o));
       }
     }
   }

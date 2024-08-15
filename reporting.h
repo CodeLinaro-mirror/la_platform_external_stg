@@ -47,12 +47,12 @@ struct Options {
 
 struct Reporting {
   const Graph& graph;
-  const Outcomes& outcomes;
+  const diff::Outcomes& outcomes;
   const Options& options;
   NameCache& names;
 };
 
-void Report(const Reporting&, const Comparison&, std::ostream&);
+void Report(const Reporting&, const diff::Comparison&, std::ostream&);
 
 bool FidelityDiff(const stg::FidelityDiff&, std::ostream&);
 

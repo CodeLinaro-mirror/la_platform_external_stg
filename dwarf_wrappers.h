@@ -22,29 +22,19 @@
 
 #include <elf.h>
 #include <elfutils/libdw.h>
-#include <elfutils/libdwfl.h>
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace stg {
 namespace dwarf {
 
 struct Address {
-  // TODO: use auto operator<=>
-  bool operator<(const Address& other) const {
-    return std::tie(value, is_tls) < std::tie(other.value, other.is_tls);
-  }
-
-  bool operator==(const Address& other) const {
-    return value == other.value && is_tls == other.is_tls;
-  }
+  auto operator<=>(const Address&) const = default;
 
   uint64_t value;
   bool is_tls;
@@ -94,32 +84,7 @@ struct CompilationUnit {
   Entry entry;
 };
 
-// C++ wrapper over libdw (DWARF library).
-//
-// Creates a "Dwarf" object from an ELF file or a memory and controls the life
-// cycle of the created objects.
-class Handler {
- public:
-  explicit Handler(const std::string& path);
-  Handler(char* data, size_t size);
-
-  Elf* GetElf();
-  std::vector<CompilationUnit> GetCompilationUnits();
-
- private:
-  struct DwflDeleter {
-    void operator()(Dwfl* dwfl) {
-      dwfl_end(dwfl);
-    }
-  };
-
-  void InitialiseDwarf();
-
-  std::unique_ptr<Dwfl, DwflDeleter> dwfl_;
-  // Lifetime of Dwfl_Module and Dwarf is controlled by Dwfl.
-  Dwfl_Module* dwfl_module_ = nullptr;
-  Dwarf* dwarf_ = nullptr;
-};
+std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf);
 
 class Files {
  public:
