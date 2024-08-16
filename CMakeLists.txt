@@ -85,6 +85,7 @@ add_library(libstg OBJECT
   deduplication.cc
   dwarf_processor.cc
   dwarf_wrappers.cc
+  elf_dwarf_handle.cc
   elf_loader.cc
   elf_reader.cc
   fidelity.cc
@@ -140,6 +141,7 @@ else()
     error_test
     file_descriptor_test
     filter_test
+    hex_test
     order_test
     reporting_test
     runtime_test
