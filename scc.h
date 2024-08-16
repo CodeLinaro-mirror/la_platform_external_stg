@@ -21,8 +21,8 @@
 #define STG_SCC_H_
 
 #include <cstddef>
+#include <exception>
 #include <iterator>
-#include <memory>
 #include <optional>
 #include <unordered_map>
 #include <utility>
@@ -84,8 +84,11 @@ namespace stg {
 template <typename Node, typename Hash = std::hash<Node>>
 class SCC {
  public:
-  bool Empty() const {
-    return open_.empty() && is_open_.empty() && root_index_.empty();
+  ~SCC() noexcept(false) {
+    if (std::uncaught_exceptions() == 0) {
+      Check(open_.empty() && is_open_.empty() && root_index_.empty())
+          << "internal error: SCC state broken";
+    }
   }
 
   std::optional<size_t> Open(const Node& node) {

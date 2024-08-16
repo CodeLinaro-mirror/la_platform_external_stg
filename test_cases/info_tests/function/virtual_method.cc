@@ -1,8 +1,7 @@
 struct Foo {
-  virtual void bar();
-  virtual void baz();
+  virtual int bar();
+  virtual int baz();
 } foo;
 
-void tweak(int);
-void Foo::bar() { tweak(0); }
-void Foo::baz() { tweak(1); }
+int Foo::bar() { return 0; }
+int Foo::baz() { return 1; }
