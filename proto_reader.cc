@@ -456,20 +456,16 @@ Type Transformer::Transform(const Type& x) {
 
 const std::array<uint32_t, 3> kSupportedFormatVersions = {0, 1, 2};
 
-void CheckFormatVersion(uint32_t version, std::optional<std::string> path) {
+void CheckFormatVersion(uint32_t version) {
   Check(std::binary_search(kSupportedFormatVersions.begin(),
                            kSupportedFormatVersions.end(), version))
       << "STG format version " << version
       << " is not supported, minimum supported version: "
       << kSupportedFormatVersions.front();
   if (version != kSupportedFormatVersions.back()) {
-    auto warn = Warn();
-    warn << "STG format version " << version
-         << " is deprecated, consider upgrading stg format to latest version ("
-         << kSupportedFormatVersions.back() << ")";
-    if (path) {
-      warn << " with: stg --stg " << *path << " --output " << *path;
-    }
+    Warn() << "STG format version " << version
+           << " is deprecated, consider upgrading to the latest version ("
+           << kSupportedFormatVersions.back() << ")";
   }
 }
 
@@ -488,7 +484,7 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   }
   {
     const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version(), path);
+    CheckFormatVersion(stg.version());
     return Transformer(graph).Transform(stg);
   }
 }
@@ -504,7 +500,7 @@ Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
   }
   {
     const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version(), std::nullopt);
+    CheckFormatVersion(stg.version());
     return Transformer(graph).Transform(stg);
   }
 }
