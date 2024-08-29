@@ -31,6 +31,7 @@
 #include <string_view>
 #include <vector>
 
+#include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/repeated_field.h>
@@ -471,16 +472,11 @@ void CheckFormatVersion(uint32_t version) {
   }
 }
 
-}  // namespace
-
-Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
+Id ReadHelper(Runtime& runtime, Graph& graph,
+              google::protobuf::io::ZeroCopyInputStream& is) {
   proto::STG stg;
   {
     const Time t(runtime, "proto.Parse");
-    std::ifstream ifs(path);
-    Check(ifs.good()) << "error opening file '" << path
-                      << "' for reading: " << Error(errno);
-    google::protobuf::io::IstreamInputStream is(&ifs);
     Check(google::protobuf::TextFormat::Parse(&is, &stg))
         << "failed to parse input as STG";
   }
@@ -491,21 +487,20 @@ Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
   }
 }
 
+}  // namespace
+
+Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
+  std::ifstream ifs(path);
+  Check(ifs.good()) << "error opening file '" << path << "' for reading: "
+                    << Error(errno);
+  google::protobuf::io::IstreamInputStream is(&ifs);
+  return ReadHelper(runtime, graph, is);
+}
+
 Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
-  proto::STG stg;
-  {
-    const Time t(runtime, "proto.Parse");
-    Check(input.size() <= std::numeric_limits<int>::max()) << "input too big";
-    google::protobuf::io::ArrayInputStream is(input.data(),
-                                    static_cast<int>(input.size()));
-    Check(google::protobuf::TextFormat::Parse(&is, &stg))
-        << "failed to parse input as STG";
-  }
-  {
-    const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version());
-    return Transformer(graph).Transform(stg);
-  }
+  Check(input.size() <= std::numeric_limits<int>::max()) << "input too big";
+  google::protobuf::io::ArrayInputStream is(input.data(), static_cast<int>(input.size()));
+  return ReadHelper(runtime, graph, is);
 }
 
 }  // namespace proto
