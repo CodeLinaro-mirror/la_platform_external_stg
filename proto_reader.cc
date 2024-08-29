@@ -31,6 +31,7 @@
 #include <string_view>
 #include <vector>
 
+#include <google/protobuf/io/tokenizer.h>
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -472,13 +473,35 @@ void CheckFormatVersion(uint32_t version) {
   }
 }
 
+class ErrorSink : public google::protobuf::io::ErrorCollector {
+ public:
+  void AddError(int line, google::protobuf::io::ColumnNumber column,
+                const std::string& message) final {
+    Moan("error", line, column, message);
+  }
+  void AddWarning(int line, google::protobuf::io::ColumnNumber column,
+                  const std::string& message) final {
+    Moan("warning", line, column, message);
+  }
+
+ private:
+  static void Moan(std::string_view which, int line,
+                   google::protobuf::io::ColumnNumber column,
+                   const std::string& message) {
+    Warn() << "google::protobuf::TextFormat " << which << " at line " << (line + 1)
+           << " column " << (column + 1) << ": " << message;
+  }
+};
+
 Id ReadHelper(Runtime& runtime, Graph& graph,
               google::protobuf::io::ZeroCopyInputStream& is) {
   proto::STG stg;
   {
     const Time t(runtime, "proto.Parse");
-    Check(google::protobuf::TextFormat::Parse(&is, &stg))
-        << "failed to parse input as STG";
+    ErrorSink error_sink;
+    google::protobuf::TextFormat::Parser parser;
+    parser.RecordErrorsTo(&error_sink);
+    Check(parser.Parse(&is, &stg)) << "failed to parse input as STG";
   }
   {
     const Time t(runtime, "proto.Transform");
