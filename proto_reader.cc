@@ -24,6 +24,7 @@
 #include <cerrno>
 #include <cstdint>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <optional>
 #include <string>
@@ -31,6 +32,7 @@
 #include <vector>
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/repeated_ptr_field.h>
 #include <google/protobuf/text_format.h>
@@ -493,9 +495,10 @@ Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
   proto::STG stg;
   {
     const Time t(runtime, "proto.Parse");
-    // TODO: Pass input once AOSP Protobuf supports string_view.
-    const std::string copy(input);
-    Check(google::protobuf::TextFormat::ParseFromString(copy, &stg))
+    Check(input.size() <= std::numeric_limits<int>::max()) << "input too big";
+    google::protobuf::io::ArrayInputStream is(input.data(),
+                                    static_cast<int>(input.size()));
+    Check(google::protobuf::TextFormat::Parse(&is, &stg))
         << "failed to parse input as STG";
   }
   {
