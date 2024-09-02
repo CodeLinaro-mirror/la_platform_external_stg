@@ -151,33 +151,19 @@ void Structs::Set(uint32_t id, Args&&... args) {
   maker_.Set<Node>(id, std::forward<Args>(args)...);
 }
 
-bool IsAlignedForBtf(std::string_view btf_data) {
-  return reinterpret_cast<uintptr_t>(btf_data.data()) % alignof(btf_header) ==
-         0;
-}
-
 Id Structs::Process(std::string_view btf_data) {
-  Check(sizeof(btf_header) <= btf_data.size())
-      << "BTF section too small for header";
-  if (IsAlignedForBtf(btf_data)) {
-    return ProcessAligned(btf_data);
-  }
-  // Copy the data to aligned memory.
-  // Check that minimum amount of BTF data containing just btf_header will be
-  // heap allocated and will not fit inside the std::string due to small string
-  // optimization.
   // TODO: Remove this hack once the upstream binaries have proper
   // alignment.
-  static_assert(
-      sizeof(btf_header) >= sizeof(std::string),
-      "btf_header may hit small string optimization and be misaligned");
-  const std::string aligned_btf_data(btf_data);
-  Check(IsAlignedForBtf(aligned_btf_data))
-      << "std::string with BTF data is misaligned";
-  return ProcessAligned(aligned_btf_data);
+  //
+  // Copy the data to aligned heap-allocated memory, if needed.
+  return reinterpret_cast<uintptr_t>(btf_data.data()) % alignof(btf_header) > 0
+      ? ProcessAligned(std::string(btf_data))
+      : ProcessAligned(btf_data);
 }
 
 Id Structs::ProcessAligned(std::string_view btf_data) {
+  Check(sizeof(btf_header) <= btf_data.size())
+      << "BTF section too small for header";
   const btf_header* header =
       reinterpret_cast<const btf_header*>(btf_data.data());
   Check(header->magic == 0xEB9F) << "Magic field must be 0xEB9F for BTF";
