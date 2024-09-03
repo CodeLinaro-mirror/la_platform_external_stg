@@ -24,13 +24,17 @@
 #include <cerrno>
 #include <cstdint>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include <google/protobuf/io/tokenizer.h>
+#include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/repeated_ptr_field.h>
 #include <google/protobuf/text_format.h>
@@ -456,54 +460,70 @@ Type Transformer::Transform(const Type& x) {
 
 const std::array<uint32_t, 3> kSupportedFormatVersions = {0, 1, 2};
 
-void CheckFormatVersion(uint32_t version, std::optional<std::string> path) {
+void CheckFormatVersion(uint32_t version) {
   Check(std::binary_search(kSupportedFormatVersions.begin(),
                            kSupportedFormatVersions.end(), version))
       << "STG format version " << version
       << " is not supported, minimum supported version: "
       << kSupportedFormatVersions.front();
   if (version != kSupportedFormatVersions.back()) {
-    auto warn = Warn();
-    warn << "STG format version " << version
-         << " is deprecated, consider upgrading stg format to latest version ("
-         << kSupportedFormatVersions.back() << ")";
-    if (path) {
-      warn << " with: stg --stg " << *path << " --output " << *path;
-    }
+    Warn() << "STG format version " << version
+           << " is deprecated, consider upgrading to the latest version ("
+           << kSupportedFormatVersions.back() << ")";
+  }
+}
+
+class ErrorSink : public google::protobuf::io::ErrorCollector {
+ public:
+  void AddError(int line, google::protobuf::io::ColumnNumber column,
+                const std::string& message) final {
+    Moan("error", line, column, message);
+  }
+  void AddWarning(int line, google::protobuf::io::ColumnNumber column,
+                  const std::string& message) final {
+    Moan("warning", line, column, message);
+  }
+
+ private:
+  static void Moan(std::string_view which, int line,
+                   google::protobuf::io::ColumnNumber column,
+                   const std::string& message) {
+    Warn() << "google::protobuf::TextFormat " << which << " at line " << (line + 1)
+           << " column " << (column + 1) << ": " << message;
+  }
+};
+
+Id ReadHelper(Runtime& runtime, Graph& graph,
+              google::protobuf::io::ZeroCopyInputStream& is) {
+  proto::STG stg;
+  {
+    const Time t(runtime, "proto.Parse");
+    ErrorSink error_sink;
+    google::protobuf::TextFormat::Parser parser;
+    parser.RecordErrorsTo(&error_sink);
+    Check(parser.Parse(&is, &stg)) << "failed to parse input as STG";
+  }
+  {
+    const Time t(runtime, "proto.Transform");
+    CheckFormatVersion(stg.version());
+    return Transformer(graph).Transform(stg);
   }
 }
 
 }  // namespace
 
 Id Read(Runtime& runtime, Graph& graph, const std::string& path) {
-  proto::STG stg;
-  {
-    const Time t(runtime, "proto.Parse");
-    std::ifstream ifs(path);
-    Check(ifs.good()) << "error opening file '" << path
-                      << "' for reading: " << Error(errno);
-    google::protobuf::io::IstreamInputStream is(&ifs);
-    google::protobuf::TextFormat::Parse(&is, &stg);
-  }
-  {
-    const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version(), path);
-    return Transformer(graph).Transform(stg);
-  }
+  std::ifstream ifs(path);
+  Check(ifs.good()) << "error opening file '" << path << "' for reading: "
+                    << Error(errno);
+  google::protobuf::io::IstreamInputStream is(&ifs);
+  return ReadHelper(runtime, graph, is);
 }
 
 Id ReadFromString(Runtime& runtime, Graph& graph, std::string_view input) {
-  proto::STG stg;
-  {
-    const Time t(runtime, "proto.Parse");
-    // TODO: Pass string_view once AOSP Protobuf supports this.
-    google::protobuf::TextFormat::ParseFromString(std::string(input), &stg);
-  }
-  {
-    const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version(), std::nullopt);
-    return Transformer(graph).Transform(stg);
-  }
+  Check(input.size() <= std::numeric_limits<int>::max()) << "input too big";
+  google::protobuf::io::ArrayInputStream is(input.data(), static_cast<int>(input.size()));
+  return ReadHelper(runtime, graph, is);
 }
 
 }  // namespace proto
