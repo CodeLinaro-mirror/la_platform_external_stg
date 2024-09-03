@@ -1,9 +1,5 @@
 version: 0x00000002
 root_id: 0x84ea5130  # interface
-special {
-  id: 0x48b5725f
-  kind: VOID
-}
 pointer_reference {
   id: 0x12c83f93
   kind: POINTER
@@ -18,6 +14,12 @@ pointer_reference {
   id: 0x32c82798
   kind: POINTER
   pointee_type_id: 0xe16078fd  # struct referring
+}
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
 }
 primitive {
   id: 0xfc0e1dbd
@@ -68,23 +70,23 @@ struct_union {
   }
 }
 function {
-  id: 0x01533705
-  return_type_id: 0x48b5725f  # void
+  id: 0x8c4b85b9
+  return_type_id: 0x6720d32f  # int
   parameter_id: 0x472d9a5b  # struct containing
 }
 function {
-  id: 0x164e865f
-  return_type_id: 0x48b5725f  # void
-  parameter_id: 0x1b5b5f31  # struct containing*
-}
-function {
-  id: 0x1c2a5875
-  return_type_id: 0x48b5725f  # void
+  id: 0x9132eac9
+  return_type_id: 0x6720d32f  # int
   parameter_id: 0x32c82798  # struct referring*
 }
 function {
-  id: 0x28c04fac
-  return_type_id: 0x48b5725f  # void
+  id: 0x9b5634e3
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x1b5b5f31  # struct containing*
+}
+function {
+  id: 0xa5d8fd10
+  return_type_id: 0x6720d32f  # int
   parameter_id: 0xe16078fd  # struct referring
 }
 elf_symbol {
@@ -92,7 +94,7 @@ elf_symbol {
   name: "register_ops6"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x01533705  # void(struct containing)
+  type_id: 0x8c4b85b9  # int(struct containing)
   full_name: "register_ops6"
 }
 elf_symbol {
@@ -100,7 +102,7 @@ elf_symbol {
   name: "register_ops7"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x164e865f  # void(struct containing*)
+  type_id: 0x9b5634e3  # int(struct containing*)
   full_name: "register_ops7"
 }
 elf_symbol {
@@ -108,7 +110,7 @@ elf_symbol {
   name: "register_ops8"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x28c04fac  # void(struct referring)
+  type_id: 0xa5d8fd10  # int(struct referring)
   full_name: "register_ops8"
 }
 elf_symbol {
@@ -116,13 +118,13 @@ elf_symbol {
   name: "register_ops9"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x1c2a5875  # void(struct referring*)
+  type_id: 0x9132eac9  # int(struct referring*)
   full_name: "register_ops9"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x97e8ca66  # void register_ops6(struct containing)
-  symbol_id: 0x68a86d39  # void register_ops7(struct containing*)
-  symbol_id: 0x1f6abcc7  # void register_ops8(struct referring)
-  symbol_id: 0xdc2ac9cf  # void register_ops9(struct referring*)
+  symbol_id: 0x97e8ca66  # int register_ops6(struct containing)
+  symbol_id: 0x68a86d39  # int register_ops7(struct containing*)
+  symbol_id: 0x1f6abcc7  # int register_ops8(struct referring)
+  symbol_id: 0xdc2ac9cf  # int register_ops9(struct referring*)
 }
