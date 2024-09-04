@@ -133,10 +133,15 @@ reports the following kinds of fidelity changes:
 *   Loss or gain of type definitions
 *   Loss or gain of type information for symbols
 
-## Output formats
+## Output
 
 All outputs are based on a diff graph which is rooted at the comparison of two
 symbol table nodes.
+
+The `--format` and `--output` options may be repeated to obtain outputs of
+different formats.
+
+### Formats
 
 *   `plain`
 
