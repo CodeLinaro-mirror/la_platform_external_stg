@@ -4,6 +4,8 @@ function symbol 'int s10(int struct S::*)' {_Z3s10M1Si} was added
 
 function symbol 'void pmz_fun()' {_Z7pmz_funv} was added
 
+function symbol 'void X::f(struct X*, int)' {_ZN1X1fEi} was added
+
 variable symbol 'char struct Y::* pmc' was added
 
 variable symbol 'int union U::* pmcu' was added
