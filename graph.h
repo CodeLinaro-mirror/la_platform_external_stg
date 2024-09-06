@@ -266,7 +266,7 @@ struct Function {
 };
 
 struct ElfSymbol {
-  enum class SymbolType { OBJECT, FUNCTION, COMMON, TLS, GNU_IFUNC };
+  enum class SymbolType { NOTYPE, OBJECT, FUNCTION, COMMON, TLS, GNU_IFUNC };
   enum class Binding { GLOBAL, LOCAL, WEAK, GNU_UNIQUE };
   enum class Visibility { DEFAULT, PROTECTED, HIDDEN, INTERNAL };
   struct VersionInfo {
