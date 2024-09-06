@@ -75,9 +75,9 @@ std::string_view UnwrapCFISymbolName(std::string_view cfi_name);
 
 class ElfLoader final {
  public:
-  explicit ElfLoader(Elf* elf);
+  explicit ElfLoader(Elf& elf);
 
-  std::string_view GetBtfRawData() const;
+  std::string_view GetSectionRawData(const char* name) const;
   std::vector<SymbolTableEntry> GetElfSymbols() const;
   std::vector<SymbolTableEntry> GetCFISymbols() const;
   ElfSymbol::CRC GetElfSymbolCRC(const SymbolTableEntry& symbol) const;
