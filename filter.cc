@@ -71,12 +71,8 @@ Items ReadAbigail(const std::string& filename) {
     }
     // See if we are entering a filter list section.
     if (line[start] == '[' && line[limit - 1] == ']') {
-      std::string_view section(&line[start + 1], limit - start - 2);
-      // TODO: use std::string_view::ends_with
-      const auto section_size = section.size();
-      const auto suffix_size = kSectionSuffix.size();
-      in_filter_section = section_size >= suffix_size &&
-          section.substr(section_size - suffix_size) == kSectionSuffix;
+      const std::string_view section(&line[start + 1], limit - start - 2);
+      in_filter_section = section.ends_with(kSectionSuffix);
       continue;
     }
     // Add item.
@@ -150,7 +146,7 @@ class SetFilter : public Filter {
   explicit SetFilter(Items&& items)
       : items_(std::move(items)) {}
   bool operator()(const std::string& item) const final {
-    return items_.count(item) > 0;
+    return items_.contains(item);
   };
 
  private:

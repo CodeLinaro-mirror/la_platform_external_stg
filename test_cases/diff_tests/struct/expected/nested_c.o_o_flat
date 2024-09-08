@@ -1,18 +1,18 @@
-function symbol 'void register_ops6(struct containing)' changed
-  type 'void(struct containing)' changed
+function symbol 'int register_ops6(struct containing)' changed
+  type 'int(struct containing)' changed
     parameter 1 type 'struct containing' changed
 
-function symbol 'void register_ops7(struct containing*)' changed
-  type 'void(struct containing*)' changed
+function symbol 'int register_ops7(struct containing*)' changed
+  type 'int(struct containing*)' changed
     parameter 1 type 'struct containing*' changed
       pointed-to type 'struct containing' changed
 
-function symbol 'void register_ops8(struct referring)' changed
-  type 'void(struct referring)' changed
+function symbol 'int register_ops8(struct referring)' changed
+  type 'int(struct referring)' changed
     parameter 1 type 'struct referring' changed
 
-function symbol 'void register_ops9(struct referring*)' changed
-  type 'void(struct referring*)' changed
+function symbol 'int register_ops9(struct referring*)' changed
+  type 'int(struct referring*)' changed
     parameter 1 type 'struct referring*' changed
       pointed-to type 'struct referring' changed
 

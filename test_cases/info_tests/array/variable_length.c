@@ -1,7 +1,4 @@
-int foo(void);
-
-int bar(void) {
-  int n = foo();
+int bar(int n) {
   int a[n];
   return a[n - 1];
 }
