@@ -42,6 +42,7 @@
 #include "scc.h"
 
 namespace stg {
+namespace diff {
 
 struct Ignore {
   enum Value {
@@ -308,6 +309,7 @@ struct Compare {
   Histogram scc_size;
 };
 
+}  // namespace diff
 }  // namespace stg
 
 #endif  // STG_COMPARISON_H_
