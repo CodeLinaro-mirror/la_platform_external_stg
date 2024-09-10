@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2022 Google LLC
+// Copyright 2020-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -30,6 +30,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -39,6 +40,7 @@
 #include <vector>
 
 #include <linux/btf.h>
+#include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"
 #include "file_descriptor.h"
@@ -48,6 +50,54 @@
 namespace stg {
 
 namespace btf {
+
+namespace {
+
+// BTF Specification: https://www.kernel.org/doc/html/latest/bpf/btf.html
+class Structs {
+ public:
+  explicit Structs(Graph& graph);
+  Id Process(std::string_view data);
+
+ private:
+  struct MemoryRange {
+    const char* start;
+    const char* limit;
+    bool Empty() const;
+    template <typename T> const T* Pull(size_t count = 1);
+  };
+
+  MemoryRange string_section_;
+
+  Maker<uint32_t> maker_;
+  std::optional<Id> void_;
+  std::optional<Id> variadic_;
+  std::map<std::string, Id> btf_symbols_;
+
+  Id ProcessAligned(std::string_view data);
+
+  Id GetVoid();
+  Id GetVariadic();
+  Id GetIdRaw(uint32_t btf_index);
+  Id GetId(uint32_t btf_index);
+  Id GetParameterId(uint32_t btf_index);
+  template <typename Node, typename... Args>
+  void Set(uint32_t id, Args&&... args);
+
+  Id BuildTypes(MemoryRange memory);
+  void BuildOneType(const btf_type* t, uint32_t btf_index,
+                    MemoryRange& memory);
+  Id BuildSymbols();
+  std::vector<Id> BuildMembers(
+      bool kflag, const btf_member* members, size_t vlen);
+  Enumeration::Enumerators BuildEnums(
+      bool is_signed, const struct btf_enum* enums, size_t vlen);
+  Enumeration::Enumerators BuildEnums64(
+      bool is_signed, const struct btf_enum64* enums, size_t vlen);
+  std::vector<Id> BuildParams(const struct btf_param* params, size_t vlen);
+  Id BuildEnumUnderlyingType(size_t size, bool is_signed);
+  std::string GetName(uint32_t name_off);
+};
 
 bool Structs::MemoryRange::Empty() const {
   return start == limit;
@@ -62,12 +112,12 @@ const T* Structs::MemoryRange::Pull(size_t count) {
 }
 
 Structs::Structs(Graph& graph)
-    : graph_(graph) {}
+    : maker_(graph) {}
 
 // Get the index of the void type, creating one if needed.
 Id Structs::GetVoid() {
   if (!void_) {
-    void_ = {graph_.Add<Special>(Special::Kind::VOID)};
+    void_ = {maker_.Add<Special>(Special::Kind::VOID)};
   }
   return *void_;
 }
@@ -75,40 +125,47 @@ Id Structs::GetVoid() {
 // Get the index of the variadic parameter type, creating one if needed.
 Id Structs::GetVariadic() {
   if (!variadic_) {
-    variadic_ = {graph_.Add<Special>(Special::Kind::VARIADIC)};
+    variadic_ = {maker_.Add<Special>(Special::Kind::VARIADIC)};
   }
   return *variadic_;
 }
 
-// Map BTF type index to own index.
-//
-// If there is no existing mapping for a BTF type, create one pointing to a new
-// slot at the end of the array.
+// Map BTF type index to node ID.
 Id Structs::GetIdRaw(uint32_t btf_index) {
-  auto [it, inserted] = btf_type_ids_.insert({btf_index, Id(0)});
-  if (inserted) {
-    it->second = graph_.Allocate();
-  }
-  return it->second;
+  return maker_.Get(btf_index);
 }
 
-// Translate BTF type id to own type id, for non-parameters.
+// Translate BTF type index to node ID, for non-parameters.
 Id Structs::GetId(uint32_t btf_index) {
   return btf_index ? GetIdRaw(btf_index) : GetVoid();
 }
 
-// Translate BTF type id to own type id, for parameters.
+// Translate BTF type index to node ID, for parameters.
 Id Structs::GetParameterId(uint32_t btf_index) {
   return btf_index ? GetIdRaw(btf_index) : GetVariadic();
 }
 
+// For a BTF type index, populate the node with the corresponding ID.
+template <typename Node, typename... Args>
+void Structs::Set(uint32_t id, Args&&... args) {
+  maker_.Set<Node>(id, std::forward<Args>(args)...);
+}
+
 Id Structs::Process(std::string_view btf_data) {
+  // TODO: Remove this hack once the upstream binaries have proper
+  // alignment.
+  //
+  // Copy the data to aligned heap-allocated memory, if needed.
+  return reinterpret_cast<uintptr_t>(btf_data.data()) % alignof(btf_header) > 0
+      ? ProcessAligned(std::string(btf_data))
+      : ProcessAligned(btf_data);
+}
+
+Id Structs::ProcessAligned(std::string_view btf_data) {
   Check(sizeof(btf_header) <= btf_data.size())
       << "BTF section too small for header";
   const btf_header* header =
       reinterpret_cast<const btf_header*>(btf_data.data());
-  Check(reinterpret_cast<uintptr_t>(header) % alignof(btf_header) == 0)
-      << "misaligned BTF data";
   Check(header->magic == 0xEB9F) << "Magic field must be 0xEB9F for BTF";
 
   const char* header_limit = btf_data.begin() + header->hdr_len;
@@ -145,7 +202,7 @@ std::vector<Id> Structs::BuildMembers(
     const auto offset = kflag ? BTF_MEMBER_BIT_OFFSET(raw_offset) : raw_offset;
     const auto bitfield_size = kflag ? BTF_MEMBER_BITFIELD_SIZE(raw_offset) : 0;
     result.push_back(
-        graph_.Add<Member>(name, GetId(raw_member.type),
+        maker_.Add<Member>(name, GetId(raw_member.type),
                            static_cast<uint64_t>(offset), bitfield_size));
   }
   return result;
@@ -206,7 +263,7 @@ Id Structs::BuildEnumUnderlyingType(size_t size, bool is_signed) {
      << (8 * size);
   const auto encoding = is_signed ? Primitive::Encoding::SIGNED_INTEGER
                                   : Primitive::Encoding::UNSIGNED_INTEGER;
-  return graph_.Add<Primitive>(os.str(), encoding, size);
+  return maker_.Add<Primitive>(os.str(), encoding, size);
 }
 
 Id Structs::BuildTypes(MemoryRange memory) {
@@ -231,11 +288,6 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
   const auto vlen = BTF_INFO_VLEN(t->info);
   Check(kind < NR_BTF_KINDS) << "Unknown BTF kind: " << static_cast<int>(kind);
 
-  // delay allocation of node id as some BTF nodes are skipped
-  auto id = [&]() {
-    return GetIdRaw(btf_index);
-  };
-
   switch (kind) {
     case BTF_KIND_INT: {
       const auto info = *memory.Pull<uint32_t>();
@@ -258,23 +310,23 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       if (bits != 8 * t->size) {
         Die() << "BTF INT bits != 8 * size";
       }
-      graph_.Set<Primitive>(id(), name, encoding, t->size);
+      Set<Primitive>(btf_index, name, encoding, t->size);
       break;
     }
     case BTF_KIND_FLOAT: {
       const auto name = GetName(t->name_off);
       const auto encoding = Primitive::Encoding::REAL_NUMBER;
-      graph_.Set<Primitive>(id(), name, encoding, t->size);
+      Set<Primitive>(btf_index, name, encoding, t->size);
       break;
     }
     case BTF_KIND_PTR: {
-      graph_.Set<PointerReference>(id(), PointerReference::Kind::POINTER,
-                                   GetId(t->type));
+      Set<PointerReference>(btf_index, PointerReference::Kind::POINTER,
+                            GetId(t->type));
       break;
     }
     case BTF_KIND_TYPEDEF: {
       const auto name = GetName(t->name_off);
-      graph_.Set<Typedef>(id(), name, GetId(t->type));
+      Set<Typedef>(btf_index, name, GetId(t->type));
       break;
     }
     case BTF_KIND_VOLATILE:
@@ -285,12 +337,12 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
                              : kind == BTF_KIND_VOLATILE
                              ? Qualifier::VOLATILE
                              : Qualifier::RESTRICT;
-      graph_.Set<Qualified>(id(), qualifier, GetId(t->type));
+      Set<Qualified>(btf_index, qualifier, GetId(t->type));
       break;
     }
     case BTF_KIND_ARRAY: {
       const auto* array = memory.Pull<struct btf_array>();
-      graph_.Set<Array>(id(), array->nelems, GetId(array->type));
+      Set<Array>(btf_index, array->nelems, GetId(array->type));
       break;
     }
     case BTF_KIND_STRUCT:
@@ -302,8 +354,8 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       const bool kflag = BTF_INFO_KFLAG(t->info);
       const auto* btf_members = memory.Pull<struct btf_member>(vlen);
       const auto members = BuildMembers(kflag, btf_members, vlen);
-      graph_.Set<StructUnion>(id(), struct_union_kind, name, t->size,
-                              std::vector<Id>(), std::vector<Id>(), members);
+      Set<StructUnion>(btf_index, struct_union_kind, name, t->size,
+                       std::vector<Id>(), std::vector<Id>(), members);
       break;
     }
     case BTF_KIND_ENUM: {
@@ -317,10 +369,10 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       if (vlen) {
         // create a synthetic underlying type
         const Id underlying = BuildEnumUnderlyingType(t->size, is_signed);
-        graph_.Set<Enumeration>(id(), name, underlying, enumerators);
+        Set<Enumeration>(btf_index, name, underlying, enumerators);
       } else {
         // BTF actually provides size (4), but it's meaningless.
-        graph_.Set<Enumeration>(id(), name);
+        Set<Enumeration>(btf_index, name);
       }
       break;
     }
@@ -331,7 +383,7 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       const auto enumerators = BuildEnums64(is_signed, enums, vlen);
       // create a synthetic underlying type
       const Id underlying = BuildEnumUnderlyingType(t->size, is_signed);
-      graph_.Set<Enumeration>(id(), name, underlying, enumerators);
+      Set<Enumeration>(btf_index, name, underlying, enumerators);
       break;
     }
     case BTF_KIND_FWD: {
@@ -339,20 +391,20 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       const auto struct_union_kind = BTF_INFO_KFLAG(t->info)
                                      ? StructUnion::Kind::UNION
                                      : StructUnion::Kind::STRUCT;
-      graph_.Set<StructUnion>(id(), struct_union_kind, name);
+      Set<StructUnion>(btf_index, struct_union_kind, name);
       break;
     }
     case BTF_KIND_FUNC: {
       const auto name = GetName(t->name_off);
       // TODO: map linkage (vlen) to symbol properties
-      graph_.Set<ElfSymbol>(id(), name, std::nullopt, true,
-                            ElfSymbol::SymbolType::FUNCTION,
-                            ElfSymbol::Binding::GLOBAL,
-                            ElfSymbol::Visibility::DEFAULT,
-                            std::nullopt,
-                            std::nullopt,
-                            GetId(t->type),
-                            std::nullopt);
+      Set<ElfSymbol>(btf_index, name, std::nullopt, true,
+                     ElfSymbol::SymbolType::FUNCTION,
+                     ElfSymbol::Binding::GLOBAL,
+                     ElfSymbol::Visibility::DEFAULT,
+                     std::nullopt,
+                     std::nullopt,
+                     GetId(t->type),
+                     std::nullopt);
       const bool inserted =
           btf_symbols_.insert({name, GetIdRaw(btf_index)}).second;
       Check(inserted) << "duplicate symbol " << name;
@@ -361,7 +413,7 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
     case BTF_KIND_FUNC_PROTO: {
       const auto* params = memory.Pull<struct btf_param>(vlen);
       const auto parameters = BuildParams(params, vlen);
-      graph_.Set<Function>(id(), GetId(t->type), parameters);
+      Set<Function>(btf_index, GetId(t->type), parameters);
       break;
     }
     case BTF_KIND_VAR: {
@@ -370,14 +422,14 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       const auto name = GetName(t->name_off);
       // TODO: map variable->linkage to symbol properties
       (void) variable;
-      graph_.Set<ElfSymbol>(id(), name, std::nullopt, true,
-                            ElfSymbol::SymbolType::OBJECT,
-                            ElfSymbol::Binding::GLOBAL,
-                            ElfSymbol::Visibility::DEFAULT,
-                            std::nullopt,
-                            std::nullopt,
-                            GetId(t->type),
-                            std::nullopt);
+      Set<ElfSymbol>(btf_index, name, std::nullopt, true,
+                     ElfSymbol::SymbolType::OBJECT,
+                     ElfSymbol::Binding::GLOBAL,
+                     ElfSymbol::Visibility::DEFAULT,
+                     std::nullopt,
+                     std::nullopt,
+                     GetId(t->type),
+                     std::nullopt);
       const bool inserted =
           btf_symbols_.insert({name, GetIdRaw(btf_index)}).second;
       Check(inserted) << "duplicate symbol " << name;
@@ -406,30 +458,19 @@ std::string Structs::GetName(uint32_t name_off) {
 }
 
 Id Structs::BuildSymbols() {
-  return graph_.Add<Interface>(btf_symbols_);
+  return maker_.Add<Interface>(btf_symbols_);
+}
+
+}  // namespace
+
+Id ReadSection(Graph& graph, std::string_view data) {
+  return Structs(graph).Process(data);
 }
 
 Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
-  Check(elf_version(EV_CURRENT) != EV_NONE) << "ELF version mismatch";
-  struct ElfDeleter {
-    void operator()(Elf* elf) {
-      elf_end(elf);
-    }
-  };
-  const FileDescriptor fd(path.c_str(), O_RDONLY);
-  const std::unique_ptr<Elf, ElfDeleter> elf(
-      elf_begin(fd.Value(), ELF_C_READ, nullptr));
-  if (!elf) {
-    const int error_code = elf_errno();
-    const char* error = elf_errmsg(error_code);
-    if (error != nullptr) {
-      Die() << "elf_begin returned error: " << error;
-    } else {
-      Die() << "elf_begin returned error: " << error_code;
-    }
-  }
-  const elf::ElfLoader loader(elf.get());
-  return Structs(graph).Process(loader.GetBtfRawData());
+  ElfDwarfHandle handle(path);
+  const elf::ElfLoader loader(handle.GetElf());
+  return ReadSection(graph, loader.GetSectionRawData(".BTF"));
 }
 
 }  // namespace btf

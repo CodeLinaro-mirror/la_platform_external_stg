@@ -26,7 +26,7 @@
 extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
   try {
     stg::Graph graph;
-    stg::btf::Structs(graph).Process(std::string_view(data, size));
+    stg::btf::ReadSection(graph, std::string_view(data, size));
   } catch (const stg::Exception&) {
     // Pass as this is us catching invalid BTF properly.
   }

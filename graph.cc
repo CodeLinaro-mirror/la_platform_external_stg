@@ -27,6 +27,8 @@
 #include <string>
 #include <string_view>
 
+#include "hex.h"
+
 namespace stg {
 
 const Id Id::kInvalid(std::numeric_limits<decltype(Id::ix_)>::max());
@@ -80,6 +82,8 @@ std::ostream& operator<<(std::ostream& os, Qualifier qualifier) {
 
 std::ostream& operator<<(std::ostream& os, ElfSymbol::SymbolType type) {
   switch (type) {
+    case ElfSymbol::SymbolType::NOTYPE:
+      return os << "no-type";
     case ElfSymbol::SymbolType::OBJECT:
       return os << "variable";
     case ElfSymbol::SymbolType::FUNCTION:
