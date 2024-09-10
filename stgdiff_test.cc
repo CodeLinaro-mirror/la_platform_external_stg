@@ -38,7 +38,7 @@ struct IgnoreTestCase {
   const std::string file0;
   const stg::InputFormat format1;
   const std::string file1;
-  const stg::Ignore ignore;
+  const stg::diff::Ignore ignore;
   const std::string expected_output;
   const bool expected_equals;
 };
@@ -61,7 +61,7 @@ TEST_CASE("ignore") {
            "symbol_type_presence_0.xml",
            stg::InputFormat::ABI,
            "symbol_type_presence_1.xml",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "symbol_type_presence_small_diff",
            false}),
       IgnoreTestCase(
@@ -70,7 +70,7 @@ TEST_CASE("ignore") {
            "symbol_type_presence_0.xml",
            stg::InputFormat::ABI,
            "symbol_type_presence_1.xml",
-           stg::Ignore(stg::Ignore::SYMBOL_TYPE_PRESENCE),
+           stg::diff::Ignore(stg::diff::Ignore::SYMBOL_TYPE_PRESENCE),
            "empty",
            true}),
       IgnoreTestCase(
@@ -79,7 +79,7 @@ TEST_CASE("ignore") {
            "type_declaration_status_0.xml",
            stg::InputFormat::ABI,
            "type_declaration_status_1.xml",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "type_declaration_status_small_diff",
            false}),
       IgnoreTestCase(
@@ -88,7 +88,7 @@ TEST_CASE("ignore") {
            "type_declaration_status_0.xml",
            stg::InputFormat::ABI,
            "type_declaration_status_1.xml",
-           stg::Ignore(stg::Ignore::TYPE_DECLARATION_STATUS),
+           stg::diff::Ignore(stg::diff::Ignore::TYPE_DECLARATION_STATUS),
            "empty",
            true}),
       IgnoreTestCase(
@@ -97,7 +97,7 @@ TEST_CASE("ignore") {
            "primitive_type_encoding_0.stg",
            stg::InputFormat::STG,
            "primitive_type_encoding_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "primitive_type_encoding_small_diff",
            false}),
       IgnoreTestCase(
@@ -106,7 +106,7 @@ TEST_CASE("ignore") {
            "primitive_type_encoding_0.stg",
            stg::InputFormat::STG,
            "primitive_type_encoding_1.stg",
-           stg::Ignore(stg::Ignore::PRIMITIVE_TYPE_ENCODING),
+           stg::diff::Ignore(stg::diff::Ignore::PRIMITIVE_TYPE_ENCODING),
            "empty",
            true}),
       IgnoreTestCase(
@@ -115,7 +115,7 @@ TEST_CASE("ignore") {
            "member_size_0.stg",
            stg::InputFormat::STG,
            "member_size_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "member_size_small_diff",
            false}),
       IgnoreTestCase(
@@ -124,7 +124,7 @@ TEST_CASE("ignore") {
            "member_size_0.stg",
            stg::InputFormat::STG,
            "member_size_1.stg",
-           stg::Ignore(stg::Ignore::MEMBER_SIZE),
+           stg::diff::Ignore(stg::diff::Ignore::MEMBER_SIZE),
            "empty",
            true}),
       IgnoreTestCase(
@@ -133,7 +133,7 @@ TEST_CASE("ignore") {
            "enum_underlying_type_0.stg",
            stg::InputFormat::STG,
            "enum_underlying_type_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "enum_underlying_type_small_diff",
            false}),
       IgnoreTestCase(
@@ -142,7 +142,7 @@ TEST_CASE("ignore") {
            "enum_underlying_type_0.stg",
            stg::InputFormat::STG,
            "enum_underlying_type_1.stg",
-           stg::Ignore(stg::Ignore::ENUM_UNDERLYING_TYPE),
+           stg::diff::Ignore(stg::diff::Ignore::ENUM_UNDERLYING_TYPE),
            "empty",
            true}),
       IgnoreTestCase(
@@ -151,7 +151,7 @@ TEST_CASE("ignore") {
            "qualifier_0.stg",
            stg::InputFormat::STG,
            "qualifier_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "qualifier_small_diff",
            false}),
       IgnoreTestCase(
@@ -160,7 +160,7 @@ TEST_CASE("ignore") {
            "qualifier_0.stg",
            stg::InputFormat::STG,
            "qualifier_1.stg",
-           stg::Ignore(stg::Ignore::QUALIFIER),
+           stg::diff::Ignore(stg::diff::Ignore::QUALIFIER),
            "empty",
            true}),
       IgnoreTestCase(
@@ -169,7 +169,7 @@ TEST_CASE("ignore") {
            "crc_change_0.stg",
            stg::InputFormat::STG,
            "crc_change_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "crc_change_small_diff",
            false}),
       IgnoreTestCase(
@@ -178,7 +178,7 @@ TEST_CASE("ignore") {
            "crc_change_0.stg",
            stg::InputFormat::STG,
            "crc_change_1.stg",
-           stg::Ignore(stg::Ignore::SYMBOL_CRC),
+           stg::diff::Ignore(stg::diff::Ignore::SYMBOL_CRC),
            "empty",
            true}),
       IgnoreTestCase(
@@ -187,7 +187,7 @@ TEST_CASE("ignore") {
            "interface_addition_0.stg",
            stg::InputFormat::STG,
            "interface_addition_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "interface_addition_small_diff",
            false}),
       IgnoreTestCase(
@@ -196,7 +196,7 @@ TEST_CASE("ignore") {
            "interface_addition_0.stg",
            stg::InputFormat::STG,
            "interface_addition_1.stg",
-           stg::Ignore(stg::Ignore::INTERFACE_ADDITION),
+           stg::diff::Ignore(stg::diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
@@ -205,7 +205,7 @@ TEST_CASE("ignore") {
            "type_addition_0.stg",
            stg::InputFormat::STG,
            "type_addition_1.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "type_addition_small_diff",
            false}),
       IgnoreTestCase(
@@ -214,7 +214,7 @@ TEST_CASE("ignore") {
            "type_addition_0.stg",
            stg::InputFormat::STG,
            "type_addition_1.stg",
-           stg::Ignore(stg::Ignore::INTERFACE_ADDITION),
+           stg::diff::Ignore(stg::diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
@@ -223,7 +223,7 @@ TEST_CASE("ignore") {
            "type_addition_1.stg",
            stg::InputFormat::STG,
            "type_addition_2.stg",
-           stg::Ignore(),
+           stg::diff::Ignore(),
            "type_definition_addition_small_diff",
            false}),
       IgnoreTestCase(
@@ -232,7 +232,7 @@ TEST_CASE("ignore") {
            "type_addition_1.stg",
            stg::InputFormat::STG,
            "type_addition_2.stg",
-           stg::Ignore(stg::Ignore::TYPE_DEFINITION_ADDITION),
+           stg::diff::Ignore(stg::diff::Ignore::TYPE_DEFINITION_ADDITION),
            "empty",
            true})
       );
@@ -247,7 +247,7 @@ TEST_CASE("ignore") {
     const auto id1 = Read(runtime, graph, test.format1, test.file1);
 
     // Compute differences.
-    stg::Compare compare{runtime, graph, test.ignore};
+    stg::diff::Compare compare{runtime, graph, test.ignore};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SMALL reports.
@@ -302,7 +302,7 @@ TEST_CASE("short report") {
     const auto id1 = Read(runtime, graph, stg::InputFormat::ABI, test.xml1);
 
     // Compute differences.
-    stg::Compare compare{runtime, graph, {}};
+    stg::diff::Compare compare{runtime, graph, {}};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SHORT reports.
