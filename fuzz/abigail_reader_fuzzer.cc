@@ -17,10 +17,11 @@
 //
 // Author: Matthias Maennich
 
-#include <string>
+#include <cstddef>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <libxml/xmlerror.h>
 #include "abigail_reader.h"
 #include "error.h"
 #include "graph.h"

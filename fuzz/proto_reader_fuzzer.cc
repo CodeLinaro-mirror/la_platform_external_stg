@@ -17,8 +17,9 @@
 //
 // Author: Matthias Maennich
 
+#include <cstddef>
 #include <sstream>
-#include <string>
+#include <string_view>
 
 #include "error.h"
 #include "graph.h"

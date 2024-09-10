@@ -17,6 +17,7 @@
 //
 // Author: Matthias Maennich
 
+#include <cstddef>
 #include <string_view>
 
 #include "btf_reader.h"

@@ -18,6 +18,7 @@
 // Author: Matthias Maennich
 // Author: Aleksei Vetrov
 
+#include <cstddef>
 #include <sstream>
 #include <vector>
 
