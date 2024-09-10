@@ -26,7 +26,7 @@
 #include "proto_reader.h"
 #include "runtime.h"
 
-extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   try {
     std::ostringstream os;
     stg::Runtime runtime(os, false);

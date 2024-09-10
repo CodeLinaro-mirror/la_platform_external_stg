@@ -28,7 +28,7 @@
 
 static void DoNothing(void*, const char*, ...) {}
 
-extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
   // Suppress libxml error messages.
   xmlSetGenericErrorFunc(ctxt, (xmlGenericErrorFunc) DoNothing);
