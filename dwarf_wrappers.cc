@@ -27,8 +27,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <ios>
-#include <memory>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -36,6 +34,7 @@
 #include <vector>
 
 #include "error.h"
+#include "hex.h"
 
 namespace stg {
 namespace dwarf {
@@ -45,12 +44,6 @@ std::ostream& operator<<(std::ostream& os, const Address& address) {
 }
 
 namespace {
-
-static const Dwfl_Callbacks kDwflCallbacks = {
-    .find_elf = nullptr,
-    .find_debuginfo = dwfl_standard_find_debuginfo,
-    .section_address = dwfl_offline_section_address,
-    .debuginfo_path = nullptr};
 
 constexpr int kReturnOk = 0;
 constexpr int kReturnNoEntry = 1;
@@ -80,18 +73,6 @@ std::optional<Dwarf_Attribute> GetDirectAttribute(Dwarf_Die* die,
     result.reset();
   }
   return result;
-}
-
-void CheckOrDwflError(bool condition, const char* caller) {
-  if (!condition) {
-    int dwfl_error = dwfl_errno();
-    const char* errmsg = dwfl_errmsg(dwfl_error);
-    if (errmsg == nullptr) {
-      // There are some cases when DWFL fails to produce an error message.
-      Die() << caller << " returned error code " << Hex(dwfl_error);
-    }
-    Die() << caller << " returned error: " << errmsg;
-  }
 }
 
 std::optional<uint64_t> MaybeGetUnsignedOperand(const Dwarf_Op& operand) {
@@ -147,56 +128,15 @@ std::optional<Expression> MaybeGetExpression(Dwarf_Attribute& attribute) {
 
 }  // namespace
 
-Handler::Handler(const std::string& path) : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
-  // Add data to process to dwfl
-  dwfl_module_ =
-      dwfl_report_offline(dwfl_.get(), path.c_str(), path.c_str(), -1);
-  InitialiseDwarf();
-}
-
-Handler::Handler(char* data, size_t size) : dwfl_(dwfl_begin(&kDwflCallbacks)) {
-  CheckOrDwflError(dwfl_.get(), "dwfl_begin");
-
-  // Check if ELF can be opened from input data, because DWFL couldn't handle
-  // memory, that is not ELF.
-  // TODO: remove this workaround
-  Elf* elf = elf_memory(data, size);
-  Check(elf != nullptr) << "Input data is not ELF";
-  elf_end(elf);
-
-  // Add data to process to dwfl
-  dwfl_module_ = dwfl_report_offline_memory(dwfl_.get(), "<memory>", "<memory>",
-                                            data, size);
-  InitialiseDwarf();
-}
-
-void Handler::InitialiseDwarf() {
-  CheckOrDwflError(dwfl_.get(), "dwfl_report_offline");
-  // Finish adding files to dwfl and process them
-  CheckOrDwflError(dwfl_report_end(dwfl_.get(), nullptr, nullptr) == kReturnOk,
-                   "dwfl_report_end");
-  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
-  dwarf_ = dwfl_module_getdwarf(dwfl_module_, &loadbase);
-  CheckOrDwflError(dwarf_, "dwfl_module_getdwarf");
-}
-
-Elf* Handler::GetElf() {
-  GElf_Addr loadbase = 0;  // output argument for dwfl, unused by us
-  Elf* elf = dwfl_module_getelf(dwfl_module_, &loadbase);
-  CheckOrDwflError(elf, "dwfl_module_getelf");
-  return elf;
-}
-
-std::vector<CompilationUnit> Handler::GetCompilationUnits() {
+std::vector<CompilationUnit> GetCompilationUnits(Dwarf& dwarf) {
   std::vector<CompilationUnit> result;
   Dwarf_Off offset = 0;
   while (true) {
     Dwarf_Off next_offset;
     size_t header_size = 0;
     Dwarf_Half version = 0;
-    int return_code =
-        dwarf_next_unit(dwarf_, offset, &next_offset, &header_size, &version,
+    const int return_code =
+        dwarf_next_unit(&dwarf, offset, &next_offset, &header_size, &version,
                         nullptr, nullptr, nullptr, nullptr, nullptr);
     Check(return_code == kReturnOk || return_code == kReturnNoEntry)
         << "dwarf_next_unit returned error";
@@ -204,7 +144,8 @@ std::vector<CompilationUnit> Handler::GetCompilationUnits() {
       break;
     }
     result.push_back({version, {}});
-    Check(dwarf_offdie(dwarf_, offset + header_size, &result.back().entry.die))
+    Check(dwarf_offdie(&dwarf, offset + header_size,
+                       &result.back().entry.die) != nullptr)
         << "dwarf_offdie returned error";
 
     offset = next_offset;
