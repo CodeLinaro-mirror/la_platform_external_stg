@@ -7,7 +7,7 @@ different in a textual report.
 STG separates the problem of reporting graph differences into two pieces:
 
 1.  comparison - generating difference graphs
-1.  reporting - serialising difference graphs
+2.  reporting - serialising difference graphs
 
 The main benefits are:
 
@@ -102,18 +102,18 @@ Excluding the two special cases documented in the following sections, the
 comparison steps are approximately:
 
 1.  if the comparison already has a known result then return this
-1.  if the comparison already is in progress then return a potential difference
-1.  start node visit, register the node with the SCC finder
+2.  if the comparison already is in progress then return a potential difference
+3.  start node visit, register the node with the SCC finder
     1.  (special cases for qualified types and typedefs)
-    1.  incomparable nodes go to `Mismatch` which returns a difference
-    1.  otherwise delegate node comparison (with possible recursion)
-    1.  result is a tentative node comparion
-1.  finish node visit, informing the SCC finder
-1.  if an SCC was closed, we've just finished its root comparison
+    2.  incomparable nodes go to `Mismatch` which returns a difference
+    3.  otherwise delegate node comparison (with possible recursion)
+    4.  result is a tentative node comparion
+4.  finish node visit, informing the SCC finder
+5.  if an SCC was closed, we've just finished its root comparison
     1.  root compared equal? discard unwanted potential differences
-    1.  difference found? record confirmed differences
-    1.  record all its comparisons as final
-1.  return result (whether final or tentative)
+    2.  difference found? record confirmed differences
+    3.  record all its comparisons as final
+6.  return result (whether final or tentative)
 
 #### Typedefs
 
@@ -290,7 +290,7 @@ revisiting nodes is avoided by reporting 2 additional artificial kinds of
 difference:
 
 1.  already reported - to handle diff sharing
-1.  being compared - to handle diff cycles
+2.  being compared - to handle diff cycles
 
 The various formats are not documented further here.
 

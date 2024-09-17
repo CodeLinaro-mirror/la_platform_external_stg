@@ -65,10 +65,10 @@ classification:
 
 1.  never visited before - the node should immediately transition to open and
     known to the SCC finder
-1.  open - the link just followed would create a cycle and the SCC finder
+2.  open - the link just followed would create a cycle and the SCC finder
     algorithm needs to do some state maintenance; the user code must not
     recursively process the node
-1.  closed - the link just followed reaches a node already fully processed and
+3.  closed - the link just followed reaches a node already fully processed and
     assigned to a SCC; the user code must not recursively process the node
 
 There are at least 3 different ways of structuring program logic to distinguish
@@ -79,8 +79,8 @@ these paths.
 Node lifecycle:
 
 1.  unvisited + not open
-1.  visited + open
-1.  visited + not open
+2.  visited + open
+3.  visited + not open
 
 If a node has never been visited, it can be unconditionally opened. If it has
 been visited, we must still check if it's open. This is a bit odd in the context
@@ -117,8 +117,8 @@ if (!nodes.empty()) {
 Node lifecycle:
 
 1.  not open + unvisited (never visited)
-1.  open (being visited)
-1.  not open + visited (closed)
+2.  open (being visited)
+3.  not open + visited (closed)
 
 This scheme also requires separate `is_open` and `really_open` operations as
 nodes musn't be reopened (-simplicity, -efficiency). It does allow the user to
@@ -150,8 +150,8 @@ NOTE: This is the currently implemented approach.
 Node lifecycle:
 
 1.  unvisited + not open
-1.  unvisited + open
-1.  visited + not open
+2.  unvisited + open
+3.  visited + not open
 
 This is the purest form of the algorithm with the `open` and `close` operations
 clearly bracketing "real" work. `really_open` and `is_open` operations are
