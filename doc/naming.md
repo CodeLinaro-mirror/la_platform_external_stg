@@ -25,11 +25,11 @@ In sensible operator grammars, composition can be done using precedence levels.
 Example with binary operators (there are minor adjustments needed if operators
 have left or right associativity):
 
-| op  | precedence |
-| --- | ---------- |
-| +   | 0          |
-| *   | 1          |
-| num | 2          |
+op  | precedence
+--- | ----------
++   | 0
+*   | 1
+num | 2
 
 ```haskell
 show x = show_prec 0 x
@@ -69,13 +69,13 @@ The basic (lowest precedence) elements are:
 
 The "operators" in increasing precedence level order are:
 
-* pointer-to, possibly CVR-qualified
-* function (return type) and array (element type)
+*   pointer-to, possibly CVR-qualified
+*   function (return type) and array (element type)
 
 The atomic (highest precedence) elements are:
 
-* variable names
-* function names
+*   variable names
+*   function names
 
 ### CVR-qualifiers
 

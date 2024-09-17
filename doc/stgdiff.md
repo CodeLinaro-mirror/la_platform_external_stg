@@ -106,9 +106,9 @@ in how much (DWARF) information they preserve.
 
 *   `linux_symbol_crc`
 
-    Ignore Linux kernel symbol CRC changes during comparison. This can be
-    useful for ABI comparisons across different toolchains, where CRC changes
-    are often large and not useful.
+    Ignore Linux kernel symbol CRC changes during comparison. This can be useful
+    for ABI comparisons across different toolchains, where CRC changes are often
+    large and not useful.
 
 These two options can be used for ABI compatibility testing where the first ABI
 is expected to be a subset of the second.
