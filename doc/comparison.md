@@ -35,7 +35,7 @@ removal, they do not occur naturally during pairwise comparison.
 ## Comparison Implementation
 
 Comparison is mostly done pair-wise recursively with a DFS, by the function
-object `Compare` and with the help of the [SCC finder](SCC.md).
+object `Compare` and with the help of the [SCC finder](scc.md).
 
 The algorithm divides responsibility between `operator()(Id, Id)` and various
 `operator()(Node, Node)` methods. There are also trivial helpers `Removed`,
@@ -282,7 +282,7 @@ In general, there are two problems to solve:
 * building a report with some meaningful structure
 
 Node and edge description and report structure are the responsibility of the
-*reporting* code. See [Names](NAMES.md) for more detailed notes on node
+*reporting* code. See [Naming](naming.md) for more detailed notes on node
 description, mainly C type name syntax.
 
 Several report formats are supported and the simplest is (omitting various
