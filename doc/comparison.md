@@ -1,38 +1,129 @@
-# Diffs
+# Comparison
 
-Consider two directed graphs, containing labelled nodes and edges. Given a
-designated starting node in each graph, describe how the reachable subgraphs are
-different in a textual report.
+This is implemented in `comparison.{h,cc}`.
 
-STG separates the problem of reporting graph differences into two pieces:
+Graph comparison is the basis of all STG difference reporting.
 
-1.  comparison - generating difference graphs
-2.  reporting - serialising difference graphs
+All the various STG node attributes (such as `size` or `name`) and edge
+identifiers (whether explicit or not, such as function parameter index) can be
+reduced to generic labels. This (over)simplification reduces the problem to
+solve to:
 
-The main benefits are:
+*   given two rooted directed graphs, containing labelled nodes and edges
+*   generate a graph that encapsulates all the differences found by following
+    matching pairs of edges
 
-*   separation of responsibility allowing reporting to vary without significant
-    changes to the comparison code
-*   a single difference graph can be used to generate multiple reports with
-    guaranteed consistency and modest time savings
-*   the difference graph data structure may be presented as a graph,
-    manipulated, subject to further analysis or stored
+Report generation from such a graph is the subject of [Reporting](reporting.md).
 
-## Abstract Graph Diffs
+STG compares the graphs starting at the root nodes and recursing along edges
+with matching labels. The recursion stops at incomparable nodes (such as a
+`struct` and `int`). Otherwise a comparison specific to the kind of node is
+performed.
 
-There are 3 kinds of node difference and each node comparison pair can have any
-number of these:
+Given that the graph will in general not be a tree and may contain cycles, STG
 
-1.  node label difference - a purely local change
-1.  outgoing edge with matching labels - a recursive difference
-1.  added or removed outgoing edge - modelled as a recursive difference with an
-    "absent" node
+*   memoises comparisons with known results
+*   detects comparison cycles and ensures correct termination and propagation of
+    results
 
-STG models comparisons as pairs of nodes where either node can be absent. While
-absent-absent comparisons can result from the composition of an addition and a
-removal, they do not occur naturally during pairwise comparison.
+Overall, this ensures that any given pair of nodes (one from each graph) is
+compared at most once. In the case of a small change to a typical ABI graph of
+size *N*, *O(N)* node comparisons are performed.
 
-## Comparison Implementation
+## Ignoring certain kinds of differences
+
+It has proved useful to add selective suppression of certain kinds of
+differences, for distinct purposes.
+
+| **ignore**               | **directionality** | **purpose**               |
+| ------------------------ | ------------------ | ------------------------- |
+| interface addition       | asymmetric         | compatibility checking    |
+| type definition addition | asymmetric         | compatibility checking    |
+| primitive type encoding  | symmetric          | cross comparison noise    |
+:                          :                    : reduction                 :
+| member size              | symmetric          | cross comparison noise    |
+:                          :                    : reduction                 :
+| enum underlying type     | symmetric          | cross comparison noise    |
+:                          :                    : reduction                 :
+| qualifier                | symmetric          | cross comparison noise    |
+:                          :                    : reduction                 :
+| symbol CRC               | symmetric          | cross comparison noise    |
+:                          :                    : reduction                 :
+| symbol type presence     | symmetric          | libabigail XML comparison |
+:                          :                    : noise reduction           :
+| type declaration status  | symmetric          | libabigail XML comparison |
+:                          :                    : noise reduction           :
+
+The first two options can be used to test whether one ABI is a subset of
+another.
+
+It can be useful to cross compare ABIs extracted in different ways to validate
+the fidelity of one ABI source against another. Where the models or
+implementations differ systematically, suppressing those differences will make
+the remainder more obvious.
+
+The libabigail versions used in Android's GKI project often generated ABIs with
+spurious differences due to the disappearance (or reappearance) of type
+definitions and (occasionally) symbol types. The corresponding ignore options
+replicate the behaviour of libabigail's `abidiff`.
+
+## Differences and difference graphs
+
+When comparing a pair of nodes, each difference falls into one of the following
+categories:
+
+*   node label - a purely local difference
+*   matching edge - a recursive difference found by following edges with
+    matching labels
+*   added or removed labelled edges, where edges are identified by label -
+    modelled as a recursive difference with a node absent on one side
+
+Each node in an STG difference graph is one of the following:
+
+*   a node removal or addition, containing
+    *   a reference to either a node in first graph or one in the second[^1]
+*   a node change, containing
+    *   a reference to two nodes, one in each of the two graphs
+    *   a possibly-empty list of differences which can each be one of
+        *   a node attribute difference in the form of some informative text
+        *   an edge difference in the form of a link to a difference node
+
+[^1]: STG models comparisons as pairs of nodes where either node can be absent.
+    While absent-absent comparisons can result from the composition of an
+    addition and a removal, they do not occur naturally during pairwise
+    comparison.
+
+Note that STG's difference nodes are *unkinded*, there is only one kind of
+difference node, unlike STG's data nodes where there is a separate kind of node
+for each kind of C type etc.
+
+## Matching and comparing collections of edges
+
+While an algorithm based on generic label comparison will work, there are a
+couple of issues:
+
+*   collections of outgoing edges may not have an obvious label to assign
+    (multiple anonymous members of a `struct`, for example)
+*   edges are often ordered (parameters and members, for example) and we
+    want to preserve this order when reporting differences
+
+Comparing two pointer types is straightforward, just compare the pointed-to
+types. However, symbol tables, function arguments and struct members all require
+comparisons of multiple entities simultaneously.
+
+STG compares edge aggregates as follows:
+
+*   arrays (like function arguments): by index, comparing recursively items with
+    the same index, reporting removals and additions of the remaining items
+*   maps (like the symbol table): by key, comparing recursively items with
+    matching keys, reporting removals and additions of unmatched items
+*   otherwise synthesise a key for comparison, compare by key, report
+    differences in the original order of items being compared (favouring the
+    second list's order over the first's); the reordering is an *O(n²)*
+    operation and it might be possible to adapt the more general Myer's diff
+    algorithm to reduce this
+
+## Implementation Details
 
 Comparison is mostly done pair-wise recursively with a DFS, by the function
 object `Compare` and with the help of the [SCC finder](scc.md).
@@ -48,17 +139,19 @@ presence of cycles in the diff comparison graph.
 
 ### `operator()(Node, Node)`
 
-For a given `Node` type, this method has the job of computing local differences,
-matching edges and obtaining edge differences from recursive calls to
-`operator()(Id, Id)` (or `Removed` and `Added`, if edge labels are unmatched).
+Specialised for each `Node` type, these methods have the job of computing local
+differences, matching edges and obtaining edge differences from recursive calls
+to `operator()(Id, Id)` (or `Removed` and `Added`, if edge labels are
+unmatched).
 
 Local differences can easily be rendered as text, but edge differences need
 recursive calls, the results of which are merged into the local differences
 `Result` with helper methods.
 
-In general we want each comparison operator to be as small as possible,
-containing no boilerplate and simply mirroring the node data. The helper
-functions were therefore chosen for power, laziness and concision.
+These methods form the bulk of the comparison code, so in general we want them
+to be as small as possible, containing no boilerplate and simply mirroring the
+node data. The helper functions were therefore chosen for power, laziness and
+concision.
 
 ### `Added` and `Removed`
 
@@ -67,8 +160,8 @@ These take care of comparisons where one side is absent.
 There are several reasons for not folding this functionality into `operator(Id,
 Id)` itself:
 
-*   it would result in unnecessary extra work for unmatched edges as its callers
-    would pack and the function would unpack `std::optional<Id>` arguments
+*   it would result in unnecessary extra work as its callers would need to pack
+    and the function would need to unpack `std::optional<Id>` arguments
 *   added and removed nodes have none of the other interesting features that it
     handles
 *   `Added` and `Removed` don't need to decorate their return values with any
@@ -85,12 +178,13 @@ It takes care of the following:
 *   revisited, in-progress comparison
 *   qualified types
 *   typedefs
-*   incomparable and comparable nodes - handled by `Mismatch` and delegated,
-    respectively
+*   incomparable and comparable nodes
+*   comparison cycles
 
 Note that the non-trivial special cases relating to typedefs and qualified types
 (and their current concrete representations) require non-parallel traversals of
-the graphs being compared.
+the graphs being compared; this is the only place where the comparison is not
+purely structural.
 
 #### Revisited Nodes and Recursive Comparison
 
@@ -104,20 +198,26 @@ comparison steps are approximately:
 1.  if the comparison already has a known result then return this
 2.  if the comparison already is in progress then return a potential difference
 3.  start node visit, register the node with the SCC finder
-    1.  (special cases for qualified types and typedefs)
-    2.  incomparable nodes go to `Mismatch` which returns a difference
-    3.  otherwise delegate node comparison (with possible recursion)
-    4.  result is a tentative node comparion
+    1.  (special handling of qualified types and typedefs)
+    2.  incomparable nodes (such as a `struct` and an `int`) go to `Mismatch`
+        which returns a difference; there is no further recursion
+    3.  otherwise delegate node comparison to a node-specific function; with
+        possible recursion
+    4.  the comparison result here is tentative, due to potential cycles
 4.  finish node visit, informing the SCC finder
 5.  if an SCC was closed, we've just finished its root comparison
     1.  root compared equal? discard unwanted potential differences
     2.  difference found? record confirmed differences
-    3.  record all its comparisons as final
-6.  return result (whether final or tentative)
+    3.  record all its comparison results as final
+6.  return result (which will be final if an SCC was closed)
 
 #### Typedefs
 
-Typedefs are just named type aliases which cannot refer to themselves or later
+This special handling is subject to change.
+
+*   `typedef` foo bar ⇔ foo
+
+Typedefs are named type aliases which cannot refer to themselves or later
 defined types. The referred-to type is exactly identical to the typedef. So for
 difference *finding*, typedefs should just be resolved and skipped over.
 However, for *reporting*, it may be still useful to say where a difference came
@@ -137,6 +237,10 @@ Note that qualified typedefs present extra complications.
 
 #### Qualified Types
 
+This special handling is subject to change.
+
+*   `const` → `volatile` → foo ⇔ `volatile` → `const` → foo
+
 STG currently represents type qualifiers as separate, individual nodes. They are
 relevant for finding differences but there may be no guarantee of the order in
 which they will appear. For diff reporting, STG currently reports added and
@@ -152,7 +256,8 @@ Note that qualified typedefs present extra complications.
 
 #### Qualified typedefs
 
-Qualifiers and typedefs have subtle interactions. For example:
+STG does not currently do anything special for qualified typedefs which can have
+subtle and surprising behaviours. For example:
 
 Before:
 
@@ -257,6 +362,10 @@ const foo quux;
 
 The two `const foo quux` cases invoke undefined behaviour. The consistently
 crazy behaviour would have been to decorate the return type instead.
+
+The "worstest" case is GCC allowing the specification of typedef alignment
+different to the defining type. This abomination should not exist and should
+never be used. Alignment is not currently modelled by STG.
 
 ### Diff helpers
 
