@@ -1,7 +1,10 @@
 # C Type Names
 
-STG does not contain full type names for every type node in the graph. If full
-type names are needed then we need to generate them ourselves.
+This is implementated in `naming.{h,cc}`.
+
+STG does not contain full type names for every type node in the graph. In order
+to meaningfully describe type changes, STG needs to be able to render C and C++
+type names back into source-level syntax.
 
 ## Implementation
 
@@ -25,27 +28,27 @@ In sensible operator grammars, composition can be done using precedence levels.
 Example with binary operators (there are minor adjustments needed if operators
 have left or right associativity):
 
-op  | precedence
---- | ----------
-+   | 0
-*   | 1
-num | 2
+**op** | **precedence**
+------ | --------------
+`+`    | 0
+`*`    | 1
+*num*  | 2
 
 ```haskell
-show x = show_prec 0 x
+data Expr = Number Int | Times Expr Expr | Plus Expr Expr
 
 show_paren p x = if p then "(" ++ x ++ ")" else x
 
-show_prec _ (Number n) = to_string n
-show_prec prec (Mult e1 e2) = show_paren (prec > 1) (show_prec 2 e1 ++ "*" ++ show_prec 2 e2)
-show_prec prec (Add e1 e2) = show_paren (prec > 2) (show_prec 3 e1 ++ "+" ++ show_prec 3 e2)
+shows_prec p (Number n) = show n
+shows_prec p (Times e1 e2) = show_paren (p > 1) $ shows_prec 2 e1 ++ "*" ++ shows_prec 2 e2
+shows_prec p (Plus e1 e2) = show_paren (p > 0) $ shows_prec 1 e1 ++ "+" ++ shows_prec 1 e2
 ```
 
 The central idea is that expressions are rendered in the context of a precedence
 level. Parentheses are needed if the context precedence is higher than the
-expression's own precedence. Atomic values can be viewed as having maximal
-precedence. The default precedence context for printing an expression is the
-minimal one; no parentheses will be emitted.
+expression's own precedence. Atomic values can be viewed as expressions having
+maximal precedence. The default precedence context for printing an expression is
+the minimal one; no parentheses will be emitted.
 
 ## The more-than-slightly-bonkers C declaration syntax
 
@@ -53,13 +56,13 @@ C's type syntax is closely related to the inside-out declaration syntax it uses
 and has the same precedence rules. A simplified, partial precedence table for
 types might look like this.
 
-thing      | precedence
----------- | ----------
-int        | 0
-refer *    | 1
-elt[N]     | 2
-ret(args)  | 2
-identifier | 3
+**thing**    | **precedence**
+------------ | --------------
+`int`        | 0
+`refer *`    | 1
+`elt[N]`     | 2
+`ret(args)`  | 2
+`identifier` | 3
 
 The basic (lowest precedence) elements are:
 
@@ -81,7 +84,10 @@ The atomic (highest precedence) elements are:
 
 The qualifiers `const`, `volatile` and `restrict` appear to the right of the
 pointer-to operator `*` and are idiomatically placed to the left of the basic
-elements. They can be considered as transparent to precedence.
+elements.[^1] They can be considered as transparent to precedence.
+
+[^1]: They can be idiomatically placed to the right, but that's a different
+    idiom.
 
 ### User-defined types
 
@@ -141,19 +147,26 @@ recursion needs to keep track of a left piece, a right piece and the precedence
 level of the hole in the middle.
 
 ```haskell
-render (Basic type) = (type, 0, "")
-render (Ptr ref) = add Left 1 "*" (render ref)
-render (Function ret args) = add Right 2 ("(" ++ render_args args ++ ")") (render ret)
-render (Array elt size) = add Right 2 ("[" ++ render_size size ++ "]") (render elt)
-render (Decl name type) = add Left 3 name (render type)
+data LR = L | R deriving Eq
+
+data Type = Basic String | Ptr Type | Function Type [Type] | Array Type Int | Decl String Type
+
+render_final expr = ll ++ rr where
+  (ll, _, rr) = render expr
+
+render (Basic name) = (name, 0, "")
+render (Ptr ref) = add L 1 "*" (render ref)
+render (Function ret args) = add R 2 ("(" ++ intercalate ", " (map final_render args) ++ ")") (render ret)
+render (Array elt size) = add R 2 ("[" ++ show size ++ "]") (render elt)
+render (Decl name t) = add L 3 name (render t)
 
 add side prec text (l, p, r) =
   case side of
-    Left => (ll ++ text, prec, rr)
-    Right => (ll, prec, text ++ rr)
+    L -> (ll ++ text, prec, rr)
+    R -> (ll, prec, text ++ rr)
   where
     paren = prec < p
-    ll = if paren then l ++ "(" else if side == LEFT then l ++ " " else l
+    ll = if paren then l ++ "(" else if side == L then l ++ " " else l
     rr = if paren then ")" ++ r else r
 ```
 
