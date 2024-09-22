@@ -4,6 +4,5 @@ pub enum Empty {}
 pub fn is_none(opt: Option<Empty>) -> bool {
     match opt {
         None => true,
-        _ => false,
     }
 }
