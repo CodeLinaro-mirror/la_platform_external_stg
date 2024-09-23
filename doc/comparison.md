@@ -104,8 +104,8 @@ couple of issues:
 
 *   collections of outgoing edges may not have an obvious label to assign
     (multiple anonymous members of a `struct`, for example)
-*   edges are often ordered (parameters and members, for example) and we
-    want to preserve this order when reporting differences
+*   edges are often ordered (parameters and members, for example) and we want to
+    preserve this order when reporting differences
 
 Comparing two pointer types is straightforward, just compare the pointed-to
 types. However, symbol tables, function arguments and struct members all require

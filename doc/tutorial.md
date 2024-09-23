@@ -158,8 +158,8 @@ interface {
 
 One issue when first starting to manage the ABI of a binary is the wish to
 restrict the interface surface to just the necessary minimum. Any superfluous
-symbols or type definitions in the ABI representation can result in spurious
-ABI differences in reports later on.
+symbols or type definitions in the ABI representation can result in spurious ABI
+differences in reports later on.
 
 When it comes to the symbols exposed, it's common to control symbol
 *visibility*. Type definitions can be either exposed in public header files or
