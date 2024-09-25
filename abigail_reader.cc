@@ -163,7 +163,9 @@ std::optional<bool> Parse<bool>(const std::string& value) {
 template <>
 std::optional<ElfSymbol::SymbolType> Parse<ElfSymbol::SymbolType>(
     const std::string& value) {
-  if (value == "object-type") {
+  if (value == "no-type") {
+    return {ElfSymbol::SymbolType::NOTYPE};
+  } else if (value == "object-type") {
     return {ElfSymbol::SymbolType::OBJECT};
   } else if (value == "func-type") {
     return {ElfSymbol::SymbolType::FUNCTION};
