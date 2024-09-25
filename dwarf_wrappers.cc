@@ -40,7 +40,12 @@ namespace stg {
 namespace dwarf {
 
 std::ostream& operator<<(std::ostream& os, const Address& address) {
-  return os << Hex(address.value) << (address.is_tls ? " (TLS)" : "");
+  switch (address.kind) {
+    case Address::Kind::ADDRESS:
+      return os << Hex(address.value);
+    case Address::Kind::TLS:
+      return os << "TLS:" << Hex(address.value);
+  }
 }
 
 namespace {
@@ -266,12 +271,12 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
     uint64_t address;
     Check(dwarf_formaddr(&result_attribute, &address) == kReturnOk)
         << "dwarf_formaddr returned error";
-    return Address{.value = address, .is_tls = false};
+    return Address{Address::Kind::ADDRESS, address};
   }
   if (expression.length == 1 && expression[0].atom == DW_OP_addr) {
     // DW_OP_addr is unsupported by dwarf_getlocation_attr, so we need to
     // manually extract the address from expression.
-    return Address{.value = expression[0].number, .is_tls = false};
+    return Address{Address::Kind::ADDRESS, expression[0].number};
   }
   // TLS operation has different encodings in Clang and GCC:
   // * Clang 14 uses DW_OP_GNU_push_tls_address
@@ -283,7 +288,7 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
     // relocations. Resetting it to zero the same way as it is done in
     // elf::Reader::MaybeAddTypeInfo.
     // TODO: match TLS variables by address
-    return Address{.value = 0, .is_tls = true};
+    return Address{Address::Kind::TLS, 0};
   }
 
   Die() << "Unsupported data location expression";
@@ -300,11 +305,10 @@ std::optional<Address> Entry::MaybeGetAddress(uint32_t attribute) {
     return GetAddressFromLocation(*dwarf_attribute);
   }
 
-  Address address;
-  Check(dwarf_formaddr(&dwarf_attribute.value(), &address.value) == kReturnOk)
+  uint64_t address;
+  Check(dwarf_formaddr(&dwarf_attribute.value(), &address) == kReturnOk)
       << "dwarf_formaddr returned error";
-  address.is_tls = false;
-  return address;
+  return Address{Address::Kind::ADDRESS, address};
 }
 
 std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
