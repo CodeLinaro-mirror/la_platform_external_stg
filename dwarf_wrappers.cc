@@ -273,11 +273,19 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
         << "dwarf_formaddr returned error";
     return Address{Address::Kind::ADDRESS, address};
   }
+
   if (expression.length == 1 && expression[0].atom == DW_OP_addr) {
     // DW_OP_addr is unsupported by dwarf_getlocation_attr, so we need to
     // manually extract the address from expression.
     return Address{Address::Kind::ADDRESS, expression[0].number};
   }
+  if (expression.length == 2 && expression[0].atom == DW_OP_addr &&
+      expression[1].atom == DW_OP_plus_uconst) {
+    // A rather odd case seen from Clang.
+    return Address{Address::Kind::ADDRESS,
+                   expression[0].number + expression[1].number};
+  }
+
   // TLS operation has different encodings in Clang and GCC:
   // * Clang 14 uses DW_OP_GNU_push_tls_address
   // * GCC 12 uses DW_OP_form_tls_address
