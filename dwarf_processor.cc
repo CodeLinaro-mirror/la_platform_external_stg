@@ -1038,7 +1038,9 @@ class Processor {
   }
 
   void AddNamedTypeNode(Id id) {
-    result_.named_type_ids.push_back(id);
+    if (scope_.named) {
+      result_.named_type_ids.push_back(id);
+    }
   }
 
   Maker<Hex<Dwarf_Off>> maker_;
