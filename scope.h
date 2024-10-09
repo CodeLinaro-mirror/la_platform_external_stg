@@ -26,32 +26,39 @@
 
 namespace stg {
 
-using Scope = std::string;
+struct Scope {
+  std::string name;
+  bool named = true;
+};
 
 class PushScopeName {
  public:
   template <typename Kind>
   PushScopeName(Scope& scope, Kind&& kind, const std::string& name)
-      : scope_(scope), old_size_(scope_.size()) {
+      : scope_(scope), old_size_(scope_.name.size()),
+        old_named_(scope_.named) {
     if (name.empty()) {
-      scope_ += "<unnamed ";
-      scope_ += kind;
-      scope_ += ">::";
+      scope_.name += "<unnamed ";
+      scope_.name += kind;
+      scope_.name += ">::";
+      scope_.named = false;
     } else {
-      scope_ += name;
-      scope_ += "::";
+      scope_.name += name;
+      scope_.name += "::";
     }
   }
 
   PushScopeName(const PushScopeName& other) = delete;
   PushScopeName& operator=(const PushScopeName& other) = delete;
   ~PushScopeName() {
-    scope_.resize(old_size_);
+    scope_.name.resize(old_size_);
+    scope_.named = old_named_;
   }
 
  private:
-  std::string& scope_;
+  Scope& scope_;
   const size_t old_size_;
+  const bool old_named_;
 };
 
 }  // namespace stg

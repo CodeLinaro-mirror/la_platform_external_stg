@@ -1077,7 +1077,7 @@ void Abigail::ProcessNamespace(xmlNodePtr scope) {
 }
 
 Id Abigail::ProcessDecl(bool is_variable, xmlNodePtr decl) {
-  const auto name = scope_ + GetAttributeOrDie(decl, "name");
+  const auto name = scope_.name + GetAttributeOrDie(decl, "name");
   const auto symbol_id = GetAttribute(decl, "elf-symbol-id");
   const auto type = is_variable ? GetEdge(decl)
                                 : maker_.Add<Function>(MakeFunctionType(decl));
@@ -1098,7 +1098,7 @@ void Abigail::ProcessFunctionType(const std::string& id, xmlNodePtr function) {
 
 void Abigail::ProcessTypedef(const std::string& id,
                              xmlNodePtr type_definition) {
-  const auto name = scope_ + GetAttributeOrDie(type_definition, "name");
+  const auto name = scope_.name + GetAttributeOrDie(type_definition, "name");
   const auto type = GetEdge(type_definition);
   maker_.MaybeSet<Typedef>(id, name, type);
 }
@@ -1173,7 +1173,7 @@ void Abigail::ProcessArray(const std::string& id, xmlNodePtr array) {
 }
 
 void Abigail::ProcessTypeDecl(const std::string& id, xmlNodePtr type_decl) {
-  const auto name = scope_ + GetAttributeOrDie(type_decl, "name");
+  const auto name = scope_.name + GetAttributeOrDie(type_decl, "name");
   const auto bits = ReadAttribute<size_t>(type_decl, "size-in-bits", 0);
   if (bits % 8) {
     Die() << "size-in-bits is not a multiple of 8";
@@ -1204,7 +1204,7 @@ void Abigail::ProcessStructUnion(const std::string& id, bool is_struct,
   const auto name =
       is_anonymous ? std::string() : GetAttributeOrDie(struct_union, "name");
   const auto full_name =
-      is_anonymous ? std::string() : scope_ + name;
+      is_anonymous ? std::string() : scope_.name + name;
   const PushScopeName push_scope_name(scope_, kind, name);
   if (forward) {
     maker_.MaybeSet<StructUnion>(id, kind, full_name);
@@ -1243,7 +1243,7 @@ void Abigail::ProcessEnum(const std::string& id, xmlNodePtr enumeration) {
       ReadAttribute<bool>(enumeration, "is-declaration-only", false);
   const auto name = ReadAttribute<bool>(enumeration, "is-anonymous", false)
                     ? std::string()
-                    : scope_ + GetAttributeOrDie(enumeration, "name");
+                    : scope_.name + GetAttributeOrDie(enumeration, "name");
   if (forward) {
     maker_.MaybeSet<Enumeration>(id, name);
     return;

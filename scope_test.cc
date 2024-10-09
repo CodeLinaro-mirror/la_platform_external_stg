@@ -30,22 +30,29 @@ using stg::PushScopeName;
 
 TEST_CASE("scope") {
   Scope scope;
-  CHECK(scope.empty());
+  CHECK(scope.name.empty());
+  CHECK(scope.named);
   {
     const PushScopeName p1(scope, "1", "A");
-    CHECK(!scope.empty());
+    CHECK(!scope.name.empty());
+    CHECK(scope.named);
     {
       const PushScopeName p2 (scope, "2", std::string());
-      CHECK(!scope.empty());
+      CHECK(!scope.name.empty());
+      CHECK(!scope.named);
       {
         const PushScopeName p3(scope, "3", "B");
-        CHECK(!scope.empty());
+        CHECK(!scope.name.empty());
+        CHECK(!scope.named);
       }
-      CHECK(!scope.empty());
+      CHECK(!scope.name.empty());
+      CHECK(!scope.named);
     }
-    CHECK(!scope.empty());
+    CHECK(!scope.name.empty());
+    CHECK(scope.named);
   }
-  CHECK(scope.empty());
+  CHECK(scope.name.empty());
+  CHECK(scope.named);
 }
 
 }  // namespace Test
