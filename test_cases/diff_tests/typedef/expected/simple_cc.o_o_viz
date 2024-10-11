@@ -9,9 +9,9 @@ digraph "ABI diff" {
   "5" [color=red, shape=rectangle, label="'struct foo'"]
   "5" -> "5:0"
   "5:0" [color=red, label="byte size changed from 2 to 4"]
-  "6" [label="'small x' -> 'large x'"]
-  "7" [label="'small' = 'short' -> 'large' = 'int'"]
-  "8" [color=red, label="'short' -> 'int'"]
+  "6" [label="'small x' → 'large x'"]
+  "7" [label="'small' = 'short' → 'large' = 'int'"]
+  "8" [color=red, label="'short' → 'int'"]
   "7" -> "8" [label="resolved"]
   "6" -> "7" [label=""]
   "5" -> "6" [label=""]
