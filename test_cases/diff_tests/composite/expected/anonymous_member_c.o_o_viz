@@ -1,7 +1,7 @@
 digraph "ABI diff" {
   "0" [shape=rectangle, label="'interface'"]
-  "1" [label="'struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; } v' -> 'struct { struct { int zero; }; struct { int two; }; struct { int four; }; struct { int six; }; struct { int eight; }; } v'"]
-  "2" [color=red, label="'struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; }' -> 'struct { struct { int zero; }; struct { int two; }; struct { int four; }; struct { int six; }; struct { int eight; }; }'"]
+  "1" [label="'struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; } v' → 'struct { struct { int zero; }; struct { int two; }; struct { int four; }; struct { int six; }; struct { int eight; }; } v'"]
+  "2" [color=red, label="'struct { struct { int one; }; struct { int two; }; struct { int four; }; struct { int eight; }; }' → 'struct { struct { int zero; }; struct { int two; }; struct { int four; }; struct { int six; }; struct { int eight; }; }'"]
   "2" -> "2:0"
   "2:0" [color=red, label="byte size changed from 16 to 20"]
   "3" [color=red, label="removed(struct { int one; })"]
