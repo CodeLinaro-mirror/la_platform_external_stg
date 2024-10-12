@@ -17,17 +17,18 @@
 //
 // Author: Matthias Maennich
 
-#include <string>
+#include <cstddef>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <libxml/xmlerror.h>
 #include "abigail_reader.h"
 #include "error.h"
 #include "graph.h"
 
 static void DoNothing(void*, const char*, ...) {}
 
-extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
   // Suppress libxml error messages.
   xmlSetGenericErrorFunc(ctxt, (xmlGenericErrorFunc) DoNothing);

@@ -9,8 +9,8 @@ digraph "ABI diff" {
   "5" [color=red, shape=rectangle, label="'struct nested'"]
   "5" -> "5:0"
   "5:0" [color=red, label="byte size changed from 4 to 8"]
-  "6" [label="'int x' -> 'long x'"]
-  "7" [color=red, label="'int' -> 'long'"]
+  "6" [label="'int x' → 'long x'"]
+  "7" [color=red, label="'int' → 'long'"]
   "6" -> "7" [label=""]
   "5" -> "6" [label=""]
   "4" -> "5" [label=""]
