@@ -150,7 +150,7 @@ int main(int argc, char* argv[]) {
   stg::diff::Ignore opt_ignore;
   stg::InputFormat opt_input_format = stg::InputFormat::ABI;
   stg::reporting::OutputFormat opt_output_format =
-      stg::reporting::OutputFormat::PLAIN;
+      stg::reporting::OutputFormat::SMALL;
   Inputs inputs;
   Outputs outputs;
   static option opts[] = {
@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
               << "  [{-f|--format} <output-format>] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
               << "  [{-F|--fidelity} {filename|-}]\n"
-              << "implicit defaults: --abi --format plain\n"
+              << "implicit defaults: --abi --format small\n"
               << "--exact (node equality) cannot be combined with --output\n"
               << stg::reporting::OutputFormatUsage()
               << stg::diff::IgnoreUsage();
