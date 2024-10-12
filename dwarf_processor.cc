@@ -435,7 +435,7 @@ class Processor {
 
   void ProcessTypedef(Entry& entry) {
     const auto type_name = GetName(entry);
-    const auto full_name = scope_ + type_name;
+    const auto full_name = scope_.name + type_name;
     const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, full_name, referred_type_id);
     if (!ShouldKeepDefinition(entry, type_name)) {
@@ -486,7 +486,8 @@ class Processor {
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
     const auto type_name = GetNameOrEmpty(entry);
-    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const auto full_name =
+        type_name.empty() ? type_name : scope_.name + type_name;
     const PushScopeName push_scope_name(scope_, kind, type_name);
 
     std::vector<Id> base_classes;
@@ -714,7 +715,8 @@ class Processor {
 
   void ProcessEnum(Entry& entry) {
     const auto type_name = GetNameOrEmpty(entry);
-    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const auto full_name =
+        type_name.empty() ? type_name : scope_.name + type_name;
 
     if (entry.GetFlag(DW_AT_declaration)) {
       // It is expected to have only name and no children in declaration.
@@ -855,7 +857,7 @@ class Processor {
       result.unscoped_name = std::string();
     }
     if (result.unscoped_name) {
-      result.scoped_name = scope_ + *result.unscoped_name;
+      result.scoped_name = scope_.name + *result.unscoped_name;
       scoped_names_.emplace_back(
           entry.GetOffset(), *result.scoped_name);
     }
@@ -1036,7 +1038,9 @@ class Processor {
   }
 
   void AddNamedTypeNode(Id id) {
-    result_.named_type_ids.push_back(id);
+    if (scope_.named) {
+      result_.named_type_ids.push_back(id);
+    }
   }
 
   Maker<Hex<Dwarf_Off>> maker_;
