@@ -17,13 +17,14 @@
 //
 // Author: Matthias Maennich
 
+#include <cstddef>
 #include <string_view>
 
 #include "btf_reader.h"
 #include "error.h"
 #include "graph.h"
 
-extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   try {
     stg::Graph graph;
     stg::btf::ReadSection(graph, std::string_view(data, size));
