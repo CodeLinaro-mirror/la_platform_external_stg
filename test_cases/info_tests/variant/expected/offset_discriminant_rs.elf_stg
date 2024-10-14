@@ -42,19 +42,19 @@ member {
 variant_member {
   id: 0x56b9f935
   name: "Two"
-  type_id: 0x573dc947
+  type_id: 0x573dc947  # struct offset_discriminant::Foo::Two
 }
 variant_member {
   id: 0x69cfc441
   name: "One"
   discriminant_value: 1114112
-  type_id: 0x988e2459
+  type_id: 0x988e2459  # struct offset_discriminant::Foo::One
 }
 variant_member {
   id: 0x276cfc01
   name: "Zero"
   discriminant_value: 1114113
-  type_id: 0xb2cd8432
+  type_id: 0xb2cd8432  # struct offset_discriminant::Foo::Zero
 }
 struct_union {
   id: 0x988e2459
