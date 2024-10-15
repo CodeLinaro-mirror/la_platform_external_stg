@@ -194,8 +194,11 @@ std::vector<std::string> GroupRemovedAddedSymbols(
 std::vector<std::string> PostProcess(const std::vector<std::string>& report,
                                      size_t max_crc_only_changes) {
   std::vector<std::string> new_report;
+  // limit the mentions of symbols with only CRC changes
   new_report = SummariseCRCChanges(report, max_crc_only_changes);
+  // collect together function / object symbol additions / removals
   new_report = GroupRemovedAddedSymbols(new_report);
+  // collapse runs of identical member offset changes
   new_report = SummariseOffsetChanges(new_report);
   return new_report;
 }
