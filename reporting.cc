@@ -419,8 +419,7 @@ void Report(const Reporting& reporting, const diff::Comparison& comparison,
       while (std::getline(report, line)) {
         report_lines.push_back(line);
       }
-      report_lines = stg::PostProcess(report_lines,
-                                      reporting.options.max_crc_only_changes);
+      report_lines = stg::PostProcess(report_lines);
       for (const auto& line : report_lines) {
         output << line << '\n';
       }

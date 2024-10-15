@@ -256,7 +256,7 @@ TEST_CASE("ignore") {
     std::ostringstream output;
     if (comparison) {
       stg::NameCache names;
-      stg::reporting::Options options{stg::reporting::OutputFormat::SMALL, 0};
+      stg::reporting::Options options{stg::reporting::OutputFormat::SMALL};
       stg::reporting::Reporting reporting{graph, compare.outcomes, options,
                                           names};
       Report(reporting, *comparison, output);
@@ -311,7 +311,7 @@ TEST_CASE("short report") {
     std::stringstream output;
     if (comparison) {
       stg::NameCache names;
-      stg::reporting::Options options{stg::reporting::OutputFormat::SHORT, 3};
+      stg::reporting::Options options{stg::reporting::OutputFormat::SHORT};
       stg::reporting::Reporting reporting{graph, compare.outcomes, options,
                                           names};
       Report(reporting, *comparison, output);
