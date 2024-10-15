@@ -1,37 +1,17 @@
 variable symbol changed from 'enum { zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, } u' to 'enum { zero = 0, } u'
   type changed from 'enum { zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, six = 6, seven = 7, eight = 8, nine = 9, }' to 'enum { zero = 0, }'
     enumerator 'one' (1) was removed
-    enumerator 'two' (2) was removed
-    enumerator 'three' (3) was removed
-    enumerator 'four' (4) was removed
-    enumerator 'five' (5) was removed
-    enumerator 'six' (6) was removed
-    enumerator 'seven' (7) was removed
-    enumerator 'eight' (8) was removed
-    enumerator 'nine' (9) was removed
+    ... 8 other enumerator(s) removed
 
 variable symbol changed from 'enum { a = 0, } v' to 'enum { a = 0, b = 1, c = 2, d = 3, e = 4, f = 5, g = 6, h = 7, i = 8, j = 9, } v'
   type changed from 'enum { a = 0, }' to 'enum { a = 0, b = 1, c = 2, d = 3, e = 4, f = 5, g = 6, h = 7, i = 8, j = 9, }'
     enumerator 'b' (1) was added
-    enumerator 'c' (2) was added
-    enumerator 'd' (3) was added
-    enumerator 'e' (4) was added
-    enumerator 'f' (5) was added
-    enumerator 'g' (6) was added
-    enumerator 'h' (7) was added
-    enumerator 'i' (8) was added
-    enumerator 'j' (9) was added
+    ... 8 other enumerator(s) added
 
 variable symbol changed from 'enum { alpha = 0, beta = 1, gamma = 2, delta = 3, epsilon = 4, } w' to 'enum { zeta = 5, eta = 6, theta = 7, iota = 8, kappa = 9, } w'
   type changed from 'enum { alpha = 0, beta = 1, gamma = 2, delta = 3, epsilon = 4, }' to 'enum { zeta = 5, eta = 6, theta = 7, iota = 8, kappa = 9, }'
     enumerator 'alpha' (0) was removed
-    enumerator 'beta' (1) was removed
-    enumerator 'gamma' (2) was removed
-    enumerator 'delta' (3) was removed
-    enumerator 'epsilon' (4) was removed
+    ... 4 other enumerator(s) removed
     enumerator 'zeta' (5) was added
-    enumerator 'eta' (6) was added
-    enumerator 'theta' (7) was added
-    enumerator 'iota' (8) was added
-    enumerator 'kappa' (9) was added
+    ... 4 other enumerator(s) added
 

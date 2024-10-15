@@ -193,6 +193,49 @@ std::vector<std::string> GroupRemovedAddedSymbols(
   return new_report;
 }
 
+std::vector<std::string> SummariseEnumeratorAdditionsAndRemovals(
+    const std::vector<std::string>& report, size_t limit) {
+  const std::regex re("^( *)enumerator (.*) was (added|removed)$");
+
+  std::vector<std::string> new_report;
+  size_t indent = 0;
+  std::string which;
+  std::vector<std::string> pending;
+
+  auto emit_pending = [&]() {
+    for (size_t ix = 0; ix < std::min(pending.size(), limit); ++ix) {
+      new_report.push_back(pending[ix]);
+    }
+    if (pending.size() > limit) {
+      std::ostringstream os;
+      os << std::string(indent, ' ') << "... " << pending.size() - limit
+         << " other enumerator(s) " << which;
+      new_report.push_back(os.str());
+    }
+    pending.clear();
+  };
+
+  for (const auto& line : report) {
+    std::smatch match;
+    if (std::regex_match(line, match, re)) {
+      const size_t new_indent = match[1].length();
+      const std::string new_which = match[3].str();
+      if (new_indent != indent || new_which != which) {
+        emit_pending();
+        indent = new_indent;
+        which = new_which;
+      }
+      pending.push_back(line);
+    } else {
+      emit_pending();
+      new_report.push_back(line);
+    }
+  }
+
+  emit_pending();
+  return new_report;
+}
+
 }  // namespace
 
 std::vector<std::string> PostProcess(const std::vector<std::string>& report) {
@@ -203,6 +246,8 @@ std::vector<std::string> PostProcess(const std::vector<std::string>& report) {
   new_report = GroupRemovedAddedSymbols(new_report);
   // collapse runs of identical member offset changes
   new_report = SummariseOffsetChanges(new_report);
+  // limit the mentions of consecutive enumerator additions / removals
+  new_report = SummariseEnumeratorAdditionsAndRemovals(new_report, 1);
   return new_report;
 }
 
