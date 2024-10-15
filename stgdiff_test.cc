@@ -275,26 +275,32 @@ TEST_CASE("ignore") {
 
 struct ShortReportTestCase {
   const std::string name;
-  const std::string xml0;
-  const std::string xml1;
+  InputFormat format;
+  const std::string file0;
+  const std::string file1;
   const std::string expected_output;
 };
 
 TEST_CASE("short report") {
   const auto test = GENERATE(
       ShortReportTestCase(
-          {"crc changes", "crc_0.xml", "crc_1.xml", "crc_changes_short_diff"}),
-      ShortReportTestCase({"only crc changes", "crc_only_0.xml",
-                           "crc_only_1.xml", "crc_only_changes_short_diff"}),
-      ShortReportTestCase({"offset changes", "offset_0.xml", "offset_1.xml",
-                           "offset_changes_short_diff"}),
+          {"crc changes", InputFormat::ABI, "crc_0.xml", "crc_1.xml",
+           "crc_changes_short_diff"}),
       ShortReportTestCase(
-          {"symbols added and removed", "added_removed_symbols_0.xml",
-           "added_removed_symbols_1.xml", "added_removed_symbols_short_diff"}),
-      ShortReportTestCase({"symbols added and removed only",
-                           "added_removed_symbols_only_0.xml",
-                           "added_removed_symbols_only_1.xml",
-                           "added_removed_symbols_only_short_diff"}));
+          {"only crc changes", InputFormat::ABI, "crc_only_0.xml",
+           "crc_only_1.xml", "crc_only_changes_short_diff"}),
+      ShortReportTestCase(
+          {"offset changes", InputFormat::ABI, "offset_0.xml",
+           "offset_1.xml", "offset_changes_short_diff"}),
+      ShortReportTestCase(
+          {"symbols added and removed", InputFormat::ABI,
+           "added_removed_symbols_0.xml", "added_removed_symbols_1.xml",
+           "added_removed_symbols_short_diff"}),
+      ShortReportTestCase(
+          {"symbols added and removed only", InputFormat::ABI,
+           "added_removed_symbols_only_0.xml",
+           "added_removed_symbols_only_1.xml",
+           "added_removed_symbols_only_short_diff"}));
 
   SECTION(test.name) {
     std::ostringstream os;
@@ -302,8 +308,8 @@ TEST_CASE("short report") {
 
     // Read inputs.
     Graph graph;
-    const Id id0 = Read(runtime, graph, InputFormat::ABI, test.xml0);
-    const Id id1 = Read(runtime, graph, InputFormat::ABI, test.xml1);
+    const Id id0 = Read(runtime, graph, test.format, test.file0);
+    const Id id1 = Read(runtime, graph, test.format, test.file1);
 
     // Compute differences.
     diff::Compare compare{runtime, graph, {}};
