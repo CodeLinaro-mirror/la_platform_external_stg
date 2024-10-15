@@ -1,0 +1,118 @@
+version: 0x00000002
+root_id: 0x84ea5130
+primitive {
+  id: 0x4585663f
+  name: "unsigned int"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+enumeration {
+  id: 0x5499be13
+  definition {
+    underlying_type_id: 0x4585663f
+    enumerator {
+      name: "zeta"
+      value: 5
+    }
+    enumerator {
+      name: "eta"
+      value: 6
+    }
+    enumerator {
+      name: "theta"
+      value: 7
+    }
+    enumerator {
+      name: "iota"
+      value: 8
+    }
+    enumerator {
+      name: "kappa"
+      value: 9
+    }
+  }
+}
+enumeration {
+  id: 0x5cde5bba
+  definition {
+    underlying_type_id: 0x4585663f
+    enumerator {
+      name: "a"
+    }
+    enumerator {
+      name: "b"
+      value: 1
+    }
+    enumerator {
+      name: "c"
+      value: 2
+    }
+    enumerator {
+      name: "d"
+      value: 3
+    }
+    enumerator {
+      name: "e"
+      value: 4
+    }
+    enumerator {
+      name: "f"
+      value: 5
+    }
+    enumerator {
+      name: "g"
+      value: 6
+    }
+    enumerator {
+      name: "h"
+      value: 7
+    }
+    enumerator {
+      name: "i"
+      value: 8
+    }
+    enumerator {
+      name: "j"
+      value: 9
+    }
+  }
+}
+enumeration {
+  id: 0x66e4522f
+  definition {
+    underlying_type_id: 0x4585663f
+    enumerator {
+      name: "zero"
+    }
+  }
+}
+elf_symbol {
+  id: 0xb6ccf6fa
+  name: "u"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x66e4522f
+  full_name: "u"
+}
+elf_symbol {
+  id: 0xf48dba91
+  name: "v"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x5cde5bba
+  full_name: "v"
+}
+elf_symbol {
+  id: 0x354daa05
+  name: "w"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x5499be13
+  full_name: "w"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0xb6ccf6fa
+  symbol_id: 0xf48dba91
+  symbol_id: 0x354daa05
+}

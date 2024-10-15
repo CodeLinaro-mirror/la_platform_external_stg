@@ -300,7 +300,12 @@ TEST_CASE("short report") {
           {"symbols added and removed only", InputFormat::ABI,
            "added_removed_symbols_only_0.xml",
            "added_removed_symbols_only_1.xml",
-           "added_removed_symbols_only_short_diff"}));
+           "added_removed_symbols_only_short_diff"}),
+      ShortReportTestCase(
+          {"enumerators added and removed", stg::InputFormat::STG,
+           "added_removed_enumerators_0.stg",
+           "added_removed_enumerators_1.stg",
+           "added_removed_enumerators_short_diff"}));
 
   SECTION(test.name) {
     std::ostringstream os;
