@@ -22,16 +22,11 @@
 
 #include "btf_reader.h"
 
-#include <fcntl.h>
-#include <libelf.h>
-
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <map>
-#include <memory>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -43,7 +38,6 @@
 #include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"
-#include "file_descriptor.h"
 #include "graph.h"
 #include "reader_options.h"
 
