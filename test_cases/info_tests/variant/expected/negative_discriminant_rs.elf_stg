@@ -32,19 +32,19 @@ variant_member {
   id: 0x72c55dce
   name: "MinusTwo"
   discriminant_value: 65534
-  type_id: 0xc8fb9972
+  type_id: 0xc8fb9972  # struct negative_discriminant::Foo::MinusTwo
 }
 variant_member {
   id: 0x528ee922
   name: "MinusOne"
   discriminant_value: 65535
-  type_id: 0xdfc84a58
+  type_id: 0xdfc84a58  # struct negative_discriminant::Foo::MinusOne
 }
 variant_member {
   id: 0x27839c0b
   name: "Zero"
   discriminant_value: 0
-  type_id: 0x5da8c8f1
+  type_id: 0x5da8c8f1  # struct negative_discriminant::Foo::Zero
 }
 struct_union {
   id: 0xdfc84a58
