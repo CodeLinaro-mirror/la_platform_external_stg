@@ -32,15 +32,16 @@
 #include "reporting.h"
 #include "runtime.h"
 
+namespace stg {
 namespace {
 
 struct IgnoreTestCase {
   const std::string name;
-  const stg::InputFormat format0;
+  const InputFormat format0;
   const std::string file0;
-  const stg::InputFormat format1;
+  const InputFormat format1;
   const std::string file1;
-  const stg::diff::Ignore ignore;
+  const diff::Ignore ignore;
   const std::string expected_output;
   const bool expected_equals;
 };
@@ -49,216 +50,215 @@ std::string filename_to_path(const std::string& f) {
   return std::filesystem::path("testdata") / f;
 }
 
-stg::Id Read(stg::Runtime& runtime, stg::Graph& graph, stg::InputFormat format,
-             const std::string& input) {
-  return stg::Read(runtime, graph, format, filename_to_path(input).c_str(),
-                   stg::ReadOptions(), nullptr);
+Id Read(Runtime& runtime, Graph& graph, InputFormat format,
+        const std::string& input) {
+  return Read(runtime, graph, format, filename_to_path(input).c_str(),
+              ReadOptions(), nullptr);
 }
 
 TEST_CASE("ignore") {
   const auto test = GENERATE(
       IgnoreTestCase(
           {"symbol type presence change",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "symbol_type_presence_0.xml",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "symbol_type_presence_1.xml",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "symbol_type_presence_small_diff",
            false}),
       IgnoreTestCase(
           {"symbol type presence change pruned",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "symbol_type_presence_0.xml",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "symbol_type_presence_1.xml",
-           stg::diff::Ignore(stg::diff::Ignore::SYMBOL_TYPE_PRESENCE),
+           diff::Ignore(diff::Ignore::SYMBOL_TYPE_PRESENCE),
            "empty",
            true}),
       IgnoreTestCase(
           {"type declaration status change",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "type_declaration_status_0.xml",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "type_declaration_status_1.xml",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "type_declaration_status_small_diff",
            false}),
       IgnoreTestCase(
           {"type declaration status change pruned",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "type_declaration_status_0.xml",
-           stg::InputFormat::ABI,
+           InputFormat::ABI,
            "type_declaration_status_1.xml",
-           stg::diff::Ignore(stg::diff::Ignore::TYPE_DECLARATION_STATUS),
+           diff::Ignore(diff::Ignore::TYPE_DECLARATION_STATUS),
            "empty",
            true}),
       IgnoreTestCase(
           {"primitive type encoding",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "primitive_type_encoding_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "primitive_type_encoding_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "primitive_type_encoding_small_diff",
            false}),
       IgnoreTestCase(
           {"primitive type encoding ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "primitive_type_encoding_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "primitive_type_encoding_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::PRIMITIVE_TYPE_ENCODING),
+           diff::Ignore(diff::Ignore::PRIMITIVE_TYPE_ENCODING),
            "empty",
            true}),
       IgnoreTestCase(
           {"member size",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "member_size_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "member_size_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "member_size_small_diff",
            false}),
       IgnoreTestCase(
           {"member size ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "member_size_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "member_size_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::MEMBER_SIZE),
+           diff::Ignore(diff::Ignore::MEMBER_SIZE),
            "empty",
            true}),
       IgnoreTestCase(
           {"enum underlying type",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "enum_underlying_type_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "enum_underlying_type_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "enum_underlying_type_small_diff",
            false}),
       IgnoreTestCase(
           {"enum underlying type ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "enum_underlying_type_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "enum_underlying_type_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::ENUM_UNDERLYING_TYPE),
+           diff::Ignore(diff::Ignore::ENUM_UNDERLYING_TYPE),
            "empty",
            true}),
       IgnoreTestCase(
           {"qualifier",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "qualifier_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "qualifier_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "qualifier_small_diff",
            false}),
       IgnoreTestCase(
           {"qualifier ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "qualifier_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "qualifier_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::QUALIFIER),
+           diff::Ignore(diff::Ignore::QUALIFIER),
            "empty",
            true}),
       IgnoreTestCase(
           {"CRC change",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "crc_change_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "crc_change_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "crc_change_small_diff",
            false}),
       IgnoreTestCase(
           {"CRC change ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "crc_change_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "crc_change_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::SYMBOL_CRC),
+           diff::Ignore(diff::Ignore::SYMBOL_CRC),
            "empty",
            true}),
       IgnoreTestCase(
           {"interface addition",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "interface_addition_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "interface_addition_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "interface_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"interface addition ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "interface_addition_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "interface_addition_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::INTERFACE_ADDITION),
+           diff::Ignore(diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
           {"type addition",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_1.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "type_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"type addition ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_0.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_1.stg",
-           stg::diff::Ignore(stg::diff::Ignore::INTERFACE_ADDITION),
+           diff::Ignore(diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
           {"type definition addition",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_1.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_2.stg",
-           stg::diff::Ignore(),
+           diff::Ignore(),
            "type_definition_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"type definition addition ignored",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_1.stg",
-           stg::InputFormat::STG,
+           InputFormat::STG,
            "type_addition_2.stg",
-           stg::diff::Ignore(stg::diff::Ignore::TYPE_DEFINITION_ADDITION),
+           diff::Ignore(diff::Ignore::TYPE_DEFINITION_ADDITION),
            "empty",
            true})
       );
 
   SECTION(test.name) {
     std::ostringstream os;
-    stg::Runtime runtime(os, false);
+    Runtime runtime(os, false);
 
     // Read inputs.
-    stg::Graph graph;
-    const auto id0 = Read(runtime, graph, test.format0, test.file0);
-    const auto id1 = Read(runtime, graph, test.format1, test.file1);
+    Graph graph;
+    const Id id0 = Read(runtime, graph, test.format0, test.file0);
+    const Id id1 = Read(runtime, graph, test.format1, test.file1);
 
     // Compute differences.
-    stg::diff::Compare compare{runtime, graph, test.ignore};
+    diff::Compare compare{runtime, graph, test.ignore};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SMALL reports.
     std::ostringstream output;
     if (comparison) {
-      stg::NameCache names;
-      const stg::reporting::Options options{
-        stg::reporting::OutputFormat::SMALL};
-      const stg::reporting::Reporting reporting{
+      NameCache names;
+      const reporting::Options options{reporting::OutputFormat::SMALL};
+      const reporting::Reporting reporting{
         graph, compare.outcomes, options, names};
       Report(reporting, *comparison, output);
     }
@@ -298,24 +298,23 @@ TEST_CASE("short report") {
 
   SECTION(test.name) {
     std::ostringstream os;
-    stg::Runtime runtime(os, false);
+    Runtime runtime(os, false);
 
     // Read inputs.
-    stg::Graph graph;
-    const auto id0 = Read(runtime, graph, stg::InputFormat::ABI, test.xml0);
-    const auto id1 = Read(runtime, graph, stg::InputFormat::ABI, test.xml1);
+    Graph graph;
+    const Id id0 = Read(runtime, graph, InputFormat::ABI, test.xml0);
+    const Id id1 = Read(runtime, graph, InputFormat::ABI, test.xml1);
 
     // Compute differences.
-    stg::diff::Compare compare{runtime, graph, {}};
+    diff::Compare compare{runtime, graph, {}};
     const auto& [equals, comparison] = compare(id0, id1);
 
     // Write SHORT reports.
     std::stringstream output;
     if (comparison) {
-      stg::NameCache names;
-      const stg::reporting::Options options{
-        stg::reporting::OutputFormat::SHORT};
-      const stg::reporting::Reporting reporting{
+      NameCache names;
+      const reporting::Options options{reporting::OutputFormat::SHORT};
+      const reporting::Reporting reporting{
         graph, compare.outcomes, options, names};
       Report(reporting, *comparison, output);
     }
@@ -332,21 +331,19 @@ TEST_CASE("short report") {
 
 TEST_CASE("fidelity diff") {
   std::ostringstream os;
-  stg::Runtime runtime(os, false);
+  Runtime runtime(os, false);
 
   // Read inputs.
-  stg::Graph graph;
-  const auto id0 =
-      Read(runtime, graph, stg::InputFormat::STG, "fidelity_diff_0.stg");
-  const auto id1 =
-      Read(runtime, graph, stg::InputFormat::STG, "fidelity_diff_1.stg");
+  Graph graph;
+  const Id id0 = Read(runtime, graph, InputFormat::STG, "fidelity_diff_0.stg");
+  const Id id1 = Read(runtime, graph, InputFormat::STG, "fidelity_diff_1.stg");
 
   // Compute fidelity diff.
-  auto fidelity_diff = stg::GetFidelityTransitions(graph, id0, id1);
+  auto fidelity_diff = GetFidelityTransitions(graph, id0, id1);
 
   // Write fidelity diff report.
   std::ostringstream report;
-  stg::reporting::FidelityDiff(fidelity_diff, report);
+  reporting::FidelityDiff(fidelity_diff, report);
 
   // Check report.
   const std::ifstream expected_report_file(
@@ -357,3 +354,4 @@ TEST_CASE("fidelity diff") {
 }
 
 }  // namespace
+}  // namespace stg
