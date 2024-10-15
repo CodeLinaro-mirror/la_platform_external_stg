@@ -446,7 +446,7 @@ Id Reader::Read() {
   (this->*get_symbols)(all_symbols, symbols);
   symbols.shrink_to_fit();
 
-  Id root = BuildRoot(symbols);
+  const Id root = BuildRoot(symbols);
 
   // Types produced by ELF/DWARF readers may require removing useless
   // qualifiers.

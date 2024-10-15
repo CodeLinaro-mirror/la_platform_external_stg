@@ -60,7 +60,7 @@ std::vector<size_t> MakePermutation(size_t k, G& gen) {
   for (size_t i = 0; i < k; ++i) {
     // pick one of [i, k)
     std::uniform_int_distribution<size_t> toss(i, k - 1);
-    auto pick = toss(gen);
+    const auto pick = toss(gen);
     using std::swap;
     swap(result[i], result[pick]);
   }
@@ -208,7 +208,7 @@ TEST_CASE("hand-curated ordering sequences") {
   // NOTES:
   //   The output sequence MUST include the second sequence as a subsequence.
   //   The first sequence's ordering is respected as far as possible.
-  std::vector<std::tuple<Sequence, Sequence, Sequence>> cases = {
+  const std::vector<std::tuple<Sequence, Sequence, Sequence>> cases = {
     {{"rose", "george", "emily"}, {"george", "ted", "emily"},
       {"rose", "george", "ted", "emily"}},
     {{}, {}, {}},
@@ -236,7 +236,7 @@ TEST_CASE("hand-curated reorderings with input order randomisation") {
   //   item added at position y: {}, {y}
   //   item modified at positions x and y: {x}, {y}
   //   input item order should be irrelevant to output order
-  std::vector<std::pair<Constraints, Constraints>> cases = {
+  const std::vector<std::pair<Constraints, Constraints>> cases = {
     {
       {
         {{2}, {2}},  // emily

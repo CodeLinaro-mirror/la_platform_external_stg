@@ -256,15 +256,17 @@ TEST_CASE("ignore") {
     std::ostringstream output;
     if (comparison) {
       stg::NameCache names;
-      stg::reporting::Options options{stg::reporting::OutputFormat::SMALL};
-      stg::reporting::Reporting reporting{graph, compare.outcomes, options,
-                                          names};
+      const stg::reporting::Options options{
+        stg::reporting::OutputFormat::SMALL};
+      const stg::reporting::Reporting reporting{
+        graph, compare.outcomes, options, names};
       Report(reporting, *comparison, output);
     }
 
     // Check comparison outcome and report output.
     CHECK(equals == test.expected_equals);
-    std::ifstream expected_output_file(filename_to_path(test.expected_output));
+    const std::ifstream expected_output_file(
+        filename_to_path(test.expected_output));
     std::ostringstream expected_output;
     expected_output << expected_output_file.rdbuf();
     CHECK(output.str() == expected_output.str());
@@ -311,15 +313,17 @@ TEST_CASE("short report") {
     std::stringstream output;
     if (comparison) {
       stg::NameCache names;
-      stg::reporting::Options options{stg::reporting::OutputFormat::SHORT};
-      stg::reporting::Reporting reporting{graph, compare.outcomes, options,
-                                          names};
+      const stg::reporting::Options options{
+        stg::reporting::OutputFormat::SHORT};
+      const stg::reporting::Reporting reporting{
+        graph, compare.outcomes, options, names};
       Report(reporting, *comparison, output);
     }
 
     // Check comparison outcome and report output.
     CHECK(equals == false);
-    std::ifstream expected_output_file(filename_to_path(test.expected_output));
+    const std::ifstream expected_output_file(
+        filename_to_path(test.expected_output));
     std::ostringstream expected_output;
     expected_output << expected_output_file.rdbuf();
     CHECK(output.str() == expected_output.str());
@@ -345,7 +349,8 @@ TEST_CASE("fidelity diff") {
   stg::reporting::FidelityDiff(fidelity_diff, report);
 
   // Check report.
-  std::ifstream expected_report_file(filename_to_path("fidelity_diff_report"));
+  const std::ifstream expected_report_file(
+      filename_to_path("fidelity_diff_report"));
   std::ostringstream expected_report;
   expected_report << expected_report_file.rdbuf();
   CHECK(report.str() == expected_report.str());
