@@ -34,6 +34,8 @@
 
 namespace stg {
 
+namespace {
+
 std::vector<std::string> SummariseCRCChanges(
     const std::vector<std::string>& report, size_t limit) {
   const std::regex symbol_changed_re("^.* symbol .* changed$");
@@ -190,6 +192,8 @@ std::vector<std::string> GroupRemovedAddedSymbols(
   emit_pending();
   return new_report;
 }
+
+}  // namespace
 
 std::vector<std::string> PostProcess(const std::vector<std::string>& report) {
   std::vector<std::string> new_report;
