@@ -311,7 +311,7 @@ TEST_CASE("short report") {
     std::stringstream output;
     if (comparison) {
       stg::NameCache names;
-      stg::reporting::Options options{stg::reporting::OutputFormat::SHORT, 2};
+      stg::reporting::Options options{stg::reporting::OutputFormat::SHORT, 3};
       stg::reporting::Reporting reporting{graph, compare.outcomes, options,
                                           names};
       Report(reporting, *comparison, output);
