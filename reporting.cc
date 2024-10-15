@@ -355,7 +355,7 @@ void VizPrint(
        << description1 << "\"]\n";
   } else {
     os << "  \"" << node << "\" [" << colour << shape << "label=\""
-       << description1 << " -> " << description2 << "\"]\n";
+       << description1 << " → " << description2 << "\"]\n";
   }
 
   size_t index = 0;
