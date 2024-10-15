@@ -46,7 +46,6 @@ namespace {
 
 const int kAbiChange = 4;
 const int kFidelityChange = 8;
-const size_t kMaxCrcOnlyChanges = 3;
 
 using Inputs = std::vector<std::pair<stg::InputFormat, const char*>>;
 using Outputs =
@@ -119,7 +118,7 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
     std::ofstream output(filename);
     if (comparison) {
       const stg::Time report(runtime, "report diffs");
-      const stg::reporting::Options options{format, kMaxCrcOnlyChanges};
+      const stg::reporting::Options options{format};
       const stg::reporting::Reporting reporting{graph, compare.outcomes,
         options, names};
       Report(reporting, *comparison, output);

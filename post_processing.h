@@ -26,8 +26,7 @@
 
 namespace stg {
 
-std::vector<std::string> PostProcess(const std::vector<std::string>& report,
-                                     size_t max_crc_only_changes);
+std::vector<std::string> PostProcess(const std::vector<std::string>& report);
 
 }  // namespace stg
 
