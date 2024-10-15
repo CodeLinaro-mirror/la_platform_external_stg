@@ -38,6 +38,7 @@
 #include "error.h"
 #include "fidelity.h"
 #include "graph.h"
+#include "naming.h"
 #include "post_processing.h"
 
 namespace stg {

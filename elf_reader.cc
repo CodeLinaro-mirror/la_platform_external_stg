@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "dwarf_processor.h"
+#include "dwarf_wrappers.h"
 #include "elf_dwarf_handle.h"
 #include "elf_loader.h"
 #include "error.h"

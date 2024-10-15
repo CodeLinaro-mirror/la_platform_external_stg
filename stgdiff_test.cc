@@ -24,8 +24,10 @@
 
 #include <catch2/catch.hpp>
 #include "comparison.h"
+#include "fidelity.h"
 #include "graph.h"
 #include "input.h"
+#include "naming.h"
 #include "reader_options.h"
 #include "reporting.h"
 #include "runtime.h"
