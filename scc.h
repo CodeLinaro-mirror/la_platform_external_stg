@@ -22,6 +22,7 @@
 
 #include <cstddef>
 #include <exception>
+#include <functional>
 #include <iterator>
 #include <optional>
 #include <unordered_map>
