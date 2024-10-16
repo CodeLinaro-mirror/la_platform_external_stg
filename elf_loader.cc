@@ -26,13 +26,13 @@
 #include <libelf.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <functional>
 #include <limits>
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "error.h"
@@ -507,6 +507,7 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
       << "Namespace symbol address is above namespace section end";
 
   const char* begin = reinterpret_cast<const char*>(data->d_buf) + offset;
+  // TODO: replace strnlen with something in a standard library
   const size_t length = strnlen(begin, data->d_size - offset);
   Check(offset + length < data->d_size)
       << "Namespace string should be null-terminated";

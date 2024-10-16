@@ -20,10 +20,7 @@
 #include "dwarf_wrappers.h"
 
 #include <dwarf.h>
-#include <elf.h>
 #include <elfutils/libdw.h>
-#include <elfutils/libdwfl.h>
-#include <fcntl.h>
 
 #include <cstddef>
 #include <cstdint>

@@ -29,12 +29,12 @@
 namespace Test {
 
 TEST_CASE("default construction") {
-  stg::FileDescriptor fd;
+  const stg::FileDescriptor fd;
   CHECK_THROWS(fd.Value());
 }
 
 TEST_CASE("successful open") {
-  stg::FileDescriptor fd("/dev/null", O_RDONLY);
+  const stg::FileDescriptor fd("/dev/null", O_RDONLY);
   CHECK(fd.Value());
 }
 
@@ -44,7 +44,7 @@ TEST_CASE("failed open") {
 
 TEST_CASE("double close") {
   CHECK_THROWS([]() {
-    stg::FileDescriptor fd("/dev/null", O_RDONLY);
+    const stg::FileDescriptor fd("/dev/null", O_RDONLY);
     close(fd.Value());
     CHECK_NOTHROW(fd.Value());  // value is still ok
   }());                         // throws on destruction
@@ -60,7 +60,7 @@ TEST_CASE("ownership transfer on move") {
   CHECK_THROWS(fd.Value());
   CHECK(fd_val == fd2.Value());
 
-  auto fd3(std::move(fd2));
+  const auto fd3(std::move(fd2));
   CHECK_THROWS(fd2.Value());
   CHECK(fd_val == fd3.Value());
 }
