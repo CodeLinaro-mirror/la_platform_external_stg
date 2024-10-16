@@ -40,12 +40,14 @@
 namespace stg {
 namespace diff {
 
+namespace {
+
 struct IgnoreDescriptor {
   std::string_view name;
   Ignore::Value value;
 };
 
-static constexpr std::array<IgnoreDescriptor, 9> kIgnores{{
+constexpr std::array<IgnoreDescriptor, 9> kIgnores{{
   {"type_declaration_status",  Ignore::TYPE_DECLARATION_STATUS  },
   {"symbol_type_presence",     Ignore::SYMBOL_TYPE_PRESENCE     },
   {"primitive_type_encoding",  Ignore::PRIMITIVE_TYPE_ENCODING  },
@@ -56,6 +58,8 @@ static constexpr std::array<IgnoreDescriptor, 9> kIgnores{{
   {"interface_addition",       Ignore::INTERFACE_ADDITION       },
   {"type_definition_addition", Ignore::TYPE_DEFINITION_ADDITION },
 }};
+
+}  // namespace
 
 std::optional<Ignore::Value> ParseIgnore(std::string_view ignore) {
   for (const auto& [name, value] : kIgnores) {
@@ -489,7 +493,9 @@ Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
   return result;
 }
 
-static KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
+namespace {
+
+KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
   KeyIndexPairs names;
   const auto size = enums.size();
   names.reserve(size);
@@ -500,6 +506,8 @@ static KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
   std::stable_sort(names.begin(), names.end());
   return names;
 }
+
+}  // namespace
 
 Result Compare::operator()(const Enumeration& x1, const Enumeration& x2) {
   Result result;
