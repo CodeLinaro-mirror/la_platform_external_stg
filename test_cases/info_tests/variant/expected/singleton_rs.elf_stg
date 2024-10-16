@@ -9,7 +9,7 @@ primitive {
 variant_member {
   id: 0xfc304e1e
   name: "Unit"
-  type_id: 0x312c753c
+  type_id: 0x312c753c  # struct singleton::Singleton::Unit
 }
 struct_union {
   id: 0x312c753c

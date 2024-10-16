@@ -26,7 +26,6 @@
 #include <ios>
 #include <ostream>
 #include <sstream>
-#include <string>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -562,7 +561,7 @@ const uint32_t kWrittenFormatVersion = 2;
 // This collection is used to register the AnnotationHexPrinter for each of the
 // fields, which will print a description of the node in STG to which the edge
 // points.
-const std::array<const google::protobuf::FieldDescriptor*, 18> edge_descriptors = {
+const std::array<const google::protobuf::FieldDescriptor*, 19> edge_descriptors = {
     PointerReference::descriptor()->FindFieldByNumber(3),
     PointerToMember::descriptor()->FindFieldByNumber(3),
     Typedef::descriptor()->FindFieldByNumber(3),
@@ -571,6 +570,7 @@ const std::array<const google::protobuf::FieldDescriptor*, 18> edge_descriptors 
     BaseClass::descriptor()->FindFieldByNumber(2),
     Method::descriptor()->FindFieldByNumber(5),
     Member::descriptor()->FindFieldByNumber(3),
+    VariantMember::descriptor()->FindFieldByNumber(4),
     StructUnion::Definition::descriptor()->FindFieldByNumber(2),
     StructUnion::Definition::descriptor()->FindFieldByNumber(3),
     StructUnion::Definition::descriptor()->FindFieldByNumber(4),
