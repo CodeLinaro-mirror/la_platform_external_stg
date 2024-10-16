@@ -42,7 +42,6 @@ std::ostream& operator<<(std::ostream&, OutputFormatUsage);
 
 struct Options {
   const OutputFormat format;
-  const size_t max_crc_only_changes;  // only for SHORT
 };
 
 struct Reporting {
