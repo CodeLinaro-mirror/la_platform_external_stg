@@ -19,14 +19,12 @@
 
 #include <cstddef>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <optional>
-#include <ostream>
-#include <sstream>
 #include <vector>
 
 #include <catch2/catch.hpp>
+#include <libxml/tree.h>
 #include "abigail_reader.h"
 #include "equality.h"
 #include "graph.h"
