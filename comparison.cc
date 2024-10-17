@@ -78,11 +78,15 @@ std::ostream& operator<<(std::ostream& os, IgnoreUsage) {
   return os << '\n';
 }
 
+namespace {
+
 std::string QualifiersMessage(Qualifier qualifier, const std::string& action) {
   std::ostringstream os;
   os << "qualifier " << qualifier << ' ' << action;
   return os.str();
 }
+
+}  // namespace
 
 /*
  * We compute a diff for every visited node.
@@ -248,7 +252,7 @@ Result Compare::operator()(const PointerReference& x1,
     return result.MarkIncomparable();
   }
   const auto type_diff = (*this)(x1.pointee_type_id, x2.pointee_type_id);
-  const auto text =
+  const char* text =
       x1.kind == PointerReference::Kind::POINTER ? "pointed-to" : "referred-to";
   result.MaybeAddEdgeDiff(text, type_diff);
   return result;

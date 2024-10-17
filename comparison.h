@@ -71,7 +71,7 @@ struct Ignore {
     bitset = bitset | (1 << other);
   }
   bool Test(Value other) const {
-    return bitset & (1 << other);
+    return (bitset & (1 << other)) != 0;
   }
 
   Bitset bitset = 0;
