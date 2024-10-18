@@ -34,10 +34,16 @@ namespace stg {
 namespace dwarf {
 
 struct Address {
+  // ADDRESS - relocated, section-relative offset
+  // TLS - broken (elfutils bug), TLS-relative offset
+  //       TODO: match TLS variables by address
+  enum class Kind { ADDRESS, TLS };
+
+  Address(Kind kind, uint64_t value) : kind(kind), value(value) {}
   auto operator<=>(const Address&) const = default;
 
+  Kind kind;
   uint64_t value;
-  bool is_tls;
 };
 
 std::ostream& operator<<(std::ostream& os, const Address& address);
