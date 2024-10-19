@@ -4,8 +4,8 @@ digraph "ABI diff" {
   "2" [color=red, shape=rectangle, label="'struct foo'"]
   "2" -> "2:0"
   "2:0" [color=red, label="byte size changed from 4 to 8"]
-  "3" [label="'int x' -> 'long x'"]
-  "4" [color=red, label="'int' -> 'long'"]
+  "3" [label="'int x' → 'long x'"]
+  "4" [color=red, label="'int' → 'long'"]
   "3" -> "4" [label=""]
   "2" -> "3" [label=""]
   "1" -> "2" [label=""]

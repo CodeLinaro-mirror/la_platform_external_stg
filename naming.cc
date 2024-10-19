@@ -197,11 +197,11 @@ Name Describe::operator()(const VariantMember& x) {
 
 Name Describe::operator()(const StructUnion& x) {
   std::ostringstream os;
-  os << x.kind << ' ';
+  os << x.kind;
   if (!x.name.empty()) {
-    os << x.name;
+    os << ' ' << x.name;
   } else if (x.definition) {
-    os << "{ ";
+    os << " { ";
     for (const auto& member : x.definition->members) {
       os << (*this)(member) << "; ";
     }
@@ -212,11 +212,11 @@ Name Describe::operator()(const StructUnion& x) {
 
 Name Describe::operator()(const Enumeration& x) {
   std::ostringstream os;
-  os << "enum ";
+  os << "enum";
   if (!x.name.empty()) {
-    os << x.name;
+    os << ' ' << x.name;
   } else if (x.definition) {
-    os << "{ ";
+    os << " { ";
     for (const auto& e : x.definition->enumerators) {
       os << e.first << " = " << e.second << ", ";
     }
