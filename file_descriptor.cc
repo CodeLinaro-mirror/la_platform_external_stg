@@ -21,6 +21,7 @@
 #include "file_descriptor.h"
 
 #include <fcntl.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <cerrno>

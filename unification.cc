@@ -20,8 +20,12 @@
 #include "unification.h"
 
 #include <cstddef>
+#include <map>
 #include <optional>
 #include <utility>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "graph.h"
 

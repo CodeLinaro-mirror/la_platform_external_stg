@@ -16,7 +16,7 @@ stgdiff
   [{-f|--format} <output-format>] ...
   [{-o|--output} {filename|-}] ...
   [{-F|--fidelity} {filename|-}]
-implicit defaults: --abi --format plain
+implicit defaults: --abi --format small
 --exact (node equality) cannot be combined with --output
 output formats: plain flat small short viz
 ignore options: type_declaration_status symbol_type_presence primitive_type_encoding member_size enum_underlying_type qualifier linux_symbol_crc interface_addition type_definition_addition
@@ -106,9 +106,9 @@ in how much (DWARF) information they preserve.
 
 *   `linux_symbol_crc`
 
-    Ignore Linux kernel symbol CRC changes during comparison. This can be
-    useful for ABI comparisons across different toolchains, where CRC changes
-    are often large and not useful.
+    Ignore Linux kernel symbol CRC changes during comparison. This can be useful
+    for ABI comparisons across different toolchains, where CRC changes are often
+    large and not useful.
 
 These two options can be used for ABI compatibility testing where the first ABI
 is expected to be a subset of the second.
