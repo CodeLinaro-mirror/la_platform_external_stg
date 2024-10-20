@@ -184,14 +184,14 @@ TEST_CASE("randomly-generated graphs") {
   //   Graphs of size 6 are plenty big enough to shake out bugs.
   //   There are O(2^k^2) possible directed graphs of size k.
   //   Testing costs are O(k^3) so we restrict accordingly.
-  uint64_t budget = 10000;
+  const uint64_t budget = 10000;
   for (size_t k = 0; k < 7; ++k) {
-    uint64_t count = std::min(static_cast<uint64_t>(1) << (k * k),
-                              budget / (k ? k * k * k : 1));
+    const uint64_t count = std::min(static_cast<uint64_t>(1) << (k * k),
+                                    budget / (k ? k * k * k : 1));
     INFO("testing with " << count << " graphs of size " << k);
     for (uint64_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
-      Graph g = invent(k, gen);
+      const Graph g = invent(k, gen);
       std::ostringstream os;
       os << "a graph of " << k << " nodes generated using seed " << seed;
       GIVEN(os.str()) {
