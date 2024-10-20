@@ -21,7 +21,6 @@
 #include "abigail_reader.h"
 
 #include <fcntl.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <array>
@@ -41,8 +40,10 @@
 #include <utility>
 #include <vector>
 
+#include <libxml/globals.h>  // xmlFree moves to xmlmemory.h later
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <libxml/xmlstring.h>
 #include "error.h"
 #include "file_descriptor.h"
 #include "graph.h"
