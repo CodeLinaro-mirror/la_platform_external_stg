@@ -4,5 +4,8 @@ variable symbol 'int a' {a@version} changed
 variable symbol 'int b' changed
   CRC changed from 0xb70c2d59 to 0x9be92606
 
-... 1 omitted; 3 symbols have only CRC changes
+variable symbol 'int c' changed
+  CRC changed from 0x1e91976d to 0x7eb59df3
+
+... 1 omitted; 4 symbols have only CRC changes
 

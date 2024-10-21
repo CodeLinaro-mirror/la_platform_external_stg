@@ -19,9 +19,7 @@
 
 #include "stable_hash.h"
 
-#include <algorithm>
 #include <cstdint>
-#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
