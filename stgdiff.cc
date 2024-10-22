@@ -21,7 +21,6 @@
 
 #include <getopt.h>
 
-#include <cstddef>
 #include <cstring>
 #include <fstream>
 #include <iostream>
