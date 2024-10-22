@@ -20,7 +20,6 @@
 #ifndef STG_POST_PROCESSING_H_
 #define STG_POST_PROCESSING_H_
 
-#include <cstddef>
 #include <string>
 #include <vector>
 

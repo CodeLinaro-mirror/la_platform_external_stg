@@ -20,7 +20,6 @@
 #ifndef STG_DWARF_WRAPPERS_H_
 #define STG_DWARF_WRAPPERS_H_
 
-#include <elf.h>
 #include <elfutils/libdw.h>
 
 #include <cstddef>
