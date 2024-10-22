@@ -44,18 +44,22 @@
 namespace stg {
 namespace reporting {
 
+namespace {
+
 struct FormatDescriptor {
   std::string_view name;
   OutputFormat value;
 };
 
-static constexpr std::array<FormatDescriptor, 5> kFormats{{
+constexpr std::array<FormatDescriptor, 5> kFormats{{
   {"plain", OutputFormat::PLAIN},
   {"flat",  OutputFormat::FLAT },
   {"small", OutputFormat::SMALL},
   {"short", OutputFormat::SHORT},
   {"viz",   OutputFormat::VIZ  },
 }};
+
+}  // namespace
 
 std::optional<OutputFormat> ParseOutputFormat(std::string_view format) {
   for (const auto& [name, value] : kFormats) {
@@ -136,7 +140,7 @@ bool PrintComparison(const Reporting& reporting,
   return false;
 }
 
-static constexpr size_t INDENT_INCREMENT = 2;
+constexpr size_t INDENT_INCREMENT = 2;
 
 class Plain {
   // unvisited (absent) -> started (false) -> finished (true)
