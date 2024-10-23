@@ -22,6 +22,7 @@
 
 #include <cstddef>
 #include <exception>
+#include <functional>
 #include <iterator>
 #include <optional>
 #include <unordered_map>
@@ -62,6 +63,8 @@ namespace stg {
  *
  * USAGE
  *
+ * Create an SCC finder with a lifetime bracketing a top-level DFS invocation.
+ *
  * Before examining a node, check it's not been assigned to an SCC already and
  * then call Open. If the node is already "open" (i.e., is already waiting to be
  * assigned to an SCC), this will return an empty optional value and the node
@@ -78,8 +81,8 @@ namespace stg {
  * the nodes as visited), this should be done now. Otherwise, an empty vector
  * will be returned.
  *
- * After a top-level DFS has completed, the SCC finder should be carrying no
- * state. This can be verified by calling Empty.
+ * On destruction, after a top-level DFS invocation has completed, the SCC
+ * finder will check that it is carrying no state.
  */
 template <typename Node, typename Hash = std::hash<Node>>
 class SCC {
