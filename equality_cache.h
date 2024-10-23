@@ -21,10 +21,10 @@
 #define STG_EQUALITY_CACHE_H_
 
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "graph.h"
