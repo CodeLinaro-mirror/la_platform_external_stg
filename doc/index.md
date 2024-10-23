@@ -9,6 +9,10 @@ These describe all the various command line options.
 *   [`stg`](stg.md): ABI extraction and transformation
 *   [`stgdiff`](stgdiff.md): ABI comparison and reporting
 
+## Reference
+
+*   [`reference`](reference.md): work-in-progress covering concepts etc.
+
 ## Design and Implementation
 
 Incomplete descriptions of some of the more interesting things that make up
