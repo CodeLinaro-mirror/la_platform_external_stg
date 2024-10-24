@@ -26,6 +26,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <system_error>
 
 namespace stg {
 
