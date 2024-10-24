@@ -87,7 +87,7 @@ types with references to full definitions, if that would result in equal types.
 
 There are two types of filters that can be applied to STG output:
 
-1.  `-F|--files|--file-filter <filter>`
+*   `-F|--files|--file-filter <filter>`
 
     Filter type definitions by source location.
 
@@ -99,7 +99,7 @@ There are two types of filters that can be applied to STG output:
     File filters are only applicable to ELF binary objects containing DWARF with
     source location information; any other kind of input will be unaffected.
 
-1.  `-S|--symbols|--symbol-filter <filter>`
+*   `-S|--symbols|--symbol-filter <filter>`
 
     Filter ELF symbols by name (which may include a `@version` or `@@version`
     suffix).
@@ -125,8 +125,8 @@ Symbol filters:
 *   `jiffies |panic` - keep just the symbols `jiffies` and `panic`
 *   `str*` - keep symbols beginning with `str` such as `strncpy_from_user`
 *   `!(*@* & ! *@@*`) - drop versioned symbols that are not the default versions
-*   ` !*@*|*@@*` - the same
-*   `:include & !:exclude ` - keep symbols that are in the symbol list file
+*   `!*@*|*@@*` - the same
+*   `:include & !:exclude` - keep symbols that are in the symbol list file
     `include` but not in the symbol list file `exclude`
 
 File filters:
