@@ -20,9 +20,9 @@
 #ifndef STG_ELF_DWARF_HANDLE_H_
 #define STG_ELF_DWARF_HANDLE_H_
 
-#include <elf.h>
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
+#include <libelf.h>
 
 #include <cstddef>
 #include <functional>

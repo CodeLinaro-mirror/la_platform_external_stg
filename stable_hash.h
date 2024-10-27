@@ -20,10 +20,7 @@
 #ifndef STG_STABLE_HASH_H_
 #define STG_STABLE_HASH_H_
 
-#include <cstdint>
-#include <iostream>
 #include <unordered_map>
-#include <vector>
 
 #include "graph.h"
 #include "hashing.h"
