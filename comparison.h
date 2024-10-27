@@ -25,8 +25,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <map>
-#include <memory>
 #include <optional>
 #include <ostream>
 #include <set>
@@ -73,7 +71,7 @@ struct Ignore {
     bitset = bitset | (1 << other);
   }
   bool Test(Value other) const {
-    return bitset & (1 << other);
+    return (bitset & (1 << other)) != 0;
   }
 
   Bitset bitset = 0;
