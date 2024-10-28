@@ -20,7 +20,6 @@
 #ifndef STG_REPORTING_H_
 #define STG_REPORTING_H_
 
-#include <cstddef>
 #include <optional>
 #include <ostream>
 #include <string_view>
