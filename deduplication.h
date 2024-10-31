@@ -20,7 +20,6 @@
 #ifndef STG_DEDUPLICATION_H_
 #define STG_DEDUPLICATION_H_
 
-#include <cstdint>
 #include <unordered_map>
 
 #include "graph.h"
