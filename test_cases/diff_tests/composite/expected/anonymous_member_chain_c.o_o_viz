@@ -5,16 +5,16 @@ digraph "ABI diff" {
   "3" [color=red, shape=rectangle, label="'struct A'"]
   "3" -> "3:0"
   "3:0" [color=red, label="byte size changed from 8 to 4"]
-  "4" [label="'union { struct { int x; }; struct { long y; }; }' -> 'union { struct { int x; }; struct { char y; }; }'"]
-  "5" [color=red, label="'union { struct { int x; }; struct { long y; }; }' -> 'union { struct { int x; }; struct { char y; }; }'"]
+  "4" [label="'union { struct { int x; }; struct { long y; }; }' → 'union { struct { int x; }; struct { char y; }; }'"]
+  "5" [color=red, label="'union { struct { int x; }; struct { long y; }; }' → 'union { struct { int x; }; struct { char y; }; }'"]
   "5" -> "5:0"
   "5:0" [color=red, label="byte size changed from 8 to 4"]
-  "6" [label="'struct { long y; }' -> 'struct { char y; }'"]
-  "7" [color=red, label="'struct { long y; }' -> 'struct { char y; }'"]
+  "6" [label="'struct { long y; }' → 'struct { char y; }'"]
+  "7" [color=red, label="'struct { long y; }' → 'struct { char y; }'"]
   "7" -> "7:0"
   "7:0" [color=red, label="byte size changed from 8 to 1"]
-  "8" [label="'long y' -> 'char y'"]
-  "9" [color=red, label="'long' -> 'char'"]
+  "8" [label="'long y' → 'char y'"]
+  "9" [color=red, label="'long' → 'char'"]
   "8" -> "9" [label=""]
   "7" -> "8" [label=""]
   "6" -> "7" [label=""]
