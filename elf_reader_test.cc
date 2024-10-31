@@ -22,7 +22,6 @@
 #include <catch2/catch.hpp>
 #include "elf_loader.h"
 #include "elf_reader.h"
-#include "graph.h"
 
 namespace Test {
 

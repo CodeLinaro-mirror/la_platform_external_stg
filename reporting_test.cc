@@ -35,7 +35,7 @@ std::string filename_to_path(const std::string& f) {
 }
 
 TEST_CASE("fidelity diff") {
-  stg::FidelityDiff diff = {
+  const stg::FidelityDiff diff = {
       .symbol_transitions =
           {
               {{SymbolFidelity::TYPED, SymbolFidelity::UNTYPED},
@@ -66,7 +66,8 @@ TEST_CASE("fidelity diff") {
   std::ostringstream report;
   CHECK(reporting::FidelityDiff(diff, report));
 
-  std::ifstream expected_report_file(filename_to_path("fidelity_diff_report"));
+  const std::ifstream expected_report_file(
+      filename_to_path("fidelity_diff_report"));
   std::ostringstream expected_report;
   expected_report << expected_report_file.rdbuf();
   CHECK(report.str() == expected_report.str());
