@@ -14,12 +14,12 @@ member {
 variant_member {
   id: 0x5212c510
   name: "None"
-  type_id: 0x3d2f2a96
+  type_id: 0x3d2f2a96  # struct core::option::Option<optional_empty::Empty>::None
 }
 variant_member {
   id: 0x3107bf38
   name: "Some"
-  type_id: 0x0148ce39
+  type_id: 0x0148ce39  # struct core::option::Option<optional_empty::Empty>::Some
 }
 struct_union {
   id: 0x3d2f2a96

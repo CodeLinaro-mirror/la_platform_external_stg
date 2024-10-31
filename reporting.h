@@ -20,7 +20,6 @@
 #ifndef STG_REPORTING_H_
 #define STG_REPORTING_H_
 
-#include <cstddef>
 #include <optional>
 #include <ostream>
 #include <string_view>
@@ -42,7 +41,6 @@ std::ostream& operator<<(std::ostream&, OutputFormatUsage);
 
 struct Options {
   const OutputFormat format;
-  const size_t max_crc_only_changes;  // only for SHORT
 };
 
 struct Reporting {

@@ -29,7 +29,7 @@
 
 namespace stg {
 
-// See NAMES.md for conceptual documentation.
+// See naming.md for conceptual documentation.
 
 enum class Precedence { NIL, POINTER, ARRAY_FUNCTION, ATOMIC };
 enum class Side { LEFT, RIGHT };

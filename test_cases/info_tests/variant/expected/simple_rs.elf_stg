@@ -62,19 +62,19 @@ variant_member {
   id: 0xfc632c0e
   name: "Unit"
   discriminant_value: 0
-  type_id: 0x624786fb
+  type_id: 0x624786fb  # struct simple::Foo::Unit
 }
 variant_member {
   id: 0xad130615
   name: "TwoU32s"
   discriminant_value: 1
-  type_id: 0x117f6853
+  type_id: 0x117f6853  # struct simple::Foo::TwoU32s
 }
 variant_member {
   id: 0xc48d72bf
   name: "ThreeI16s"
   discriminant_value: 2
-  type_id: 0x0e0db07a
+  type_id: 0x0e0db07a  # struct simple::Foo::ThreeI16s
 }
 struct_union {
   id: 0x0e0db07a
