@@ -23,7 +23,7 @@
 #include <elfutils/libdw.h>
 
 #include <cstddef>
-#include <optional>
+#include <memory>
 #include <string>
 #include <vector>
 
