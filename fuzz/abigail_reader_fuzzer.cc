@@ -26,7 +26,11 @@
 #include "error.h"
 #include "graph.h"
 
-static void DoNothing(void*, const char*, ...) {}
+namespace {
+
+void DoNothing(void*, const char*, ...) {}
+
+}  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
