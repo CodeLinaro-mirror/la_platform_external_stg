@@ -21,8 +21,6 @@
 #define STG_UNIFICATION_H_
 
 #include <exception>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "graph.h"
 #include "runtime.h"
