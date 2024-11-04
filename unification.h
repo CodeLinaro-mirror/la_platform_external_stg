@@ -51,10 +51,10 @@ class Unification {
     const Time time(runtime_, "unification.rewrite");
     Counter removed(runtime_, "unification.removed");
     Counter retained(runtime_, "unification.retained");
-    auto remap = [&](Id& id) {
+    const auto remap = [&](Id& id) {
       Update(id);
     };
-    ::stg::Substitute substitute(graph_, remap);
+    const ::stg::Substitute substitute(graph_, remap);
     graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
       if (Find(id) != id) {
         graph_.Remove(id);
