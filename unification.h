@@ -54,7 +54,7 @@ class Unification {
     const auto remap = [&](Id& id) {
       Update(id);
     };
-    const ::stg::Substitute substitute(graph_, remap);
+    const Substitute substitute(graph_, remap);
     graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
       if (Find(id) != id) {
         graph_.Remove(id);
