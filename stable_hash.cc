@@ -115,54 +115,55 @@ HashValue StableHash::operator()(const Method& x) {
 }
 
 HashValue StableHash::operator()(const Member& x) {
-  HashValue hash = hash_('m', x.name, x.bitsize);
-  hash = DecayHashCombine<20>(hash, hash_(x.offset));
+  HashValue value = hash_('m', x.name, x.bitsize);
+  value = DecayHashCombine<20>(value, hash_(x.offset));
   if (x.name.empty()) {
-    return DecayHashCombine<2>(hash, (*this)(x.type_id));
+    return DecayHashCombine<2>(value, (*this)(x.type_id));
   } else {
-    return DecayHashCombine<8>(hash, (*this)(x.type_id));
+    return DecayHashCombine<8>(value, (*this)(x.type_id));
   }
 }
 
 HashValue StableHash::operator()(const VariantMember& x) {
-  HashValue hash = hash_('v', x.name);
-  hash = DecayHashCombine<8>(hash, (*this)(x.type_id));
+  HashValue value = hash_('v', x.name);
+  value = DecayHashCombine<8>(value, (*this)(x.type_id));
   return x.discriminant_value
-             ? DecayHashCombine<20>(hash, hash_(*x.discriminant_value))
-             : hash;
+             ? DecayHashCombine<20>(value, hash_(*x.discriminant_value))
+             : value;
 }
 
 HashValue StableHash::operator()(const StructUnion& x) {
-  HashValue hash = hash_('S', static_cast<uint32_t>(x.kind), x.name,
-                         static_cast<bool>(x.definition));
+  HashValue value = hash_('S', static_cast<uint32_t>(x.kind), x.name,
+                          static_cast<bool>(x.definition));
   if (!x.name.empty() || !x.definition) {
-    return hash;
+    return value;
   }
 
   auto h1 = DecayHashCombineInReverse<8>(x.definition->methods, *this);
   auto h2 = DecayHashCombineInReverse<8>(x.definition->members, *this);
-  return DecayHashCombine<2>(hash, HashValue(h1.value ^ h2.value));
+  return DecayHashCombine<2>(value, HashValue(h1.value ^ h2.value));
 }
 
 HashValue StableHash::operator()(const Enumeration& x) {
-  HashValue hash = hash_('e', x.name, static_cast<bool>(x.definition));
+  HashValue value = hash_('e', x.name, static_cast<bool>(x.definition));
   if (!x.name.empty() || !x.definition) {
-    return hash;
+    return value;
   }
 
   auto hash_enum = [this](const std::pair<std::string, int64_t>& e) {
     return hash_(e.first, e.second);
   };
   return DecayHashCombine<2>(
-      hash, DecayHashCombineInReverse<8>(x.definition->enumerators, hash_enum));
+      value,
+      DecayHashCombineInReverse<8>(x.definition->enumerators, hash_enum));
 }
 
 HashValue StableHash::operator()(const Variant& x) {
-  HashValue hash = hash_('V', x.name, x.bytesize);
+  HashValue value = hash_('V', x.name, x.bytesize);
   if (x.discriminant.has_value()) {
-    hash = DecayHashCombine<12>(hash, (*this)(x.discriminant.value()));
+    value = DecayHashCombine<12>(value, (*this)(x.discriminant.value()));
   }
-  return DecayHashCombine<2>(hash,
+  return DecayHashCombine<2>(value,
                              DecayHashCombineInReverse<8>(x.members, *this));
 }
 
@@ -172,12 +173,12 @@ HashValue StableHash::operator()(const Function& x) {
 }
 
 HashValue StableHash::operator()(const ElfSymbol& x) {
-  HashValue hash = hash_('s', x.symbol_name);
+  HashValue value = hash_('s', x.symbol_name);
   if (x.version_info) {
-    hash = DecayHashCombine<16>(
-        hash, hash_(x.version_info->name, x.version_info->is_default));
+    value = DecayHashCombine<16>(
+        value, hash_(x.version_info->name, x.version_info->is_default));
   }
-  return hash;
+  return value;
 }
 
 HashValue StableHash::operator()(const Interface&) {
