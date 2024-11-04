@@ -76,12 +76,12 @@ class Unification {
     ++find_query_;
     // path halving - tiny performance gain
     while (true) {
-      // note: safe to take references as mapping cannot grow after this
+      // note: safe to take a reference as mapping cannot grow after this
       auto& parent = mapping_[id];
       if (parent == id) {
         return id;
       }
-      auto& parent_parent = mapping_[parent];
+      const auto parent_parent = mapping_[parent];
       if (parent_parent == parent) {
         return parent;
       }
