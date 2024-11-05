@@ -19,9 +19,9 @@
 
 #include "runtime.h"
 
-#include <cstddef>
+#include <time.h>
+
 #include <iomanip>
-#include <map>
 #include <ostream>
 
 namespace stg {

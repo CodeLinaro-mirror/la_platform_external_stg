@@ -22,6 +22,7 @@
 #define STG_BTF_READER_H_
 
 #include <string>
+#include <string_view>
 
 #include "graph.h"
 #include "reader_options.h"

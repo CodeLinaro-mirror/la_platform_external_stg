@@ -18,6 +18,7 @@
 // Author: Matthias Maennich
 // Author: Aleksei Vetrov
 
+#include <cstddef>
 #include <sstream>
 #include <vector>
 
@@ -28,7 +29,7 @@
 #include "reader_options.h"
 #include "runtime.h"
 
-extern "C" int LLVMFuzzerTestOneInput(char* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   try {
     // Fuzzer forbids changing "data", but libdwfl, used in elf::Read, requires
     // read and write access to memory.

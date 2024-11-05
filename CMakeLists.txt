@@ -146,6 +146,7 @@ else()
     reporting_test
     runtime_test
     scc_test
+    scope_test
     stgdiff_test
   )
 
