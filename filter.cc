@@ -21,8 +21,8 @@
 
 #include <fnmatch.h>
 
-#include <array>
 #include <cctype>
+#include <cerrno>
 #include <cstddef>
 #include <cstring>
 #include <fstream>
