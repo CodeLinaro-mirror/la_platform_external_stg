@@ -66,7 +66,7 @@ struct Unifier {
       return true;
     }
 
-    const auto winner = graph.Apply2<Winner>(*this, fid1, fid2);
+    const auto winner = graph.Apply2(*this, fid1, fid2);
     if (winner == Neither) {
       return false;
     }

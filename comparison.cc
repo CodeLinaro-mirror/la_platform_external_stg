@@ -182,7 +182,7 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
       result.MaybeAddEdgeDiff("resolved", (*this)(resolved1, resolved2));
     } else {
       // 4. Compare nodes, if possible.
-      result = graph.Apply2<Result>(*this, unqualified1, unqualified2);
+      result = graph.Apply2(*this, unqualified1, unqualified2);
     }
   }
 
@@ -728,7 +728,7 @@ Result Compare::operator()(const Interface& x1, const Interface& x2) {
 std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
   std::pair<Id, Qualifiers> result = {id, {}};
   ResolveQualifier resolve(graph, result.first, result.second);
-  while (graph.Apply<bool>(resolve, result.first)) {
+  while (graph.Apply(resolve, result.first)) {
   }
   return result;
 }
@@ -760,7 +760,7 @@ std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id) {
   std::pair<Id, std::vector<std::string>> result = {id, {}};
   ResolveTypedef resolve(graph, result.first, result.second);
-  while (graph.Apply<bool>(resolve, result.first)) {
+  while (graph.Apply(resolve, result.first)) {
   }
   return result;
 }
@@ -777,7 +777,7 @@ bool ResolveTypedef::operator()(const Node&) {
 }
 
 std::string MatchingKey::operator()(Id id) {
-  return graph.Apply<std::string>(*this, id);
+  return graph.Apply(*this, id);
 }
 
 std::string MatchingKey::operator()(const BaseClass& x) {

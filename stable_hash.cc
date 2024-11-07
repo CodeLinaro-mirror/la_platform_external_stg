@@ -64,7 +64,7 @@ struct StableHashWorker {
   HashValue operator()(Id id) {
     auto [it, inserted] = cache.emplace(id, 0);
     if (inserted) {
-      it->second = graph.Apply<HashValue>(*this, id);
+      it->second = graph.Apply(*this, id);
     }
     return it->second;
   }

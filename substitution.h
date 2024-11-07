@@ -59,7 +59,7 @@ struct Substitute {
   }
 
   void operator()(Id id) const {
-    return graph.Apply<void>(*this, id);
+    return graph.Apply(*this, id);
   }
 
   void operator()(Special&) const {}

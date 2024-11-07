@@ -116,7 +116,7 @@ struct DescribeWorker {
     auto insertion = names.insert({id, black_hole});
     Name& cached = insertion.first->second;
     if (insertion.second) {
-      cached = graph.Apply<Name>(*this, id);
+      cached = graph.Apply(*this, id);
     }
     return cached;
   }
@@ -273,7 +273,7 @@ struct DescribeKindWorker {
   explicit DescribeKindWorker(const Graph& graph) : graph(graph) {}
 
   std::string operator()(Id id) {
-    return graph.Apply<std::string>(*this, id);
+    return graph.Apply(*this, id);
   }
 
   std::string operator()(const BaseClass&) {
@@ -310,7 +310,7 @@ struct DescribeExtraWorker {
   explicit DescribeExtraWorker(const Graph& graph) : graph(graph) {}
 
   std::string operator()(Id id) {
-    return graph.Apply<std::string>(*this, id);
+    return graph.Apply(*this, id);
   }
 
   std::string operator()(const ElfSymbol& x) {
