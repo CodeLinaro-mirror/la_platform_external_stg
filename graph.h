@@ -439,17 +439,17 @@ class Graph {
   }
 
   template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject& function, Id id, Args&&... args) const;
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) const;
 
   template <typename FunctionObject, typename... Args>
   decltype(auto) Apply2(
-      FunctionObject& function, Id id1, Id id2, Args&&... args) const;
+      FunctionObject&& function, Id id1, Id id2, Args&&... args) const;
 
   template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject& function, Id id, Args&&... args);
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args);
 
-  template <typename Function>
-  void ForEach(Id start, Id limit, Function&& function) const {
+  template <typename FunctionObject>
+  void ForEach(Id start, Id limit, FunctionObject&& function) const {
     for (size_t ix = start.ix_; ix < limit.ix_; ++ix) {
       const Id id(ix);
       if (Is(id)) {
@@ -503,7 +503,7 @@ class Graph {
 
 template <typename FunctionObject, typename... Args>
 decltype(auto) Graph::Apply(
-    FunctionObject& function, Id id, Args&&... args) const {
+    FunctionObject&& function, Id id, Args&&... args) const {
   const auto& [which, ix] = indirection_[id.ix_];
   switch (which) {
     case Which::ABSENT:
@@ -547,7 +547,7 @@ decltype(auto) Graph::Apply(
 
 template <typename FunctionObject, typename... Args>
 decltype(auto) Graph::Apply2(
-    FunctionObject& function, Id id1, Id id2, Args&&... args) const {
+    FunctionObject&& function, Id id1, Id id2, Args&&... args) const {
   const auto& [which1, ix1] = indirection_[id1.ix_];
   const auto& [which2, ix2] = indirection_[id2.ix_];
   if (which1 != which2) {
@@ -621,7 +621,7 @@ struct ConstAdapter {
 };
 
 template <typename FunctionObject, typename... Args>
-decltype(auto) Graph::Apply(FunctionObject& function, Id id, Args&&... args) {
+decltype(auto) Graph::Apply(FunctionObject&& function, Id id, Args&&... args) {
   ConstAdapter<FunctionObject, Args&&...> adapter(function);
   return static_cast<const Graph&>(*this).Apply(
       adapter, id, std::forward<Args>(args)...);
