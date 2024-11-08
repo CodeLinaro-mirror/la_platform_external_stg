@@ -757,15 +757,6 @@ bool ResolveQualifier::operator()(const Node&) {
   return false;
 }
 
-std::pair<Id, std::vector<std::string>> ResolveTypedefs(
-    const Graph& graph, Id id) {
-  std::pair<Id, std::vector<std::string>> result = {id, {}};
-  ResolveTypedef resolve(graph, result.first, result.second);
-  while (graph.Apply(resolve, result.first)) {
-  }
-  return result;
-}
-
 bool ResolveTypedef::operator()(const Typedef& x) {
   id = x.referred_type_id;
   names.push_back(x.name);
@@ -819,6 +810,14 @@ std::string MatchingKey::operator()(const StructUnion& x) {
 template <typename Node>
 std::string MatchingKey::operator()(const Node&) {
   return {};
+}
+
+std::pair<Id, std::vector<std::string>> ResolveTypedefs(
+    const Graph& graph, Id id) {
+  std::pair<Id, std::vector<std::string>> result = {id, {}};
+  ResolveTypedef resolve(graph, result.first, result.second);
+  while (graph.Apply(resolve, result.first)) {}
+  return result;
 }
 
 std::pair<bool, std::optional<Comparison>> CompareRoots(
