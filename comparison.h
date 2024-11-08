@@ -86,9 +86,9 @@ using Comparison = std::pair<std::optional<Id>, std::optional<Id>>;
 
 struct DiffDetail {
   DiffDetail(const std::string& text, const std::optional<Comparison>& edge)
-      : text_(text), edge_(edge) {}
-  std::string text_;
-  std::optional<Comparison> edge_;
+      : text(text), edge(edge) {}
+  std::string text;
+  std::optional<Comparison> edge;
 };
 
 struct Diff {
