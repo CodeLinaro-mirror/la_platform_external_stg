@@ -240,7 +240,7 @@ struct Compare {
 
   Comparison Removed(Id id);
   Comparison Added(Id id);
-  void CompareDefined(bool defined1, bool defined2, Result& result);
+  void Defined(bool defined1, bool defined2, Result& result);
 
   Result Mismatch();
   Result operator()(const Special&, const Special&);
@@ -487,7 +487,7 @@ Result Compare::operator()(const Array& x1, const Array& x2) {
   return result;
 }
 
-void Compare::CompareDefined(bool defined1, bool defined2, Result& result) {
+void Compare::Defined(bool defined1, bool defined2, Result& result) {
   if (defined1 != defined2) {
     if (!ignore.Test(Ignore::TYPE_DECLARATION_STATUS)
         && !(ignore.Test(Ignore::TYPE_DEFINITION_ADDITION) && defined2)) {
@@ -667,7 +667,7 @@ Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
 
   const auto& definition1 = x1.definition;
   const auto& definition2 = x2.definition;
-  CompareDefined(definition1.has_value(), definition2.has_value(), result);
+  Defined(definition1.has_value(), definition2.has_value(), result);
 
   if (definition1.has_value() && definition2.has_value()) {
     result.MaybeAddNodeDiff(
@@ -705,7 +705,7 @@ Result Compare::operator()(const Enumeration& x1, const Enumeration& x2) {
 
   const auto& definition1 = x1.definition;
   const auto& definition2 = x2.definition;
-  CompareDefined(definition1.has_value(), definition2.has_value(), result);
+  Defined(definition1.has_value(), definition2.has_value(), result);
 
   if (definition1.has_value() && definition2.has_value()) {
     if (!ignore.Test(Ignore::ENUM_UNDERLYING_TYPE)) {
