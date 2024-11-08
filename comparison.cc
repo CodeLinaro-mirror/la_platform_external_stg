@@ -241,6 +241,11 @@ struct Compare {
   Comparison Removed(Id id);
   Comparison Added(Id id);
   void Defined(bool defined1, bool defined2, Result& result);
+  void Nodes(const std::vector<Id>& ids1, const std::vector<Id>& ids2,
+             Result& result);
+  void Nodes(const std::map<std::string, Id>& x1,
+             const std::map<std::string, Id>& x2,
+             bool ignore_added, Result& result);
 
   Result Mismatch();
   Result operator()(const Special&, const Special&);
@@ -544,36 +549,35 @@ MatchedPairs PairUp(const KeyIndexPairs& keys1, const KeyIndexPairs& keys2) {
   return pairs;
 }
 
-void CompareNodes(Result& result, Compare& compare, const std::vector<Id>& ids1,
-                  const std::vector<Id>& ids2) {
-  const auto keys1 = MatchingKeys(compare.graph, ids1);
-  const auto keys2 = MatchingKeys(compare.graph, ids2);
+void Compare::Nodes(const std::vector<Id>& ids1, const std::vector<Id>& ids2,
+                    Result& result) {
+  const auto keys1 = MatchingKeys(graph, ids1);
+  const auto keys2 = MatchingKeys(graph, ids2);
   auto pairs = PairUp(keys1, keys2);
   Reorder(pairs);
   for (const auto& [index1, index2] : pairs) {
     if (index1 && !index2) {
       // removed
       const auto& x1 = ids1[*index1];
-      result.AddEdgeDiff("", compare.Removed(x1));
+      result.AddEdgeDiff("", Removed(x1));
     } else if (!index1 && index2) {
       // added
       const auto& x2 = ids2[*index2];
-      result.AddEdgeDiff("", compare.Added(x2));
+      result.AddEdgeDiff("", Added(x2));
     } else if (index1 && index2) {
       // in both
       const auto& x1 = ids1[*index1];
       const auto& x2 = ids2[*index2];
-      result.MaybeAddEdgeDiff("", compare(x1, x2));
+      result.MaybeAddEdgeDiff("", (*this)(x1, x2));
     } else {
-      Die() << "CompareNodes: impossible pair";
+      Die() << "Compare::Nodes: impossible pair";
     }
   }
 }
 
-void CompareNodes(Result& result, Compare& compare,
-                  const std::map<std::string, Id>& x1,
-                  const std::map<std::string, Id>& x2,
-                  bool ignore_added) {
+void Compare::Nodes(const std::map<std::string, Id>& x1,
+                    const std::map<std::string, Id>& x2,
+                    bool ignore_added, Result& result) {
   // Group diffs into removed, added and changed symbols for readability.
   std::vector<Id> removed;
   std::vector<Id> added;
@@ -603,13 +607,13 @@ void CompareNodes(Result& result, Compare& compare,
   }
 
   for (const auto symbol1 : removed) {
-    result.AddEdgeDiff("", compare.Removed(symbol1));
+    result.AddEdgeDiff("", Removed(symbol1));
   }
   for (const auto symbol2 : added) {
-    result.AddEdgeDiff("", compare.Added(symbol2));
+    result.AddEdgeDiff("", Added(symbol2));
   }
   for (const auto& [symbol1, symbol2] : in_both) {
-    result.MaybeAddEdgeDiff("", compare(symbol1, symbol2));
+    result.MaybeAddEdgeDiff("", (*this)(symbol1, symbol2));
   }
 }
 
@@ -672,10 +676,9 @@ Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
   if (definition1.has_value() && definition2.has_value()) {
     result.MaybeAddNodeDiff(
         "byte size", definition1->bytesize, definition2->bytesize);
-    CompareNodes(
-        result, *this, definition1->base_classes, definition2->base_classes);
-    CompareNodes(result, *this, definition1->methods, definition2->methods);
-    CompareNodes(result, *this, definition1->members, definition2->members);
+    Nodes(definition1->base_classes, definition2->base_classes, result);
+    Nodes(definition1->methods, definition2->methods, result);
+    Nodes(definition1->members, definition2->members, result);
   }
 
   return result;
@@ -772,7 +775,7 @@ Result Compare::operator()(const Variant& x1, const Variant& x2) {
   } else if (x2.discriminant.has_value()) {
     result.AddEdgeDiff("", Added(x2.discriminant.value()));
   }
-  CompareNodes(result, *this, x1.members, x2.members);
+  Nodes(x1.members, x2.members, result);
   return result;
 }
 
@@ -900,8 +903,8 @@ Result Compare::operator()(const Interface& x1, const Interface& x2) {
   Result result;
   result.diff.holds_changes = true;
   const bool ignore_added = ignore.Test(Ignore::INTERFACE_ADDITION);
-  CompareNodes(result, *this, x1.symbols, x2.symbols, ignore_added);
-  CompareNodes(result, *this, x1.types, x2.types, ignore_added);
+  Nodes(x1.symbols, x2.symbols, ignore_added, result);
+  Nodes(x1.types, x2.types, ignore_added, result);
   return result;
 }
 
