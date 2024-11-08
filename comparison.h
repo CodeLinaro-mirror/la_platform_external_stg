@@ -258,8 +258,9 @@ struct ResolveQualifier {
 };
 
 struct Compare {
-  Compare(Runtime& runtime, const Graph& graph, const Ignore& ignore)
-      : graph(graph), ignore(ignore),
+  Compare(Runtime& runtime, const Ignore& ignore, const Graph& graph,
+          Outcomes& outcomes)
+      : ignore(ignore), graph(graph), outcomes(outcomes),
         queried(runtime, "compare.queried"),
         already_compared(runtime, "compare.already_compared"),
         being_compared(runtime, "compare.being_compared"),
@@ -292,11 +293,11 @@ struct Compare {
   Result operator()(const ElfSymbol&, const ElfSymbol&);
   Result operator()(const Interface&, const Interface&);
 
-  const Graph& graph;
   const Ignore ignore;
-  std::unordered_map<Comparison, bool, HashComparison> known;
-  Outcomes outcomes;
+  const Graph& graph;
+  Outcomes& outcomes;
   Outcomes provisional;
+  std::unordered_map<Comparison, bool, HashComparison> known;
   SCC<Comparison, HashComparison> scc;
   Counter queried;
   Counter already_compared;
@@ -306,6 +307,10 @@ struct Compare {
   Counter inequivalent;
   Histogram scc_size;
 };
+
+std::pair<bool, std::optional<Comparison>>
+    CompareRoots(Runtime& runtime, Ignore ignore, const Graph& graph,
+                 Id root1, Id root2, Outcomes& outcomes);
 
 }  // namespace diff
 }  // namespace stg

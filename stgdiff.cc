@@ -102,11 +102,12 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
         const std::vector<stg::Id>& roots, const Outputs& outputs,
         stg::diff::Ignore ignore, std::optional<const char*> fidelity) {
   // Compute differences.
-  stg::diff::Compare compare{runtime, graph, ignore};
+  stg::diff::Outcomes outcomes;
   std::pair<bool, std::optional<stg::diff::Comparison>> result;
   {
     const stg::Time compute(runtime, "compute diffs");
-    result = compare(roots[0], roots[1]);
+    result = stg::diff::CompareRoots(
+        runtime, ignore, graph, roots[0], roots[1], outcomes);
   }
   const auto& [equals, comparison] = result;
   int status = equals ? 0 : kAbiChange;
@@ -118,8 +119,8 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
     if (comparison) {
       const stg::Time report(runtime, "report diffs");
       const stg::reporting::Options options{format};
-      const stg::reporting::Reporting reporting{graph, compare.outcomes,
-        options, names};
+      const stg::reporting::Reporting reporting{graph, outcomes, options,
+        names};
       Report(reporting, *comparison, output);
       output << std::flush;
     }

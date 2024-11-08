@@ -250,16 +250,16 @@ TEST_CASE("ignore") {
     const Id id1 = Read(runtime, graph, test.format1, test.file1);
 
     // Compute differences.
-    diff::Compare compare{runtime, graph, test.ignore};
-    const auto& [equals, comparison] = compare(id0, id1);
+    stg::diff::Outcomes outcomes;
+    const auto [equals, comparison] =
+        diff::CompareRoots(runtime, test.ignore, graph, id0, id1, outcomes);
 
     // Write SMALL reports.
     std::ostringstream output;
     if (comparison) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SMALL};
-      const reporting::Reporting reporting{
-        graph, compare.outcomes, options, names};
+      const reporting::Reporting reporting{graph, outcomes, options, names};
       Report(reporting, *comparison, output);
     }
 
@@ -317,16 +317,16 @@ TEST_CASE("short report") {
     const Id id1 = Read(runtime, graph, test.format, test.file1);
 
     // Compute differences.
-    diff::Compare compare{runtime, graph, {}};
-    const auto& [equals, comparison] = compare(id0, id1);
+    stg::diff::Outcomes outcomes;
+    const auto [equals, comparison] =
+        diff::CompareRoots(runtime, {}, graph, id0, id1, outcomes);
 
     // Write SHORT reports.
     std::stringstream output;
     if (comparison) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SHORT};
-      const reporting::Reporting reporting{
-        graph, compare.outcomes, options, names};
+      const reporting::Reporting reporting{graph, outcomes, options, names};
       Report(reporting, *comparison, output);
     }
 

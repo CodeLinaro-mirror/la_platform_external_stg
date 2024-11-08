@@ -36,6 +36,7 @@
 #include "error.h"
 #include "graph.h"
 #include "order.h"
+#include "runtime.h"
 
 namespace stg {
 namespace diff {
@@ -818,6 +819,12 @@ std::string MatchingKey::operator()(const StructUnion& x) {
 template <typename Node>
 std::string MatchingKey::operator()(const Node&) {
   return {};
+}
+
+std::pair<bool, std::optional<Comparison>> CompareRoots(
+    Runtime& runtime, Ignore ignore, const Graph& graph, Id root1, Id root2,
+    Outcomes& outcomes) {
+  return Compare(runtime, ignore, graph, outcomes)(root1, root2);
 }
 
 }  // namespace diff
