@@ -108,16 +108,16 @@ struct Diff {
 struct Result {
   // Used when two nodes cannot be meaningfully compared.
   Result& MarkIncomparable() {
-    equals_ = false;
-    diff_.has_changes = true;
+    equals = false;
+    diff.has_changes = true;
     return *this;
   }
 
   // Used when a node attribute has changed.
   void AddNodeDiff(const std::string& text) {
-    equals_ = false;
-    diff_.has_changes = true;
-    diff_.Add(text, {});
+    equals = false;
+    diff.has_changes = true;
+    diff.Add(text, {});
   }
 
   // Used when a node attribute may have changed.
@@ -162,34 +162,34 @@ struct Result {
 
   // Used when an edge has been removed or added.
   void AddEdgeDiff(const std::string& text, const Comparison& comparison) {
-    equals_ = false;
-    diff_.Add(text, {comparison});
+    equals = false;
+    diff.Add(text, {comparison});
   }
 
   // Used when an edge to a possible comparison is present.
   void MaybeAddEdgeDiff(const std::string& text,
                         const std::pair<bool, std::optional<Comparison>>& p) {
-    equals_ &= p.first;
+    equals &= p.first;
     const auto& comparison = p.second;
     if (comparison) {
-      diff_.Add(text, comparison);
+      diff.Add(text, comparison);
     }
   }
 
   // Used when an edge to a possible comparison is present, lazy version.
   void MaybeAddEdgeDiff(const std::function<void(std::ostream&)>& text,
                         const std::pair<bool, std::optional<Comparison>>& p) {
-    equals_ &= p.first;
+    equals &= p.first;
     const auto& comparison = p.second;
     if (comparison) {
       std::ostringstream os;
       text(os);
-      diff_.Add(os.str(), comparison);
+      diff.Add(os.str(), comparison);
     }
   }
 
-  bool equals_ = true;
-  Diff diff_;
+  bool equals = true;
+  Diff diff;
 };
 
 struct HashComparison {

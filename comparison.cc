@@ -178,8 +178,8 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
     const auto [resolved2, typedefs2] = ResolveTypedefs(graph, unqualified2);
     if (unqualified1 != resolved1 || unqualified2 != resolved2) {
       // 3.2 Typedef difference.
-      result.diff_.holds_changes = !typedefs1.empty() && !typedefs2.empty()
-                                   && typedefs1[0] == typedefs2[0];
+      result.diff.holds_changes = !typedefs1.empty() && !typedefs2.empty()
+                                  && typedefs1[0] == typedefs2[0];
       result.MaybeAddEdgeDiff("resolved", (*this)(resolved1, resolved2));
     } else {
       // 4. Compare nodes, if possible.
@@ -188,7 +188,7 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
   }
 
   // 5. Update result and check for a complete Strongly-Connected Component.
-  provisional.insert({comparison, result.diff_});
+  provisional.insert({comparison, result.diff});
   auto comparisons = scc.Close(*handle);
   auto size = comparisons.size();
   if (size) {
@@ -199,17 +199,17 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
     // SCC via the DFS spanning tree.
     for (auto& c : comparisons) {
       // Record equality / inequality.
-      known.insert({c, result.equals_});
+      known.insert({c, result.equals});
       const auto it = provisional.find(c);
       Check(it != provisional.end())
           << "internal error: missing provisional diffs";
-      if (!result.equals_) {
+      if (!result.equals) {
         // Record differences.
         outcomes.insert(*it);
       }
       provisional.erase(it);
     }
-    if (result.equals_) {
+    if (result.equals) {
       equivalent += size;
       return {true, {}};
     } else {
@@ -219,7 +219,7 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
   }
 
   // Note that both equals and diff are tentative as comparison is still open.
-  return {result.equals_, {comparison}};
+  return {result.equals, {comparison}};
 }
 
 Comparison Compare::Removed(Id id) {
@@ -283,7 +283,7 @@ Result Compare::operator()(const Primitive& x1, const Primitive& x2) {
   if (x1.name != x2.name) {
     return result.MarkIncomparable();
   }
-  result.diff_.holds_changes = !x1.name.empty();
+  result.diff.holds_changes = !x1.name.empty();
   if (!ignore.Test(Ignore::PRIMITIVE_TYPE_ENCODING)) {
     result.MaybeAddNodeDiff("encoding", x1.encoding, x2.encoding);
   }
@@ -480,7 +480,7 @@ Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
   if (x1.kind != x2.kind || x1.name != x2.name) {
     return result.MarkIncomparable();
   }
-  result.diff_.holds_changes = !x1.name.empty();
+  result.diff.holds_changes = !x1.name.empty();
 
   const auto& definition1 = x1.definition;
   const auto& definition2 = x2.definition;
@@ -522,7 +522,7 @@ Result Compare::operator()(const Enumeration& x1, const Enumeration& x2) {
   if (x1.name != x2.name) {
     return result.MarkIncomparable();
   }
-  result.diff_.holds_changes = !x1.name.empty();
+  result.diff.holds_changes = !x1.name.empty();
 
   const auto& definition1 = x1.definition;
   const auto& definition2 = x2.definition;
@@ -581,7 +581,7 @@ Result Compare::operator()(const Variant& x1, const Variant& x2) {
   if (x1.name != x2.name) {
     return result.MarkIncomparable();
   }
-  result.diff_.holds_changes = true;  // Anonymous variants are not allowed.
+  result.diff.holds_changes = true;  // Anonymous variants are not allowed.
 
   result.MaybeAddNodeDiff("bytesize", x1.bytesize, x2.bytesize);
   if (x1.discriminant.has_value() && x2.discriminant.has_value()) {
@@ -719,7 +719,7 @@ Result Compare::operator()(const ElfSymbol& x1, const ElfSymbol& x2) {
 
 Result Compare::operator()(const Interface& x1, const Interface& x2) {
   Result result;
-  result.diff_.holds_changes = true;
+  result.diff.holds_changes = true;
   const bool ignore_added = ignore.Test(Ignore::INTERFACE_ADDITION);
   CompareNodes(result, *this, x1.symbols, x2.symbols, ignore_added);
   CompareNodes(result, *this, x1.types, x2.types, ignore_added);
