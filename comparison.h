@@ -27,8 +27,6 @@
 #include <functional>
 #include <optional>
 #include <ostream>
-#include <set>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -37,7 +35,6 @@
 
 #include "graph.h"
 #include "runtime.h"
-#include "scc.h"
 
 namespace stg {
 namespace diff {
@@ -105,93 +102,6 @@ struct Diff {
   }
 };
 
-struct Result {
-  // Used when two nodes cannot be meaningfully compared.
-  Result& MarkIncomparable() {
-    equals = false;
-    diff.has_changes = true;
-    return *this;
-  }
-
-  // Used when a node attribute has changed.
-  void AddNodeDiff(const std::string& text) {
-    equals = false;
-    diff.has_changes = true;
-    diff.Add(text, {});
-  }
-
-  // Used when a node attribute may have changed.
-  template <typename T>
-  void MaybeAddNodeDiff(
-      const std::string& text, const T& before, const T& after) {
-    if (before != after) {
-      std::ostringstream os;
-      os << text << " changed from " << before << " to " << after;
-      AddNodeDiff(os.str());
-    }
-  }
-
-  // Used when a node attribute may have changed, lazy version.
-  template <typename T>
-  void MaybeAddNodeDiff(const std::function<void(std::ostream&)>& text,
-                        const T& before, const T& after) {
-    if (before != after) {
-      std::ostringstream os;
-      text(os);
-      os << " changed from " << before << " to " << after;
-      AddNodeDiff(os.str());
-    }
-  }
-
-  // Used when node attributes are optional values.
-  template <typename T>
-  void MaybeAddNodeDiff(const std::string& text, const std::optional<T>& before,
-                        const std::optional<T>& after) {
-    if (before && after) {
-      MaybeAddNodeDiff(text, *before, *after);
-    } else if (before) {
-      std::ostringstream os;
-      os << text << ' ' << *before << " was removed";
-      AddNodeDiff(os.str());
-    } else if (after) {
-      std::ostringstream os;
-      os << text << ' ' << *after << " was added";
-      AddNodeDiff(os.str());
-    }
-  }
-
-  // Used when an edge has been removed or added.
-  void AddEdgeDiff(const std::string& text, const Comparison& comparison) {
-    equals = false;
-    diff.Add(text, {comparison});
-  }
-
-  // Used when an edge to a possible comparison is present.
-  void MaybeAddEdgeDiff(const std::string& text,
-                        const std::pair<bool, std::optional<Comparison>>& p) {
-    equals &= p.first;
-    const auto& comparison = p.second;
-    if (comparison) {
-      diff.Add(text, comparison);
-    }
-  }
-
-  // Used when an edge to a possible comparison is present, lazy version.
-  void MaybeAddEdgeDiff(const std::function<void(std::ostream&)>& text,
-                        const std::pair<bool, std::optional<Comparison>>& p) {
-    equals &= p.first;
-    const auto& comparison = p.second;
-    if (comparison) {
-      std::ostringstream os;
-      text(os);
-      diff.Add(os.str(), comparison);
-    }
-  }
-
-  bool equals = true;
-  Diff diff;
-};
-
 struct HashComparison {
   size_t operator()(const Comparison& comparison) const {
     size_t seed = 0;
@@ -207,106 +117,8 @@ struct HashComparison {
 
 using Outcomes = std::unordered_map<Comparison, Diff, HashComparison>;
 
-struct MatchingKey {
-  explicit MatchingKey(const Graph& graph) : graph(graph) {}
-  std::string operator()(Id id);
-  std::string operator()(const BaseClass&);
-  std::string operator()(const Method&);
-  std::string operator()(const Member&);
-  std::string operator()(const VariantMember&);
-  std::string operator()(const StructUnion&);
-  template <typename Node>
-  std::string operator()(const Node&);
-  const Graph& graph;
-};
-
 std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id);
-
-struct ResolveTypedef {
-  ResolveTypedef(const Graph& graph, Id& id, std::vector<std::string>& names)
-      : graph(graph), id(id), names(names) {}
-  bool operator()(const Typedef&);
-  template <typename Node>
-  bool operator()(const Node&);
-
-  const Graph& graph;
-  Id& id;
-  std::vector<std::string>& names;
-};
-
-using Qualifiers = std::set<Qualifier>;
-
-// Separate qualifiers from underlying type.
-//
-// The caller must always be prepared to receive a different type as qualifiers
-// are sometimes discarded.
-std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id);
-
-struct ResolveQualifier {
-  ResolveQualifier(const Graph& graph, Id& id, Qualifiers& qualifiers)
-      : graph(graph), id(id), qualifiers(qualifiers) {}
-  bool operator()(const Qualified&);
-  bool operator()(const Array&);
-  bool operator()(const Function&);
-  template <typename Node>
-  bool operator()(const Node&);
-
-  const Graph& graph;
-  Id& id;
-  Qualifiers& qualifiers;
-};
-
-struct Compare {
-  Compare(Runtime& runtime, const Ignore& ignore, const Graph& graph,
-          Outcomes& outcomes)
-      : ignore(ignore), graph(graph), outcomes(outcomes),
-        queried(runtime, "compare.queried"),
-        already_compared(runtime, "compare.already_compared"),
-        being_compared(runtime, "compare.being_compared"),
-        really_compared(runtime, "compare.really_compared"),
-        equivalent(runtime, "compare.equivalent"),
-        inequivalent(runtime, "compare.inequivalent"),
-        scc_size(runtime, "compare.scc_size") {}
-  std::pair<bool, std::optional<Comparison>>  operator()(Id id1, Id id2);
-
-  Comparison Removed(Id id);
-  Comparison Added(Id id);
-  void CompareDefined(bool defined1, bool defined2, Result& result);
-
-  Result Mismatch();
-  Result operator()(const Special&, const Special&);
-  Result operator()(const PointerReference&, const PointerReference&);
-  Result operator()(const PointerToMember&, const PointerToMember&);
-  Result operator()(const Typedef&, const Typedef&);
-  Result operator()(const Qualified&, const Qualified&);
-  Result operator()(const Primitive&, const Primitive&);
-  Result operator()(const Array&, const Array&);
-  Result operator()(const BaseClass&, const BaseClass&);
-  Result operator()(const Method&, const Method&);
-  Result operator()(const Member&, const Member&);
-  Result operator()(const VariantMember&, const VariantMember&);
-  Result operator()(const StructUnion&, const StructUnion&);
-  Result operator()(const Enumeration&, const Enumeration&);
-  Result operator()(const Variant&, const Variant&);
-  Result operator()(const Function&, const Function&);
-  Result operator()(const ElfSymbol&, const ElfSymbol&);
-  Result operator()(const Interface&, const Interface&);
-
-  const Ignore ignore;
-  const Graph& graph;
-  Outcomes& outcomes;
-  Outcomes provisional;
-  std::unordered_map<Comparison, bool, HashComparison> known;
-  SCC<Comparison, HashComparison> scc;
-  Counter queried;
-  Counter already_compared;
-  Counter being_compared;
-  Counter really_compared;
-  Counter equivalent;
-  Counter inequivalent;
-  Histogram scc_size;
-};
 
 std::pair<bool, std::optional<Comparison>>
     CompareRoots(Runtime& runtime, Ignore ignore, const Graph& graph,
