@@ -129,8 +129,8 @@ Comparison is mostly done pair-wise recursively with a DFS, by the function
 object `Compare` and with the help of the [SCC finder](scc.md).
 
 The algorithm divides responsibility between `operator()(Id, Id)` and various
-`operator()(Node, Node)` methods. There are also trivial helpers `Removed`,
-`Added` and `Mismatch`.
+`operator()(Node, Node)` methods. There are also various helpers in and outside
+`Compare`.
 
 The `Result` type encapsulates the difference between two nodes being compared.
 It contains both a list (`Diff`) of differences (`DiffDetail`) and a boolean
@@ -161,11 +161,24 @@ There are several reasons for not folding this functionality into `operator(Id,
 Id)` itself:
 
 *   it would result in unnecessary extra work as its callers would need to pack
-    and the function would need to unpack `std::optional<Id>` arguments
+    and the function would need to unpack `optional<Id>` arguments
 *   added and removed nodes have none of the other interesting features that it
     handles
 *   `Added` and `Removed` don't need to decorate their return values with any
     difference information
+
+### `Defined`
+
+This takes care of comparisons of user-defined types which may be forward
+declarations or full definitions.
+
+### `Nodes`
+
+These take care of comparisons of sequences of arbitrary nodes (or enumerators).
+
+STG uses "matching keys" to reduce the problem of comparing sequences to
+comparing maps. It attempts to preserve original sequence order as described in
+`order.h`.
 
 ### `operator(Id, Id)`
 
