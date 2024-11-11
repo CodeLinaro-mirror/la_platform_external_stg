@@ -43,7 +43,7 @@ struct IgnoreTestCase {
   const std::string file1;
   const diff::Ignore ignore;
   const std::string expected_output;
-  const bool expected_equals;
+  const bool expected_same;
 };
 
 std::string filename_to_path(const std::string& f) {
@@ -250,21 +250,22 @@ TEST_CASE("ignore") {
     const Id id1 = Read(runtime, graph, test.format1, test.file1);
 
     // Compute differences.
-    diff::Compare compare{runtime, graph, test.ignore};
-    const auto& [equals, comparison] = compare(id0, id1);
+    stg::diff::Outcomes outcomes;
+    const auto comparison =
+        diff::Compare(runtime, test.ignore, graph, id0, id1, outcomes);
+    const bool same = comparison == diff::Comparison{};
 
     // Write SMALL reports.
     std::ostringstream output;
-    if (comparison) {
+    if (!same) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SMALL};
-      const reporting::Reporting reporting{
-        graph, compare.outcomes, options, names};
-      Report(reporting, *comparison, output);
+      const reporting::Reporting reporting{graph, outcomes, options, names};
+      Report(reporting, comparison, output);
     }
 
     // Check comparison outcome and report output.
-    CHECK(equals == test.expected_equals);
+    CHECK(same == test.expected_same);
     const std::ifstream expected_output_file(
         filename_to_path(test.expected_output));
     std::ostringstream expected_output;
@@ -317,21 +318,22 @@ TEST_CASE("short report") {
     const Id id1 = Read(runtime, graph, test.format, test.file1);
 
     // Compute differences.
-    diff::Compare compare{runtime, graph, {}};
-    const auto& [equals, comparison] = compare(id0, id1);
+    stg::diff::Outcomes outcomes;
+    const auto comparison =
+        diff::Compare(runtime, {}, graph, id0, id1, outcomes);
+    const bool same = comparison == diff::Comparison{};
 
     // Write SHORT reports.
     std::stringstream output;
-    if (comparison) {
+    if (!same) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SHORT};
-      const reporting::Reporting reporting{
-        graph, compare.outcomes, options, names};
-      Report(reporting, *comparison, output);
+      const reporting::Reporting reporting{graph, outcomes, options, names};
+      Report(reporting, comparison, output);
     }
 
     // Check comparison outcome and report output.
-    CHECK(equals == false);
+    CHECK(!same);
     const std::ifstream expected_output_file(
         filename_to_path(test.expected_output));
     std::ostringstream expected_output;
