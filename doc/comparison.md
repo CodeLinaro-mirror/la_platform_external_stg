@@ -126,11 +126,11 @@ STG compares edge aggregates as follows:
 ## Implementation Details
 
 Comparison is mostly done pair-wise recursively with a DFS, by the function
-object `Compare` and with the help of the [SCC finder](scc.md).
+object `CompareWorker` and with the help of the [SCC finder](scc.md).
 
 The algorithm divides responsibility between `operator()(Id, Id)` and various
 `operator()(Node, Node)` methods. There are also various helpers in and outside
-`Compare`.
+`CompareWorker`.
 
 The `Result` type encapsulates the difference between two nodes being compared.
 It contains both a list (`Diff`) of differences (`DiffDetail`) and a boolean
@@ -382,7 +382,7 @@ never be used. Alignment is not currently modelled by STG.
 
 ### Diff helpers
 
-These are mainly used by the `Compare::operator()(Node, Node)` methods.
+These are mainly used by the `CompareWorker::operator()(Node, Node)` methods.
 
 *   `MarkIncomparable` - nodes are just different
 *   `AddNodeDiff` - add node difference, unconditionally

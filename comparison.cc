@@ -352,9 +352,9 @@ std::string QualifiersMessage(Qualifier qualifier, const std::string& action) {
   return os.str();
 }
 
-struct Compare {
-  Compare(Runtime& runtime, const Ignore& ignore, const Graph& graph,
-          Outcomes& outcomes)
+struct CompareWorker {
+  CompareWorker(Runtime& runtime, const Ignore& ignore, const Graph& graph,
+                Outcomes& outcomes)
       : ignore(ignore), graph(graph), outcomes(outcomes),
         queried(runtime, "compare.queried"),
         already_compared(runtime, "compare.already_compared"),
@@ -543,7 +543,7 @@ struct Compare {
         const auto& x2 = ids2[*index2];
         result.MaybeAddEdgeDiff("", (*this)(x1, x2));
       } else {
-        Die() << "Compare::Nodes: impossible pair";
+        Die() << "CompareWorker::Nodes: impossible pair";
       }
     }
   }
@@ -625,12 +625,12 @@ struct Compare {
 
   Result operator()(const Typedef&, const Typedef&) {
     // Compare will never attempt to directly compare Typedefs.
-    Die() << "internal error: Compare(Typedef)";
+    Die() << "internal error: CompareWorker(Typedef)";
   }
 
   Result operator()(const Qualified&, const Qualified&) {
     // Compare will never attempt to directly compare Qualifiers.
-    Die() << "internal error: Compare(Qualified)";
+    Die() << "internal error: CompareWorker(Qualified)";
   }
 
   Result operator()(const Primitive& x1, const Primitive& x2) {
@@ -775,7 +775,7 @@ struct Compare {
               },
               enum1.second, enum2.second);
         } else {
-          Die() << "Compare(Enumeration): impossible pair";
+          Die() << "CompareWorker(Enumeration): impossible pair";
         }
       }
     }
@@ -960,10 +960,10 @@ std::pair<Id, std::vector<std::string>> ResolveTypedefs(
   return result;
 }
 
-std::pair<bool, std::optional<Comparison>> CompareRoots(
+std::pair<bool, std::optional<Comparison>> Compare(
     Runtime& runtime, Ignore ignore, const Graph& graph, Id root1, Id root2,
     Outcomes& outcomes) {
-  return Compare(runtime, ignore, graph, outcomes)(root1, root2);
+  return CompareWorker(runtime, ignore, graph, outcomes)(root1, root2);
 }
 
 }  // namespace diff

@@ -106,7 +106,7 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
   std::pair<bool, std::optional<stg::diff::Comparison>> result;
   {
     const stg::Time compute(runtime, "compute diffs");
-    result = stg::diff::CompareRoots(
+    result = stg::diff::Compare(
         runtime, ignore, graph, roots[0], roots[1], outcomes);
   }
   const auto& [equals, comparison] = result;

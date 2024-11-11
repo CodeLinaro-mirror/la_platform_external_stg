@@ -121,8 +121,8 @@ std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id);
 
 std::pair<bool, std::optional<Comparison>>
-    CompareRoots(Runtime& runtime, Ignore ignore, const Graph& graph,
-                 Id root1, Id root2, Outcomes& outcomes);
+    Compare(Runtime& runtime, Ignore ignore, const Graph& graph,
+            Id root1, Id root2, Outcomes& outcomes);
 
 }  // namespace diff
 }  // namespace stg

@@ -252,7 +252,7 @@ TEST_CASE("ignore") {
     // Compute differences.
     stg::diff::Outcomes outcomes;
     const auto [equals, comparison] =
-        diff::CompareRoots(runtime, test.ignore, graph, id0, id1, outcomes);
+        diff::Compare(runtime, test.ignore, graph, id0, id1, outcomes);
 
     // Write SMALL reports.
     std::ostringstream output;
@@ -319,7 +319,7 @@ TEST_CASE("short report") {
     // Compute differences.
     stg::diff::Outcomes outcomes;
     const auto [equals, comparison] =
-        diff::CompareRoots(runtime, {}, graph, id0, id1, outcomes);
+        diff::Compare(runtime, {}, graph, id0, id1, outcomes);
 
     // Write SHORT reports.
     std::stringstream output;
