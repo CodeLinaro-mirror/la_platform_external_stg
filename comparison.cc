@@ -175,9 +175,17 @@ struct Result {
 struct ResolveTypedef {
   ResolveTypedef(const Graph& graph, Id& id, std::vector<std::string>& names)
       : graph(graph), id(id), names(names) {}
-  bool operator()(const Typedef&);
+
+  bool operator()(const Typedef& x) {
+    id = x.referred_type_id;
+    names.push_back(x.name);
+    return true;
+  }
+
   template <typename Node>
-  bool operator()(const Node&);
+  bool operator()(const Node&) {
+    return false;
+  }
 
   const Graph& graph;
   Id& id;
@@ -929,17 +937,6 @@ Result Compare::operator()(const Interface& x1, const Interface& x2) {
   Nodes(x1.symbols, x2.symbols, ignore_added, result);
   Nodes(x1.types, x2.types, ignore_added, result);
   return result;
-}
-
-bool ResolveTypedef::operator()(const Typedef& x) {
-  id = x.referred_type_id;
-  names.push_back(x.name);
-  return true;
-}
-
-template <typename Node>
-bool ResolveTypedef::operator()(const Node&) {
-  return false;
 }
 
 std::string MatchingKey::operator()(Id id) {
