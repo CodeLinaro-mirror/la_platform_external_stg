@@ -186,25 +186,48 @@ struct ResolveTypedef {
 
 using Qualifiers = std::set<Qualifier>;
 
-// Separate qualifiers from underlying type.
-//
-// The caller must always be prepared to receive a different type as qualifiers
-// are sometimes discarded.
-std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id);
-
 struct ResolveQualifier {
   ResolveQualifier(const Graph& graph, Id& id, Qualifiers& qualifiers)
       : graph(graph), id(id), qualifiers(qualifiers) {}
-  bool operator()(const Qualified&);
-  bool operator()(const Array&);
-  bool operator()(const Function&);
+
+  bool operator()(const Qualified& x) {
+    id = x.qualified_type_id;
+    qualifiers.insert(x.qualifier);
+    return true;
+  }
+
+  bool operator()(const Array&) {
+    // There should be no qualifiers here.
+    qualifiers.clear();
+    return false;
+  }
+
+  bool operator()(const Function&) {
+    // There should be no qualifiers here.
+    qualifiers.clear();
+    return false;
+  }
+
   template <typename Node>
-  bool operator()(const Node&);
+  bool operator()(const Node&) {
+    return false;
+  }
 
   const Graph& graph;
   Id& id;
   Qualifiers& qualifiers;
 };
+
+// Separate qualifiers from underlying type.
+//
+// The caller must always be prepared to receive a different type as qualifiers
+// are sometimes discarded.
+std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
+  std::pair<Id, Qualifiers> result = {id, {}};
+  ResolveQualifier resolve(graph, result.first, result.second);
+  while (graph.Apply(resolve, result.first)) {}
+  return result;
+}
 
 struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
@@ -906,37 +929,6 @@ Result Compare::operator()(const Interface& x1, const Interface& x2) {
   Nodes(x1.symbols, x2.symbols, ignore_added, result);
   Nodes(x1.types, x2.types, ignore_added, result);
   return result;
-}
-
-std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
-  std::pair<Id, Qualifiers> result = {id, {}};
-  ResolveQualifier resolve(graph, result.first, result.second);
-  while (graph.Apply(resolve, result.first)) {
-  }
-  return result;
-}
-
-bool ResolveQualifier::operator()(const Array&) {
-  // There should be no qualifiers here.
-  qualifiers.clear();
-  return false;
-}
-
-bool ResolveQualifier::operator()(const Function&) {
-  // There should be no qualifiers here.
-  qualifiers.clear();
-  return false;
-}
-
-bool ResolveQualifier::operator()(const Qualified& x) {
-  id = x.qualified_type_id;
-  qualifiers.insert(x.qualifier);
-  return true;
-}
-
-template <typename Node>
-bool ResolveQualifier::operator()(const Node&) {
-  return false;
 }
 
 bool ResolveTypedef::operator()(const Typedef& x) {
