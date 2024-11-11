@@ -239,14 +239,51 @@ std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
 
 struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
-  std::string operator()(Id id);
-  std::string operator()(const BaseClass&);
-  std::string operator()(const Method&);
-  std::string operator()(const Member&);
-  std::string operator()(const VariantMember&);
-  std::string operator()(const StructUnion&);
+
+  std::string operator()(Id id) {
+    return graph.Apply(*this, id);
+  }
+
+  std::string operator()(const BaseClass& x) {
+    return (*this)(x.type_id);
+  }
+
+  std::string operator()(const Method& x) {
+    return x.name + ',' + x.mangled_name;
+  }
+
+  std::string operator()(const Member& x) {
+    if (!x.name.empty()) {
+      return x.name;
+    }
+    return (*this)(x.type_id);
+  }
+
+  std::string operator()(const VariantMember& x) {
+    return x.name;
+  }
+
+  std::string operator()(const StructUnion& x) {
+    if (!x.name.empty()) {
+      return x.name;
+    }
+    if (x.definition) {
+      const auto& members = x.definition->members;
+      for (const auto& member : members) {
+        const auto recursive = (*this)(member);
+        if (!recursive.empty()) {
+          return recursive + '+';
+        }
+      }
+    }
+    return {};
+  }
+
   template <typename Node>
-  std::string operator()(const Node&);
+  std::string operator()(const Node&) {
+    return {};
+  }
+
   const Graph& graph;
 };
 
@@ -937,50 +974,6 @@ Result Compare::operator()(const Interface& x1, const Interface& x2) {
   Nodes(x1.symbols, x2.symbols, ignore_added, result);
   Nodes(x1.types, x2.types, ignore_added, result);
   return result;
-}
-
-std::string MatchingKey::operator()(Id id) {
-  return graph.Apply(*this, id);
-}
-
-std::string MatchingKey::operator()(const BaseClass& x) {
-  return (*this)(x.type_id);
-}
-
-std::string MatchingKey::operator()(const Method& x) {
-  return x.name + ',' + x.mangled_name;
-}
-
-std::string MatchingKey::operator()(const Member& x) {
-  if (!x.name.empty()) {
-    return x.name;
-  }
-  return (*this)(x.type_id);
-}
-
-std::string MatchingKey::operator()(const VariantMember& x) {
-  return x.name;
-}
-
-std::string MatchingKey::operator()(const StructUnion& x) {
-  if (!x.name.empty()) {
-    return x.name;
-  }
-  if (x.definition) {
-    const auto& members = x.definition->members;
-    for (const auto& member : members) {
-      const auto recursive = (*this)(member);
-      if (!recursive.empty()) {
-        return recursive + '+';
-      }
-    }
-  }
-  return {};
-}
-
-template <typename Node>
-std::string MatchingKey::operator()(const Node&) {
-  return {};
 }
 
 }  // namespace
