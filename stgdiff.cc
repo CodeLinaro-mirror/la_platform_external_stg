@@ -103,20 +103,20 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
         stg::diff::Ignore ignore, std::optional<const char*> fidelity) {
   // Compute differences.
   stg::diff::Outcomes outcomes;
-  std::pair<bool, stg::diff::Comparison> result;
+  stg::diff::Comparison comparison;
   {
     const stg::Time compute(runtime, "compute diffs");
-    result = stg::diff::Compare(
+    comparison = stg::diff::Compare(
         runtime, ignore, graph, roots[0], roots[1], outcomes);
   }
-  const auto [equals, comparison] = result;
+  const bool equals = comparison == stg::diff::Comparison{};
   int status = equals ? 0 : kAbiChange;
 
   // Write reports.
   stg::NameCache names;
   for (const auto& [format, filename] : outputs) {
     std::ofstream output(filename);
-    if (comparison != stg::diff::Comparison{}) {
+    if (!equals) {
       const stg::Time report(runtime, "report diffs");
       const stg::reporting::Options options{format};
       const stg::reporting::Reporting reporting{graph, outcomes, options,

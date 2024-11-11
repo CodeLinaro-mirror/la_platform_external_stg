@@ -960,10 +960,20 @@ std::pair<Id, std::vector<std::string>> ResolveTypedefs(
   return result;
 }
 
-std::pair<bool, Comparison> Compare(
-    Runtime& runtime, Ignore ignore, const Graph& graph, Id root1, Id root2,
-    Outcomes& outcomes) {
-  return CompareWorker(runtime, ignore, graph, outcomes)(root1, root2);
+Comparison Compare(Runtime& runtime, Ignore ignore, const Graph& graph,
+                   Id root1, Id root2, Outcomes& outcomes) {
+  // The root node (Comparison{{id1}, {id2}}) must be the last node to be
+  // completely visited by the SCC finder and the SCC finder state must be empty
+  // on return from this function call. In particular, the returns where the SCC
+  // is "open" are impossible. The remaining cases (of which one is impossible
+  // for the root node) both have the same two possible return values:
+  //
+  // * (true, Comparison{})
+  // * (false, Comparison{{id1}, {id2}}
+  //
+  // So the invariant value.first == (value.second == Comparison{}) holds and we
+  // can unambiguously return value.second.
+  return CompareWorker(runtime, ignore, graph, outcomes)(root1, root2).second;
 }
 
 }  // namespace diff

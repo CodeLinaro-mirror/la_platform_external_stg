@@ -119,9 +119,8 @@ using Outcomes = std::unordered_map<Comparison, Diff, HashComparison>;
 std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id);
 
-std::pair<bool, Comparison>
-    Compare(Runtime& runtime, Ignore ignore, const Graph& graph,
-            Id root1, Id root2, Outcomes& outcomes);
+Comparison Compare(Runtime& runtime, Ignore ignore, const Graph& graph,
+                   Id root1, Id root2, Outcomes& outcomes);
 
 }  // namespace diff
 }  // namespace stg

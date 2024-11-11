@@ -251,12 +251,13 @@ TEST_CASE("ignore") {
 
     // Compute differences.
     stg::diff::Outcomes outcomes;
-    const auto [equals, comparison] =
+    const auto comparison =
         diff::Compare(runtime, test.ignore, graph, id0, id1, outcomes);
+    const bool equals = comparison == diff::Comparison{};
 
     // Write SMALL reports.
     std::ostringstream output;
-    if (comparison != diff::Comparison{}) {
+    if (!equals) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SMALL};
       const reporting::Reporting reporting{graph, outcomes, options, names};
@@ -318,12 +319,13 @@ TEST_CASE("short report") {
 
     // Compute differences.
     stg::diff::Outcomes outcomes;
-    const auto [equals, comparison] =
+    const auto comparison =
         diff::Compare(runtime, {}, graph, id0, id1, outcomes);
+    const bool equals = comparison == diff::Comparison{};
 
     // Write SHORT reports.
     std::stringstream output;
-    if (comparison != diff::Comparison{}) {
+    if (!equals) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SHORT};
       const reporting::Reporting reporting{graph, outcomes, options, names};
