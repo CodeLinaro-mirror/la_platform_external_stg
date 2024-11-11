@@ -109,14 +109,14 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
     comparison = stg::diff::Compare(
         runtime, ignore, graph, roots[0], roots[1], outcomes);
   }
-  const bool equals = comparison == stg::diff::Comparison{};
-  int status = equals ? 0 : kAbiChange;
+  const bool same = comparison == stg::diff::Comparison{};
+  int status = same ? 0 : kAbiChange;
 
   // Write reports.
   stg::NameCache names;
   for (const auto& [format, filename] : outputs) {
     std::ofstream output(filename);
-    if (!equals) {
+    if (!same) {
       const stg::Time report(runtime, "report diffs");
       const stg::reporting::Options options{format};
       const stg::reporting::Reporting reporting{graph, outcomes, options,

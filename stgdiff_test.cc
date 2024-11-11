@@ -43,7 +43,7 @@ struct IgnoreTestCase {
   const std::string file1;
   const diff::Ignore ignore;
   const std::string expected_output;
-  const bool expected_equals;
+  const bool expected_same;
 };
 
 std::string filename_to_path(const std::string& f) {
@@ -253,11 +253,11 @@ TEST_CASE("ignore") {
     stg::diff::Outcomes outcomes;
     const auto comparison =
         diff::Compare(runtime, test.ignore, graph, id0, id1, outcomes);
-    const bool equals = comparison == diff::Comparison{};
+    const bool same = comparison == diff::Comparison{};
 
     // Write SMALL reports.
     std::ostringstream output;
-    if (!equals) {
+    if (!same) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SMALL};
       const reporting::Reporting reporting{graph, outcomes, options, names};
@@ -265,7 +265,7 @@ TEST_CASE("ignore") {
     }
 
     // Check comparison outcome and report output.
-    CHECK(equals == test.expected_equals);
+    CHECK(same == test.expected_same);
     const std::ifstream expected_output_file(
         filename_to_path(test.expected_output));
     std::ostringstream expected_output;
@@ -321,11 +321,11 @@ TEST_CASE("short report") {
     stg::diff::Outcomes outcomes;
     const auto comparison =
         diff::Compare(runtime, {}, graph, id0, id1, outcomes);
-    const bool equals = comparison == diff::Comparison{};
+    const bool same = comparison == diff::Comparison{};
 
     // Write SHORT reports.
     std::stringstream output;
-    if (!equals) {
+    if (!same) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SHORT};
       const reporting::Reporting reporting{graph, outcomes, options, names};
@@ -333,7 +333,7 @@ TEST_CASE("short report") {
     }
 
     // Check comparison outcome and report output.
-    CHECK(equals == false);
+    CHECK(!same);
     const std::ifstream expected_output_file(
         filename_to_path(test.expected_output));
     std::ostringstream expected_output;

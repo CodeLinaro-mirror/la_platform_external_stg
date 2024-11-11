@@ -88,14 +88,14 @@ namespace {
 struct Result {
   // Used when two nodes cannot be meaningfully compared.
   Result& MarkIncomparable() {
-    equals = false;
+    same = false;
     diff.has_changes = true;
     return *this;
   }
 
   // Used when a node attribute has changed.
   void AddNodeDiff(const std::string& text) {
-    equals = false;
+    same = false;
     diff.has_changes = true;
     diff.Add(text, {});
   }
@@ -142,14 +142,14 @@ struct Result {
 
   // Used when an edge has been removed or added.
   void AddEdgeDiff(const std::string& text, const Comparison& comparison) {
-    equals = false;
+    same = false;
     diff.Add(text, comparison);
   }
 
   // Used when an edge to a possible comparison is present.
   void MaybeAddEdgeDiff(const std::string& text,
                         const std::pair<bool, Comparison>& p) {
-    equals &= p.first;
+    same &= p.first;
     const auto& comparison = p.second;
     if (comparison != Comparison{}) {
       diff.Add(text, comparison);
@@ -159,7 +159,7 @@ struct Result {
   // Used when an edge to a possible comparison is present, lazy version.
   void MaybeAddEdgeDiff(const std::function<void(std::ostream&)>& text,
                         const std::pair<bool, Comparison>& p) {
-    equals &= p.first;
+    same &= p.first;
     const auto& comparison = p.second;
     if (comparison != Comparison{}) {
       std::ostringstream os;
@@ -168,7 +168,7 @@ struct Result {
     }
   }
 
-  bool equals = true;
+  bool same = true;
   Diff diff;
 };
 
@@ -369,21 +369,21 @@ struct CompareWorker {
    *
    * Each node has one of:
    *
-   * 1. equals = true; perhaps only tentative edge differences
-   * 2. equals = false; at least one definitive node or edge difference
+   * 1. same == true; perhaps only tentative edge differences
+   * 2. same == false; at least one definitive node or edge difference
    *
-   * On the first visit to a node we can put a placeholder in, the equals value
+   * On the first visit to a node we can put a placeholder in, the value of same
    * is irrelevant, the diff may contain local and edge differences. If an SCC
-   * contains only internal edge differences (and equivalently equals is true)
+   * contains only internal edge differences (and equivalently same is true)
    * then the differences can all (eventually) be discarded.
    *
-   * On exit from the first visit to a node, equals reflects the tree of
+   * On exit from the first visit to a node, same reflects the tree of
    * comparisons below that node in the DFS and similarly, the diff graph
    * starting from the node contains a subtree of this tree plus potentially
    * edges to existing nodes to the side or below (already visited SCCs,
    * sharing), or above (back links forming cycles).
    *
-   * When an SCC is closed, all equals implies deleting all diffs, any false
+   * When an SCC is closed, all same implies deleting all diffs, any not same
    * implies updating all to false.
    *
    * On subsequent visits to a node, there are 2 cases. The node is still open:
@@ -463,15 +463,15 @@ struct CompareWorker {
     }
 
     // 5. Update result and check for a complete Strongly-Connected Component.
-    const bool equals = result.equals;
+    const bool same = result.same;
     provisional.insert({comparison, result.diff});
     const auto comparisons = scc.Close(*handle);
     if (comparisons.empty()) {
       // Open SCC.
       //
-      // Note that both equals and diff are tentative as comparison is still
+      // Note that both same and diff are tentative as comparison is still
       // open.
-      return {equals, comparison};
+      return {same, comparison};
     }
 
     // Closed SCC.
@@ -482,18 +482,18 @@ struct CompareWorker {
     scc_size.Add(size);
     for (const auto& c : comparisons) {
       // Record equality / inequality.
-      known.insert({c, equals});
+      known.insert({c, same});
       const auto it = provisional.find(c);
       Check(it != provisional.end())
           << "internal error: missing provisional diffs";
-      if (!equals) {
+      if (!same) {
         // Record differences.
         outcomes.insert(*it);
       }
       provisional.erase(it);
     }
-    (equals ? equivalent : inequivalent) += size;
-    return equals
+    (same ? equivalent : inequivalent) += size;
+    return same
         ? std::make_pair(true, Comparison{})
         : std::make_pair(false, comparison);
   }
