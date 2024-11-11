@@ -287,6 +287,65 @@ struct MatchingKey {
   const Graph& graph;
 };
 
+using KeyIndexPairs = std::vector<std::pair<std::string, size_t>>;
+
+KeyIndexPairs MatchingKeys(const Graph& graph, const std::vector<Id>& ids) {
+  KeyIndexPairs keys;
+  const auto size = ids.size();
+  keys.reserve(size);
+  size_t anonymous_ix = 0;
+  for (size_t ix = 0; ix < size; ++ix) {
+    auto key = MatchingKey(graph)(ids[ix]);
+    if (key.empty()) {
+      key = "#anon#" + std::to_string(anonymous_ix++);
+    }
+    keys.emplace_back(key, ix);
+  }
+  std::stable_sort(keys.begin(), keys.end());
+  return keys;
+}
+
+KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
+  KeyIndexPairs names;
+  const auto size = enums.size();
+  names.reserve(size);
+  for (size_t ix = 0; ix < size; ++ix) {
+    const auto& name = enums[ix].first;
+    names.emplace_back(name, ix);
+  }
+  std::stable_sort(names.begin(), names.end());
+  return names;
+}
+
+using MatchedPairs =
+    std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
+
+MatchedPairs PairUp(const KeyIndexPairs& keys1, const KeyIndexPairs& keys2) {
+  MatchedPairs pairs;
+  pairs.reserve(std::max(keys1.size(), keys2.size()));
+  auto it1 = keys1.begin();
+  auto it2 = keys2.begin();
+  const auto end1 = keys1.end();
+  const auto end2 = keys2.end();
+  while (it1 != end1 || it2 != end2) {
+    if (it2 == end2 || (it1 != end1 && it1->first < it2->first)) {
+      // removed
+      pairs.push_back({{it1->second}, {}});
+      ++it1;
+    } else if (it1 == end1 || (it2 != end2 && it1->first > it2->first)) {
+      // added
+      pairs.push_back({{}, {it2->second}});
+      ++it2;
+    } else {
+      // in both
+      pairs.push_back({{it1->second}, {it2->second}});
+      ++it1;
+      ++it2;
+    }
+  }
+  return pairs;
+}
+
 std::string QualifiersMessage(Qualifier qualifier, const std::string& action) {
   std::ostringstream os;
   os << "qualifier " << qualifier << ' ' << action;
@@ -572,51 +631,6 @@ void Compare::Defined(bool defined1, bool defined2, Result& result) {
   }
 }
 
-using KeyIndexPairs = std::vector<std::pair<std::string, size_t>>;
-KeyIndexPairs MatchingKeys(const Graph& graph, const std::vector<Id>& ids) {
-  KeyIndexPairs keys;
-  const auto size = ids.size();
-  keys.reserve(size);
-  size_t anonymous_ix = 0;
-  for (size_t ix = 0; ix < size; ++ix) {
-    auto key = MatchingKey(graph)(ids[ix]);
-    if (key.empty()) {
-      key = "#anon#" + std::to_string(anonymous_ix++);
-    }
-    keys.emplace_back(key, ix);
-  }
-  std::stable_sort(keys.begin(), keys.end());
-  return keys;
-}
-
-using MatchedPairs =
-    std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
-MatchedPairs PairUp(const KeyIndexPairs& keys1, const KeyIndexPairs& keys2) {
-  MatchedPairs pairs;
-  pairs.reserve(std::max(keys1.size(), keys2.size()));
-  auto it1 = keys1.begin();
-  auto it2 = keys2.begin();
-  const auto end1 = keys1.end();
-  const auto end2 = keys2.end();
-  while (it1 != end1 || it2 != end2) {
-    if (it2 == end2 || (it1 != end1 && it1->first < it2->first)) {
-      // removed
-      pairs.push_back({{it1->second}, {}});
-      ++it1;
-    } else if (it1 == end1 || (it2 != end2 && it1->first > it2->first)) {
-      // added
-      pairs.push_back({{}, {it2->second}});
-      ++it2;
-    } else {
-      // in both
-      pairs.push_back({{it1->second}, {it2->second}});
-      ++it1;
-      ++it2;
-    }
-  }
-  return pairs;
-}
-
 void Compare::Nodes(const std::vector<Id>& ids1, const std::vector<Id>& ids2,
                     Result& result) {
   const auto keys1 = MatchingKeys(graph, ids1);
@@ -750,18 +764,6 @@ Result Compare::operator()(const StructUnion& x1, const StructUnion& x2) {
   }
 
   return result;
-}
-
-KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
-  KeyIndexPairs names;
-  const auto size = enums.size();
-  names.reserve(size);
-  for (size_t ix = 0; ix < size; ++ix) {
-    const auto& name = enums[ix].first;
-    names.emplace_back(name, ix);
-  }
-  std::stable_sort(names.begin(), names.end());
-  return names;
 }
 
 Result Compare::operator()(const Enumeration& x1, const Enumeration& x2) {
