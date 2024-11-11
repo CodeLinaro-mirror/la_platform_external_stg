@@ -438,20 +438,18 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
   ++queried;
 
   // 1. Check if the comparison has an already known result.
-  auto already_known = known.find(comparison);
+  const auto already_known = known.find(comparison);
   if (already_known != known.end()) {
     // Already visited and closed.
     ++already_compared;
-    if (already_known->second) {
-      return {true, {}};
-    } else  {
-      return {false, {comparison}};
-    }
+    return already_known->second
+        ? std::make_pair(true, std::nullopt)
+        : std::make_pair(false, std::make_optional(comparison));
   }
   // Either open or not visited at all
 
   // 2. Record node with Strongly-Connected Component finder.
-  auto handle = scc.Open(comparison);
+  const auto handle = scc.Open(comparison);
   if (!handle) {
     // Already open.
     //
@@ -507,38 +505,38 @@ std::pair<bool, std::optional<Comparison>> Compare::operator()(Id id1, Id id2) {
   }
 
   // 5. Update result and check for a complete Strongly-Connected Component.
+  const bool equals = result.equals;
   provisional.insert({comparison, result.diff});
-  auto comparisons = scc.Close(*handle);
-  auto size = comparisons.size();
-  if (size) {
-    scc_size.Add(size);
-    // Closed SCC.
+  const auto comparisons = scc.Close(*handle);
+  if (comparisons.empty()) {
+    // Open SCC.
     //
-    // Note that result now incorporates every inequality and difference in the
-    // SCC via the DFS spanning tree.
-    for (auto& c : comparisons) {
-      // Record equality / inequality.
-      known.insert({c, result.equals});
-      const auto it = provisional.find(c);
-      Check(it != provisional.end())
-          << "internal error: missing provisional diffs";
-      if (!result.equals) {
-        // Record differences.
-        outcomes.insert(*it);
-      }
-      provisional.erase(it);
-    }
-    if (result.equals) {
-      equivalent += size;
-      return {true, {}};
-    } else {
-      inequivalent += size;
-      return {false, {comparison}};
-    }
+    // Note that both equals and diff are tentative as comparison is still open.
+    return {equals, {comparison}};
   }
 
-  // Note that both equals and diff are tentative as comparison is still open.
-  return {result.equals, {comparison}};
+  // Closed SCC.
+  //
+  // Note that result now incorporates every inequality and difference in the
+  // SCC via the DFS spanning tree.
+  const auto size = comparisons.size();
+  scc_size.Add(size);
+  for (const auto& c : comparisons) {
+    // Record equality / inequality.
+    known.insert({c, equals});
+    const auto it = provisional.find(c);
+    Check(it != provisional.end())
+        << "internal error: missing provisional diffs";
+    if (!equals) {
+      // Record differences.
+      outcomes.insert(*it);
+    }
+    provisional.erase(it);
+  }
+  (equals ? equivalent : inequivalent) += size;
+  return equals
+      ? std::make_pair(true, std::nullopt)
+      : std::make_pair(false, std::make_optional(comparison));
 }
 
 Comparison Compare::Removed(Id id) {
