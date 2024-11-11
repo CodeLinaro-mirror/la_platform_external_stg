@@ -256,11 +256,11 @@ TEST_CASE("ignore") {
 
     // Write SMALL reports.
     std::ostringstream output;
-    if (comparison) {
+    if (comparison != diff::Comparison{}) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SMALL};
       const reporting::Reporting reporting{graph, outcomes, options, names};
-      Report(reporting, *comparison, output);
+      Report(reporting, comparison, output);
     }
 
     // Check comparison outcome and report output.
@@ -323,11 +323,11 @@ TEST_CASE("short report") {
 
     // Write SHORT reports.
     std::stringstream output;
-    if (comparison) {
+    if (comparison != diff::Comparison{}) {
       NameCache names;
       const reporting::Options options{reporting::OutputFormat::SHORT};
       const reporting::Reporting reporting{graph, outcomes, options, names};
-      Report(reporting, *comparison, output);
+      Report(reporting, comparison, output);
     }
 
     // Check comparison outcome and report output.

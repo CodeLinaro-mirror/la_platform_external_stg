@@ -143,25 +143,25 @@ struct Result {
   // Used when an edge has been removed or added.
   void AddEdgeDiff(const std::string& text, const Comparison& comparison) {
     equals = false;
-    diff.Add(text, {comparison});
+    diff.Add(text, comparison);
   }
 
   // Used when an edge to a possible comparison is present.
   void MaybeAddEdgeDiff(const std::string& text,
-                        const std::pair<bool, std::optional<Comparison>>& p) {
+                        const std::pair<bool, Comparison>& p) {
     equals &= p.first;
     const auto& comparison = p.second;
-    if (comparison) {
+    if (comparison != Comparison{}) {
       diff.Add(text, comparison);
     }
   }
 
   // Used when an edge to a possible comparison is present, lazy version.
   void MaybeAddEdgeDiff(const std::function<void(std::ostream&)>& text,
-                        const std::pair<bool, std::optional<Comparison>>& p) {
+                        const std::pair<bool, Comparison>& p) {
     equals &= p.first;
     const auto& comparison = p.second;
-    if (comparison) {
+    if (comparison != Comparison{}) {
       std::ostringstream os;
       text(os);
       diff.Add(os.str(), comparison);
@@ -390,7 +390,7 @@ struct CompareWorker {
    * return true and an edge diff. The node is closed, return the stored value
    * and an edge diff.
    */
-  std::pair<bool, std::optional<Comparison>> operator()(Id id1, Id id2) {
+  std::pair<bool, Comparison> operator()(Id id1, Id id2) {
     const Comparison comparison{{id1}, {id2}};
     ++queried;
 
@@ -400,8 +400,8 @@ struct CompareWorker {
       // Already visited and closed.
       ++already_compared;
       return already_known->second
-          ? std::make_pair(true, std::nullopt)
-          : std::make_pair(false, std::make_optional(comparison));
+          ? std::make_pair(true, Comparison{})
+          : std::make_pair(false, comparison);
     }
     // Either open or not visited at all
 
@@ -415,7 +415,7 @@ struct CompareWorker {
       // all the cycling-breaking edges needed to recreate a full diff
       // structure.
       ++being_compared;
-      return {true, {comparison}};
+      return {true, comparison};
     }
     // Comparison opened, need to close it before returning.
     ++really_compared;
@@ -471,7 +471,7 @@ struct CompareWorker {
       //
       // Note that both equals and diff are tentative as comparison is still
       // open.
-      return {equals, {comparison}};
+      return {equals, comparison};
     }
 
     // Closed SCC.
@@ -494,8 +494,8 @@ struct CompareWorker {
     }
     (equals ? equivalent : inequivalent) += size;
     return equals
-        ? std::make_pair(true, std::nullopt)
-        : std::make_pair(false, std::make_optional(comparison));
+        ? std::make_pair(true, Comparison{})
+        : std::make_pair(false, comparison);
   }
 
   Comparison Removed(Id id) {
@@ -960,7 +960,7 @@ std::pair<Id, std::vector<std::string>> ResolveTypedefs(
   return result;
 }
 
-std::pair<bool, std::optional<Comparison>> Compare(
+std::pair<bool, Comparison> Compare(
     Runtime& runtime, Ignore ignore, const Graph& graph, Id root1, Id root2,
     Outcomes& outcomes) {
   return CompareWorker(runtime, ignore, graph, outcomes)(root1, root2);

@@ -78,10 +78,10 @@ categories:
 *   added or removed labelled edges, where edges are identified by label -
     modelled as a recursive difference with a node absent on one side
 
-Each node in an STG difference graph is one of the following:
+Each node in an STG difference graph is one of the following[^1]:
 
 *   a node removal or addition, containing
-    *   a reference to either a node in first graph or one in the second[^1]
+    *   a reference to either a node in first graph or one in the second
 *   a node change, containing
     *   a reference to two nodes, one in each of the two graphs
     *   a possibly-empty list of differences which can each be one of
@@ -89,9 +89,9 @@ Each node in an STG difference graph is one of the following:
         *   an edge difference in the form of a link to a difference node
 
 [^1]: STG models comparisons as pairs of nodes where either node can be absent.
-    While absent-absent comparisons can result from the composition of an
-    addition and a removal, they do not occur naturally during pairwise
-    comparison.
+    The absent-absent comparison is used to represent "no change". All such
+    edges, except those representing the root of a "no change" graph comparison,
+    are pruned during diff graph creation.
 
 Note that STG's difference nodes are *unkinded*, there is only one kind of
 difference node, unlike STG's data nodes where there is a separate kind of node

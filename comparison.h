@@ -82,10 +82,10 @@ std::ostream& operator<<(std::ostream& os, IgnoreUsage);
 using Comparison = std::pair<std::optional<Id>, std::optional<Id>>;
 
 struct DiffDetail {
-  DiffDetail(const std::string& text, const std::optional<Comparison>& edge)
+  DiffDetail(const std::string& text, const Comparison& edge)
       : text(text), edge(edge) {}
   std::string text;
-  std::optional<Comparison> edge;
+  Comparison edge;
 };
 
 struct Diff {
@@ -96,8 +96,7 @@ struct Diff {
   bool has_changes = false;
   std::vector<DiffDetail> details;
 
-  void Add(const std::string& text,
-           const std::optional<Comparison>& comparison) {
+  void Add(const std::string& text, const Comparison& comparison) {
     details.emplace_back(text, comparison);
   }
 };
@@ -120,7 +119,7 @@ using Outcomes = std::unordered_map<Comparison, Diff, HashComparison>;
 std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id);
 
-std::pair<bool, std::optional<Comparison>>
+std::pair<bool, Comparison>
     Compare(Runtime& runtime, Ignore ignore, const Graph& graph,
             Id root1, Id root2, Outcomes& outcomes);
 
