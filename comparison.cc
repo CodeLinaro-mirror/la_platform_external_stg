@@ -384,8 +384,7 @@ struct CompareWorker {
    * sharing), or above (back links forming cycles).
    *
    * When an SCC is closed, same is true results in the deletion of all the
-   * nodes' provisional diffs. The value of same is recorded for all nodes in
-   * the SCC.
+   * nodes' diffs. The value of same is recorded for all nodes in the SCC.
    *
    * On other visits to a node, there are 2 cases. The node is still open
    * (meaning a recursive visit): return true and an edge diff. The node is
@@ -425,7 +424,7 @@ struct CompareWorker {
     const auto [same, diff] = CompareWithResolution(id1, id2);
 
     // Record the result and check for a complete Strongly-Connected Component.
-    provisional.insert({comparison, diff});
+    outcomes.insert({comparison, diff});
     const auto comparisons = scc.Close(*handle);
     if (comparisons.empty()) {
       // Open SCC.
@@ -440,19 +439,15 @@ struct CompareWorker {
     // the SCC via the DFS spanning tree.
     const auto size = comparisons.size();
     scc_size.Add(size);
+    (same ? equivalent : inequivalent) += size;
     for (const auto& c : comparisons) {
       // Record equality / inequality.
       known.insert({c, same});
-      const auto it = provisional.find(c);
-      Check(it != provisional.end())
-          << "internal error: missing provisional diffs";
-      if (!same) {
-        // Record differences.
-        outcomes.insert(*it);
+      if (same) {
+        // Discard provisional diff.
+        outcomes.erase(c);
       }
-      provisional.erase(it);
     }
-    (same ? equivalent : inequivalent) += size;
     return same
         ? std::make_pair(true, Comparison{})
         : std::make_pair(false, comparison);
@@ -944,7 +939,6 @@ struct CompareWorker {
   const Ignore ignore;
   const Graph& graph;
   Outcomes& outcomes;
-  Outcomes provisional;
   std::unordered_map<Comparison, bool, HashComparison> known;
   SCC<Comparison, HashComparison> scc;
   Counter queried;
