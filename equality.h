@@ -59,7 +59,7 @@ struct Equals {
     }
     // Comparison opened, need to close it before returning.
 
-    const auto result = graph.Apply2<bool>(*this, id1, id2);
+    const auto result = graph.Apply2(*this, id1, id2);
 
     // Check for a complete Strongly-Connected Component.
     auto comparisons = scc.Close(*handle);

@@ -68,7 +68,7 @@ struct NamedTypes {
   void operator()(Id id) {
     if (seen.Insert(id)) {
       ++nodes;
-      graph.Apply<void>(*this, id, id);
+      graph.Apply(*this, id, id);
     }
   }
 
