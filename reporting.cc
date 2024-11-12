@@ -189,10 +189,10 @@ void Plain::Print(const diff::Comparison& comparison, size_t indent,
   }
 
   for (const auto& detail : diff.details) {
-    if (!detail.edge_) {
-      output_ << std::string(indent, ' ') << detail.text_ << '\n';
+    if (detail.edge == diff::Comparison{}) {
+      output_ << std::string(indent, ' ') << detail.text << '\n';
     } else {
-      Print(*detail.edge_, indent, detail.text_);
+      Print(detail.edge, indent, detail.text);
     }
   }
 
@@ -205,7 +205,7 @@ void Plain::Report(const diff::Comparison& comparison) {
   // unpack then print - want symbol diff forest rather than symbols diff tree
   const auto& diff = reporting_.outcomes.at(comparison);
   for (const auto& detail : diff.details) {
-    Print(*detail.edge_, 0, {});
+    Print(detail.edge, 0, {});
     // paragraph spacing
     output_ << '\n';
   }
@@ -266,8 +266,8 @@ bool Flat::Print(const diff::Comparison& comparison, bool stop,
   indent += INDENT_INCREMENT;
   bool interesting = diff.has_changes;
   for (const auto& detail : diff.details) {
-    if (!detail.edge_) {
-      os << std::string(indent, ' ') << detail.text_ << '\n';
+    if (detail.edge == diff::Comparison{}) {
+      os << std::string(indent, ' ') << detail.text << '\n';
       // Node changes may not be interesting, if we allow non-change diff
       // details at some point. Just trust the has_changes flag.
     } else {
@@ -275,7 +275,7 @@ bool Flat::Print(const diff::Comparison& comparison, bool stop,
       std::ostringstream sub_os;
       // Set the stop flag to prevent recursion past diff-holding nodes.
       const bool sub_interesting =
-          Print(*detail.edge_, true, sub_os, indent, detail.text_);
+          Print(detail.edge, true, sub_os, indent, detail.text);
       // If the sub-tree was interesting, add it.
       if (sub_interesting || full_) {
         os << sub_os.str();
@@ -292,7 +292,7 @@ void Flat::Report(const diff::Comparison& comparison) {
   const auto& diff = reporting_.outcomes.at(comparison);
   for (const auto& detail : diff.details) {
     std::ostringstream os;
-    const bool interesting = Print(*detail.edge_, true, os, 0, {});
+    const bool interesting = Print(detail.edge, true, os, 0, {});
     if (interesting || full_) {
       output_ << os.str() << '\n';
     }
@@ -365,17 +365,17 @@ void VizPrint(
 
   size_t index = 0;
   for (const auto& detail : diff.details) {
-    if (!detail.edge_) {
+    if (detail.edge == diff::Comparison{}) {
       // attribute change, create an implicit edge and node
       os << "  \"" << node << "\" -> \"" << node << ':' << index << "\"\n"
          << "  \"" << node << ':' << index << "\" [color=red, label=\""
-         << detail.text_ << "\"]\n";
+         << detail.text << "\"]\n";
       ++index;
     } else {
-      const auto& to = *detail.edge_;
+      const auto& to = detail.edge;
       VizPrint(reporting, to, seen, ids, os);
       os << "  \"" << node << "\" -> \"" << VizId(ids, to) << "\" [label=\""
-         << detail.text_ << "\"]\n";
+         << detail.text << "\"]\n";
     }
   }
 }
