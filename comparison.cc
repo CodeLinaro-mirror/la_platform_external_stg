@@ -176,14 +176,14 @@ struct ResolveTypedef {
   ResolveTypedef(const Graph& graph, Id& id, std::vector<std::string>& names)
       : graph(graph), id(id), names(names) {}
 
-  bool operator()(const Typedef& x) {
+  bool operator()(const Typedef& x) const {
     id = x.referred_type_id;
     names.push_back(x.name);
     return true;
   }
 
   template <typename Node>
-  bool operator()(const Node&) {
+  bool operator()(const Node&) const {
     return false;
   }
 
@@ -198,26 +198,26 @@ struct ResolveQualifier {
   ResolveQualifier(const Graph& graph, Id& id, Qualifiers& qualifiers)
       : graph(graph), id(id), qualifiers(qualifiers) {}
 
-  bool operator()(const Qualified& x) {
+  bool operator()(const Qualified& x) const {
     id = x.qualified_type_id;
     qualifiers.insert(x.qualifier);
     return true;
   }
 
-  bool operator()(const Array&) {
+  bool operator()(const Array&) const {
     // There should be no qualifiers here.
     qualifiers.clear();
     return false;
   }
 
-  bool operator()(const Function&) {
+  bool operator()(const Function&) const {
     // There should be no qualifiers here.
     qualifiers.clear();
     return false;
   }
 
   template <typename Node>
-  bool operator()(const Node&) {
+  bool operator()(const Node&) const {
     return false;
   }
 
@@ -240,30 +240,30 @@ std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
 struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
 
-  std::string operator()(Id id) {
+  std::string operator()(Id id) const {
     return graph.Apply(*this, id);
   }
 
-  std::string operator()(const BaseClass& x) {
+  std::string operator()(const BaseClass& x) const {
     return (*this)(x.type_id);
   }
 
-  std::string operator()(const Method& x) {
+  std::string operator()(const Method& x) const {
     return x.name + ',' + x.mangled_name;
   }
 
-  std::string operator()(const Member& x) {
+  std::string operator()(const Member& x) const {
     if (!x.name.empty()) {
       return x.name;
     }
     return (*this)(x.type_id);
   }
 
-  std::string operator()(const VariantMember& x) {
+  std::string operator()(const VariantMember& x) const {
     return x.name;
   }
 
-  std::string operator()(const StructUnion& x) {
+  std::string operator()(const StructUnion& x) const {
     if (!x.name.empty()) {
       return x.name;
     }
@@ -280,7 +280,7 @@ struct MatchingKey {
   }
 
   template <typename Node>
-  std::string operator()(const Node&) {
+  std::string operator()(const Node&) const {
     return {};
   }
 
