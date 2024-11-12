@@ -70,7 +70,7 @@ struct Fidelity {
 
 void Fidelity::operator()(Id id) {
   if (seen.Insert(id)) {
-    graph.Apply<void>(*this, id, id);
+    graph.Apply(*this, id, id);
   }
 }
 
