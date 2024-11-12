@@ -122,7 +122,7 @@ uint32_t Transform<MapId>::operator()(Id id) {
       ++mapped_id;
     }
     it->second = mapped_id;
-    graph.Apply<void>(*this, id, mapped_id);
+    graph.Apply(*this, id, mapped_id);
   }
   return it->second;
 }
