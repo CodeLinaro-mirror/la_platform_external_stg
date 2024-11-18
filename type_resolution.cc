@@ -37,13 +37,11 @@ namespace {
 struct NamedTypes {
   NamedTypes(Runtime& runtime, const Graph& graph)
       : graph(graph),
-        seen(Id(0)),
+        seen(Id(0), graph.Limit()),
         nodes(runtime, "named_types.nodes"),
         types(runtime, "named_types.types"),
         definitions(runtime, "named_types.definitions"),
-        declarations(runtime, "named_types.declarations") {
-    seen.Reserve(graph.Limit());
-  }
+        declarations(runtime, "named_types.declarations") {}
 
   enum class Tag { STRUCT, UNION, ENUM, TYPEDEF, VARIANT };
   using Type = std::pair<Tag, std::string>;
