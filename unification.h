@@ -32,7 +32,7 @@ namespace stg {
 // destruction.
 class Unification {
  public:
-  Unification(Runtime& runtime, Graph& graph, Id start)
+  Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
       : graph_(graph),
         start_(start),
         mapping_(start),
@@ -40,7 +40,9 @@ class Unification {
         find_query_(runtime, "unification.find_query"),
         find_halved_(runtime, "unification.find_halved"),
         union_known_(runtime, "unification.union_known"),
-        union_unknown_(runtime, "unification.union_unknown") {}
+        union_unknown_(runtime, "unification.union_unknown") {
+    mapping_.Reserve(limit);
+  }
 
   ~Unification() {
     if (std::uncaught_exceptions() > 0) {
@@ -64,10 +66,6 @@ class Unification {
         ++retained;
       }
     });
-  }
-
-  void Reserve(Id limit) {
-    mapping_.Reserve(limit);
   }
 
   bool Unify(Id id1, Id id2);

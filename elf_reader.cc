@@ -235,7 +235,7 @@ class Reader {
     // the nodes in consideration to the ones allocated by the DWARF processor
     // here and any symbol or type roots that follow. This is done by setting
     // the starting node ID to be the current graph limit.
-    Unification unification(runtime_, graph_, graph_.Limit());
+    const Id start = graph_.Limit();
 
     const dwarf::Types types =
         dwarf::Process(elf_dwarf_handle_.GetDwarf(),
@@ -243,7 +243,7 @@ class Reader {
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.
-    unification.Reserve(graph_.Limit());
+    Unification unification(runtime_, graph_, start, graph_.Limit());
 
     // fill address to id
     //
