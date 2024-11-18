@@ -285,7 +285,7 @@ class Reader {
       }
     }
 
-    Id root = graph_.Add<Interface>(
+    const Id root = graph_.Add<Interface>(
         std::move(symbols_map), std::move(types_map));
 
     // Use all named types and DWARF declarations as roots for type resolution.
@@ -301,8 +301,7 @@ class Reader {
 
     stg::ResolveTypes(runtime_, graph_, unification, {roots});
 
-    unification.Update(root);
-    return root;
+    return unification.Find(root);
   }
 
   static bool IsEqual(Unification& unification,

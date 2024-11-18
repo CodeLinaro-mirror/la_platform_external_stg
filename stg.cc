@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
       {
         stg::Unification unification(runtime, graph, stg::Id(0), graph.Limit());
         stg::ResolveTypes(runtime, graph, unification, {root});
-        unification.Update(root);
+        root = unification.Find(root);
       }
       const auto hashes = stg::Fingerprint(runtime, graph, root);
       root = stg::Deduplicate(runtime, graph, root, hashes);
