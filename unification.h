@@ -35,14 +35,12 @@ class Unification {
   Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
       : graph_(graph),
         start_(start),
-        mapping_(start),
+        mapping_(start, limit),
         runtime_(runtime),
         find_query_(runtime, "unification.find_query"),
         find_halved_(runtime, "unification.find_halved"),
         union_known_(runtime, "unification.union_known"),
-        union_unknown_(runtime, "unification.union_unknown") {
-    mapping_.Reserve(limit);
-  }
+        union_unknown_(runtime, "unification.union_unknown") {}
 
   ~Unification() {
     if (std::uncaught_exceptions() > 0) {
