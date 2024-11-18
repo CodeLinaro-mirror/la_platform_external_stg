@@ -52,7 +52,11 @@ class Unification {
     Counter removed(runtime_, "unification.removed");
     Counter retained(runtime_, "unification.retained");
     const auto remap = [&](Id& id) {
-      Update(id);
+      // update id to representative id, avoiding silent stores
+      const Id fid = Find(id);
+      if (fid != id) {
+        id = fid;
+      }
     };
     const Substitute substitute(graph_, remap);
     graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
@@ -97,15 +101,6 @@ class Unification {
     }
     mapping_[fid1] = fid2;
     ++union_unknown_;
-  }
-
-  // update id to representative id
-  void Update(Id& id) {
-    const Id fid = Find(id);
-    // avoid silent stores
-    if (fid != id) {
-      id = fid;
-    }
   }
 
  private:
