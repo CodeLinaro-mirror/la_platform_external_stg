@@ -42,7 +42,7 @@ class Unification {
         union_known_(runtime, "unification.union_known"),
         union_unknown_(runtime, "unification.union_unknown") {}
 
-  ~Unification() {
+  ~Unification() noexcept(false) {
     if (std::uncaught_exceptions() > 0) {
       // abort unification
       return;
