@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2024 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,11 +20,8 @@
 #ifndef STG_UNIFICATION_H_
 #define STG_UNIFICATION_H_
 
-#include <exception>
-
 #include "graph.h"
 #include "runtime.h"
-#include "substitution.h"
 
 namespace stg {
 
@@ -32,76 +29,19 @@ namespace stg {
 // destruction.
 class Unification {
  public:
-  Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
-      : graph_(graph),
-        start_(start),
-        mapping_(start, limit),
-        runtime_(runtime),
-        find_query_(runtime, "unification.find_query"),
-        find_halved_(runtime, "unification.find_halved"),
-        union_known_(runtime, "unification.union_known"),
-        union_unknown_(runtime, "unification.union_unknown") {}
+  Unification(Runtime& runtime, Graph& graph, Id start, Id limit);
 
-  ~Unification() noexcept(false) {
-    if (std::uncaught_exceptions() > 0) {
-      // abort unification
-      return;
-    }
-    // apply substitutions to the entire graph
-    const Time time(runtime_, "unification.rewrite");
-    Counter removed(runtime_, "unification.removed");
-    Counter retained(runtime_, "unification.retained");
-    const auto remap = [&](Id& id) {
-      // update id to representative id, avoiding silent stores
-      const Id fid = Find(id);
-      if (fid != id) {
-        id = fid;
-      }
-    };
-    const Substitute substitute(graph_, remap);
-    graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
-      if (Find(id) != id) {
-        graph_.Remove(id);
-        ++removed;
-      } else {
-        substitute(id);
-        ++retained;
-      }
-    });
-  }
+  ~Unification() noexcept(false);
 
+  // id2 will always be preferred as a parent node; interpreted as a
+  // substitution, id1 will be replaced by id2
+  void Union(Id id1, Id id2);
+
+  Id Find(Id id);
+
+  // attempt to unify, recursively, allowing types declarations to be replaced
+  // by definitions
   bool Unify(Id id1, Id id2);
-
-  Id Find(Id id) {
-    ++find_query_;
-    // path halving - tiny performance gain
-    while (true) {
-      // note: safe to take a reference as mapping cannot grow after this
-      auto& parent = mapping_[id];
-      if (parent == id) {
-        return id;
-      }
-      const auto parent_parent = mapping_[parent];
-      if (parent_parent == parent) {
-        return parent;
-      }
-      id = parent = parent_parent;
-      ++find_halved_;
-    }
-  }
-
-  void Union(Id id1, Id id2) {
-    // id2 will always be preferred as a parent node; interpreted as a
-    // substitution, id1 will be replaced by id2
-    const Id fid1 = Find(id1);
-    const Id fid2 = Find(id2);
-    if (fid1 == fid2) {
-      ++union_known_;
-      return;
-    }
-    mapping_[fid1] = fid2;
-    ++union_unknown_;
-  }
 
  private:
   Graph& graph_;
