@@ -78,10 +78,10 @@ categories:
 *   added or removed labelled edges, where edges are identified by label -
     modelled as a recursive difference with a node absent on one side
 
-Each node in an STG difference graph is one of the following:
+Each node in an STG difference graph is one of the following[^1]:
 
 *   a node removal or addition, containing
-    *   a reference to either a node in first graph or one in the second[^1]
+    *   a reference to either a node in first graph or one in the second
 *   a node change, containing
     *   a reference to two nodes, one in each of the two graphs
     *   a possibly-empty list of differences which can each be one of
@@ -89,9 +89,9 @@ Each node in an STG difference graph is one of the following:
         *   an edge difference in the form of a link to a difference node
 
 [^1]: STG models comparisons as pairs of nodes where either node can be absent.
-    While absent-absent comparisons can result from the composition of an
-    addition and a removal, they do not occur naturally during pairwise
-    comparison.
+    The absent-absent comparison is used to represent "no change". All such
+    edges, except those representing the root of a "no change" graph comparison,
+    are pruned during diff graph creation.
 
 Note that STG's difference nodes are *unkinded*, there is only one kind of
 difference node, unlike STG's data nodes where there is a separate kind of node
@@ -126,11 +126,11 @@ STG compares edge aggregates as follows:
 ## Implementation Details
 
 Comparison is mostly done pair-wise recursively with a DFS, by the function
-object `Compare` and with the help of the [SCC finder](scc.md).
+object `CompareWorker` and with the help of the [SCC finder](scc.md).
 
 The algorithm divides responsibility between `operator()(Id, Id)` and various
-`operator()(Node, Node)` methods. There are also trivial helpers `Removed`,
-`Added` and `Mismatch`.
+`operator()(Node, Node)` methods. There are also various helpers in and outside
+`CompareWorker`.
 
 The `Result` type encapsulates the difference between two nodes being compared.
 It contains both a list (`Diff`) of differences (`DiffDetail`) and a boolean
@@ -161,11 +161,24 @@ There are several reasons for not folding this functionality into `operator(Id,
 Id)` itself:
 
 *   it would result in unnecessary extra work as its callers would need to pack
-    and the function would need to unpack `std::optional<Id>` arguments
+    and the function would need to unpack `optional<Id>` arguments
 *   added and removed nodes have none of the other interesting features that it
     handles
 *   `Added` and `Removed` don't need to decorate their return values with any
     difference information
+
+### `Defined`
+
+This takes care of comparisons of user-defined types which may be forward
+declarations or full definitions.
+
+### `Nodes`
+
+These take care of comparisons of sequences of arbitrary nodes (or enumerators).
+
+STG uses "matching keys" to reduce the problem of comparing sequences to
+comparing maps. It attempts to preserve original sequence order as described in
+`order.h`.
 
 ### `operator(Id, Id)`
 
@@ -369,7 +382,7 @@ never be used. Alignment is not currently modelled by STG.
 
 ### Diff helpers
 
-These are mainly used by the `Compare::operator()(Node, Node)` methods.
+These are mainly used by the `CompareWorker::operator()(Node, Node)` methods.
 
 *   `MarkIncomparable` - nodes are just different
 *   `AddNodeDiff` - add node difference, unconditionally
