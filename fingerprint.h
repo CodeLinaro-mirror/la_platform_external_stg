@@ -20,7 +20,6 @@
 #ifndef STG_FINGERPRINT_H_
 #define STG_FINGERPRINT_H_
 
-#include <cstdint>
 #include <unordered_map>
 
 #include "graph.h"

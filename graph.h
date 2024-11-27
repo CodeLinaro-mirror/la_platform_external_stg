@@ -22,9 +22,9 @@
 #ifndef STG_GRAPH_H_
 #define STG_GRAPH_H_
 
-#include <compare>
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <functional>
 #include <map>
 #include <optional>
