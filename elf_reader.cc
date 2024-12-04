@@ -197,7 +197,12 @@ bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
   if (symbol.binding == SymbolTableEntry::Binding::LOCAL) {
     return false;
   }
+
   // TODO: handle undefined ksymtab symbols
+  if (symbol.value_type == SymbolTableEntry::ValueType::UNDEFINED) {
+    return false;
+  }
+
   return ksymtab.contains(symbol.name);
 }
 
