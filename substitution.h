@@ -58,52 +58,52 @@ struct Substitute {
     }
   }
 
-  void operator()(Id id) {
-    return graph.Apply<void>(*this, id);
+  void operator()(Id id) const {
+    return graph.Apply(*this, id);
   }
 
-  void operator()(Special&) {}
+  void operator()(Special&) const {}
 
-  void operator()(PointerReference& x) {
+  void operator()(PointerReference& x) const {
     Update(x.pointee_type_id);
   }
 
-  void operator()(PointerToMember& x) {
+  void operator()(PointerToMember& x) const {
     Update(x.containing_type_id);
     Update(x.pointee_type_id);
   }
 
-  void operator()(Typedef& x) {
+  void operator()(Typedef& x) const {
     Update(x.referred_type_id);
   }
 
-  void operator()(Qualified& x) {
+  void operator()(Qualified& x) const {
     Update(x.qualified_type_id);
   }
 
-  void operator()(Primitive&) {}
+  void operator()(Primitive&) const {}
 
-  void operator()(Array& x) {
+  void operator()(Array& x) const {
     Update(x.element_type_id);
   }
 
-  void operator()(BaseClass& x) {
+  void operator()(BaseClass& x) const {
     Update(x.type_id);
   }
 
-  void operator()(Method& x) {
+  void operator()(Method& x) const {
     Update(x.type_id);
   }
 
-  void operator()(Member& x) {
+  void operator()(Member& x) const {
     Update(x.type_id);
   }
 
-  void operator()(VariantMember& x) {
+  void operator()(VariantMember& x) const {
     Update(x.type_id);
   }
 
-  void operator()(StructUnion& x) {
+  void operator()(StructUnion& x) const {
     if (x.definition.has_value()) {
       auto& definition = x.definition.value();
       Update(definition.base_classes);
@@ -112,32 +112,32 @@ struct Substitute {
     }
   }
 
-  void operator()(Enumeration& x) {
+  void operator()(Enumeration& x) const {
     if (x.definition.has_value()) {
       auto& definition = x.definition.value();
       Update(definition.underlying_type_id);
     }
   }
 
-  void operator()(Variant& x) {
+  void operator()(Variant& x) const {
     if (x.discriminant.has_value()) {
       Update(x.discriminant.value());
     }
     Update(x.members);
   }
 
-  void operator()(Function& x) {
+  void operator()(Function& x) const {
     Update(x.parameters);
     Update(x.return_type_id);
   }
 
-  void operator()(ElfSymbol& x) {
+  void operator()(ElfSymbol& x) const {
     if (x.type_id) {
       Update(*x.type_id);
     }
   }
 
-  void operator()(Interface& x) {
+  void operator()(Interface& x) const {
     Update(x.symbols);
     Update(x.types);
   }

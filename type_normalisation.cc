@@ -37,7 +37,7 @@ struct ResolveQualifiedChain {
       : graph(graph), resolved(resolved) {}
 
   Id operator()(Id node_id) {
-    return graph.Apply<Id>(*this, node_id, node_id);
+    return graph.Apply(*this, node_id, node_id);
   }
 
   Id operator()(const Qualified& x, Id node_id) {
@@ -72,7 +72,7 @@ struct FindQualifiedTypesAndFunctions {
 
   void operator()(Id id) {
     if (seen.insert(id).second) {
-      graph.Apply<void>(*this, id, id);
+      graph.Apply(*this, id, id);
     }
   }
 
@@ -187,7 +187,7 @@ struct RemoveFunctionQualifiers {
       : graph(graph), resolved(resolved) {}
 
   void operator()(Id id) {
-    graph.Apply<void>(*this, id);
+    graph.Apply(*this, id);
   }
 
   void operator()(Function& x) {
