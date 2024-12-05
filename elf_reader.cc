@@ -35,6 +35,7 @@
 #include "error.h"
 #include "filter.h"
 #include "graph.h"
+#include "hex.h"
 #include "reader_options.h"
 #include "runtime.h"
 #include "type_normalisation.h"
@@ -203,7 +204,23 @@ bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
     return false;
   }
 
-  return ksymtab.contains(symbol.name);
+  // Symbol linkage is determined by the ksymtab.
+  if (!ksymtab.contains(symbol.name)) {
+    return false;
+  }
+
+  const auto symbol_type = symbol.symbol_type;
+  // Keep function and object symbols, but not GNU indirect function or TLS ones
+  // as the module loader does not expect them.
+  if (symbol_type != SymbolTableEntry::SymbolType::FUNCTION
+      && symbol_type != SymbolTableEntry::SymbolType::OBJECT) {
+    // TODO: upgrade to Die after more testing / fixing
+    Warn() << "ignoring Linux kernel symbol '" << symbol.name << "' in section "
+           << Hex(symbol.section_index) << " of type " << symbol_type;
+    return false;
+  }
+
+  return true;
 }
 
 namespace {
