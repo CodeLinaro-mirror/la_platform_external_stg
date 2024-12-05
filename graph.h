@@ -438,17 +438,18 @@ class Graph {
     Deallocate(id);
   }
 
-  template <typename Result, typename FunctionObject, typename... Args>
-  Result Apply(FunctionObject& function, Id id, Args&&... args) const;
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) const;
 
-  template <typename Result, typename FunctionObject, typename... Args>
-  Result Apply2(FunctionObject& function, Id id1, Id id2, Args&&... args) const;
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply2(
+      FunctionObject&& function, Id id1, Id id2, Args&&... args) const;
 
-  template <typename Result, typename FunctionObject, typename... Args>
-  Result Apply(FunctionObject& function, Id id, Args&&... args);
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args);
 
-  template <typename Function>
-  void ForEach(Id start, Id limit, Function&& function) const {
+  template <typename FunctionObject>
+  void ForEach(Id start, Id limit, FunctionObject&& function) const {
     for (size_t ix = start.ix_; ix < limit.ix_; ++ix) {
       const Id id(ix);
       if (Is(id)) {
@@ -500,8 +501,9 @@ class Graph {
   std::vector<Interface> interface_;
 };
 
-template <typename Result, typename FunctionObject, typename... Args>
-Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
+template <typename FunctionObject, typename... Args>
+decltype(auto) Graph::Apply(
+    FunctionObject&& function, Id id, Args&&... args) const {
   const auto& [which, ix] = indirection_[id.ix_];
   switch (which) {
     case Which::ABSENT:
@@ -543,9 +545,9 @@ Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) const {
   }
 }
 
-template <typename Result, typename FunctionObject, typename... Args>
-Result Graph::Apply2(
-    FunctionObject& function, Id id1, Id id2, Args&&... args) const {
+template <typename FunctionObject, typename... Args>
+decltype(auto) Graph::Apply2(
+    FunctionObject&& function, Id id1, Id id2, Args&&... args) const {
   const auto& [which1, ix1] = indirection_[id1.ix_];
   const auto& [which2, ix2] = indirection_[id2.ix_];
   if (which1 != which2) {
@@ -608,20 +610,20 @@ Result Graph::Apply2(
   }
 }
 
-template <typename Result, typename FunctionObject, typename... Args>
+template <typename FunctionObject, typename... Args>
 struct ConstAdapter {
   explicit ConstAdapter(FunctionObject& function) : function(function) {}
   template <typename Node>
-  Result operator()(const Node& node, Args&&... args) {
+  decltype(auto) operator()(const Node& node, Args&&... args) {
     return function(const_cast<Node&>(node), std::forward<Args>(args)...);
   }
   FunctionObject& function;
 };
 
-template <typename Result, typename FunctionObject, typename... Args>
-Result Graph::Apply(FunctionObject& function, Id id, Args&&... args) {
-  ConstAdapter<Result, FunctionObject, Args&&...> adapter(function);
-  return static_cast<const Graph&>(*this).Apply<Result>(
+template <typename FunctionObject, typename... Args>
+decltype(auto) Graph::Apply(FunctionObject&& function, Id id, Args&&... args) {
+  ConstAdapter<FunctionObject, Args&&...> adapter(function);
+  return static_cast<const Graph&>(*this).Apply(
       adapter, id, std::forward<Args>(args)...);
 }
 
@@ -629,7 +631,7 @@ struct InterfaceKey {
   explicit InterfaceKey(const Graph& graph) : graph(graph) {}
 
   std::string operator()(Id id) const {
-    return graph.Apply<std::string>(*this, id);
+    return graph.Apply(*this, id);
   }
 
   std::string operator()(const stg::Typedef& x) const {
