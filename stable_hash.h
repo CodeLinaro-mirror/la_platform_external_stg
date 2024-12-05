@@ -30,32 +30,11 @@ namespace stg {
 class StableHash {
  public:
   explicit StableHash(const Graph& graph) : graph_(graph) {}
-
   HashValue operator()(Id);
-  HashValue operator()(const Special&);
-  HashValue operator()(const PointerReference&);
-  HashValue operator()(const PointerToMember&);
-  HashValue operator()(const Typedef&);
-  HashValue operator()(const Qualified&);
-  HashValue operator()(const Primitive&);
-  HashValue operator()(const Array&);
-  HashValue operator()(const BaseClass&);
-  HashValue operator()(const Method&);
-  HashValue operator()(const Member&);
-  HashValue operator()(const VariantMember&);
-  HashValue operator()(const StructUnion&);
-  HashValue operator()(const Enumeration&);
-  HashValue operator()(const Variant&);
-  HashValue operator()(const Function&);
-  HashValue operator()(const ElfSymbol&);
-  HashValue operator()(const Interface&);
 
  private:
   const Graph& graph_;
   std::unordered_map<Id, HashValue> cache_;
-
-  // Function object: (Args...) -> HashValue
-  Hash hash_;
 };
 
 }  // namespace stg

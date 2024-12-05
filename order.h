@@ -135,8 +135,8 @@ void Permute(std::vector<T>& data, std::vector<size_t>& permutation) {
 //
 // Each pair gives 1 or 2 abstract positions for the corresponding data item.
 //
-// The first and second positions are interpreted separately, with the first's
-// implied ordering having precedence in the event of a conflict.
+// The first and second positions are interpreted separately, with the second
+// implied ordering having precedence over the first in the event of a conflict.
 //
 // The real work is done by CombineOrders and Permute.
 //
