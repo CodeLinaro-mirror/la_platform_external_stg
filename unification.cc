@@ -20,8 +20,12 @@
 #include "unification.h"
 
 #include <cstddef>
+#include <map>
 #include <optional>
 #include <utility>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "graph.h"
 
@@ -53,14 +57,16 @@ struct Unifier {
       return true;
     }
 
-    // Check if the comparison has an already known result.
+    // Check if the comparison has been (or is being) visited already. We don't
+    // need an SCC finder as any failure to unify will poison the entire DFS.
     //
-    // Opportunistic as seen is unaware of new mappings.
+    // This prevents infinite recursion, but maybe not immediately as seen is
+    // unaware of new mappings.
     if (!seen.emplace(fid1, fid2).second) {
       return true;
     }
 
-    const auto winner = graph.Apply2<Winner>(*this, fid1, fid2);
+    const auto winner = graph.Apply2(*this, fid1, fid2);
     if (winner == Neither) {
       return false;
     }

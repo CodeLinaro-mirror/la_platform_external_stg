@@ -104,205 +104,241 @@ std::ostream& operator<<(std::ostream& os, const Name& name) {
   return name.Print(os);
 }
 
-Name Describe::operator()(Id id) {
-  // infinite recursion prevention - insert at most once
-  static const Name black_hole{"#"};
-  auto insertion = names.insert({id, black_hole});
-  Name& cached = insertion.first->second;
-  if (insertion.second) {
-    cached = graph.Apply<Name>(*this, id);
+namespace {
+
+struct DescribeWorker {
+  DescribeWorker(const Graph& graph, NameCache& names)
+      : graph(graph), names(names) {}
+
+  Name operator()(Id id) {
+    // infinite recursion prevention - insert at most once
+    static const Name black_hole{"#"};
+    auto insertion = names.insert({id, black_hole});
+    Name& cached = insertion.first->second;
+    if (insertion.second) {
+      cached = graph.Apply(*this, id);
+    }
+    return cached;
   }
-  return cached;
-}
 
-Name Describe::operator()(const Special& x) {
-  switch (x.kind) {
-    case Special::Kind::VOID:
-      return Name{"void"};
-    case Special::Kind::VARIADIC:
-      return Name{"..."};
-    case Special::Kind::NULLPTR:
-      return Name{"decltype(nullptr)"};
+  Name operator()(const Special& x) {
+    switch (x.kind) {
+      case Special::Kind::VOID:
+        return Name{"void"};
+      case Special::Kind::VARIADIC:
+        return Name{"..."};
+      case Special::Kind::NULLPTR:
+        return Name{"decltype(nullptr)"};
+    }
   }
-}
 
-Name Describe::operator()(const PointerReference& x) {
-  std::string sign;
-  switch (x.kind) {
-    case PointerReference::Kind::POINTER:
-      sign = "*";
-      break;
-    case PointerReference::Kind::LVALUE_REFERENCE:
-      sign = "&";
-      break;
-    case PointerReference::Kind::RVALUE_REFERENCE:
-      sign = "&&";
-      break;
+  Name operator()(const PointerReference& x) {
+    std::string sign;
+    switch (x.kind) {
+      case PointerReference::Kind::POINTER:
+        sign = "*";
+        break;
+      case PointerReference::Kind::LVALUE_REFERENCE:
+        sign = "&";
+        break;
+      case PointerReference::Kind::RVALUE_REFERENCE:
+        sign = "&&";
+        break;
+    }
+    return (*this)(x.pointee_type_id)
+            .Add(Side::LEFT, Precedence::POINTER, sign);
   }
-  return (*this)(x.pointee_type_id)
-          .Add(Side::LEFT, Precedence::POINTER, sign);
-}
 
-Name Describe::operator()(const PointerToMember& x) {
-  std::ostringstream os;
-  os << (*this)(x.containing_type_id) << "::*";
-  return (*this)(x.pointee_type_id).Add(Side::LEFT, Precedence::POINTER,
-                                        os.str());
-}
+  Name operator()(const PointerToMember& x) {
+    std::ostringstream os;
+    os << (*this)(x.containing_type_id) << "::*";
+    return (*this)(x.pointee_type_id).Add(Side::LEFT, Precedence::POINTER,
+                                          os.str());
+  }
 
-Name Describe::operator()(const Typedef& x) {
-  return Name{x.name};
-}
+  Name operator()(const Typedef& x) {
+    return Name{x.name};
+  }
 
-Name Describe::operator()(const Qualified& x) {
-  return (*this)(x.qualified_type_id).Qualify(x.qualifier);
-}
+  Name operator()(const Qualified& x) {
+    return (*this)(x.qualified_type_id).Qualify(x.qualifier);
+  }
 
-Name Describe::operator()(const Primitive& x) {
-  return Name{x.name};
-}
+  Name operator()(const Primitive& x) {
+    return Name{x.name};
+  }
 
-Name Describe::operator()(const Array& x) {
-  std::ostringstream os;
-  os << '[' << x.number_of_elements << ']';
-  return (*this)(x.element_type_id)
-          .Add(Side::RIGHT, Precedence::ARRAY_FUNCTION, os.str());
-}
+  Name operator()(const Array& x) {
+    std::ostringstream os;
+    os << '[' << x.number_of_elements << ']';
+    return (*this)(x.element_type_id)
+            .Add(Side::RIGHT, Precedence::ARRAY_FUNCTION, os.str());
+  }
 
-Name Describe::operator()(const BaseClass& x) {
-  return (*this)(x.type_id);
-}
+  Name operator()(const BaseClass& x) {
+    return (*this)(x.type_id);
+  }
 
-Name Describe::operator()(const Method& x) {
-  return (*this)(x.type_id).Add(Side::LEFT, Precedence::ATOMIC, x.name);
-}
+  Name operator()(const Method& x) {
+    return (*this)(x.type_id).Add(Side::LEFT, Precedence::ATOMIC, x.name);
+  }
 
-Name Describe::operator()(const Member& x) {
-  auto description = (*this)(x.type_id);
-  if (!x.name.empty()) {
+  Name operator()(const Member& x) {
+    auto description = (*this)(x.type_id);
+    if (!x.name.empty()) {
+      description = description.Add(Side::LEFT, Precedence::ATOMIC, x.name);
+    }
+    if (x.bitsize) {
+      description = description.Add(
+          Side::RIGHT, Precedence::ATOMIC, ':' + std::to_string(x.bitsize));
+    }
+    return description;
+  }
+
+  Name operator()(const VariantMember& x) {
+    auto description = (*this)(x.type_id);
     description = description.Add(Side::LEFT, Precedence::ATOMIC, x.name);
+    return description;
   }
-  if (x.bitsize) {
-    description = description.Add(
-        Side::RIGHT, Precedence::ATOMIC, ':' + std::to_string(x.bitsize));
-  }
-  return description;
-}
 
-Name Describe::operator()(const VariantMember& x) {
-  auto description = (*this)(x.type_id);
-  description = description.Add(Side::LEFT, Precedence::ATOMIC, x.name);
-  return description;
-}
-
-Name Describe::operator()(const StructUnion& x) {
-  std::ostringstream os;
-  os << x.kind << ' ';
-  if (!x.name.empty()) {
-    os << x.name;
-  } else if (x.definition) {
-    os << "{ ";
-    for (const auto& member : x.definition->members) {
-      os << (*this)(member) << "; ";
+  Name operator()(const StructUnion& x) {
+    std::ostringstream os;
+    os << x.kind;
+    if (!x.name.empty()) {
+      os << ' ' << x.name;
+    } else if (x.definition) {
+      os << " { ";
+      for (const auto& member : x.definition->members) {
+        os << (*this)(member) << "; ";
+      }
+      os << '}';
     }
-    os << '}';
+    return Name{os.str()};
   }
-  return Name{os.str()};
-}
 
-Name Describe::operator()(const Enumeration& x) {
-  std::ostringstream os;
-  os << "enum ";
-  if (!x.name.empty()) {
-    os << x.name;
-  } else if (x.definition) {
-    os << "{ ";
-    for (const auto& e : x.definition->enumerators) {
-      os << e.first << " = " << e.second << ", ";
+  Name operator()(const Enumeration& x) {
+    std::ostringstream os;
+    os << "enum";
+    if (!x.name.empty()) {
+      os << ' ' << x.name;
+    } else if (x.definition) {
+      os << " { ";
+      for (const auto& e : x.definition->enumerators) {
+        os << e.first << " = " << e.second << ", ";
+      }
+      os << '}';
     }
-    os << '}';
+    return Name{os.str()};
   }
-  return Name{os.str()};
-}
 
-Name Describe::operator()(const Variant& x) {
-  std::ostringstream os;
-  os << "variant " << x.name;
-  return Name{os.str()};
-}
+  Name operator()(const Variant& x) {
+    std::ostringstream os;
+    os << "variant " << x.name;
+    return Name{os.str()};
+  }
 
-Name Describe::operator()(const Function& x) {
-  std::ostringstream os;
-  os << '(';
-  bool sep = false;
-  for (const Id p : x.parameters) {
-    if (sep) {
-      os << ", ";
-    } else {
-      sep = true;
+  Name operator()(const Function& x) {
+    std::ostringstream os;
+    os << '(';
+    bool sep = false;
+    for (const Id p : x.parameters) {
+      if (sep) {
+        os << ", ";
+      } else {
+        sep = true;
+      }
+      os << (*this)(p);
     }
-    os << (*this)(p);
+    os << ')';
+    return (*this)(x.return_type_id)
+            .Add(Side::RIGHT, Precedence::ARRAY_FUNCTION, os.str());
   }
-  os << ')';
-  return (*this)(x.return_type_id)
-          .Add(Side::RIGHT, Precedence::ARRAY_FUNCTION, os.str());
-}
 
-Name Describe::operator()(const ElfSymbol& x) {
-  const auto& name = x.full_name ? *x.full_name : x.symbol_name;
-  return x.type_id
-      ? (*this)(*x.type_id).Add(Side::LEFT, Precedence::ATOMIC, name)
-      : Name{name};
-}
+  Name operator()(const ElfSymbol& x) {
+    const auto& name = x.full_name ? *x.full_name : x.symbol_name;
+    return x.type_id
+        ? (*this)(*x.type_id).Add(Side::LEFT, Precedence::ATOMIC, name)
+        : Name{name};
+  }
 
-Name Describe::operator()(const Interface&) {
-  return Name{"interface"};
+  Name operator()(const Interface&) {
+    return Name{"interface"};
+  }
+
+  const Graph& graph;
+  NameCache& names;
+};
+
+struct DescribeKindWorker {
+  explicit DescribeKindWorker(const Graph& graph) : graph(graph) {}
+
+  std::string operator()(Id id) {
+    return graph.Apply(*this, id);
+  }
+
+  std::string operator()(const BaseClass&) {
+    return "base class";
+  }
+
+  std::string operator()(const Method&) {
+    return "method";
+  }
+
+  std::string operator()(const Member&) {
+    return "member";
+  }
+
+  std::string operator()(const ElfSymbol& x) {
+    std::ostringstream os;
+    os << x.symbol_type << " symbol";
+    return os.str();
+  }
+
+  std::string operator()(const Interface&) {
+    return "interface";
+  }
+
+  template <typename Node>
+      std::string operator()(const Node&) {
+    return "type";
+  }
+
+  const Graph& graph;
+};
+
+struct DescribeExtraWorker {
+  explicit DescribeExtraWorker(const Graph& graph) : graph(graph) {}
+
+  std::string operator()(Id id) {
+    return graph.Apply(*this, id);
+  }
+
+  std::string operator()(const ElfSymbol& x) {
+    const auto& name = x.full_name ? *x.full_name : x.symbol_name;
+    auto versioned = VersionedSymbolName(x);
+    return name == versioned ? std::string() : " {" + versioned + '}';
+  }
+
+  template <typename Node>
+      std::string operator()(const Node&) {
+    return {};
+  }
+
+  const Graph& graph;
+};
+
+}  // namespace
+
+Name Describe::operator()(Id id) {
+  return DescribeWorker(graph, names)(id);
 }
 
 std::string DescribeKind::operator()(Id id) {
-  return graph.Apply<std::string>(*this, id);
-}
-
-std::string DescribeKind::operator()(const BaseClass&) {
-  return "base class";
-}
-
-std::string DescribeKind::operator()(const Method&) {
-  return "method";
-}
-
-std::string DescribeKind::operator()(const Member&) {
-  return "member";
-}
-
-std::string DescribeKind::operator()(const ElfSymbol& x) {
-  std::ostringstream os;
-  os << x.symbol_type << " symbol";
-  return os.str();
-}
-
-std::string DescribeKind::operator()(const Interface&) {
-  return "interface";
-}
-
-template <typename Node>
-std::string DescribeKind::operator()(const Node&) {
-  return "type";
+  return DescribeKindWorker(graph)(id);
 }
 
 std::string DescribeExtra::operator()(Id id) {
-  return graph.Apply<std::string>(*this, id);
-}
-
-std::string DescribeExtra::operator()(const ElfSymbol& x) {
-  const auto& name = x.full_name ? *x.full_name : x.symbol_name;
-  auto versioned = VersionedSymbolName(x);
-  return name == versioned ? std::string() : " {" + versioned + '}';
-}
-
-template <typename Node>
-std::string DescribeExtra::operator()(const Node&) {
-  return {};
+  return DescribeExtraWorker(graph)(id);
 }
 
 }  // namespace stg

@@ -21,8 +21,6 @@
 #define STG_UNIFICATION_H_
 
 #include <exception>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "graph.h"
 #include "runtime.h"
@@ -53,10 +51,10 @@ class Unification {
     const Time time(runtime_, "unification.rewrite");
     Counter removed(runtime_, "unification.removed");
     Counter retained(runtime_, "unification.retained");
-    auto remap = [&](Id& id) {
+    const auto remap = [&](Id& id) {
       Update(id);
     };
-    ::stg::Substitute substitute(graph_, remap);
+    const Substitute substitute(graph_, remap);
     graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
       if (Find(id) != id) {
         graph_.Remove(id);
@@ -78,12 +76,12 @@ class Unification {
     ++find_query_;
     // path halving - tiny performance gain
     while (true) {
-      // note: safe to take references as mapping cannot grow after this
+      // note: safe to take a reference as mapping cannot grow after this
       auto& parent = mapping_[id];
       if (parent == id) {
         return id;
       }
-      auto& parent_parent = mapping_[parent];
+      const auto parent_parent = mapping_[parent];
       if (parent_parent == parent) {
         return parent;
       }

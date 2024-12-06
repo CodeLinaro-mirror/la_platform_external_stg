@@ -19,6 +19,7 @@
 
 #include <fcntl.h>
 #include <getopt.h>
+#include <sys/stat.h>
 
 #include <cstring>
 #include <iostream>
@@ -65,7 +66,7 @@ Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
   std::map<std::string, Id> types;
   const GetInterface get;
   for (auto root : roots) {
-    const auto& interface = graph.Apply<Interface&>(get, root);
+    const auto& interface = graph.Apply(get, root);
     for (const auto& x : interface.symbols) {
       if (!symbols.insert(x).second) {
         Warn() << "duplicate symbol during merge: " << x.first;
@@ -91,7 +92,7 @@ Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
 void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
   std::map<std::string, Id> symbols;
   GetInterface get;
-  auto& interface = graph.Apply<Interface&>(get, root);
+  auto& interface = graph.Apply(get, root);
   for (const auto& x : interface.symbols) {
     if (filter(x.first)) {
       symbols.insert(x);
