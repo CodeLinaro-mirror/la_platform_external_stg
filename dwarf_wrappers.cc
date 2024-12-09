@@ -291,7 +291,7 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
        expression[1].atom == DW_OP_form_tls_address)) {
     // TLS symbols address may be incorrect because of unsupported
     // relocations. Resetting it to zero the same way as it is done in
-    // elf::Reader::MaybeAddTypeInfo.
+    // elf::Reader::GetUserspaceSymbols.
     // TODO: match TLS variables by address
     return Address{Address::Kind::TLS, 0};
   }

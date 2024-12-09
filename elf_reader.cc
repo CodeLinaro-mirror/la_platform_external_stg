@@ -244,12 +244,13 @@ class Reader {
 
   void GetLinuxKernelSymbols(
       const std::vector<SymbolTableEntry>& all_symbols,
-      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
+      std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const;
   void GetUserspaceSymbols(
       const std::vector<SymbolTableEntry>& all_symbols,
-      std::vector<std::pair<ElfSymbol, size_t>>& symbols) const;
+      std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const;
 
-  Id BuildRoot(const std::vector<std::pair<ElfSymbol, size_t>>& symbols) {
+  Id BuildRoot(
+      const std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) {
     // On destruction, the unification object will remove or rewrite each graph
     // node for which it has a mapping.
     //
@@ -355,15 +356,7 @@ class Reader {
   static void MaybeAddTypeInfo(
       const SymbolIndex& address_name_to_index,
       const std::vector<dwarf::Types::Symbol>& dwarf_symbols,
-      size_t address_value, ElfSymbol& node, Unification& unification) {
-    // TLS symbols address may be incorrect because of unsupported
-    // relocations. Resetting it to zero the same way as it is done in
-    // dwarf::Entry::GetAddressFromLocation.
-    // TODO: match TLS variables by address
-    const dwarf::Address address =
-        node.symbol_type == ElfSymbol::SymbolType::TLS
-            ? dwarf::Address{dwarf::Address::Kind::TLS, 0}
-            : dwarf::Address{dwarf::Address::Kind::ADDRESS, address_value};
+      dwarf::Address address, ElfSymbol& node, Unification& unification) {
     // try to find the first symbol with given address
     const auto start_it = address_name_to_index.lower_bound(
         std::make_pair(address, std::string()));
@@ -428,7 +421,7 @@ class Reader {
 
 void Reader::GetLinuxKernelSymbols(
     const std::vector<SymbolTableEntry>& all_symbols,
-    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+    std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const {
   const auto crcs = GetCRCValuesMap(all_symbols, elf_);
   const auto namespaces = GetNamespacesMap(all_symbols, elf_);
   const auto ksymtab_symbols = GetKsymtabSymbols(all_symbols);
@@ -436,23 +429,34 @@ void Reader::GetLinuxKernelSymbols(
     if (IsLinuxKernelFunctionOrVariable(ksymtab_symbols, symbol)) {
       const size_t address = elf_.GetAbsoluteAddress(symbol);
       symbols.emplace_back(
-          SymbolTableEntryToElfSymbol(crcs, namespaces, symbol), address);
+          SymbolTableEntryToElfSymbol(crcs, namespaces, symbol),
+          dwarf::Address{dwarf::Address::Kind::ADDRESS, address});
     }
   }
 }
 
 void Reader::GetUserspaceSymbols(
     const std::vector<SymbolTableEntry>& all_symbols,
-    std::vector<std::pair<ElfSymbol, size_t>>& symbols) const {
+    std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const {
   const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
   for (const auto& symbol : all_symbols) {
     if (IsPublicFunctionOrVariable(symbol)) {
-      const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
-      const size_t address = cfi_it != cfi_address_map.end()
-                                 ? cfi_it->second
-                                 : elf_.GetAbsoluteAddress(symbol);
-      symbols.emplace_back(
-          SymbolTableEntryToElfSymbol({}, {}, symbol), address);
+      if (symbol.symbol_type == SymbolTableEntry::SymbolType::TLS) {
+        // TLS symbols address may be incorrect because of unsupported
+        // relocations. Resetting it to zero the same way as it is done in
+        // dwarf::Entry::GetAddressFromLocation.
+        // TODO: match TLS variables by address
+        symbols.emplace_back(SymbolTableEntryToElfSymbol({}, {}, symbol),
+                             dwarf::Address{dwarf::Address::Kind::TLS, 0});
+      } else {
+        const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
+        const size_t absolute = cfi_it != cfi_address_map.end()
+                                    ? cfi_it->second
+                                    : elf_.GetAbsoluteAddress(symbol);
+        symbols.emplace_back(
+            SymbolTableEntryToElfSymbol({}, {}, symbol),
+            dwarf::Address{dwarf::Address::Kind::ADDRESS, absolute});
+      }
     }
   }
 }
@@ -462,7 +466,7 @@ Id Reader::Read() {
   const auto get_symbols = elf_.IsLinuxKernelBinary()
                            ? &Reader::GetLinuxKernelSymbols
                            : &Reader::GetUserspaceSymbols;
-  std::vector<std::pair<ElfSymbol, size_t>> symbols;
+  std::vector<std::pair<ElfSymbol, dwarf::Address>> symbols;
   symbols.reserve(all_symbols.size());
   (this->*get_symbols)(all_symbols, symbols);
   symbols.shrink_to_fit();
