@@ -28,9 +28,9 @@ Tarjan's algorithm can be massaged into the form where it can be separated into
 a plain DFS traversal and SCC-specific pieces but the resulting code is a bit
 messy and responsibility for SCC state management is rather scattered.
 
-The path-based algorithm is the best fit and can be put in a form where the DFS
-traversal and SCC state management are cleanly separated. The concept of "open"
-nodes carries directly over to the implementation used here and SCC state
+The path-based algorithm is the best fit and can be put into a form where the
+DFS traversal and SCC state management are cleanly separated. The concept of
+"open" nodes carries directly over to the implementation used here and SCC state
 management occurs in two well-defined places.
 
 *   node visit starts; repeat visits to open nodes are detected
@@ -188,40 +188,3 @@ sharing- and cycle-breaking links.
 
 However, building a graph (say a copy of the traversal, or a diff graph)
 requires open node state to be squirrelled away somewhere.
-
-##### Enhancement
-
-The SCC finder data structure can be made to carry values associated with open
-nodes and hand them to the user on failure-to-open and closure. This allows us
-to retain purity and regain the ability to maintain simple state for open nodes
-separately from that for closed nodes, at the expense of a slightly
-heavier-touch interface (+power).
-
-In the simplest case, we'd want nothing stored at all (beyond the node identity)
-and actually supplying a second empty type would be an annoyance and an
-inefficiency (-simplicity, -power, -efficiency)). So the best thing to supply is
-the user's container's `value_type` and associated `value_compare` comparator.
-
-However, in this variation, it's painful to set up the SCC structures for
-efficient `open` as nodes need to exist in a map or set, independently of any
-payload. The approach could be revisited if there's a solution to this.
-
-```c++
-if (visited) {
-  // work-saving link to shared node
-  return;
-}
-[&node_state, token] = open(node_state);
-if (!token) {
-  // cycle-breaking back link
-  return;
-}
-...
-// do work, update node_state if you like
-...
-node_states = close(token.value())
-if (!node_states.empty()) {
-  ...
-  mark_visited();
-}
-```
