@@ -174,6 +174,11 @@ bool IsPublicFunctionOrVariable(const SymbolTableEntry& symbol) {
     return false;
   }
 
+  // Common symbols can only be seen in .o files emitted by old compilers.
+  if (symbol.value_type == SymbolTableEntry::ValueType::COMMON) {
+    Die() << "unexpected COMMON symbol: '" << symbol.name << '\'';
+  }
+
   // Local symbol is not visible outside the binary, so it is not public
   // and should be rejected.
   if (symbol.binding == SymbolTableEntry::Binding::LOCAL) {
@@ -202,6 +207,11 @@ bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
   // TODO: handle undefined ksymtab symbols
   if (symbol.value_type == SymbolTableEntry::ValueType::UNDEFINED) {
     return false;
+  }
+
+  // Common symbols can only be seen in .o files emitted by old compilers.
+  if (symbol.value_type == SymbolTableEntry::ValueType::COMMON) {
+    Die() << "unexpected COMMON symbol: '" << symbol.name << '\'';
   }
 
   // Symbol linkage is determined by the ksymtab.
