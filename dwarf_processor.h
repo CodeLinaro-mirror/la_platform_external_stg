@@ -38,7 +38,7 @@ struct Types {
   struct Symbol {
     std::string scoped_name;
     std::string linkage_name;
-    Address address;
+    Location location;
     Id type_id;
   };
 
