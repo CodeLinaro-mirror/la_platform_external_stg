@@ -240,17 +240,17 @@ class Reader {
 
  private:
   using SymbolIndex =
-      std::map<std::pair<dwarf::Address, std::string>, std::vector<size_t>>;
+      std::map<std::pair<dwarf::Location, std::string>, std::vector<size_t>>;
 
   void GetLinuxKernelSymbols(
       const std::vector<SymbolTableEntry>& all_symbols,
-      std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const;
+      std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) const;
   void GetUserspaceSymbols(
       const std::vector<SymbolTableEntry>& all_symbols,
-      std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const;
+      std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) const;
 
   Id BuildRoot(
-      const std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) {
+      const std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) {
     // On destruction, the unification object will remove or rewrite each graph
     // node for which it has a mapping.
     //
@@ -268,7 +268,7 @@ class Reader {
     // is populated. This is done by reserving space to the new graph limit.
     Unification unification(runtime_, graph_, start, graph_.Limit());
 
-    // fill address to id
+    // fill location to id
     //
     // In general, we want to handle as many of the following cases as possible.
     // In practice, determining the correct ELF-DWARF match may be impossible.
@@ -280,10 +280,10 @@ class Reader {
     //   address
     // * assembly symbols - multiple declarations but no definition and no
     //   address in DWARF.
-    SymbolIndex address_name_to_index;
+    SymbolIndex location_and_name_to_index;
     for (size_t i = 0; i < types.symbols.size(); ++i) {
-      const auto& symbol = types.symbols[i];
-      address_name_to_index[{symbol.address, symbol.linkage_name}].push_back(i);
+      const auto& s = types.symbols[i];
+      location_and_name_to_index[{s.location, s.linkage_name}].push_back(i);
     }
 
     std::map<std::string, Id> symbols_map;
@@ -291,8 +291,8 @@ class Reader {
       // TODO: add VersionInfoToString to SymbolKey name
       // TODO: check for uniqueness of SymbolKey in map after
       // support for version info
-      MaybeAddTypeInfo(address_name_to_index, types.symbols, address, symbol,
-                       unification);
+      MaybeAddTypeInfo(location_and_name_to_index, types.symbols, address,
+                       symbol, unification);
       symbols_map.emplace(VersionedSymbolName(symbol),
                           graph_.Add<ElfSymbol>(symbol));
     }
@@ -332,7 +332,7 @@ class Reader {
                       const dwarf::Types::Symbol& rhs) {
     return lhs.scoped_name == rhs.scoped_name
         && lhs.linkage_name == rhs.linkage_name
-        && lhs.address == rhs.address
+        && lhs.location == rhs.location
         && unification.Unify(lhs.type_id, rhs.type_id);
   }
 
@@ -354,32 +354,32 @@ class Reader {
   }
 
   static void MaybeAddTypeInfo(
-      const SymbolIndex& address_name_to_index,
+      const SymbolIndex& location_and_name_to_index,
       const std::vector<dwarf::Types::Symbol>& dwarf_symbols,
-      dwarf::Address address, ElfSymbol& node, Unification& unification) {
-    // try to find the first symbol with given address
-    const auto start_it = address_name_to_index.lower_bound(
-        std::make_pair(address, std::string()));
-    auto best_symbols_it = address_name_to_index.end();
+      dwarf::Location location, ElfSymbol& node, Unification& unification) {
+    // try to find the first symbol with given location
+    const auto start_it = location_and_name_to_index.lower_bound(
+        std::make_pair(location, std::string()));
+    auto best_symbols_it = location_and_name_to_index.end();
     bool matched_by_name = false;
     size_t candidates = 0;
     for (auto it = start_it;
-         it != address_name_to_index.end() && it->first.first == address;
+         it != location_and_name_to_index.end() && it->first.first == location;
          ++it) {
       ++candidates;
-      // We have at least matching addresses.
+      // We have at least matching locations.
       if (it->first.second == node.symbol_name) {
         // If we have also matching names we can stop looking further.
         matched_by_name = true;
         best_symbols_it = it;
         break;
       }
-      if (best_symbols_it == address_name_to_index.end()) {
+      if (best_symbols_it == location_and_name_to_index.end()) {
         // Otherwise keep the first match.
         best_symbols_it = it;
       }
     }
-    if (best_symbols_it != address_name_to_index.end()) {
+    if (best_symbols_it != location_and_name_to_index.end()) {
       const auto& best_symbols = best_symbols_it->second;
       Check(!best_symbols.empty()) << "best_symbols.empty()";
       const auto& best_symbol = dwarf_symbols[best_symbols[0]];
@@ -388,13 +388,13 @@ class Reader {
         // TODO: allow "compatible" duplicates, for example
         // "void foo(int bar)" vs "void foo(const int bar)"
         if (!IsEqual(unification, best_symbol, other)) {
-          Die() << "Duplicate DWARF symbol: address="
+          Die() << "Duplicate DWARF symbol: location="
                 << best_symbols_it->first.first
                 << ", name=" << best_symbols_it->first.second;
         }
       }
       if (best_symbol.scoped_name.empty()) {
-        Die() << "Anonymous DWARF symbol: address="
+        Die() << "Anonymous DWARF symbol: location="
               << best_symbols_it->first.first
               << ", name=" << best_symbols_it->first.second;
       }
@@ -403,7 +403,7 @@ class Reader {
       // But if we have both situations at once, we can't match ELF to DWARF and
       // it should be fixed in analysed binary source code.
       Check(matched_by_name || candidates == 1)
-          << "Multiple candidate symbols without matching name: address="
+          << "Multiple candidate symbols without matching name: location="
           << best_symbols_it->first.first
           << ", name=" << best_symbols_it->first.second;
       node.type_id = best_symbol.type_id;
@@ -421,7 +421,7 @@ class Reader {
 
 void Reader::GetLinuxKernelSymbols(
     const std::vector<SymbolTableEntry>& all_symbols,
-    std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const {
+    std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) const {
   const auto crcs = GetCRCValuesMap(all_symbols, elf_);
   const auto namespaces = GetNamespacesMap(all_symbols, elf_);
   const auto ksymtab_symbols = GetKsymtabSymbols(all_symbols);
@@ -430,24 +430,24 @@ void Reader::GetLinuxKernelSymbols(
       const size_t address = elf_.GetAbsoluteAddress(symbol);
       symbols.emplace_back(
           SymbolTableEntryToElfSymbol(crcs, namespaces, symbol),
-          dwarf::Address{dwarf::Address::Kind::ADDRESS, address});
+          dwarf::Location{dwarf::Location::Kind::ADDRESS, address});
     }
   }
 }
 
 void Reader::GetUserspaceSymbols(
     const std::vector<SymbolTableEntry>& all_symbols,
-    std::vector<std::pair<ElfSymbol, dwarf::Address>>& symbols) const {
+    std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) const {
   const auto cfi_address_map = GetCFIAddressMap(elf_.GetCFISymbols(), elf_);
   for (const auto& symbol : all_symbols) {
     if (IsPublicFunctionOrVariable(symbol)) {
       if (symbol.symbol_type == SymbolTableEntry::SymbolType::TLS) {
-        // TLS symbols address may be incorrect because of unsupported
+        // TLS symbols offsets may be incorrect because of unsupported
         // relocations. Resetting it to zero the same way as it is done in
-        // dwarf::Entry::GetAddressFromLocation.
-        // TODO: match TLS variables by address
+        // dwarf::Entry::GetLocationFromExpression.
+        // TODO: match TLS variables by offset
         symbols.emplace_back(SymbolTableEntryToElfSymbol({}, {}, symbol),
-                             dwarf::Address{dwarf::Address::Kind::TLS, 0});
+                             dwarf::Location{dwarf::Location::Kind::TLS, 0});
       } else {
         const auto cfi_it = cfi_address_map.find(std::string(symbol.name));
         const size_t absolute = cfi_it != cfi_address_map.end()
@@ -455,7 +455,7 @@ void Reader::GetUserspaceSymbols(
                                     : elf_.GetAbsoluteAddress(symbol);
         symbols.emplace_back(
             SymbolTableEntryToElfSymbol({}, {}, symbol),
-            dwarf::Address{dwarf::Address::Kind::ADDRESS, absolute});
+            dwarf::Location{dwarf::Location::Kind::ADDRESS, absolute});
       }
     }
   }
@@ -466,7 +466,7 @@ Id Reader::Read() {
   const auto get_symbols = elf_.IsLinuxKernelBinary()
                            ? &Reader::GetLinuxKernelSymbols
                            : &Reader::GetUserspaceSymbols;
-  std::vector<std::pair<ElfSymbol, dwarf::Address>> symbols;
+  std::vector<std::pair<ElfSymbol, dwarf::Location>> symbols;
   symbols.reserve(all_symbols.size());
   (this->*get_symbols)(all_symbols, symbols);
   symbols.shrink_to_fit();
