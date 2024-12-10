@@ -2,6 +2,7 @@
 __asm__(
     ".global bar\n"
     ".type bar,object\n"
-    "bar = 0x1\n");
+    ".size bar,0\n"
+    "bar = 0\n");
 
 long x, y;
