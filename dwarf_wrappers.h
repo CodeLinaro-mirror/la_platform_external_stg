@@ -32,20 +32,20 @@
 namespace stg {
 namespace dwarf {
 
-struct Address {
+struct Location {
   // ADDRESS - relocated, section-relative offset
   // TLS - broken (elfutils bug), TLS-relative offset
-  //       TODO: match TLS variables by address
+  //       TODO: match TLS variables by offset
   enum class Kind { ADDRESS, TLS };
 
-  Address(Kind kind, uint64_t value) : kind(kind), value(value) {}
-  auto operator<=>(const Address&) const = default;
+  Location(Kind kind, uint64_t value) : kind(kind), value(value) {}
+  auto operator<=>(const Location&) const = default;
 
   Kind kind;
   uint64_t value;
 };
 
-std::ostream& operator<<(std::ostream& os, const Address& address);
+std::ostream& operator<<(std::ostream& os, const Location& location);
 
 // C++ wrapper over Dwarf_Die, providing interface for its various properties.
 struct Entry {
@@ -75,7 +75,7 @@ struct Entry {
   uint64_t MustGetUnsignedConstant(uint32_t attribute);
   bool GetFlag(uint32_t attribute);
   std::optional<Entry> MaybeGetReference(uint32_t attribute);
-  std::optional<Address> MaybeGetAddress(uint32_t attribute);
+  std::optional<Location> MaybeGetLocation(uint32_t attribute);
   std::optional<uint64_t> MaybeGetMemberByteOffset();
   std::optional<uint64_t> MaybeGetVtableOffset();
   // Returns value of subrange element count if it is constant or nullopt if it
