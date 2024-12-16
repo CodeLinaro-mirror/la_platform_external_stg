@@ -176,14 +176,14 @@ struct ResolveTypedef {
   ResolveTypedef(const Graph& graph, Id& id, std::vector<std::string>& names)
       : graph(graph), id(id), names(names) {}
 
-  bool operator()(const Typedef& x) {
+  bool operator()(const Typedef& x) const {
     id = x.referred_type_id;
     names.push_back(x.name);
     return true;
   }
 
   template <typename Node>
-  bool operator()(const Node&) {
+  bool operator()(const Node&) const {
     return false;
   }
 
@@ -198,26 +198,26 @@ struct ResolveQualifier {
   ResolveQualifier(const Graph& graph, Id& id, Qualifiers& qualifiers)
       : graph(graph), id(id), qualifiers(qualifiers) {}
 
-  bool operator()(const Qualified& x) {
+  bool operator()(const Qualified& x) const {
     id = x.qualified_type_id;
     qualifiers.insert(x.qualifier);
     return true;
   }
 
-  bool operator()(const Array&) {
+  bool operator()(const Array&) const {
     // There should be no qualifiers here.
     qualifiers.clear();
     return false;
   }
 
-  bool operator()(const Function&) {
+  bool operator()(const Function&) const {
     // There should be no qualifiers here.
     qualifiers.clear();
     return false;
   }
 
   template <typename Node>
-  bool operator()(const Node&) {
+  bool operator()(const Node&) const {
     return false;
   }
 
@@ -240,30 +240,30 @@ std::pair<Id, Qualifiers> ResolveQualifiers(const Graph& graph, Id id) {
 struct MatchingKey {
   explicit MatchingKey(const Graph& graph) : graph(graph) {}
 
-  std::string operator()(Id id) {
+  std::string operator()(Id id) const {
     return graph.Apply(*this, id);
   }
 
-  std::string operator()(const BaseClass& x) {
+  std::string operator()(const BaseClass& x) const {
     return (*this)(x.type_id);
   }
 
-  std::string operator()(const Method& x) {
+  std::string operator()(const Method& x) const {
     return x.name + ',' + x.mangled_name;
   }
 
-  std::string operator()(const Member& x) {
+  std::string operator()(const Member& x) const {
     if (!x.name.empty()) {
       return x.name;
     }
     return (*this)(x.type_id);
   }
 
-  std::string operator()(const VariantMember& x) {
+  std::string operator()(const VariantMember& x) const {
     return x.name;
   }
 
-  std::string operator()(const StructUnion& x) {
+  std::string operator()(const StructUnion& x) const {
     if (!x.name.empty()) {
       return x.name;
     }
@@ -280,7 +280,7 @@ struct MatchingKey {
   }
 
   template <typename Node>
-  std::string operator()(const Node&) {
+  std::string operator()(const Node&) const {
     return {};
   }
 
@@ -369,11 +369,11 @@ struct CompareWorker {
    *
    * Each node has one of:
    *
-   * 1. same == true; perhaps only tentative edge differences
-   * 2. same == false; at least one definitive node or edge difference
+   * * same == true; perhaps only tentative edge differences
+   * * same == false; at least one definitive node or edge difference
    *
-   * On the first visit to a node we can put a placeholder in, the value of same
-   * is irrelevant, the diff may contain local and edge differences. If an SCC
+   * On the first visit to a node, the value of same is determined via recursive
+   * comparison and the diff may contain local and edge differences. If an SCC
    * contains only internal edge differences (and equivalently same is true)
    * then the differences can all (eventually) be discarded.
    *
@@ -383,18 +383,18 @@ struct CompareWorker {
    * edges to existing nodes to the side or below (already visited SCCs,
    * sharing), or above (back links forming cycles).
    *
-   * When an SCC is closed, all same implies deleting all diffs, any not same
-   * implies updating all to false.
+   * When an SCC is closed, same is true results in the deletion of all the
+   * nodes' diffs. The value of same is recorded for all nodes in the SCC.
    *
-   * On subsequent visits to a node, there are 2 cases. The node is still open:
-   * return true and an edge diff. The node is closed, return the stored value
-   * and an edge diff.
+   * On other visits to a node, there are 2 cases. The node is still open
+   * (meaning a recursive visit): return true and an edge diff. The node is
+   * closed (meaning a repeat visit): return the stored value and an edge diff.
    */
   std::pair<bool, Comparison> operator()(Id id1, Id id2) {
     const Comparison comparison{{id1}, {id2}};
     ++queried;
 
-    // 1. Check if the comparison has an already known result.
+    // Check if the comparison has an already known result.
     const auto already_known = known.find(comparison);
     if (already_known != known.end()) {
       // Already visited and closed.
@@ -403,9 +403,9 @@ struct CompareWorker {
           ? std::make_pair(true, Comparison{})
           : std::make_pair(false, comparison);
     }
-    // Either open or not visited at all
+    // The comparison is either already open or has not been visited at all.
 
-    // 2. Record node with Strongly-Connected Component finder.
+    // Record the comparison with the Strongly-Connected Component finder.
     const auto handle = scc.Open(comparison);
     if (!handle) {
       // Already open.
@@ -417,15 +417,48 @@ struct CompareWorker {
       ++being_compared;
       return {true, comparison};
     }
-    // Comparison opened, need to close it before returning.
+    // The comparison has now been opened, we must close it before returning.
+
+    // Really compare.
     ++really_compared;
+    const auto [same, diff] = CompareWithResolution(id1, id2);
 
-    Result result;
+    // Record the result and check for a complete Strongly-Connected Component.
+    outcomes.insert({comparison, diff});
+    const auto comparisons = scc.Close(*handle);
+    if (comparisons.empty()) {
+      // Open SCC.
+      //
+      // Note that both same and diff are tentative as comparison is still
+      // open.
+      return {same, comparison};
+    }
+    // Closed SCC.
+    //
+    // Note that same and diff now include every inequality and difference in
+    // the SCC via the DFS spanning tree.
+    const auto size = comparisons.size();
+    scc_size.Add(size);
+    (same ? equivalent : inequivalent) += size;
+    for (const auto& c : comparisons) {
+      // Record equality / inequality.
+      known.insert({c, same});
+      if (same) {
+        // Discard provisional diff.
+        outcomes.erase(c);
+      }
+    }
+    return same
+        ? std::make_pair(true, Comparison{})
+        : std::make_pair(false, comparison);
+  }
 
+  Result CompareWithResolution(Id id1, Id id2) {
     const auto [unqualified1, qualifiers1] = ResolveQualifiers(graph, id1);
     const auto [unqualified2, qualifiers2] = ResolveQualifiers(graph, id2);
     if (!qualifiers1.empty() || !qualifiers2.empty()) {
-      // 3.1 Qualified type difference.
+      // Qualified type difference.
+      Result result;
       auto it1 = qualifiers1.begin();
       auto it2 = qualifiers2.begin();
       const auto end1 = qualifiers1.end();
@@ -446,56 +479,24 @@ struct CompareWorker {
           ++it2;
         }
       }
-      const auto type_diff = (*this)(unqualified1, unqualified2);
-      result.MaybeAddEdgeDiff("underlying", type_diff);
-    } else {
-      const auto [resolved1, typedefs1] = ResolveTypedefs(graph, unqualified1);
-      const auto [resolved2, typedefs2] = ResolveTypedefs(graph, unqualified2);
-      if (unqualified1 != resolved1 || unqualified2 != resolved2) {
-        // 3.2 Typedef difference.
-        result.diff.holds_changes = !typedefs1.empty() && !typedefs2.empty()
-                                    && typedefs1[0] == typedefs2[0];
-        result.MaybeAddEdgeDiff("resolved", (*this)(resolved1, resolved2));
-      } else {
-        // 4. Compare nodes, if possible.
-        result = graph.Apply2(*this, unqualified1, unqualified2);
-      }
+      result.MaybeAddEdgeDiff("underlying",
+                              (*this)(unqualified1, unqualified2));
+      return result;
     }
 
-    // 5. Update result and check for a complete Strongly-Connected Component.
-    const bool same = result.same;
-    provisional.insert({comparison, result.diff});
-    const auto comparisons = scc.Close(*handle);
-    if (comparisons.empty()) {
-      // Open SCC.
-      //
-      // Note that both same and diff are tentative as comparison is still
-      // open.
-      return {same, comparison};
+    const auto [resolved1, typedefs1] = ResolveTypedefs(graph, unqualified1);
+    const auto [resolved2, typedefs2] = ResolveTypedefs(graph, unqualified2);
+    if (unqualified1 != resolved1 || unqualified2 != resolved2) {
+      // Typedef difference.
+      Result result;
+      result.diff.holds_changes = !typedefs1.empty() && !typedefs2.empty()
+                                  && typedefs1[0] == typedefs2[0];
+      result.MaybeAddEdgeDiff("resolved", (*this)(resolved1, resolved2));
+      return result;
     }
 
-    // Closed SCC.
-    //
-    // Note that result now incorporates every inequality and difference in the
-    // SCC via the DFS spanning tree.
-    const auto size = comparisons.size();
-    scc_size.Add(size);
-    for (const auto& c : comparisons) {
-      // Record equality / inequality.
-      known.insert({c, same});
-      const auto it = provisional.find(c);
-      Check(it != provisional.end())
-          << "internal error: missing provisional diffs";
-      if (!same) {
-        // Record differences.
-        outcomes.insert(*it);
-      }
-      provisional.erase(it);
-    }
-    (same ? equivalent : inequivalent) += size;
-    return same
-        ? std::make_pair(true, Comparison{})
-        : std::make_pair(false, comparison);
+    // Compare nodes directly.
+    return graph.Apply2(*this, unqualified1, unqualified2);
   }
 
   Comparison Removed(Id id) {
@@ -938,7 +939,6 @@ struct CompareWorker {
   const Ignore ignore;
   const Graph& graph;
   Outcomes& outcomes;
-  Outcomes provisional;
   std::unordered_map<Comparison, bool, HashComparison> known;
   SCC<Comparison, HashComparison> scc;
   Counter queried;
