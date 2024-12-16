@@ -82,14 +82,14 @@ Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes) {
   // Keep one representative of each set of duplicates.
   Counter unique(runtime, "deduplicate.unique");
   Counter duplicate(runtime, "deduplicate.duplicate");
-  auto remap = [&cache](Id& id) {
+  const auto remap = [&cache](Id& id) {
     // update id to representative id, avoiding silent stores
     const Id fid = cache.Find(id);
     if (fid != id) {
       id = fid;
     }
   };
-  Substitute substitute(graph, remap);
+  const Substitute substitute(graph, remap);
   {
     const Time x(runtime, "rewrite");
     for (const auto& [id, fp] : hashes) {
