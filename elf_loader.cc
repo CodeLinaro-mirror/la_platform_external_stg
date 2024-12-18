@@ -26,13 +26,13 @@
 #include <libelf.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <functional>
 #include <limits>
 #include <ostream>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "error.h"
@@ -466,9 +466,9 @@ ElfSymbol::CRC ElfLoader::GetElfSymbolCRC(
     const SymbolTableEntry& symbol) const {
   Check(is_little_endian_binary_)
       << "CRC is not supported in big-endian binaries";
-  const auto address = GetAbsoluteAddress(symbol);
+
   if (symbol.value_type == SymbolTableEntry::ValueType::ABSOLUTE) {
-    return ElfSymbol::CRC{static_cast<uint32_t>(address)};
+    return ElfSymbol::CRC{static_cast<uint32_t>(symbol.value)};
   }
   Check(symbol.value_type == SymbolTableEntry::ValueType::RELATIVE_TO_SECTION)
       << "CRC symbol is expected to be absolute or relative to a section";
@@ -477,6 +477,7 @@ ElfSymbol::CRC ElfLoader::GetElfSymbolCRC(
   const auto [header, data] = GetSectionInfo(section);
   Check(data->d_buf != nullptr) << "Section has no data buffer";
 
+  const auto address = GetAbsoluteAddress(symbol);
   Check(address >= header.sh_addr)
       << "CRC symbol address is below CRC section start";
 
@@ -507,6 +508,7 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
       << "Namespace symbol address is above namespace section end";
 
   const char* begin = reinterpret_cast<const char*>(data->d_buf) + offset;
+  // TODO: replace strnlen with something in a standard library
   const size_t length = strnlen(begin, data->d_size - offset);
   Check(offset + length < data->d_size)
       << "Namespace string should be null-terminated";
@@ -515,11 +517,8 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
 }
 
 size_t ElfLoader::GetAbsoluteAddress(const SymbolTableEntry& symbol) const {
-  if (symbol.value_type == SymbolTableEntry::ValueType::ABSOLUTE) {
-    return symbol.value;
-  }
   Check(symbol.value_type == SymbolTableEntry::ValueType::RELATIVE_TO_SECTION)
-      << "Only absolute and relative to sections symbols are supported";
+      << "only relocatable symbols are supported";
   // In relocatable files, st_value holds a section offset for a defined symbol.
   if (is_relocatable_) {
     const auto section = GetSectionByIndex(elf_, symbol.section_index);

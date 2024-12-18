@@ -30,7 +30,6 @@
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -435,7 +434,7 @@ class Processor {
 
   void ProcessTypedef(Entry& entry) {
     const auto type_name = GetName(entry);
-    const auto full_name = scope_ + type_name;
+    const auto full_name = scope_.name + type_name;
     const Id referred_type_id = GetReferredTypeId(MaybeGetReferredType(entry));
     const Id id = AddProcessedNode<Typedef>(entry, full_name, referred_type_id);
     if (!ShouldKeepDefinition(entry, type_name)) {
@@ -486,7 +485,8 @@ class Processor {
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
     const auto type_name = GetNameOrEmpty(entry);
-    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const auto full_name =
+        type_name.empty() ? type_name : scope_.name + type_name;
     const PushScopeName push_scope_name(scope_, kind, type_name);
 
     std::vector<Id> base_classes;
@@ -638,7 +638,7 @@ class Processor {
   void ProcessMethod(std::vector<Id>& methods, Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     auto id = maker_.Add<Function>(std::move(subprogram.node));
-    if (subprogram.external && subprogram.address) {
+    if (subprogram.external && subprogram.location) {
       // Only external functions with address are useful for ABI monitoring
       // TODO: cover virtual methods
       const auto new_symbol_idx = result_.symbols.size();
@@ -646,7 +646,7 @@ class Processor {
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = subprogram.linkage_name,
-          .address = *subprogram.address,
+          .location = *subprogram.location,
           .type_id = id});
     }
     const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
@@ -714,7 +714,8 @@ class Processor {
 
   void ProcessEnum(Entry& entry) {
     const auto type_name = GetNameOrEmpty(entry);
-    const auto full_name = type_name.empty() ? type_name : scope_ + type_name;
+    const auto full_name =
+        type_name.empty() ? type_name : scope_.name + type_name;
 
     if (entry.GetFlag(DW_AT_declaration)) {
       // It is expected to have only name and no children in declaration.
@@ -855,7 +856,7 @@ class Processor {
       result.unscoped_name = std::string();
     }
     if (result.unscoped_name) {
-      result.scoped_name = scope_ + *result.unscoped_name;
+      result.scoped_name = scope_.name + *result.unscoped_name;
       scoped_names_.emplace_back(
           entry.GetOffset(), *result.scoped_name);
     }
@@ -894,14 +895,14 @@ class Processor {
     auto referred_type = GetReferredType(entry);
     const Id referred_type_id = GetIdForEntry(referred_type);
 
-    if (auto address = entry.MaybeGetAddress(DW_AT_location)) {
+    if (auto location = entry.MaybeGetLocation(DW_AT_location)) {
       // Only external variables with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, name_with_context),
           .linkage_name = GetLinkageName(version_, entry),
-          .address = *address,
+          .location = *location,
           .type_id = referred_type_id});
     }
   }
@@ -909,14 +910,14 @@ class Processor {
   void ProcessFunction(Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     const Id id = AddProcessedNode<Function>(entry, std::move(subprogram.node));
-    if (subprogram.external && subprogram.address) {
+    if (subprogram.external && subprogram.location) {
       // Only external functions with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = std::move(subprogram.linkage_name),
-          .address = *subprogram.address,
+          .location = *subprogram.location,
           .type_id = id});
     }
   }
@@ -925,7 +926,7 @@ class Processor {
     Function node;
     NameWithContext name_with_context;
     std::string linkage_name;
-    std::optional<Address> address;
+    std::optional<Location> location;
     bool external;
   };
 
@@ -1008,7 +1009,7 @@ class Processor {
     return Subprogram{.node = Function(return_type_id, parameters),
                       .name_with_context = GetNameWithContext(entry),
                       .linkage_name = GetLinkageName(version_, entry),
-                      .address = entry.MaybeGetAddress(DW_AT_low_pc),
+                      .location = entry.MaybeGetLocation(DW_AT_low_pc),
                       .external = entry.GetFlag(DW_AT_external)};
   }
 
@@ -1036,7 +1037,9 @@ class Processor {
   }
 
   void AddNamedTypeNode(Id id) {
-    result_.named_type_ids.push_back(id);
+    if (scope_.named) {
+      result_.named_type_ids.push_back(id);
+    }
   }
 
   Maker<Hex<Dwarf_Off>> maker_;

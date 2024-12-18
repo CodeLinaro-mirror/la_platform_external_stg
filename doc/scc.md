@@ -16,11 +16,9 @@ There are three commonly-studied asymptotically-optimal approaches to
 determining the Strongly-Connected Components of a directed graph. Each of these
 admits various optimisations and specialisations for different purposes.
 
-* [Kosaraju's algorithm](https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm)
-* [Tarjan's
-  algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
-* [The path-based
-  algorithm](https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm)
+*   [Kosaraju's algorithm](https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm)
+*   [Tarjan's algorithm](https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm)
+*   [The path-based algorithm](https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm)
 
 Kosaraju's algorithm is unsuited to DFS-generated graphs (such as type
 comparison graphs) as it requires both forwards and reverse edges to be known
@@ -30,9 +28,9 @@ Tarjan's algorithm can be massaged into the form where it can be separated into
 a plain DFS traversal and SCC-specific pieces but the resulting code is a bit
 messy and responsibility for SCC state management is rather scattered.
 
-The path-based algorithm is the best fit and can be put in a form where the DFS
-traversal and SCC state management are cleanly separated. The concept of "open"
-nodes carries directly over to the implementation used here and SCC state
+The path-based algorithm is the best fit and can be put into a form where the
+DFS traversal and SCC state management are cleanly separated. The concept of
+"open" nodes carries directly over to the implementation used here and SCC state
 management occurs in two well-defined places.
 
 *   node visit starts; repeat visits to open nodes are detected
@@ -67,10 +65,10 @@ classification:
 
 1.  never visited before - the node should immediately transition to open and
     known to the SCC finder
-1.  open - the link just followed would create a cycle and the SCC finder
+2.  open - the link just followed would create a cycle and the SCC finder
     algorithm needs to do some state maintenance; the user code must not
     recursively process the node
-1.  closed - the link just followed reaches a node already fully processed and
+3.  closed - the link just followed reaches a node already fully processed and
     assigned to a SCC; the user code must not recursively process the node
 
 There are at least 3 different ways of structuring program logic to distinguish
@@ -80,9 +78,9 @@ these paths.
 
 Node lifecycle:
 
-1. unvisited + not open
-1. visited + open
-1. visited + not open
+1.  unvisited + not open
+2.  visited + open
+3.  visited + not open
 
 If a node has never been visited, it can be unconditionally opened. If it has
 been visited, we must still check if it's open. This is a bit odd in the context
@@ -118,9 +116,9 @@ if (!nodes.empty()) {
 
 Node lifecycle:
 
-1. not open + unvisited (never visited)
-1. open (being visited)
-1. not open + visited (closed)
+1.  not open + unvisited (never visited)
+2.  open (being visited)
+3.  not open + visited (closed)
 
 This scheme also requires separate `is_open` and `really_open` operations as
 nodes musn't be reopened (-simplicity, -efficiency). It does allow the user to
@@ -151,9 +149,9 @@ NOTE: This is the currently implemented approach.
 
 Node lifecycle:
 
-1. unvisited + not open
-1. unvisited + open
-1. visited + not open
+1.  unvisited + not open
+2.  unvisited + open
+3.  visited + not open
 
 This is the purest form of the algorithm with the `open` and `close` operations
 clearly bracketing "real" work. `really_open` and `is_open` operations are
@@ -190,40 +188,3 @@ sharing- and cycle-breaking links.
 
 However, building a graph (say a copy of the traversal, or a diff graph)
 requires open node state to be squirrelled away somewhere.
-
-##### Enhancement
-
-The SCC finder data structure can be made to carry values associated with open
-nodes and hand them to the user on failure-to-open and closure. This allows us
-to retain purity and regain the ability to maintain simple state for open nodes
-separately from that for closed nodes, at the expense of a slightly
-heavier-touch interface (+power).
-
-In the simplest case, we'd want nothing stored at all (beyond the node identity)
-and actually supplying a second empty type would be an annoyance and an
-inefficiency (-simplicity, -power, -efficiency)). So the best thing to supply is
-the user's container's `value_type` and associated `value_compare` comparator.
-
-However, in this variation, it's painful to set up the SCC structures for
-efficient `open` as nodes need to exist in a map or set, independently of any
-payload. The approach could be revisited if there's a solution to this.
-
-```c++
-if (visited) {
-  // work-saving link to shared node
-  return;
-}
-[&node_state, token] = open(node_state);
-if (!token) {
-  // cycle-breaking back link
-  return;
-}
-...
-// do work, update node_state if you like
-...
-node_states = close(token.value())
-if (!node_states.empty()) {
-  ...
-  mark_visited();
-}
-```

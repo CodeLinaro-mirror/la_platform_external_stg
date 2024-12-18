@@ -29,7 +29,7 @@
 
 namespace stg {
 
-// See NAMES.md for conceptual documentation.
+// See naming.md for conceptual documentation.
 
 enum class Precedence { NIL, POINTER, ARRAY_FUNCTION, ATOMIC };
 enum class Side { LEFT, RIGHT };
@@ -58,23 +58,6 @@ using NameCache = std::unordered_map<Id, Name>;
 struct Describe {
   Describe(const Graph& graph, NameCache& names) : graph(graph), names(names) {}
   Name operator()(Id id);
-  Name operator()(const Special&);
-  Name operator()(const PointerReference&);
-  Name operator()(const PointerToMember&);
-  Name operator()(const Typedef&);
-  Name operator()(const Qualified&);
-  Name operator()(const Primitive&);
-  Name operator()(const Array&);
-  Name operator()(const BaseClass&);
-  Name operator()(const Method&);
-  Name operator()(const Member&);
-  Name operator()(const VariantMember&);
-  Name operator()(const StructUnion&);
-  Name operator()(const Enumeration&);
-  Name operator()(const Variant&);
-  Name operator()(const Function&);
-  Name operator()(const ElfSymbol&);
-  Name operator()(const Interface&);
   const Graph& graph;
   NameCache& names;
 };
@@ -82,22 +65,12 @@ struct Describe {
 struct DescribeKind {
   explicit DescribeKind(const Graph& graph) : graph(graph) {}
   std::string operator()(Id id);
-  std::string operator()(const BaseClass&);
-  std::string operator()(const Method&);
-  std::string operator()(const Member&);
-  std::string operator()(const ElfSymbol&);
-  std::string operator()(const Interface&);
-  template <typename Node>
-  std::string operator()(const Node&);
   const Graph& graph;
 };
 
 struct DescribeExtra {
   explicit DescribeExtra(const Graph& graph) : graph(graph) {}
   std::string operator()(Id id);
-  std::string operator()(const ElfSymbol&);
-  template <typename Node>
-  std::string operator()(const Node&);
   const Graph& graph;
 };
 

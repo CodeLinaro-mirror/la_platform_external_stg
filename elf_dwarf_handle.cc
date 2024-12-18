@@ -21,7 +21,6 @@
 
 #include <elfutils/libdw.h>
 #include <elfutils/libdwfl.h>
-#include <fcntl.h>
 #include <gelf.h>
 #include <libelf.h>
 
