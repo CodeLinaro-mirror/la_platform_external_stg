@@ -19,8 +19,13 @@ primitive {
   bytesize: 0x00000004
 }
 member {
-  id: 0x16e523e2
+  id: 0x16e52ed9
   type_id: 0xd4bacb77  # u32
+}
+member {
+  id: 0x978131cb
+  name: "__0"
+  type_id: 0x384f7d7c  # char
   offset: 32
 }
 member {
@@ -37,19 +42,19 @@ member {
 variant_member {
   id: 0x56b9f935
   name: "Two"
-  type_id: 0x573dc947
+  type_id: 0x573dc947  # struct offset_discriminant::Foo::Two
 }
 variant_member {
   id: 0x69cfc441
   name: "One"
   discriminant_value: 1114112
-  type_id: 0x988e2459
+  type_id: 0x988e2459  # struct offset_discriminant::Foo::One
 }
 variant_member {
   id: 0x276cfc01
   name: "Zero"
   discriminant_value: 1114113
-  type_id: 0xb2cd8432
+  type_id: 0xb2cd8432  # struct offset_discriminant::Foo::Zero
 }
 struct_union {
   id: 0x988e2459
@@ -57,7 +62,7 @@ struct_union {
   name: "offset_discriminant::Foo::One"
   definition {
     bytesize: 8
-    member_id: 0x97813cf0  # char __0
+    member_id: 0x978131cb  # char __0
   }
 }
 struct_union {
@@ -82,7 +87,7 @@ variant {
   id: 0x82b2aa29
   name: "offset_discriminant::Foo"
   bytesize: 8
-  discriminant: 0x16e523e2
+  discriminant: 0x16e52ed9
   member_id: 0x56b9f935
   member_id: 0x69cfc441
   member_id: 0x276cfc01

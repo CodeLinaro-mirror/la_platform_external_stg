@@ -20,10 +20,7 @@
 #include "dwarf_wrappers.h"
 
 #include <dwarf.h>
-#include <elf.h>
 #include <elfutils/libdw.h>
-#include <elfutils/libdwfl.h>
-#include <fcntl.h>
 
 #include <cstddef>
 #include <cstdint>
@@ -39,8 +36,13 @@
 namespace stg {
 namespace dwarf {
 
-std::ostream& operator<<(std::ostream& os, const Address& address) {
-  return os << Hex(address.value) << (address.is_tls ? " (TLS)" : "");
+std::ostream& operator<<(std::ostream& os, const Location& location) {
+  switch (location.kind) {
+    case Location::Kind::ADDRESS:
+      return os << Hex(location.value);
+    case Location::Kind::TLS:
+      return os << "TLS:" << Hex(location.value);
+  }
 }
 
 namespace {
@@ -253,7 +255,7 @@ std::optional<Entry> Entry::MaybeGetReference(uint32_t attribute) {
 
 namespace {
 
-std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
+std::optional<Location> GetLocationFromExpression(Dwarf_Attribute& attribute) {
   const auto expression_opt = MaybeGetExpression(attribute);
   if (!expression_opt) {
     return {};
@@ -266,13 +268,21 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
     uint64_t address;
     Check(dwarf_formaddr(&result_attribute, &address) == kReturnOk)
         << "dwarf_formaddr returned error";
-    return Address{.value = address, .is_tls = false};
+    return Location{Location::Kind::ADDRESS, address};
   }
+
   if (expression.length == 1 && expression[0].atom == DW_OP_addr) {
     // DW_OP_addr is unsupported by dwarf_getlocation_attr, so we need to
     // manually extract the address from expression.
-    return Address{.value = expression[0].number, .is_tls = false};
+    return Location{Location::Kind::ADDRESS, expression[0].number};
   }
+  if (expression.length == 2 && expression[0].atom == DW_OP_addr &&
+      expression[1].atom == DW_OP_plus_uconst) {
+    // A rather odd case seen from Clang.
+    return Location{Location::Kind::ADDRESS,
+                    expression[0].number + expression[1].number};
+  }
+
   // TLS operation has different encodings in Clang and GCC:
   // * Clang 14 uses DW_OP_GNU_push_tls_address
   // * GCC 12 uses DW_OP_form_tls_address
@@ -281,9 +291,9 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
        expression[1].atom == DW_OP_form_tls_address)) {
     // TLS symbols address may be incorrect because of unsupported
     // relocations. Resetting it to zero the same way as it is done in
-    // elf::Reader::MaybeAddTypeInfo.
+    // elf::Reader::GetUserspaceSymbols.
     // TODO: match TLS variables by address
-    return Address{.value = 0, .is_tls = true};
+    return Location{Location::Kind::TLS, 0};
   }
 
   Die() << "Unsupported data location expression";
@@ -291,20 +301,19 @@ std::optional<Address> GetAddressFromLocation(Dwarf_Attribute& attribute) {
 
 }  // namespace
 
-std::optional<Address> Entry::MaybeGetAddress(uint32_t attribute) {
+std::optional<Location> Entry::MaybeGetLocation(uint32_t attribute) {
   auto dwarf_attribute = GetAttribute(&die, attribute);
   if (!dwarf_attribute) {
     return {};
   }
   if (attribute == DW_AT_location) {
-    return GetAddressFromLocation(*dwarf_attribute);
+    return GetLocationFromExpression(*dwarf_attribute);
   }
 
-  Address address;
-  Check(dwarf_formaddr(&dwarf_attribute.value(), &address.value) == kReturnOk)
+  uint64_t address;
+  Check(dwarf_formaddr(&dwarf_attribute.value(), &address) == kReturnOk)
       << "dwarf_formaddr returned error";
-  address.is_tls = false;
-  return address;
+  return Location{Location::Kind::ADDRESS, address};
 }
 
 std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
