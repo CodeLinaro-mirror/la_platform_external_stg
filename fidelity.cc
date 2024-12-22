@@ -36,9 +36,7 @@ namespace {
 
 struct Fidelity {
   Fidelity(const Graph& graph, NameCache& name_cache)
-      : graph(graph), describe(graph, name_cache), seen(Id(0)) {
-    seen.Reserve(graph.Limit());
-  }
+      : graph(graph), describe(graph, name_cache), seen(Id(0), graph.Limit()) {}
 
   void operator()(Id);
   void operator()(const std::vector<Id>&);
