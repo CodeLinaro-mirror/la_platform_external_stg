@@ -60,13 +60,12 @@ struct GetInterface {
 Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
   bool failed = false;
   // this rewrites the graph on destruction
-  Unification unification(runtime, graph, Id(0));
-  unification.Reserve(graph.Limit());
+  Unification unification(runtime, graph, Id(0), graph.Limit());
   std::map<std::string, Id> symbols;
   std::map<std::string, Id> types;
   const GetInterface get;
   for (auto root : roots) {
-    const auto& interface = graph.Apply<Interface&>(get, root);
+    const auto& interface = graph.Apply(get, root);
     for (const auto& x : interface.symbols) {
       if (!symbols.insert(x).second) {
         Warn() << "duplicate symbol during merge: " << x.first;
@@ -92,7 +91,7 @@ Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
 void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
   std::map<std::string, Id> symbols;
   GetInterface get;
-  auto& interface = graph.Apply<Interface&>(get, root);
+  auto& interface = graph.Apply(get, root);
   for (const auto& x : interface.symbols) {
     if (filter(x.first)) {
       symbols.insert(x);
@@ -228,10 +227,9 @@ int main(int argc, char* argv[]) {
     }
     if (!opt_keep_duplicates) {
       {
-        stg::Unification unification(runtime, graph, stg::Id(0));
-        unification.Reserve(graph.Limit());
+        stg::Unification unification(runtime, graph, stg::Id(0), graph.Limit());
         stg::ResolveTypes(runtime, graph, unification, {root});
-        unification.Update(root);
+        root = unification.Find(root);
       }
       const auto hashes = stg::Fingerprint(runtime, graph, root);
       root = stg::Deduplicate(runtime, graph, root, hashes);

@@ -20,6 +20,7 @@
 #include "unification.h"
 
 #include <cstddef>
+#include <exception>
 #include <map>
 #include <optional>
 #include <utility>
@@ -28,6 +29,8 @@
 #include <vector>
 
 #include "graph.h"
+#include "runtime.h"
+#include "substitution.h"
 
 namespace stg {
 
@@ -57,14 +60,16 @@ struct Unifier {
       return true;
     }
 
-    // Check if the comparison has an already known result.
+    // Check if the comparison has been (or is being) visited already. We don't
+    // need an SCC finder as any failure to unify will poison the entire DFS.
     //
-    // Opportunistic as seen is unaware of new mappings.
+    // This prevents infinite recursion, but maybe not immediately as seen is
+    // unaware of new mappings.
     if (!seen.emplace(fid1, fid2).second) {
       return true;
     }
 
-    const auto winner = graph.Apply2<Winner>(*this, fid1, fid2);
+    const auto winner = graph.Apply2(*this, fid1, fid2);
     if (winner == Neither) {
       return false;
     }
@@ -278,6 +283,74 @@ struct Unifier {
 };
 
 }  // namespace
+
+Unification::Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
+    : graph_(graph),
+      start_(start),
+      mapping_(start, limit),
+      runtime_(runtime),
+      find_query_(runtime, "unification.find_query"),
+      find_halved_(runtime, "unification.find_halved"),
+      union_known_(runtime, "unification.union_known"),
+      union_unknown_(runtime, "unification.union_unknown") {}
+
+Unification::~Unification() noexcept(false) {
+  if (std::uncaught_exceptions() > 0) {
+    // abort unification
+    return;
+  }
+  // apply substitutions to the entire graph
+  const Time time(runtime_, "unification.rewrite");
+  Counter removed(runtime_, "unification.removed");
+  Counter retained(runtime_, "unification.retained");
+  const auto remap = [&](Id& id) {
+    // update id to representative id, avoiding silent stores
+    const Id fid = Find(id);
+    if (fid != id) {
+      id = fid;
+    }
+  };
+  const Substitute substitute(graph_, remap);
+  graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
+    if (Find(id) != id) {
+      graph_.Remove(id);
+      ++removed;
+    } else {
+      substitute(id);
+      ++retained;
+    }
+  });
+}
+
+void Unification::Union(Id id1, Id id2) {
+  // always prefer Find(id2) as a parent
+  const Id fid1 = Find(id1);
+  const Id fid2 = Find(id2);
+  if (fid1 == fid2) {
+    ++union_known_;
+    return;
+  }
+  mapping_[fid1] = fid2;
+  ++union_unknown_;
+}
+
+Id Unification::Find(Id id) {
+  ++find_query_;
+  // path halving - tiny performance gain
+  while (true) {
+    // note: safe to take a reference as mapping cannot grow after this
+    auto& parent = mapping_[id];
+    if (parent == id) {
+      return id;
+    }
+    const auto parent_parent = mapping_[parent];
+    if (parent_parent == parent) {
+      return parent;
+    }
+    id = parent = parent_parent;
+    ++find_halved_;
+  }
+}
 
 bool Unification::Unify(Id id1, Id id2) {
   // TODO: Unifier only needs access to Unification::Find
