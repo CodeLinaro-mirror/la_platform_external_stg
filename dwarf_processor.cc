@@ -969,13 +969,17 @@ class Processor {
         case DW_TAG_subprogram:
         case DW_TAG_variable:
         case DW_TAG_call_site:
-        case DW_TAG_GNU_call_site:
-          // TODO: Do not leak local types outside this scope.
+        case DW_TAG_GNU_call_site: {
           // TODO: It would be better to not process any
           // information that is function local but there is a dangling
           // reference Clang bug.
+          //
+          // This scope will be called "unnamed function" which is a little
+          // unfortunate, but it is nevertheless similarly inaccessible.
+          const PushScopeName anonymous(scope_, "function", std::string());
           Process(child);
           break;
+        }
         case DW_TAG_imported_declaration:
         case DW_TAG_imported_module:
           // For now information there is useless for ABI monitoring, but we
