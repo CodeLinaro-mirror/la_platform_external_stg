@@ -485,7 +485,16 @@ class Processor {
   }
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
-    const auto type_name = GetNameOrEmpty(entry);
+    std::optional<Entry> signature_entry =
+        entry.MaybeGetReference(DW_AT_signature);
+    if (signature_entry) {
+      // Record a mapping from the current incomplete type to the full type
+      // referenced through DW_AT_signature.
+      result_.incomplete_to_full_types.emplace_back(
+          GetIdForEntry(entry), GetIdForEntry(*signature_entry));
+    }
+    const auto type_name =
+        GetNameOrEmpty(signature_entry ? *signature_entry : entry);
     const auto full_name =
         type_name.empty() ? type_name : scope_.name + type_name;
     const PushScopeName push_scope_name(scope_, kind, type_name);
@@ -714,7 +723,16 @@ class Processor {
   }
 
   void ProcessEnum(Entry& entry) {
-    const auto type_name = GetNameOrEmpty(entry);
+    std::optional<Entry> signature_entry =
+        entry.MaybeGetReference(DW_AT_signature);
+    if (signature_entry) {
+      // Record a mapping from the current incomplete type to the full type
+      // referenced through DW_AT_signature.
+      result_.incomplete_to_full_types.emplace_back(
+          GetIdForEntry(entry), GetIdForEntry(*signature_entry));
+    }
+    const auto type_name =
+        GetNameOrEmpty(signature_entry ? *signature_entry : entry);
     const auto full_name =
         type_name.empty() ? type_name : scope_.name + type_name;
 
