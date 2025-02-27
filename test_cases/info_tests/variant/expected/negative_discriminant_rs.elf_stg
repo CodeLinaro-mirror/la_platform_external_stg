@@ -29,15 +29,15 @@ member {
   offset: 64
 }
 variant_member {
-  id: 0x72c55dce
+  id: 0x72c55fb9
   name: "MinusTwo"
-  discriminant_value: 65534
+  discriminant_value: 254
   type_id: 0xc8fb9972  # struct negative_discriminant::Foo::MinusTwo
 }
 variant_member {
-  id: 0x528ee922
+  id: 0x528eec24
   name: "MinusOne"
-  discriminant_value: 65535
+  discriminant_value: 255
   type_id: 0xdfc84a58  # struct negative_discriminant::Foo::MinusOne
 }
 variant_member {
@@ -73,25 +73,25 @@ struct_union {
   }
 }
 variant {
-  id: 0x298b726b
+  id: 0x298b72f7
   name: "negative_discriminant::Foo"
   bytesize: 16
   discriminant: 0x18ba9281
-  member_id: 0x72c55dce
-  member_id: 0x528ee922
+  member_id: 0x72c55fb9
+  member_id: 0x528eec24
   member_id: 0x27839c0b
 }
 function {
-  id: 0xb432b724
+  id: 0xb432b703
   return_type_id: 0x62aebfd4  # bool
-  parameter_id: 0x298b726b  # variant negative_discriminant::Foo
+  parameter_id: 0x298b72f7  # variant negative_discriminant::Foo
 }
 elf_symbol {
   id: 0x0f95dadc
   name: "is_minus_one"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0xb432b724  # bool(variant negative_discriminant::Foo)
+  type_id: 0xb432b703  # bool(variant negative_discriminant::Foo)
   full_name: "negative_discriminant::is_minus_one"
 }
 interface {
