@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -600,13 +600,7 @@ class Processor {
   }
 
   void ProcessVariantMember(Entry& entry) {
-    // TODO: Process signed discriminant values.
-    auto dw_discriminant_value =
-        entry.MaybeGetUnsignedConstant(DW_AT_discr_value);
-    auto discriminant_value =
-        dw_discriminant_value
-            ? std::optional(static_cast<int64_t>(*dw_discriminant_value))
-            : std::nullopt;
+    const auto discriminant_value = entry.MaybeGetConstant(DW_AT_discr_value);
 
     auto children = entry.GetChildren();
     if (children.size() != 1) {
@@ -756,13 +750,12 @@ class Processor {
           const std::string enumerator_name = GetName(child);
           // TODO: detect signedness of underlying type and call
           // an appropriate method.
-          std::optional<size_t> value_optional =
-              child.MaybeGetUnsignedConstant(DW_AT_const_value);
+          std::optional<int64_t> value_optional =
+              child.MaybeGetConstant(DW_AT_const_value);
           Check(value_optional.has_value()) << "Enumerator should have value";
           // TODO: support both uint64_t and int64_t, depending on
           // signedness of underlying type.
-          enumerators.emplace_back(enumerator_name,
-                                   static_cast<int64_t>(*value_optional));
+          enumerators.emplace_back(enumerator_name, *value_optional);
           break;
         }
         case DW_TAG_subprogram:

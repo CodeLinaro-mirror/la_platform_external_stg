@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -224,6 +224,48 @@ uint64_t Entry::MustGetUnsignedConstant(uint32_t attribute) {
           << " is missing attribute " << Hex(attribute);
   }
   return maybe_constant.value();
+}
+
+std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
+  auto dwarf_attribute = GetAttribute(&die, attribute);
+  if (!dwarf_attribute) {
+    return {};
+  }
+  const auto format = dwarf_whatform(&dwarf_attribute.value());
+  switch (format) {
+    case DW_FORM_sdata: {
+      int64_t svalue;
+      Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
+          << "dwarf_formsdata returned error for format " << Hex(format);
+      return svalue;
+    }
+    case DW_FORM_udata: {
+      uint64_t uvalue;
+      Check(dwarf_formudata(&dwarf_attribute.value(), &uvalue) == kReturnOk)
+          << "dwarf_formudata returned error for format " << Hex(format);
+      const auto svalue = static_cast<int64_t>(uvalue);
+      if (svalue < 0) {
+        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
+               << " format " << Hex(format) << " value -" << Hex(-svalue)
+               << " should actually be " << Hex(uvalue);
+      }
+      return svalue;
+    }
+    default: {
+      uint64_t uvalue;
+      Check(dwarf_formudata(&dwarf_attribute.value(), &uvalue) == kReturnOk)
+          << "dwarf_formudata returned error for format " << Hex(format);
+      int64_t svalue;
+      Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
+          << "dwarf_formsdata returned error for format " << Hex(format);
+      if (svalue < 0) {
+        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
+               << " format " << Hex(format) << " value " << uvalue
+               << " might actually be " << svalue;
+      }
+      return static_cast<int64_t>(uvalue);
+    }
+  }
 }
 
 bool Entry::GetFlag(uint32_t attribute) {
