@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2024 Google LLC
+// Copyright 2020-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -203,9 +203,9 @@ std::vector<Id> Structs::BuildMembers(
 }
 
 // vlen: vector length, the number of enum values
-std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums(
+Enumeration::Enumerators Structs::BuildEnums(
     bool is_signed, const struct btf_enum* enums, size_t vlen) {
-  std::vector<std::pair<std::string, int64_t>> result;
+  Enumeration::Enumerators result;
   for (size_t i = 0; i < vlen; ++i) {
     const auto name = GetName(enums[i].name_off);
     const uint32_t unsigned_value = enums[i].val;
@@ -219,9 +219,9 @@ std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums(
   return result;
 }
 
-std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums64(
+Enumeration::Enumerators Structs::BuildEnums64(
     bool is_signed, const struct btf_enum64* enums, size_t vlen) {
-  std::vector<std::pair<std::string, int64_t>> result;
+  Enumeration::Enumerators result;
   for (size_t i = 0; i < vlen; ++i) {
     const auto name = GetName(enums[i].name_off);
     const uint32_t low = enums[i].val_lo32;
