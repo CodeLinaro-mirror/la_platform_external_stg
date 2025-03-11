@@ -40,6 +40,7 @@
 #include "error.h"
 #include "graph.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 
@@ -50,7 +51,7 @@ namespace {
 // BTF Specification: https://www.kernel.org/doc/html/latest/bpf/btf.html
 class Structs {
  public:
-  explicit Structs(Graph& graph);
+  Structs(Runtime& runtime, Graph& graph);
   Id Process(std::string_view data);
 
  private:
@@ -105,7 +106,7 @@ const T* Structs::MemoryRange::Pull(size_t count) {
   return reinterpret_cast<const T*>(saved);
 }
 
-Structs::Structs(Graph& graph)
+Structs::Structs(Runtime&, Graph& graph)
     : maker_(graph) {}
 
 // Get the index of the void type, creating one if needed.
@@ -457,14 +458,15 @@ Id Structs::BuildSymbols() {
 
 }  // namespace
 
-Id ReadSection(Graph& graph, std::string_view data) {
-  return Structs(graph).Process(data);
+Id ReadSection(Runtime& runtime, Graph& graph, std::string_view data) {
+  return Structs(runtime, graph).Process(data);
 }
 
-Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
+Id ReadFile(Runtime& runtime, Graph& graph, const std::string& path,
+            ReadOptions) {
   ElfDwarfHandle handle(path);
   const elf::ElfLoader loader(handle.GetElf());
-  return ReadSection(graph, loader.GetSectionRawData(".BTF"));
+  return ReadSection(runtime, graph, loader.GetSectionRawData(".BTF"));
 }
 
 }  // namespace btf

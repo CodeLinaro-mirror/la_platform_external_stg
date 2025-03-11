@@ -18,16 +18,20 @@
 // Author: Matthias Maennich
 
 #include <cstddef>
+#include <sstream>
 #include <string_view>
 
 #include "btf_reader.h"
 #include "error.h"
 #include "graph.h"
+#include "runtime.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const char* data, size_t size) {
   try {
+    std::ostringstream os;
+    stg::Runtime runtime(os, false);
     stg::Graph graph;
-    stg::btf::ReadSection(graph, std::string_view(data, size));
+    stg::btf::ReadSection(runtime, graph, std::string_view(data, size));
   } catch (const stg::Exception&) {
     // Pass as this is us catching invalid BTF properly.
   }
