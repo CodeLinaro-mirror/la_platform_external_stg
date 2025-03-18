@@ -5,10 +5,46 @@ special {
   kind: VOID
 }
 primitive {
+  id: 0x2d2f93e0
+  name: "u8"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0x47ea5d8b
+  name: "i16"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000002
+}
+primitive {
   id: 0x89d2d38c
   name: "u64"
   encoding: UNSIGNED_INTEGER
   bytesize: 0x00000008
+}
+primitive {
+  id: 0x951c1ffe
+  name: "u16"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000002
+}
+primitive {
+  id: 0xd4bacb77
+  name: "u32"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+primitive {
+  id: 0xd6c419f3
+  name: "i8"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0xe5312866
+  name: "i32"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
 }
 primitive {
   id: 0xedc43a15
@@ -17,152 +53,423 @@ primitive {
   bytesize: 0x00000008
 }
 enumeration {
-  id: 0x61ae057b
-  name: "enumerator_limits::Neg"
+  id: 0x03655a23
+  name: "enumerator_limits::Neg16"
   definition {
-    underlying_type_id: 0xedc43a15  # i64
+    underlying_type_id: 0x47ea5d8b  # i16
     enumerator {
-      name: "A"
+      name: "N0"
     }
     enumerator {
-      name: "B"
+      name: "N1"
       value: -1
     }
     enumerator {
-      name: "C"
+      name: "N127"
+      value: -127
+    }
+    enumerator {
+      name: "N128"
       value: -128
     }
     enumerator {
-      name: "D"
-      value: -129
+      name: "N255"
+      value: -255
     }
     enumerator {
-      name: "E"
+      name: "N256"
       value: -256
     }
     enumerator {
-      name: "F"
-      value: -257
+      name: "N32767"
+      value: -32767
     }
     enumerator {
-      name: "G"
+      name: "N32768"
+      value: -32768
+    }
+  }
+}
+enumeration {
+  id: 0xf379acbb
+  name: "enumerator_limits::Neg32"
+  definition {
+    underlying_type_id: 0xe5312866  # i32
+    enumerator {
+      name: "N0"
+    }
+    enumerator {
+      name: "N1"
+      value: -1
+    }
+    enumerator {
+      name: "N127"
+      value: -127
+    }
+    enumerator {
+      name: "N128"
+      value: -128
+    }
+    enumerator {
+      name: "N255"
+      value: -255
+    }
+    enumerator {
+      name: "N256"
+      value: -256
+    }
+    enumerator {
+      name: "N32767"
+      value: -32767
+    }
+    enumerator {
+      name: "N32768"
       value: -32768
     }
     enumerator {
-      name: "H"
-      value: -32769
+      name: "N65535"
+      value: -65535
     }
     enumerator {
-      name: "I"
+      name: "N65536"
       value: -65536
     }
     enumerator {
-      name: "J"
-      value: -65537
+      name: "N2147483647"
+      value: -2147483647
     }
     enumerator {
-      name: "K"
+      name: "N2147483648"
+      value: -2147483648
+    }
+  }
+}
+enumeration {
+  id: 0x612fd343
+  name: "enumerator_limits::Neg64"
+  definition {
+    underlying_type_id: 0xedc43a15  # i64
+    enumerator {
+      name: "N0"
+    }
+    enumerator {
+      name: "N1"
+      value: -1
+    }
+    enumerator {
+      name: "N127"
+      value: -127
+    }
+    enumerator {
+      name: "N128"
+      value: -128
+    }
+    enumerator {
+      name: "N255"
+      value: -255
+    }
+    enumerator {
+      name: "N256"
+      value: -256
+    }
+    enumerator {
+      name: "N32767"
+      value: -32767
+    }
+    enumerator {
+      name: "N32768"
+      value: -32768
+    }
+    enumerator {
+      name: "N65535"
+      value: -65535
+    }
+    enumerator {
+      name: "N65536"
+      value: -65536
+    }
+    enumerator {
+      name: "N2147483647"
+      value: -2147483647
+    }
+    enumerator {
+      name: "N2147483648"
       value: -2147483648
     }
     enumerator {
-      name: "L"
-      value: -2147483649
+      name: "N4294967295"
+      value: -4294967295
     }
     enumerator {
-      name: "M"
+      name: "N4294967296"
       value: -4294967296
     }
     enumerator {
-      name: "N"
-      value: -4294967297
+      name: "N9223372036854775807"
+      value: -9223372036854775807
     }
     enumerator {
-      name: "O"
+      name: "N9223372036854775808"
       value: -9223372036854775808
     }
   }
 }
 enumeration {
-  id: 0xf8ecf7f6
-  name: "enumerator_limits::Pos"
+  id: 0x2143fe22
+  name: "enumerator_limits::Neg8"
   definition {
-    underlying_type_id: 0x89d2d38c  # u64
+    underlying_type_id: 0xd6c419f3  # i8
     enumerator {
-      name: "A"
+      name: "N0"
     }
     enumerator {
-      name: "B"
+      name: "N1"
+      value: -1
+    }
+    enumerator {
+      name: "N127"
+      value: -127
+    }
+    enumerator {
+      name: "N128"
+      value: -128
+    }
+  }
+}
+enumeration {
+  id: 0xda89c5e6
+  name: "enumerator_limits::Pos16"
+  definition {
+    underlying_type_id: 0x951c1ffe  # u16
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P1"
       value: 1
     }
     enumerator {
-      name: "C"
+      name: "P127"
       value: 127
     }
     enumerator {
-      name: "D"
+      name: "P128"
       value: 128
     }
     enumerator {
-      name: "E"
+      name: "P255"
       value: 255
     }
     enumerator {
-      name: "F"
+      name: "P256"
       value: 256
     }
     enumerator {
-      name: "G"
+      name: "P32767"
       value: 32767
     }
     enumerator {
-      name: "H"
+      name: "P32768"
       value: 32768
     }
     enumerator {
-      name: "I"
+      name: "P65535"
+      value: 65535
+    }
+  }
+}
+enumeration {
+  id: 0x6cca9488
+  name: "enumerator_limits::Pos32"
+  definition {
+    underlying_type_id: 0xd4bacb77  # u32
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P1"
+      value: 1
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P128"
+      value: 128
+    }
+    enumerator {
+      name: "P255"
+      value: 255
+    }
+    enumerator {
+      name: "P256"
+      value: 256
+    }
+    enumerator {
+      name: "P32767"
+      value: 32767
+    }
+    enumerator {
+      name: "P32768"
+      value: 32768
+    }
+    enumerator {
+      name: "P65535"
       value: 65535
     }
     enumerator {
-      name: "J"
+      name: "P65536"
       value: 65536
     }
     enumerator {
-      name: "K"
+      name: "P2147483647"
       value: 2147483647
     }
     enumerator {
-      name: "L"
+      name: "P2147483648"
       value: 2147483648
     }
     enumerator {
-      name: "M"
+      name: "P4294967295"
+      value: 4294967295
+    }
+  }
+}
+enumeration {
+  id: 0x9597ae22
+  name: "enumerator_limits::Pos64"
+  definition {
+    underlying_type_id: 0x89d2d38c  # u64
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P1"
+      value: 1
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P128"
+      value: 128
+    }
+    enumerator {
+      name: "P255"
+      value: 255
+    }
+    enumerator {
+      name: "P256"
+      value: 256
+    }
+    enumerator {
+      name: "P32767"
+      value: 32767
+    }
+    enumerator {
+      name: "P32768"
+      value: 32768
+    }
+    enumerator {
+      name: "P65535"
+      value: 65535
+    }
+    enumerator {
+      name: "P65536"
+      value: 65536
+    }
+    enumerator {
+      name: "P2147483647"
+      value: 2147483647
+    }
+    enumerator {
+      name: "P2147483648"
+      value: 2147483648
+    }
+    enumerator {
+      name: "P4294967295"
       value: 4294967295
     }
     enumerator {
-      name: "N"
+      name: "P4294967296"
       value: 4294967296
     }
     enumerator {
-      name: "O"
+      name: "P9223372036854775807"
       value: 9223372036854775807
+    }
+    enumerator {
+      name: "P9223372036854775808"
+      value: -9223372036854775808
+    }
+    enumerator {
+      name: "P18446744073709551615"
+      value: -1
+    }
+  }
+}
+enumeration {
+  id: 0x80814b97
+  name: "enumerator_limits::Pos8"
+  definition {
+    underlying_type_id: 0x2d2f93e0  # u8
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P1"
+      value: 1
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P128"
+      value: 128
+    }
+    enumerator {
+      name: "P255"
+      value: 255
     }
   }
 }
 function {
-  id: 0x2f25d47b
+  id: 0x18f861a7
   return_type_id: 0x48b5725f  # void
-  parameter_id: 0xf8ecf7f6  # enum enumerator_limits::Pos
-  parameter_id: 0x61ae057b  # enum enumerator_limits::Neg
+  parameter_id: 0x2143fe22  # enum enumerator_limits::Neg8
+  parameter_id: 0x03655a23  # enum enumerator_limits::Neg16
+  parameter_id: 0xf379acbb  # enum enumerator_limits::Neg32
+  parameter_id: 0x612fd343  # enum enumerator_limits::Neg64
+}
+function {
+  id: 0x33cb409a
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x80814b97  # enum enumerator_limits::Pos8
+  parameter_id: 0xda89c5e6  # enum enumerator_limits::Pos16
+  parameter_id: 0x6cca9488  # enum enumerator_limits::Pos32
+  parameter_id: 0x9597ae22  # enum enumerator_limits::Pos64
 }
 elf_symbol {
-  id: 0xb11bf393
-  name: "_RNvCscgSZSNRB2lP_17enumerator_limits11use_pos_neg"
+  id: 0xb97459f7
+  name: "_RNvCscgSZSNRB2lP_17enumerator_limits7use_neg"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x2f25d47b  # void(enum enumerator_limits::Pos, enum enumerator_limits::Neg)
-  full_name: "enumerator_limits::use_pos_neg"
+  type_id: 0x18f861a7  # void(enum enumerator_limits::Neg8, enum enumerator_limits::Neg16, enum enumerator_limits::Neg32, enum enumerator_limits::Neg64)
+  full_name: "enumerator_limits::use_neg"
+}
+elf_symbol {
+  id: 0xe37c0a3b
+  name: "_RNvCscgSZSNRB2lP_17enumerator_limits7use_pos"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x33cb409a  # void(enum enumerator_limits::Pos8, enum enumerator_limits::Pos16, enum enumerator_limits::Pos32, enum enumerator_limits::Pos64)
+  full_name: "enumerator_limits::use_pos"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0xb11bf393  # void enumerator_limits::use_pos_neg(enum enumerator_limits::Pos, enum enumerator_limits::Neg)
+  symbol_id: 0xb97459f7  # void enumerator_limits::use_neg(enum enumerator_limits::Neg8, enum enumerator_limits::Neg16, enum enumerator_limits::Neg32, enum enumerator_limits::Neg64)
+  symbol_id: 0xe37c0a3b  # void enumerator_limits::use_pos(enum enumerator_limits::Pos8, enum enumerator_limits::Pos16, enum enumerator_limits::Pos32, enum enumerator_limits::Pos64)
 }
