@@ -4,7 +4,7 @@ variable symbol '_ZTI15VirtualToStatic' was removed
 
 variable symbol '_ZTS15VirtualToStatic' was removed
 
-variable symbol '_ZTV15VirtualToStatic' was removed
+variable symbol 'void* VirtualToStatic::_vtable$' {_ZTV15VirtualToStatic} was removed
 
 function symbol 'void StaticToVirtual::StaticToVirtual(struct StaticToVirtual*)' {_ZN15StaticToVirtualC2Ev} was added
 
@@ -12,7 +12,7 @@ variable symbol '_ZTI15StaticToVirtual' was added
 
 variable symbol '_ZTS15StaticToVirtual' was added
 
-variable symbol '_ZTV15StaticToVirtual' was added
+variable symbol 'void* StaticToVirtual::_vtable$' {_ZTV15StaticToVirtual} was added
 
 function symbol changed from 'int StaticToVirtual::print()' {_ZN15StaticToVirtual5printEv} to 'int StaticToVirtual::print(struct StaticToVirtual*)' {_ZN15StaticToVirtual5printEv}
   type changed from 'int()' to 'int(struct StaticToVirtual*)'

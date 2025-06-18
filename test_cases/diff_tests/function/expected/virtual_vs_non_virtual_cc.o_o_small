@@ -2,13 +2,13 @@ variable symbol '_ZTI15VirtualToNormal' was removed
 
 variable symbol '_ZTS15VirtualToNormal' was removed
 
-variable symbol '_ZTV15VirtualToNormal' was removed
+variable symbol 'void* VirtualToNormal::_vtable$' {_ZTV15VirtualToNormal} was removed
 
 variable symbol '_ZTI15NormalToVirtual' was added
 
 variable symbol '_ZTS15NormalToVirtual' was added
 
-variable symbol '_ZTV15NormalToVirtual' was added
+variable symbol 'void* NormalToVirtual::_vtable$' {_ZTV15NormalToVirtual} was added
 
 type 'struct NormalToVirtual' changed
   byte size changed from 1 to 8
