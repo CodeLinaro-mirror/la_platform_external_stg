@@ -535,8 +535,8 @@ function {
   parameter_id: 0x11accb2e  # variant discriminant_limits::Neg
 }
 elf_symbol {
-  id: 0x07a3217e
-  name: "_RNvCsjDsefnZajGk_19discriminant_limits11use_pos_neg"
+  id: 0xbe2ac15a
+  name: "_RNvCsimMchmvBJNU_19discriminant_limits11use_pos_neg"
   is_defined: true
   symbol_type: FUNCTION
   type_id: 0x1ec83fb6  # void(variant discriminant_limits::Pos, variant discriminant_limits::Neg)
@@ -544,5 +544,5 @@ elf_symbol {
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x07a3217e  # void discriminant_limits::use_pos_neg(variant discriminant_limits::Pos, variant discriminant_limits::Neg)
+  symbol_id: 0xbe2ac15a  # void discriminant_limits::use_pos_neg(variant discriminant_limits::Pos, variant discriminant_limits::Neg)
 }
