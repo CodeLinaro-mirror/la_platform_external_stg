@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2024 Google LLC
+// Copyright 2021-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -1255,7 +1255,7 @@ void Abigail::ProcessEnum(const std::string& id, xmlNodePtr enumeration) {
   CheckName("underlying-type", underlying);
   const auto type = GetEdge(underlying);
 
-  std::vector<std::pair<std::string, int64_t>> enumerators;
+  Enumeration::Enumerators enumerators;
   for (auto* enumerator = Next(underlying); enumerator;
        enumerator = Next(enumerator)) {
     CheckName("enumerator", enumerator);
