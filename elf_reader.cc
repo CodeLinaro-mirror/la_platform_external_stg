@@ -278,6 +278,12 @@ class Reader {
     // is populated. This is done by reserving space to the new graph limit.
     Unification unification(runtime_, graph_, start, graph_.Limit());
 
+    // Replace incomplete types with the full type.
+    for (const auto [incomplete_type_id, full_type_id] :
+         types.incomplete_to_full_types) {
+      unification.Unify(incomplete_type_id, full_type_id);
+    }
+
     // fill location to id
     //
     // In general, we want to handle as many of the following cases as possible.
