@@ -352,6 +352,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
+      case DW_TAG_type_unit:
         language_ = entry.MustGetUnsignedConstant(DW_AT_language);
         ProcessAllChildren(entry);
         break;
