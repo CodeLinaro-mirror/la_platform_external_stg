@@ -205,10 +205,11 @@ void Transformer::AddNode(const VariantMember& x) {
 
 void Transformer::AddNode(const StructUnion& x) {
   if (x.has_definition()) {
+    const auto& definition = x.definition();
     AddNode<stg::StructUnion>(
-        x.id(), x.kind(), x.name(), x.definition().bytesize(),
-        x.definition().base_class_id(), x.definition().method_id(),
-        x.definition().member_id());
+        x.id(), x.kind(), x.name(), definition.bytesize(),
+        definition.base_class_id(), definition.method_id(),
+        definition.member_id());
   } else {
     AddNode<stg::StructUnion>(x.id(), x.kind(), x.name());
   }
@@ -216,9 +217,10 @@ void Transformer::AddNode(const StructUnion& x) {
 
 void Transformer::AddNode(const Enumeration& x) {
   if (x.has_definition()) {
+    const auto& definition = x.definition();
     AddNode<stg::Enumeration>(x.id(), x.name(),
-                              GetId(x.definition().underlying_type_id()),
-                              x.definition().enumerator());
+                              GetId(definition.underlying_type_id()),
+                              definition.enumerator());
     return;
   } else {
     AddNode<stg::Enumeration>(x.id(), x.name());
