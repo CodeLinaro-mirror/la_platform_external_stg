@@ -50,7 +50,8 @@ namespace proto {
 namespace {
 
 struct Transformer {
-  explicit Transformer(Graph& graph) : graph(graph), maker(graph) {}
+  Transformer(uint32_t version, Graph& graph)
+      : version(version), graph(graph), maker(graph) {}
 
   Id Transform(const proto::STG&);
 
@@ -101,6 +102,7 @@ struct Transformer {
   template <typename Type>
   Type Transform(const Type&);
 
+  uint32_t version;
   Graph& graph;
   Maker<Hex<uint32_t>> maker;
 };
@@ -141,10 +143,12 @@ void Transformer::AddNodes(const google::protobuf::RepeatedPtrField<ProtoType>& 
 }
 
 void Transformer::AddNode(const Void& x) {
+  Check(version <= 1) << "unexpected Void in input";
   AddNode<stg::Special>(x.id(), stg::Special::Kind::VOID);
 }
 
 void Transformer::AddNode(const Variadic& x) {
+  Check(version <= 1) << "unexpected Variadic in input";
   AddNode<stg::Special>(x.id(), stg::Special::Kind::VARIADIC);
 }
 
@@ -261,6 +265,7 @@ void Transformer::AddNode(const ElfSymbol& x) {
 }
 
 void Transformer::AddNode(const Symbols& x) {
+  Check(version <= 0) << "unexpected Symbols in input";
   std::map<std::string, Id> symbols;
   for (const auto& [symbol, id] : x.symbol()) {
     symbols.emplace(symbol, GetId(id));
@@ -507,8 +512,9 @@ Id ReadHelper(Runtime& runtime, Graph& graph,
   }
   {
     const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version());
-    return Transformer(graph).Transform(stg);
+    const auto version = stg.version();
+    CheckFormatVersion(version);
+    return Transformer(version, graph).Transform(stg);
   }
 }
 
