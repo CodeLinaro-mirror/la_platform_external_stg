@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2024 Google LLC
+// Copyright 2020-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -40,6 +40,7 @@
 #include "error.h"
 #include "graph.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 
@@ -50,7 +51,7 @@ namespace {
 // BTF Specification: https://www.kernel.org/doc/html/latest/bpf/btf.html
 class Structs {
  public:
-  explicit Structs(Graph& graph);
+  Structs(Runtime& runtime, Graph& graph);
   Id Process(std::string_view data);
 
  private:
@@ -105,7 +106,7 @@ const T* Structs::MemoryRange::Pull(size_t count) {
   return reinterpret_cast<const T*>(saved);
 }
 
-Structs::Structs(Graph& graph)
+Structs::Structs(Runtime&, Graph& graph)
     : maker_(graph) {}
 
 // Get the index of the void type, creating one if needed.
@@ -203,9 +204,9 @@ std::vector<Id> Structs::BuildMembers(
 }
 
 // vlen: vector length, the number of enum values
-std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums(
+Enumeration::Enumerators Structs::BuildEnums(
     bool is_signed, const struct btf_enum* enums, size_t vlen) {
-  std::vector<std::pair<std::string, int64_t>> result;
+  Enumeration::Enumerators result;
   for (size_t i = 0; i < vlen; ++i) {
     const auto name = GetName(enums[i].name_off);
     const uint32_t unsigned_value = enums[i].val;
@@ -219,9 +220,9 @@ std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums(
   return result;
 }
 
-std::vector<std::pair<std::string, int64_t>> Structs::BuildEnums64(
+Enumeration::Enumerators Structs::BuildEnums64(
     bool is_signed, const struct btf_enum64* enums, size_t vlen) {
-  std::vector<std::pair<std::string, int64_t>> result;
+  Enumeration::Enumerators result;
   for (size_t i = 0; i < vlen; ++i) {
     const auto name = GetName(enums[i].name_off);
     const uint32_t low = enums[i].val_lo32;
@@ -457,14 +458,15 @@ Id Structs::BuildSymbols() {
 
 }  // namespace
 
-Id ReadSection(Graph& graph, std::string_view data) {
-  return Structs(graph).Process(data);
+Id ReadSection(Runtime& runtime, Graph& graph, std::string_view data) {
+  return Structs(runtime, graph).Process(data);
 }
 
-Id ReadFile(Graph& graph, const std::string& path, ReadOptions) {
+Id ReadFile(Runtime& runtime, Graph& graph, const std::string& path,
+            ReadOptions) {
   ElfDwarfHandle handle(path);
   const elf::ElfLoader loader(handle.GetElf());
-  return ReadSection(graph, loader.GetSectionRawData(".BTF"));
+  return ReadSection(runtime, graph, loader.GetSectionRawData(".BTF"));
 }
 
 }  // namespace btf

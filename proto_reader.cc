@@ -50,7 +50,8 @@ namespace proto {
 namespace {
 
 struct Transformer {
-  explicit Transformer(Graph& graph) : graph(graph), maker(graph) {}
+  Transformer(uint32_t version, Graph& graph)
+      : version(version), graph(graph), maker(graph) {}
 
   Id Transform(const proto::STG&);
 
@@ -101,6 +102,7 @@ struct Transformer {
   template <typename Type>
   Type Transform(const Type&);
 
+  uint32_t version;
   Graph& graph;
   Maker<Hex<uint32_t>> maker;
 };
@@ -141,10 +143,12 @@ void Transformer::AddNodes(const google::protobuf::RepeatedPtrField<ProtoType>& 
 }
 
 void Transformer::AddNode(const Void& x) {
+  Check(version <= 1) << "unexpected Void in input";
   AddNode<stg::Special>(x.id(), stg::Special::Kind::VOID);
 }
 
 void Transformer::AddNode(const Variadic& x) {
+  Check(version <= 1) << "unexpected Variadic in input";
   AddNode<stg::Special>(x.id(), stg::Special::Kind::VARIADIC);
 }
 
@@ -205,10 +209,11 @@ void Transformer::AddNode(const VariantMember& x) {
 
 void Transformer::AddNode(const StructUnion& x) {
   if (x.has_definition()) {
+    const auto& definition = x.definition();
     AddNode<stg::StructUnion>(
-        x.id(), x.kind(), x.name(), x.definition().bytesize(),
-        x.definition().base_class_id(), x.definition().method_id(),
-        x.definition().member_id());
+        x.id(), x.kind(), x.name(), definition.bytesize(),
+        definition.base_class_id(), definition.method_id(),
+        definition.member_id());
   } else {
     AddNode<stg::StructUnion>(x.id(), x.kind(), x.name());
   }
@@ -216,9 +221,10 @@ void Transformer::AddNode(const StructUnion& x) {
 
 void Transformer::AddNode(const Enumeration& x) {
   if (x.has_definition()) {
+    const auto& definition = x.definition();
     AddNode<stg::Enumeration>(x.id(), x.name(),
-                              GetId(x.definition().underlying_type_id()),
-                              x.definition().enumerator());
+                              GetId(definition.underlying_type_id()),
+                              definition.enumerator());
     return;
   } else {
     AddNode<stg::Enumeration>(x.id(), x.name());
@@ -259,6 +265,7 @@ void Transformer::AddNode(const ElfSymbol& x) {
 }
 
 void Transformer::AddNode(const Symbols& x) {
+  Check(version <= 0) << "unexpected Symbols in input";
   std::map<std::string, Id> symbols;
   for (const auto& [symbol, id] : x.symbol()) {
     symbols.emplace(symbol, GetId(id));
@@ -505,8 +512,9 @@ Id ReadHelper(Runtime& runtime, Graph& graph,
   }
   {
     const Time t(runtime, "proto.Transform");
-    CheckFormatVersion(stg.version());
-    return Transformer(graph).Transform(stg);
+    const auto version = stg.version();
+    CheckFormatVersion(version);
+    return Transformer(version, graph).Transform(stg);
   }
 }
 
