@@ -26,12 +26,14 @@
 
 #include "graph.h"
 #include "reader_options.h"
+#include "runtime.h"
 
 namespace stg {
 namespace btf {
 
-Id ReadSection(Graph& graph, std::string_view data);
-Id ReadFile(Graph& graph, const std::string& path, ReadOptions options);
+Id ReadSection(Runtime& runtime, Graph& graph, std::string_view data);
+Id ReadFile(Runtime& runtime, Graph& graph, const std::string& path,
+            ReadOptions options);
 
 }  // namespace btf
 }  // namespace stg

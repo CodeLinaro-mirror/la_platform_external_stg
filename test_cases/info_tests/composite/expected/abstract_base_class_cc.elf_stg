@@ -20,6 +20,11 @@ pointer_reference {
   pointee_type_id: 0x677b0759  # struct Y
 }
 pointer_reference {
+  id: 0x18bd6530
+  kind: POINTER
+  pointee_type_id: 0x48b5725f  # void
+}
+pointer_reference {
   id: 0x2df0016c
   kind: POINTER
   pointee_type_id: 0x9d80e32f  # int()
@@ -204,12 +209,16 @@ elf_symbol {
   is_defined: true
   symbol_type: OBJECT
   binding: WEAK
+  type_id: 0x18bd6530  # void*
+  full_name: "X::_vtable$"
 }
 elf_symbol {
   id: 0x4df3aa88
   name: "_ZTV1Y"
   is_defined: true
   symbol_type: OBJECT
+  type_id: 0x18bd6530  # void*
+  full_name: "Y::_vtable$"
 }
 interface {
   id: 0x84ea5130
@@ -223,6 +232,6 @@ interface {
   symbol_id: 0x62dbf9a8  # _ZTI1Y
   symbol_id: 0xa9b67458  # _ZTS1X
   symbol_id: 0x68f7d82f  # _ZTS1Y
-  symbol_id: 0x8c3333ff  # _ZTV1X
-  symbol_id: 0x4df3aa88  # _ZTV1Y
+  symbol_id: 0x8c3333ff  # void* X::_vtable$
+  symbol_id: 0x4df3aa88  # void* Y::_vtable$
 }
