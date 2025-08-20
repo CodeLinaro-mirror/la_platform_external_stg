@@ -45,21 +45,9 @@ namespace proto {
 
 namespace {
 
-class StableId {
- public:
-  explicit StableId(const Graph& graph) : stable_hash_(graph) {}
-
-  uint32_t operator()(Id id) {
-    return stable_hash_(id).value;
-  }
-
- private:
-  StableHash stable_hash_;
-};
-
 struct Transform {
-  Transform(const Graph& graph, proto::STG& stg, StableId& map_id)
-      : graph(graph), stg(stg), map_id(map_id) {}
+  Transform(const Graph& graph, proto::STG& stg)
+      : graph(graph), stg(stg), stable_hash(graph) {}
 
   uint32_t operator()(Id);
 
@@ -101,17 +89,15 @@ struct Transform {
 
   const Graph& graph;
   proto::STG& stg;
+  StableHash stable_hash;
   std::unordered_map<Id, uint32_t> external_id_by_internal_id;
   std::unordered_set<uint32_t> used_ids;
-
-  // Function object: Id -> uint32_t
-  StableId& map_id;
 };
 
 uint32_t Transform::operator()(Id id) {
   auto [it, inserted] = external_id_by_internal_id.emplace(id, 0);
   if (inserted) {
-    uint32_t mapped_id = map_id(id);
+    uint32_t mapped_id = stable_hash(id).value;
 
     // Ensure uniqueness of external ids. It is best to probe here since id
     // generators will not in general guarantee that the mapping from internal
@@ -560,8 +546,7 @@ const std::array<const google::protobuf::FieldDescriptor*, 19> edge_descriptors 
 void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os,
                    bool annotate) {
   proto::STG stg;
-  StableId stable_id(graph_);
-  Transform transform(graph_, stg, stable_id);
+  Transform transform(graph_, stg);
   stg.set_root_id(transform(root));
   SortNodes(stg);
   stg.set_version(kWrittenFormatVersion);
