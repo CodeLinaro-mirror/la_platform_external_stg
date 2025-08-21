@@ -38,6 +38,7 @@
 #include "filter.h"
 #include "hex.h"
 #include "graph.h"
+#include "number.h"
 #include "scope.h"
 
 namespace stg {
@@ -750,7 +751,7 @@ class Processor {
           const std::string enumerator_name = GetName(child);
           // TODO: detect signedness of underlying type and call
           // an appropriate method.
-          std::optional<int64_t> value_optional =
+          std::optional<Number> value_optional =
               child.MaybeGetConstant(DW_AT_const_value);
           Check(value_optional.has_value()) << "Enumerator should have value";
           // TODO: support both uint64_t and int64_t, depending on

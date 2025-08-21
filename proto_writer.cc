@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Siddharth Nayyar
+// Author: Giuliano Procida
 
 #include "proto_writer.h"
 
@@ -37,6 +38,7 @@
 #include "error.h"
 #include "graph.h"
 #include "naming.h"
+#include "number.h"
 #include "stable_hash.h"
 #include "stg.pb.h"
 
@@ -68,6 +70,8 @@ struct Transform {
   void operator()(const stg::Function&, uint32_t);
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
+
+  int64_t operator()(const Number&) const;
 
   Special::Kind operator()(stg::Special::Kind) const;
   PointerReference::Kind operator()(stg::PointerReference::Kind) const;
@@ -193,7 +197,7 @@ void Transform::operator()(const stg::VariantMember& x, uint32_t id) {
   variant_member.set_id(id);
   variant_member.set_name(x.name);
   if (x.discriminant_value) {
-    variant_member.set_discriminant_value(*x.discriminant_value);
+    variant_member.set_discriminant_value((*this)(*x.discriminant_value));
   }
   variant_member.set_type_id((*this)(x.type_id));
 }
@@ -229,7 +233,7 @@ void Transform::operator()(const stg::Enumeration& x, uint32_t id) {
     for (const auto& [name, value] : x.definition->enumerators) {
       auto& enumerator = *definition.add_enumerator();
       enumerator.set_name(name);
-      enumerator.set_value(value);
+      enumerator.set_value((*this)(value));
     }
   }
 }
@@ -292,6 +296,10 @@ void Transform::operator()(const stg::Interface& x, uint32_t id) {
   for (const auto& [_, id] : x.types) {
     interface.add_type_id((*this)(id));
   }
+}
+
+int64_t Transform::operator()(const Number& number) const {
+  return number.AsInt64();
 }
 
 PointerReference::Kind Transform::operator()(

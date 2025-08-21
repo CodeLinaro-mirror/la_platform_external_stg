@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2024 Google LLC
+// Copyright 2020-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -36,6 +36,7 @@
 #include <vector>
 
 #include "error.h"
+#include "number.h"
 
 namespace stg {
 
@@ -201,11 +202,11 @@ struct Member {
 
 struct VariantMember {
   VariantMember(const std::string& name,
-                std::optional<int64_t> discriminant_value, Id type_id)
+                std::optional<Number> discriminant_value, Id type_id)
       : name(name), discriminant_value(discriminant_value), type_id(type_id) {}
 
   std::string name;
-  std::optional<int64_t> discriminant_value;
+  std::optional<Number> discriminant_value;
   Id type_id;
 };
 
@@ -233,7 +234,7 @@ std::ostream& operator<<(std::ostream& os, StructUnion::Kind kind);
 std::string& operator+=(std::string& os, StructUnion::Kind kind);
 
 struct Enumeration {
-  using Enumerators = std::vector<std::pair<std::string, int64_t>>;
+  using Enumerators = std::vector<std::pair<std::string, Number>>;
   struct Definition {
     Id underlying_type_id;
     Enumerators enumerators;
