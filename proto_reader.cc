@@ -290,13 +290,11 @@ void Transformer::AddNode(uint32_t id, Args&&... args) {
 }
 
 Number Transformer::Transform(const google::protobuf::RepeatedField<int64_t>& repeated) {
-  std::vector<int64_t> chunks;
+  std::vector<uint64_t> chunks;
   for (auto chunk : repeated) {
-    chunks.push_back(chunk);
+    chunks.push_back(static_cast<uint64_t>(chunk));
   }
-  const auto number = Number::FromChunks(chunks);
-  Check(number.has_value()) << "unrepresentable number";
-  return number.value();
+  return Number::FromChunks(chunks);
 }
 
 std::vector<Id> Transformer::Transform(

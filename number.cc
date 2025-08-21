@@ -19,64 +19,152 @@
 
 #include "number.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
-#include <limits>
-#include <optional>
 #include <ostream>
+#include <string>
 #include <type_traits>
 #include <vector>
 
-#include "error.h"
-
 namespace stg {
 
-Number::Number() : value_(0) {}
+namespace {
 
-template<typename T>
-Number::Number(T n) : value_(n) {
-  static_assert(std::is_integral_v<T>);
-  if constexpr (std::is_signed_v<T>) {
-    if (std::numeric_limits<int64_t>::min() <= n
-        && n <= std::numeric_limits<int64_t>::max()) {
-      return;
-    }
-  } else {
-    if (0 <= n
-        && n <= static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
-      return;
+bool Negative(const std::string& limbs) {
+  return !limbs.empty() && (limbs.back() & 0x80) != 0;
+}
+
+void Negate(std::string& limbs) {
+  // negate in 2's complement
+  bool carry = true;
+  for (char& limb : limbs) {
+    limb = ~limb;
+    if (carry) {
+      limb = static_cast<unsigned char>(limb) + 1;
+      carry = limb == 0;
     }
   }
-  Warn() << "number " << n << " misrepresented as " << value_;
+}
+
+void Trim(std::string& limbs) {
+  const bool negative = Negative(limbs);
+  while (!limbs.empty()
+         && (limbs.back() == 0 || limbs.back() == static_cast<char>(-1))) {
+    const bool new_negative = limbs.size() > 1
+                              && (limbs[limbs.size() - 2] & 0x80) != 0;
+    if (new_negative != negative) {
+      break;
+    }
+    limbs.pop_back();
+  }
+}
+
+}  // namespace
+
+template<typename T>
+Number::Number(T n) {
+  static_assert(std::is_integral_v<T>);
+  if constexpr (std::is_signed_v<T>) {
+    // This works for both signed and unsigned T, but with explicit template
+    // instantiation it triggers Clang signed / unsigned comparison warnings.
+    while (n != 0 && n != -1) {
+      limbs_.push_back(n);
+      n = n >> 8;
+    }
+    // sign extend, if needed
+    if (Negative(limbs_) != (n < 0)) {
+      limbs_.push_back(n);
+    }
+  } else {
+    while (n != 0) {
+      limbs_.push_back(n);
+      n = n >> 8;
+    }
+    // zero extend, if needed
+    if (Negative(limbs_)) {
+      limbs_.push_back(0);
+    }
+  }
 }
 
 std::ostream& Number::Print(std::ostream& os) const {
-  return os << value_;
+  std::string limbs = limbs_;
+  if (Negative(limbs)) {
+    Negate(limbs);
+    os << '-';
+  }
+  std::string digits;
+  while (!limbs.empty()) {
+    char carry = 0;
+    for (auto it = limbs.rbegin(); it != limbs.rend(); ++it) {
+      auto& value = *it;
+      const unsigned int intermediate
+          = static_cast<uint8_t>(value) | (static_cast<uint8_t>(carry) << 8);
+      value = intermediate / 10;
+      carry = intermediate % 10;
+    }
+    digits.push_back('0' + carry);
+    if (limbs.back() == 0) {
+      limbs.pop_back();
+    }
+  }
+  if (digits.empty()) {
+    return os << '0';
+  }
+  std::reverse(digits.begin(), digits.end());
+  return os << digits;
 }
 
 int64_t Number::HashValue() const {
-  return value_;
+  // abbreviated ToChunks<uint64_t>, for backwards compatibility
+  uint64_t result = 0;
+  const char extension = Negative(limbs_) ? -1 : 0;
+  for (size_t ix = 0; ix < 8; ++ix) {
+    const uint8_t value = ix < limbs_.size() ? limbs_[ix] : extension;
+    result |= static_cast<uint64_t>(value) << (8 * ix);
+  }
+  return static_cast<int64_t>(result);
 }
 
-std::vector<int64_t> Number::ToChunks(const Number& number) {
-  std::vector<int64_t> chunks;
-  if (number.value_ != 0) {
-    chunks.push_back(number.value_);
+template<typename T>
+std::vector<T> Number::ToChunks(const Number& number) {
+  static_assert(std::is_integral_v<T> && std::is_unsigned_v<T>);
+  std::vector<T> chunks;
+
+  const auto& limbs = number.limbs_;
+  const char extension = Negative(limbs) ? -1 : 0;
+  for (size_t ix = 0; ix < limbs.size(); ix += sizeof(T)) {
+    T chunk = 0;
+    for (size_t iy = 0; iy < sizeof(T); ++iy) {
+      const size_t byte = ix + iy;
+      const uint8_t limb = byte < limbs.size() ? limbs[byte] : extension;
+      chunk |= static_cast<T>(limb) << (8 * iy);
+    }
+    chunks.push_back(chunk);
   }
+
   return chunks;
 }
 
-std::optional<Number> Number::FromChunks(const std::vector<int64_t>& chunks) {
-  auto size = chunks.size();
-  while (size > 0 && chunks[size - 1] == 0) {
-    --size;
-  }
-  if (size > 1) {
-    return std::nullopt;
-  }
+template<typename T>
+Number Number::FromChunks(const std::vector<T>& chunks) {
+  static_assert(std::is_integral_v<T> && std::is_unsigned_v<T>);
+
   Number number;
-  if (size > 0) {
-    number.value_ = chunks[0];
+
+  auto& limbs = number.limbs_;
+  for (size_t ix = 0; ix < chunks.size(); ++ix) {
+    T value = chunks[ix];
+    for (size_t iy = 0; iy < sizeof(T); ++iy) {
+      limbs.push_back(value);
+      value = value >> 8;
+    }
   }
+
+  // remove excess sign extension
+  Trim(limbs);
+
   return number;
 }
 
@@ -89,5 +177,15 @@ template Number::Number(uint8_t);
 template Number::Number(uint16_t);
 template Number::Number(uint32_t);
 template Number::Number(uint64_t);
+
+template std::vector<uint8_t> Number::ToChunks(const Number&);
+template std::vector<uint16_t> Number::ToChunks(const Number&);
+template std::vector<uint32_t> Number::ToChunks(const Number&);
+template std::vector<uint64_t> Number::ToChunks(const Number&);
+
+template Number Number::FromChunks(const std::vector<uint8_t>&);
+template Number Number::FromChunks(const std::vector<uint16_t>&);
+template Number Number::FromChunks(const std::vector<uint32_t>&);
+template Number Number::FromChunks(const std::vector<uint64_t>&);
 
 }  // namespace stg
