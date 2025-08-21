@@ -89,6 +89,8 @@ struct Transformer {
   std::map<std::string, Id> Transform(GetKey,
                                       const google::protobuf::RepeatedField<uint32_t>&);
 
+  static Number Transform(const google::protobuf::RepeatedField<int64_t>&);
+
   static stg::Special::Kind Transform(Special::Kind);
   static stg::PointerReference::Kind Transform(PointerReference::Kind);
   static stg::Qualifier Transform(Qualified::Qualifier);
@@ -203,9 +205,9 @@ void Transformer::AddNode(const Member& x) {
 }
 
 void Transformer::AddNode(const VariantMember& x) {
-  const auto& discriminant_value = x.has_discriminant_value()
-      ? std::make_optional(Number(x.discriminant_value()))
-      : std::nullopt;
+  const auto discriminant_value = x.discriminant_value().empty()
+      ? std::nullopt
+      : std::make_optional(Transform(x.discriminant_value()));
   AddNode<stg::VariantMember>(x.id(), x.name(), discriminant_value,
                               GetId(x.type_id()));
 }
@@ -285,6 +287,16 @@ void Transformer::AddNode(const Interface& x) {
 template <typename STGType, typename... Args>
 void Transformer::AddNode(uint32_t id, Args&&... args) {
   maker.Set<STGType>(Hex(id), Transform(args)...);
+}
+
+Number Transformer::Transform(const google::protobuf::RepeatedField<int64_t>& repeated) {
+  std::vector<int64_t> chunks;
+  for (auto chunk : repeated) {
+    chunks.push_back(chunk);
+  }
+  const auto number = Number::FromChunks(chunks);
+  Check(number.has_value()) << "unrepresentable number";
+  return number.value();
 }
 
 std::vector<Id> Transformer::Transform(
@@ -451,7 +463,8 @@ stg::Enumeration::Enumerators Transformer::Transform(
   stg::Enumeration::Enumerators enumerators;
   enumerators.reserve(x.size());
   for (const auto& enumerator : x) {
-    enumerators.emplace_back(enumerator.name(), Number(enumerator.value()));
+    enumerators.emplace_back(enumerator.name(),
+                             Transform(enumerator.value()));
   }
   return enumerators;
 }

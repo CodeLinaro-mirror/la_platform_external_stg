@@ -21,7 +21,9 @@
 #define STG_NUMBER_H_
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
+#include <vector>
 
 namespace stg {
 
@@ -32,13 +34,14 @@ class Number {
   template<typename T>
   explicit Number(T n);
 
-  int64_t AsInt64() const;
-
   bool operator==(const Number&) const = default;
 
   std::ostream& Print(std::ostream& os) const;
 
   int64_t HashValue() const;
+
+  static std::vector<int64_t> ToChunks(const Number& number);
+  static std::optional<Number> FromChunks(const std::vector<int64_t>& chunks);
 
  private:
   int64_t value_;

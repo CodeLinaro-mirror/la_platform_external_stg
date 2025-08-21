@@ -71,7 +71,7 @@ struct Transform {
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
 
-  int64_t operator()(const Number&) const;
+  void operator()(const Number&, google::protobuf::RepeatedField<int64_t>&) const;
 
   Special::Kind operator()(stg::Special::Kind) const;
   PointerReference::Kind operator()(stg::PointerReference::Kind) const;
@@ -197,7 +197,12 @@ void Transform::operator()(const stg::VariantMember& x, uint32_t id) {
   variant_member.set_id(id);
   variant_member.set_name(x.name);
   if (x.discriminant_value) {
-    variant_member.set_discriminant_value((*this)(*x.discriminant_value));
+    const auto& number = *x.discriminant_value;
+    if (number == Number()) {
+      variant_member.add_discriminant_value(0);
+    } else {
+      (*this)(number, *variant_member.mutable_discriminant_value());
+    }
   }
   variant_member.set_type_id((*this)(x.type_id));
 }
@@ -233,7 +238,7 @@ void Transform::operator()(const stg::Enumeration& x, uint32_t id) {
     for (const auto& [name, value] : x.definition->enumerators) {
       auto& enumerator = *definition.add_enumerator();
       enumerator.set_name(name);
-      enumerator.set_value((*this)(value));
+      (*this)(value, *enumerator.mutable_value());
     }
   }
 }
@@ -298,8 +303,11 @@ void Transform::operator()(const stg::Interface& x, uint32_t id) {
   }
 }
 
-int64_t Transform::operator()(const Number& number) const {
-  return number.AsInt64();
+void Transform::operator()(const Number& number,
+                           google::protobuf::RepeatedField<int64_t>& repeated) const {
+  for (auto chunk : Number::ToChunks(number)) {
+    repeated.Add(chunk);
+  }
 }
 
 PointerReference::Kind Transform::operator()(
