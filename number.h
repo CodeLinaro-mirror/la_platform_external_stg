@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace stg {
@@ -45,9 +46,19 @@ class Number {
   template<typename T>
   static Number FromChunks(const std::vector<T>& chunks);
 
+  static Number FromUnsignedBytes(std::string_view bytes) {
+    return FromBytes(false, bytes);
+  }
+
+  static Number FromSignedBytes(std::string_view bytes) {
+    return FromBytes(true, bytes);
+  }
+
  private:
   // little endian, 2's complement, minimal sign bits
   std::string limbs_;
+
+  static Number FromBytes(bool is_signed, std::string_view bytes);
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Number& number) {
