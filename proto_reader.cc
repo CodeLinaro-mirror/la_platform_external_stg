@@ -86,21 +86,22 @@ struct Transformer {
   template <typename GetKey>
   std::map<std::string, Id> Transform(GetKey,
                                       const google::protobuf::RepeatedField<uint32_t>&);
-  stg::Special::Kind Transform(Special::Kind);
-  stg::PointerReference::Kind Transform(PointerReference::Kind);
-  stg::Qualifier Transform(Qualified::Qualifier);
-  stg::Primitive::Encoding Transform(Primitive::Encoding);
-  stg::BaseClass::Inheritance Transform(BaseClass::Inheritance);
-  stg::StructUnion::Kind Transform(StructUnion::Kind);
-  stg::ElfSymbol::SymbolType Transform(ElfSymbol::SymbolType);
-  stg::ElfSymbol::Binding Transform(ElfSymbol::Binding);
-  stg::ElfSymbol::Visibility Transform(ElfSymbol::Visibility);
-  stg::Enumeration::Enumerators Transform(
+
+  static stg::Special::Kind Transform(Special::Kind);
+  static stg::PointerReference::Kind Transform(PointerReference::Kind);
+  static stg::Qualifier Transform(Qualified::Qualifier);
+  static stg::Primitive::Encoding Transform(Primitive::Encoding);
+  static stg::BaseClass::Inheritance Transform(BaseClass::Inheritance);
+  static stg::StructUnion::Kind Transform(StructUnion::Kind);
+  static stg::ElfSymbol::SymbolType Transform(ElfSymbol::SymbolType);
+  static stg::ElfSymbol::Binding Transform(ElfSymbol::Binding);
+  static stg::ElfSymbol::Visibility Transform(ElfSymbol::Visibility);
+  static stg::Enumeration::Enumerators Transform(
       const google::protobuf::RepeatedPtrField<Enumeration::Enumerator>&);
   template <typename STGType, typename ProtoType>
-  std::optional<STGType> Transform(bool, const ProtoType&);
+  static std::optional<STGType> Transform(bool, const ProtoType&);
   template <typename Type>
-  Type Transform(const Type&);
+  static Type Transform(const Type&);
 
   uint32_t version;
   Graph& graph;
