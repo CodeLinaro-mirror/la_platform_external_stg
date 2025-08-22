@@ -234,6 +234,22 @@ std::optional<Number> Entry::MaybeGetConstant(uint32_t attribute) {
   }
   const auto format = dwarf_whatform(&dwarf_attribute.value());
   switch (format) {
+    case DW_FORM_block1: {
+      // LLVM emits 128-bit constants as full-width little endian numbers.
+      Dwarf_Block block;
+      Check(dwarf_formblock(&dwarf_attribute.value(), &block) == kReturnOk)
+          << "dwarf_formblock returned error";
+      Check(block.length == 16) << "unexpected LLVM block1 length";
+      const char* data = reinterpret_cast<const char*>(block.data);
+      const auto uvalue = Number::FromUnsignedBytes({data, 16});
+      if ((data[15] & 0x80) != 0) {
+        const auto svalue = Number::FromSignedBytes({data, 16});
+        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
+               << " format " << Hex(format) << " value " << uvalue
+               << " might actually be " << svalue;
+      }
+      return uvalue;
+    }
     case DW_FORM_sdata: {
       int64_t svalue;
       Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
