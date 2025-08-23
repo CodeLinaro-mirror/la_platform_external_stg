@@ -41,6 +41,7 @@
 #include "graph.h"
 #include "reader_options.h"
 #include "runtime.h"
+#include "unification.h"
 
 namespace stg {
 
@@ -92,6 +93,8 @@ class Structs {
   std::vector<Id> BuildParams(const struct btf_param* params, size_t vlen);
   Id BuildEnumUnderlyingType(size_t size, bool is_signed);
   std::string GetName(uint32_t name_off);
+
+  Unification unification_;
 };
 
 bool Structs::MemoryRange::Empty() const {
@@ -106,8 +109,8 @@ const T* Structs::MemoryRange::Pull(size_t count) {
   return reinterpret_cast<const T*>(saved);
 }
 
-Structs::Structs(Runtime&, Graph& graph)
-    : maker_(graph) {}
+Structs::Structs(Runtime& runtime, Graph& graph)
+    : maker_(graph), unification_(runtime, graph, Id{0}, Id{0}) {}
 
 // Get the index of the void type, creating one if needed.
 Id Structs::GetVoid() {
@@ -333,6 +336,19 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
                              ? Qualifier::VOLATILE
                              : Qualifier::RESTRICT;
       Set<Qualified>(btf_index, qualifier, GetId(t->type));
+      break;
+    }
+    case BTF_KIND_TYPE_TAG: {
+      // Type tags are stringly-kinded qualifiers of specific relevance to the
+      // Linux kernel. The current tags include "rcu" and "user". As yet, they
+      // have no ABI significance, so just replace references to them with their
+      // referants.
+      //
+      // Set with a dummy value, to avoid upsetting Maker's undefined node
+      // tracking. Refactoring ownership and lifetime of the union mapping would
+      // be one way of avoiding this.
+      Set<Special>(btf_index, Special::Kind::VOID);
+      unification_.Union(GetId(btf_index), GetId(t->type));
       break;
     }
     case BTF_KIND_ARRAY: {
