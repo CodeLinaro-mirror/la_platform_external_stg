@@ -81,6 +81,30 @@ std::ostream& operator<<(std::ostream& os, IgnoreUsage);
 
 using Comparison = std::pair<std::optional<Id>, std::optional<Id>>;
 
+}  // namespace diff
+}  // namespace stg
+
+namespace std {
+
+template <>
+struct hash<stg::diff::Comparison> {
+  size_t operator()(const stg::diff::Comparison& comparison) const {
+    size_t seed = 0;
+    HashCombine(seed, comparison.first);
+    HashCombine(seed, comparison.second);
+    return seed;
+  }
+  static void HashCombine(size_t& seed, const std::optional<stg::Id>& side) {
+    const std::hash<std::optional<stg::Id>> h;
+    seed ^= h(side) + 0x9e3779b97f4a7c15 + (seed << 12) + (seed >> 4);
+  }
+};
+
+}  // namespace std
+
+namespace stg {
+namespace diff {
+
 struct DiffDetail {
   DiffDetail(const std::string& text, const Comparison& edge)
       : text(text), edge(edge) {}
@@ -101,20 +125,7 @@ struct Diff {
   }
 };
 
-struct HashComparison {
-  size_t operator()(const Comparison& comparison) const {
-    size_t seed = 0;
-    const std::hash<std::optional<Id>> h;
-    combine_hash(seed, h(comparison.first));
-    combine_hash(seed, h(comparison.second));
-    return seed;
-  }
-  static void combine_hash(size_t& seed, size_t hash) {
-    seed ^= hash + 0x9e3779b97f4a7c15 + (seed << 12) + (seed >> 4);
-  }
-};
-
-using Outcomes = std::unordered_map<Comparison, Diff, HashComparison>;
+using Outcomes = std::unordered_map<Comparison, Diff>;
 
 std::pair<Id, std::vector<std::string>> ResolveTypedefs(
     const Graph& graph, Id id);
