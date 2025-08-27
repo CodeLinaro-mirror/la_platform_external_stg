@@ -66,11 +66,15 @@ struct hash<stg::Id> {
 template <>
 struct hash<stg::Pair> {
   size_t operator()(const stg::Pair& comparison) const {
-    const hash<stg::Id> h;
-    auto h1 = h(comparison.first);
-    auto h2 = h(comparison.second);
+    size_t seed = 0;
+    HashCombine(seed, comparison.first);
+    HashCombine(seed, comparison.second);
+    return seed;
+  }
+  static void HashCombine(size_t& seed, const stg::Id& id) {
+    const std::hash<stg::Id> h;
     // assumes 64-bit size_t, would be better if std::hash_combine existed
-    return h1 ^ (h2 + 0x9e3779b97f4a7c15 + (h1 << 12) + (h1 >> 4));
+    seed ^= h(id) + 0x9e3779b97f4a7c15 + (seed << 12) + (seed >> 4);
   }
 };
 
