@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -164,6 +165,28 @@ Number Number::FromChunks(const std::vector<T>& chunks) {
 
   // remove excess sign extension
   Trim(limbs);
+
+  return number;
+}
+
+Number Number::FromBytes(bool is_signed, std::string_view bytes) {
+  Number number;
+
+  auto& limbs = number.limbs_;
+  limbs.reserve(bytes.size());
+  for (auto byte : bytes) {
+    limbs.push_back(byte);
+  }
+  if (is_signed) {
+    Trim(limbs);
+  } else {
+    // need to avoid a false negative if the highest bit is set
+    if (Negative(limbs)) {
+      limbs.push_back(0);
+    } else {
+      Trim(limbs);
+    }
+  }
 
   return number;
 }
