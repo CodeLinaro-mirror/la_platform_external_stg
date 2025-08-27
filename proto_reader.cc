@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Siddharth Nayyar
+// Author: Giuliano Procida
 
 #include "proto_reader.h"
 
@@ -41,6 +42,7 @@
 #include "error.h"
 #include "graph.h"
 #include "hex.h"
+#include "number.h"
 #include "runtime.h"
 #include "stg.pb.h"
 
@@ -201,10 +203,10 @@ void Transformer::AddNode(const Member& x) {
 }
 
 void Transformer::AddNode(const VariantMember& x) {
-  const auto& discr_value = x.has_discriminant_value()
-                                ? std::make_optional(x.discriminant_value())
-                                : std::nullopt;
-  AddNode<stg::VariantMember>(x.id(), x.name(), discr_value,
+  const auto& discriminant_value = x.has_discriminant_value()
+      ? std::make_optional(Number(x.discriminant_value()))
+      : std::nullopt;
+  AddNode<stg::VariantMember>(x.id(), x.name(), discriminant_value,
                               GetId(x.type_id()));
 }
 
@@ -449,7 +451,7 @@ stg::Enumeration::Enumerators Transformer::Transform(
   stg::Enumeration::Enumerators enumerators;
   enumerators.reserve(x.size());
   for (const auto& enumerator : x) {
-    enumerators.emplace_back(enumerator.name(), enumerator.value());
+    enumerators.emplace_back(enumerator.name(), Number(enumerator.value()));
   }
   return enumerators;
 }

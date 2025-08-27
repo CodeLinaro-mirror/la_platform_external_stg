@@ -32,6 +32,7 @@
 
 #include "error.h"
 #include "hex.h"
+#include "number.h"
 
 namespace stg {
 namespace dwarf {
@@ -226,7 +227,7 @@ uint64_t Entry::MustGetUnsignedConstant(uint32_t attribute) {
   return maybe_constant.value();
 }
 
-std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
+std::optional<Number> Entry::MaybeGetConstant(uint32_t attribute) {
   auto dwarf_attribute = GetAttribute(&die, attribute);
   if (!dwarf_attribute) {
     return {};
@@ -237,7 +238,7 @@ std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
       int64_t svalue;
       Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
           << "dwarf_formsdata returned error for format " << Hex(format);
-      return svalue;
+      return Number(svalue);
     }
     case DW_FORM_udata: {
       uint64_t uvalue;
@@ -249,7 +250,7 @@ std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
                << " format " << Hex(format) << " value -" << Hex(-svalue)
                << " should actually be " << Hex(uvalue);
       }
-      return svalue;
+      return Number(svalue);
     }
     default: {
       uint64_t uvalue;
@@ -263,7 +264,7 @@ std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
                << " format " << Hex(format) << " value " << uvalue
                << " might actually be " << svalue;
       }
-      return static_cast<int64_t>(uvalue);
+      return Number(uvalue);
     }
   }
 }
