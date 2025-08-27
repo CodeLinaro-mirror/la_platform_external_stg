@@ -215,9 +215,9 @@ Enumeration::Enumerators Structs::BuildEnums(
     const uint32_t unsigned_value = enums[i].val;
     if (is_signed) {
       const int32_t signed_value = unsigned_value;
-      result.emplace_back(name, static_cast<int64_t>(signed_value));
+      result.emplace_back(name, signed_value);
     } else {
-      result.emplace_back(name, static_cast<int64_t>(unsigned_value));
+      result.emplace_back(name, unsigned_value);
     }
   }
   return result;
@@ -235,8 +235,7 @@ Enumeration::Enumerators Structs::BuildEnums64(
       const int64_t signed_value = unsigned_value;
       result.emplace_back(name, signed_value);
     } else {
-      // TODO: very large unsigned values are stored as negative numbers
-      result.emplace_back(name, static_cast<int64_t>(unsigned_value));
+      result.emplace_back(name, unsigned_value);
     }
   }
   return result;

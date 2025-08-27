@@ -32,6 +32,7 @@
 
 #include "error.h"
 #include "hex.h"
+#include "number.h"
 
 namespace stg {
 namespace dwarf {
@@ -226,44 +227,55 @@ uint64_t Entry::MustGetUnsignedConstant(uint32_t attribute) {
   return maybe_constant.value();
 }
 
-std::optional<int64_t> Entry::MaybeGetConstant(uint32_t attribute) {
-  auto dwarf_attribute = GetAttribute(&die, attribute);
-  if (!dwarf_attribute) {
+std::optional<Number> Entry::MaybeGetConstant(uint32_t attribute) {
+  auto maybe_dwarf_attribute = GetAttribute(&die, attribute);
+  if (!maybe_dwarf_attribute) {
     return {};
   }
-  const auto format = dwarf_whatform(&dwarf_attribute.value());
+  auto& dwarf_attribute = maybe_dwarf_attribute.value();
+  const auto format = dwarf_whatform(&dwarf_attribute);
   switch (format) {
+    case DW_FORM_block1: {
+      // LLVM emits 128-bit constants as full-width little endian numbers.
+      Dwarf_Block block;
+      Check(dwarf_formblock(&dwarf_attribute, &block) == kReturnOk)
+          << "dwarf_formblock returned error";
+      Check(block.length == 16) << "unexpected LLVM block1 length";
+      const char* data = reinterpret_cast<const char*>(block.data);
+      const auto uvalue = Number::FromUnsignedBytes({data, 16});
+      if ((data[15] & 0x80) != 0) {
+        const auto svalue = Number::FromSignedBytes({data, 16});
+        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
+               << " format " << Hex(format) << " value " << uvalue
+               << " might actually be " << svalue;
+      }
+      return uvalue;
+    }
     case DW_FORM_sdata: {
       int64_t svalue;
-      Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
+      Check(dwarf_formsdata(&dwarf_attribute, &svalue) == kReturnOk)
           << "dwarf_formsdata returned error for format " << Hex(format);
-      return svalue;
+      return Number(svalue);
     }
     case DW_FORM_udata: {
       uint64_t uvalue;
-      Check(dwarf_formudata(&dwarf_attribute.value(), &uvalue) == kReturnOk)
+      Check(dwarf_formudata(&dwarf_attribute, &uvalue) == kReturnOk)
           << "dwarf_formudata returned error for format " << Hex(format);
-      const auto svalue = static_cast<int64_t>(uvalue);
-      if (svalue < 0) {
-        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
-               << " format " << Hex(format) << " value -" << Hex(-svalue)
-               << " should actually be " << Hex(uvalue);
-      }
-      return svalue;
+      return Number(uvalue);
     }
     default: {
       uint64_t uvalue;
-      Check(dwarf_formudata(&dwarf_attribute.value(), &uvalue) == kReturnOk)
+      Check(dwarf_formudata(&dwarf_attribute, &uvalue) == kReturnOk)
           << "dwarf_formudata returned error for format " << Hex(format);
       int64_t svalue;
-      Check(dwarf_formsdata(&dwarf_attribute.value(), &svalue) == kReturnOk)
+      Check(dwarf_formsdata(&dwarf_attribute, &svalue) == kReturnOk)
           << "dwarf_formsdata returned error for format " << Hex(format);
       if (svalue < 0) {
         Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
                << " format " << Hex(format) << " value " << uvalue
                << " might actually be " << svalue;
       }
-      return static_cast<int64_t>(uvalue);
+      return Number(uvalue);
     }
   }
 }

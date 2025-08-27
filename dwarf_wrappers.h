@@ -29,6 +29,8 @@
 #include <string>
 #include <vector>
 
+#include "number.h"
+
 namespace stg {
 namespace dwarf {
 
@@ -73,7 +75,7 @@ struct Entry {
   std::optional<std::string> MaybeGetDirectString(uint32_t attribute);
   std::optional<uint64_t> MaybeGetUnsignedConstant(uint32_t attribute);
   uint64_t MustGetUnsignedConstant(uint32_t attribute);
-  std::optional<int64_t> MaybeGetConstant(uint32_t attribute);
+  std::optional<Number> MaybeGetConstant(uint32_t attribute);
   bool GetFlag(uint32_t attribute);
   std::optional<Entry> MaybeGetReference(uint32_t attribute);
   std::optional<Location> MaybeGetLocation(uint32_t attribute);

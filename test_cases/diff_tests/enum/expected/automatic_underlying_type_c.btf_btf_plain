@@ -7,7 +7,7 @@ function symbol 'unsigned int fun(enum A, enum B, enum C, enum D)' changed
       enumerator 'Be' value changed from 2147483647 to 2147483648
     parameter 3 type 'enum C' changed
       underlying type changed from 'enum-underlying-signed-64' to 'enum-underlying-unsigned-64'
-      enumerator 'Ce' value changed from -9223372036854775808 to -1
+      enumerator 'Ce' value changed from -9223372036854775808 to 18446744073709551615
     parameter 4 type 'enum D' changed
       underlying type changed from 'enum-underlying-signed-32' to 'enum-underlying-unsigned-32'
       enumerator 'De' value changed from -1 to 1
