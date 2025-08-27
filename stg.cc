@@ -102,16 +102,21 @@ void FilterSymbols(Graph& graph, Id root, const Filter& filter) {
 
 void Write(Runtime& runtime, const Graph& graph, Id root, const char* output,
            bool annotate) {
-  const FileDescriptor output_fd(
-      output, O_CREAT | O_WRONLY | O_TRUNC,
-      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
-  google::protobuf::io::FileOutputStream os(output_fd.Value());
-  {
+  const auto write = [&](int fd) {
     const Time x(runtime, "write");
+    google::protobuf::io::FileOutputStream os(fd);
     proto::Writer writer(graph);
     writer.Write(root, os, annotate);
     Check(os.Flush()) << "error writing to '" << output
                       << "': " << os.GetErrno();
+  };
+  if (strcmp(output, "-") == 0) {
+    write(STDOUT_FILENO);
+  } else {
+    const FileDescriptor output_fd(
+        output, O_CREAT | O_WRONLY | O_TRUNC,
+        S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+    write(output_fd.Value());
   }
 }
 
@@ -198,9 +203,6 @@ int main(int argc, char* argv[]) {
         inputs.emplace_back(opt_input_format, argument);
         break;
       case 'o':
-        if (strcmp(argument, "-") == 0) {
-          argument = "/dev/stdout";
-        }
         outputs.push_back(argument);
         break;
       case 'A':

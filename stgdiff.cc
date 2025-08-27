@@ -62,16 +62,22 @@ std::vector<stg::Id> Read(stg::Runtime& runtime, const Inputs& inputs,
 
 int RunFidelity(const char* filename, const stg::Graph& graph,
                 const std::vector<stg::Id>& roots) {
-  std::ofstream output(filename);
-  const auto fidelity_diff =
-      stg::GetFidelityTransitions(graph, roots[0], roots[1]);
-  const bool diffs_reported =
-      stg::reporting::FidelityDiff(fidelity_diff, output);
-  output << std::flush;
-  if (!output) {
-    stg::Die() << "error writing to " << '\'' << filename << '\'';
+  const auto write = [&](std::ostream& output) {
+    const auto fidelity_diff =
+        stg::GetFidelityTransitions(graph, roots[0], roots[1]);
+    const bool diffs_reported =
+        stg::reporting::FidelityDiff(fidelity_diff, output);
+    output << std::flush;
+    if (!output) {
+      stg::Die() << "error writing to " << '\'' << filename << '\'';
+    }
+    return diffs_reported ? kFidelityChange : 0;
+  };
+  if (strcmp(filename, "-") == 0) {
+    return write(std::cout);
   }
-  return diffs_reported ? kFidelityChange : 0;
+  std::ofstream output(filename);
+  return write(output);
 }
 
 int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
@@ -115,17 +121,24 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
   // Write reports.
   stg::NameCache names;
   for (const auto& [format, filename] : outputs) {
-    std::ofstream output(filename);
-    if (!same) {
-      const stg::Time report(runtime, "report diffs");
-      const stg::reporting::Options options{format};
-      const stg::reporting::Reporting reporting{graph, outcomes, options,
-        names};
-      Report(reporting, comparison, output);
-      output << std::flush;
-    }
-    if (!output) {
-      stg::Die() << "error writing to " << '\'' << filename << '\'';
+    const auto write = [&](std::ostream& output) {
+      if (!same) {
+        const stg::Time report(runtime, "report diffs");
+        const stg::reporting::Options options{format};
+        const stg::reporting::Reporting reporting{graph, outcomes, options,
+          names};
+        Report(reporting, comparison, output);
+        output << std::flush;
+      }
+      if (!output) {
+        stg::Die() << "error writing to " << '\'' << filename << '\'';
+      }
+    };
+    if (strcmp(filename, "-") == 0) {
+      write(std::cout);
+    } else {
+      std::ofstream output(filename);
+      write(output);
     }
   }
 
@@ -234,15 +247,9 @@ int main(int argc, char* argv[]) {
         }
         break;
       case 'o':
-        if (strcmp(argument, "-") == 0) {
-          argument = "/dev/stdout";
-        }
         outputs.emplace_back(opt_output_format, argument);
         break;
       case 'F':
-        if (strcmp(argument, "-") == 0) {
-          argument = "/dev/stdout";
-        }
         opt_fidelity.emplace(argument);
         break;
       default:
