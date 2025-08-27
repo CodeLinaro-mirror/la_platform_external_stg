@@ -21,8 +21,10 @@
 
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <type_traits>
+#include <vector>
 
 #include "error.h"
 
@@ -47,16 +49,35 @@ Number::Number(T n) : value_(n) {
   Warn() << "number " << n << " misrepresented as " << value_;
 }
 
-int64_t Number::AsInt64() const {
-  return value_;
-}
-
 std::ostream& Number::Print(std::ostream& os) const {
   return os << value_;
 }
 
 int64_t Number::HashValue() const {
   return value_;
+}
+
+std::vector<int64_t> Number::ToChunks(const Number& number) {
+  std::vector<int64_t> chunks;
+  if (number.value_ != 0) {
+    chunks.push_back(number.value_);
+  }
+  return chunks;
+}
+
+std::optional<Number> Number::FromChunks(const std::vector<int64_t>& chunks) {
+  auto size = chunks.size();
+  while (size > 0 && chunks[size - 1] == 0) {
+    --size;
+  }
+  if (size > 1) {
+    return std::nullopt;
+  }
+  Number number;
+  if (size > 0) {
+    number.value_ = chunks[0];
+  }
+  return number;
 }
 
 template Number::Number(int8_t);

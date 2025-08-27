@@ -19,9 +19,11 @@
 
 #include "number.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <sstream>
+#include <vector>
 
 #include <catch2/catch.hpp>
 
@@ -86,6 +88,28 @@ TEST_CASE("min/max uint32_t via Number to string") {
 
 TEST_CASE("min/max int64_t via Number to string") {
   CheckLimitStrings<int64_t>();
+}
+
+void CheckZeroChunks() {
+  const Number zero;
+  const Number four(4);
+  for (size_t ix = 0; ix < 12; ++ix) {
+    std::vector<int64_t> chunks;
+    chunks.resize(ix);
+    const auto number = Number::FromChunks(chunks);
+    CHECK(number == zero);
+  }
+  for (size_t ix = 1; ix < 12; ++ix) {
+    std::vector<int64_t> chunks;
+    chunks.resize(ix);
+    chunks[0] = 4;
+    const auto number = Number::FromChunks(chunks);
+    CHECK(number == four);
+  }
+}
+
+TEST_CASE("zero chunks") {
+  CheckZeroChunks();
 }
 
 }  // namespace
