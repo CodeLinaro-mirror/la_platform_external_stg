@@ -69,15 +69,15 @@ struct Transform {
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
 
-  Special::Kind operator()(stg::Special::Kind);
-  PointerReference::Kind operator()(stg::PointerReference::Kind);
-  Qualified::Qualifier operator()(stg::Qualifier);
-  Primitive::Encoding operator()(stg::Primitive::Encoding);
-  BaseClass::Inheritance operator()(stg::BaseClass::Inheritance);
-  StructUnion::Kind operator()(stg::StructUnion::Kind);
-  ElfSymbol::SymbolType operator()(stg::ElfSymbol::SymbolType);
-  ElfSymbol::Binding operator()(stg::ElfSymbol::Binding);
-  ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility);
+  Special::Kind operator()(stg::Special::Kind) const;
+  PointerReference::Kind operator()(stg::PointerReference::Kind) const;
+  Qualified::Qualifier operator()(stg::Qualifier) const;
+  Primitive::Encoding operator()(stg::Primitive::Encoding) const;
+  BaseClass::Inheritance operator()(stg::BaseClass::Inheritance) const;
+  StructUnion::Kind operator()(stg::StructUnion::Kind) const;
+  ElfSymbol::SymbolType operator()(stg::ElfSymbol::SymbolType) const;
+  ElfSymbol::Binding operator()(stg::ElfSymbol::Binding) const;
+  ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility) const;
 
   std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
     std::unordered_map<uint32_t, Id> internal_id_map;
@@ -295,7 +295,7 @@ void Transform::operator()(const stg::Interface& x, uint32_t id) {
 }
 
 PointerReference::Kind Transform::operator()(
-    stg::PointerReference::Kind x) {
+    stg::PointerReference::Kind x) const {
   switch (x) {
     case stg::PointerReference::Kind::POINTER:
       return PointerReference::POINTER;
@@ -307,7 +307,7 @@ PointerReference::Kind Transform::operator()(
 }
 
 Special::Kind Transform::operator()(
-    stg::Special::Kind x) {
+    stg::Special::Kind x) const {
   switch (x) {
     case stg::Special::Kind::VOID:
       return Special::VOID;
@@ -318,7 +318,7 @@ Special::Kind Transform::operator()(
   }
 }
 
-Qualified::Qualifier Transform::operator()(stg::Qualifier x) {
+Qualified::Qualifier Transform::operator()(stg::Qualifier x) const {
   switch (x) {
     case stg::Qualifier::CONST:
       return Qualified::CONST;
@@ -331,7 +331,7 @@ Qualified::Qualifier Transform::operator()(stg::Qualifier x) {
   }
 }
 
-Primitive::Encoding Transform::operator()(stg::Primitive::Encoding x) {
+Primitive::Encoding Transform::operator()(stg::Primitive::Encoding x) const {
   switch (x) {
     case stg::Primitive::Encoding::BOOLEAN:
       return Primitive::BOOLEAN;
@@ -353,7 +353,7 @@ Primitive::Encoding Transform::operator()(stg::Primitive::Encoding x) {
 }
 
 BaseClass::Inheritance Transform::operator()(
-    stg::BaseClass::Inheritance x) {
+    stg::BaseClass::Inheritance x) const {
   switch (x) {
     case stg::BaseClass::Inheritance::NON_VIRTUAL:
       return BaseClass::NON_VIRTUAL;
@@ -362,7 +362,7 @@ BaseClass::Inheritance Transform::operator()(
   }
 }
 
-StructUnion::Kind Transform::operator()(stg::StructUnion::Kind x) {
+StructUnion::Kind Transform::operator()(stg::StructUnion::Kind x) const {
   switch (x) {
     case stg::StructUnion::Kind::STRUCT:
       return StructUnion::STRUCT;
@@ -372,7 +372,7 @@ StructUnion::Kind Transform::operator()(stg::StructUnion::Kind x) {
 }
 
 ElfSymbol::SymbolType Transform::operator()(
-    stg::ElfSymbol::SymbolType x) {
+    stg::ElfSymbol::SymbolType x) const {
   switch (x) {
     case stg::ElfSymbol::SymbolType::NOTYPE:
       return ElfSymbol::NOTYPE;
@@ -389,7 +389,7 @@ ElfSymbol::SymbolType Transform::operator()(
   }
 }
 
-ElfSymbol::Binding Transform::operator()(stg::ElfSymbol::Binding x) {
+ElfSymbol::Binding Transform::operator()(stg::ElfSymbol::Binding x) const {
   switch (x) {
     case stg::ElfSymbol::Binding::GLOBAL:
       return ElfSymbol::GLOBAL;
@@ -403,7 +403,7 @@ ElfSymbol::Binding Transform::operator()(stg::ElfSymbol::Binding x) {
 }
 
 ElfSymbol::Visibility Transform::operator()(
-    stg::ElfSymbol::Visibility x) {
+    stg::ElfSymbol::Visibility x) const {
   switch (x) {
     case stg::ElfSymbol::Visibility::DEFAULT:
       return ElfSymbol::DEFAULT;
