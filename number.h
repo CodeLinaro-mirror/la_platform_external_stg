@@ -21,15 +21,15 @@
 #define STG_NUMBER_H_
 
 #include <cstdint>
-#include <optional>
 #include <ostream>
+#include <string>
 #include <vector>
 
 namespace stg {
 
 class Number {
  public:
-  Number();
+  Number() = default;
 
   template<typename T>
   explicit Number(T n);
@@ -40,11 +40,14 @@ class Number {
 
   int64_t HashValue() const;
 
-  static std::vector<int64_t> ToChunks(const Number& number);
-  static std::optional<Number> FromChunks(const std::vector<int64_t>& chunks);
+  template<typename T>
+  static std::vector<T> ToChunks(const Number& number);
+  template<typename T>
+  static Number FromChunks(const std::vector<T>& chunks);
 
  private:
-  int64_t value_;
+  // little endian, 2's complement, minimal sign bits
+  std::string limbs_;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Number& number) {

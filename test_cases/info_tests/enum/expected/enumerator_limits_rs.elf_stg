@@ -403,10 +403,12 @@ enumeration {
     enumerator {
       name: "P9223372036854775808"
       value: -9223372036854775808
+      value: 0
     }
     enumerator {
       name: "P18446744073709551615"
       value: -1
+      value: 0
     }
   }
 }

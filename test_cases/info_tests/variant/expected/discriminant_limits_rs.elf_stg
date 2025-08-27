@@ -316,24 +316,28 @@ variant_member {
   id: 0x2e83d54f
   name: "N4294967295"
   discriminant_value: -4294967295
+  discriminant_value: 0
   type_id: 0xb2bf9705  # struct discriminant_limits::Neg64::N4294967295
 }
 variant_member {
   id: 0xef6a5bbc
   name: "N4294967296"
   discriminant_value: -4294967296
+  discriminant_value: 0
   type_id: 0x9bd288c0  # struct discriminant_limits::Neg64::N4294967296
 }
 variant_member {
   id: 0xe0d13be4
   name: "N9223372036854775807"
   discriminant_value: -9223372036854775807
+  discriminant_value: 0
   type_id: 0x1f462918  # struct discriminant_limits::Neg64::N9223372036854775807
 }
 variant_member {
   id: 0x1c65d0c9
   name: "N9223372036854775808"
   discriminant_value: -9223372036854775808
+  discriminant_value: 0
   type_id: 0xf6537027  # struct discriminant_limits::Neg64::N9223372036854775808
 }
 variant_member {
@@ -592,12 +596,14 @@ variant_member {
   id: 0x7056cfeb
   name: "P9223372036854775808"
   discriminant_value: -9223372036854775808
+  discriminant_value: 0
   type_id: 0x1307f76a  # struct discriminant_limits::Pos64::P9223372036854775808
 }
 variant_member {
   id: 0x011bceb7
   name: "P18446744073709551615"
   discriminant_value: -1
+  discriminant_value: 0
   type_id: 0x2046a569  # struct discriminant_limits::Pos64::P18446744073709551615
 }
 struct_union {

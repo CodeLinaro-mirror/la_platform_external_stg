@@ -305,8 +305,8 @@ void Transform::operator()(const stg::Interface& x, uint32_t id) {
 
 void Transform::operator()(const Number& number,
                            google::protobuf::RepeatedField<int64_t>& repeated) const {
-  for (auto chunk : Number::ToChunks(number)) {
-    repeated.Add(chunk);
+  for (auto chunk : Number::ToChunks<uint64_t>(number)) {
+    repeated.Add(static_cast<int64_t>(chunk));
   }
 }
 

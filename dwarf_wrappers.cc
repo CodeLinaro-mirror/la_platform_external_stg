@@ -244,13 +244,7 @@ std::optional<Number> Entry::MaybeGetConstant(uint32_t attribute) {
       uint64_t uvalue;
       Check(dwarf_formudata(&dwarf_attribute.value(), &uvalue) == kReturnOk)
           << "dwarf_formudata returned error for format " << Hex(format);
-      const auto svalue = static_cast<int64_t>(uvalue);
-      if (svalue < 0) {
-        Warn() << "DIE " << Hex(GetOffset()) << " attribute " << Hex(attribute)
-               << " format " << Hex(format) << " value -" << Hex(-svalue)
-               << " should actually be " << Hex(uvalue);
-      }
-      return Number(svalue);
+      return Number(uvalue);
     }
     default: {
       uint64_t uvalue;
