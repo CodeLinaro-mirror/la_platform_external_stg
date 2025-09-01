@@ -1,0 +1,150 @@
+function symbol 'void enumerator_values::use_neg(enum enumerator_values::Neg8, enum enumerator_values::Neg16, enum enumerator_values::Neg32, enum enumerator_values::Neg64, enum enumerator_values::Neg128)' {_RNvCs2kD5cA2qdLz_17enumerator_values7use_neg} changed
+  type 'void(enum enumerator_values::Neg8, enum enumerator_values::Neg16, enum enumerator_values::Neg32, enum enumerator_values::Neg64, enum enumerator_values::Neg128)' changed
+    parameter 1 type 'enum enumerator_values::Neg8' changed
+      enumerator 'N1' value changed from 0 to -1
+      enumerator 'N2' value changed from 1 to -2
+      enumerator 'N8' value changed from 2 to -8
+      enumerator 'N128' value changed from 3 to -128
+      enumerator 'N64' value changed from 4 to -64
+    parameter 2 type 'enum enumerator_values::Neg16' changed
+      enumerator 'N1' value changed from 0 to -1
+      enumerator 'N2' value changed from 1 to -2
+      enumerator 'N8' value changed from 2 to -8
+      enumerator 'N128' value changed from 3 to -128
+      enumerator 'N32768' value changed from 4 to -32768
+      enumerator 'N64' value changed from 5 to -64
+      enumerator 'N8192' value changed from 6 to -8192
+    parameter 3 type 'enum enumerator_values::Neg32' changed
+      enumerator 'N1' value changed from 0 to -1
+      enumerator 'N2' value changed from 1 to -2
+      enumerator 'N8' value changed from 2 to -8
+      enumerator 'N128' value changed from 3 to -128
+      enumerator 'N32768' value changed from 4 to -32768
+      enumerator 'N2147483648' value changed from 5 to -2147483648
+      enumerator 'N64' value changed from 6 to -64
+      enumerator 'N8192' value changed from 7 to -8192
+      enumerator 'N1048576' value changed from 8 to -1048576
+      enumerator 'N134217728' value changed from 9 to -134217728
+    parameter 4 type 'enum enumerator_values::Neg64' changed
+      enumerator 'N1' value changed from 0 to -1
+      enumerator 'N2' value changed from 1 to -2
+      enumerator 'N8' value changed from 2 to -8
+      enumerator 'N128' value changed from 3 to -128
+      enumerator 'N32768' value changed from 4 to -32768
+      enumerator 'N2147483648' value changed from 5 to -2147483648
+      enumerator 'N9223372036854775808' value changed from 6 to -9223372036854775808
+      enumerator 'N64' value changed from 7 to -64
+      enumerator 'N8192' value changed from 8 to -8192
+      enumerator 'N1048576' value changed from 9 to -1048576
+      enumerator 'N134217728' value changed from 10 to -134217728
+      enumerator 'N17179869184' value changed from 11 to -17179869184
+      enumerator 'N2199023255552' value changed from 12 to -2199023255552
+      enumerator 'N281474976710656' value changed from 13 to -281474976710656
+      enumerator 'N36028797018963968' value changed from 14 to -36028797018963968
+      enumerator 'N4611686018427387904' value changed from 15 to -4611686018427387904
+    parameter 5 type 'enum enumerator_values::Neg128' changed
+      enumerator 'N1' value changed from 0 to 340282366920938463463374607431768211455
+      enumerator 'N2' value changed from 1 to 340282366920938463463374607431768211454
+      enumerator 'N8' value changed from 2 to 340282366920938463463374607431768211448
+      enumerator 'N128' value changed from 3 to 340282366920938463463374607431768211328
+      enumerator 'N32768' value changed from 4 to 340282366920938463463374607431768178688
+      enumerator 'N2147483648' value changed from 5 to 340282366920938463463374607429620727808
+      enumerator 'N9223372036854775808' value changed from 6 to 340282366920938463454151235394913435648
+      enumerator 'N170141183460469231731687303715884105728' value changed from 7 to 170141183460469231731687303715884105728
+      enumerator 'N64' value changed from 8 to 340282366920938463463374607431768211392
+      enumerator 'N8192' value changed from 9 to 340282366920938463463374607431768203264
+      enumerator 'N1048576' value changed from 10 to 340282366920938463463374607431767162880
+      enumerator 'N134217728' value changed from 11 to 340282366920938463463374607431633993728
+      enumerator 'N17179869184' value changed from 12 to 340282366920938463463374607414588342272
+      enumerator 'N2199023255552' value changed from 13 to 340282366920938463463374605232744955904
+      enumerator 'N281474976710656' value changed from 14 to 340282366920938463463374325956791500800
+      enumerator 'N36028797018963968' value changed from 15 to 340282366920938463463338578634749247488
+      enumerator 'N4611686018427387904' value changed from 16 to 340282366920938463458762921413340823552
+      enumerator 'N590295810358705651712' value changed from 17 to 340282366920938462873078797073062559744
+      enumerator 'N75557863725914323419136' value changed from 18 to 340282366920938387905510881517444792320
+      enumerator 'N9671406556917033397649408' value changed from 19 to 340282366920928792056817690398370562048
+      enumerator 'N1237940039285380274899124224' value changed from 20 to 340282366919700523424089227156869087232
+      enumerator 'N158456325028528675187087900672' value changed from 21 to 340282366762482138434845932244680310784
+      enumerator 'N20282409603651670423947251286016' value changed from 22 to 340282346638528859811704183484516925440
+      enumerator 'N2596148429267413814265248164610048' value changed from 23 to 340279770772509196049560342183603601408
+      enumerator 'N332306998946228968225951765070086144' value changed from 24 to 339950059921992234495148655666698125312
+      enumerator 'N42535295865117307932921825928971026432' value changed from 25 to 297747071055821155530452781502797185024
+
+function symbol 'void enumerator_values::use_pos(enum enumerator_values::Pos8, enum enumerator_values::Pos16, enum enumerator_values::Pos32, enum enumerator_values::Pos64, enum enumerator_values::Pos128)' {_RNvCs2kD5cA2qdLz_17enumerator_values7use_pos} changed
+  type 'void(enum enumerator_values::Pos8, enum enumerator_values::Pos16, enum enumerator_values::Pos32, enum enumerator_values::Pos64, enum enumerator_values::Pos128)' changed
+    parameter 1 type 'enum enumerator_values::Pos8' changed
+      enumerator 'P1' value changed from 0 to 1
+      enumerator 'P3' value changed from 1 to 3
+      enumerator 'P15' value changed from 2 to 15
+      enumerator 'P255' value changed from 3 to 255
+      enumerator 'P0' value changed from 4 to 0
+      enumerator 'P127' value changed from 5 to 127
+    parameter 2 type 'enum enumerator_values::Pos16' changed
+      enumerator 'P1' value changed from 0 to 1
+      enumerator 'P3' value changed from 1 to 3
+      enumerator 'P15' value changed from 2 to 15
+      enumerator 'P255' value changed from 3 to 255
+      enumerator 'P65535' value changed from 4 to 65535
+      enumerator 'P0' value changed from 5 to 0
+      enumerator 'P127' value changed from 6 to 127
+      enumerator 'P16383' value changed from 7 to 16383
+    parameter 3 type 'enum enumerator_values::Pos32' changed
+      enumerator 'P1' value changed from 0 to 1
+      enumerator 'P3' value changed from 1 to 3
+      enumerator 'P15' value changed from 2 to 15
+      enumerator 'P255' value changed from 3 to 255
+      enumerator 'P65535' value changed from 4 to 65535
+      enumerator 'P4294967295' value changed from 5 to 4294967295
+      enumerator 'P0' value changed from 6 to 0
+      enumerator 'P127' value changed from 7 to 127
+      enumerator 'P16383' value changed from 8 to 16383
+      enumerator 'P2097151' value changed from 9 to 2097151
+      enumerator 'P268435455' value changed from 10 to 268435455
+    parameter 4 type 'enum enumerator_values::Pos64' changed
+      enumerator 'P1' value changed from 0 to 1
+      enumerator 'P3' value changed from 1 to 3
+      enumerator 'P15' value changed from 2 to 15
+      enumerator 'P255' value changed from 3 to 255
+      enumerator 'P65535' value changed from 4 to 65535
+      enumerator 'P4294967295' value changed from 5 to 4294967295
+      enumerator 'P18446744073709551615' value changed from 6 to 18446744073709551615
+      enumerator 'P0' value changed from 7 to 0
+      enumerator 'P127' value changed from 8 to 127
+      enumerator 'P16383' value changed from 9 to 16383
+      enumerator 'P2097151' value changed from 10 to 2097151
+      enumerator 'P268435455' value changed from 11 to 268435455
+      enumerator 'P34359738367' value changed from 12 to 34359738367
+      enumerator 'P4398046511103' value changed from 13 to 4398046511103
+      enumerator 'P562949953421311' value changed from 14 to 562949953421311
+      enumerator 'P72057594037927935' value changed from 15 to 72057594037927935
+      enumerator 'P9223372036854775807' value changed from 16 to 9223372036854775807
+    parameter 5 type 'enum enumerator_values::Pos128' changed
+      enumerator 'P1' value changed from 0 to 1
+      enumerator 'P3' value changed from 1 to 3
+      enumerator 'P15' value changed from 2 to 15
+      enumerator 'P255' value changed from 3 to 255
+      enumerator 'P65535' value changed from 4 to 65535
+      enumerator 'P4294967295' value changed from 5 to 4294967295
+      enumerator 'P18446744073709551615' value changed from 6 to 18446744073709551615
+      enumerator 'P340282366920938463463374607431768211455' value changed from 7 to 340282366920938463463374607431768211455
+      enumerator 'P0' value changed from 8 to 0
+      enumerator 'P127' value changed from 9 to 127
+      enumerator 'P16383' value changed from 10 to 16383
+      enumerator 'P2097151' value changed from 11 to 2097151
+      enumerator 'P268435455' value changed from 12 to 268435455
+      enumerator 'P34359738367' value changed from 13 to 34359738367
+      enumerator 'P4398046511103' value changed from 14 to 4398046511103
+      enumerator 'P562949953421311' value changed from 15 to 562949953421311
+      enumerator 'P72057594037927935' value changed from 16 to 72057594037927935
+      enumerator 'P9223372036854775807' value changed from 17 to 9223372036854775807
+      enumerator 'P1180591620717411303423' value changed from 18 to 1180591620717411303423
+      enumerator 'P151115727451828646838271' value changed from 19 to 151115727451828646838271
+      enumerator 'P19342813113834066795298815' value changed from 20 to 19342813113834066795298815
+      enumerator 'P2475880078570760549798248447' value changed from 21 to 2475880078570760549798248447
+      enumerator 'P316912650057057350374175801343' value changed from 22 to 316912650057057350374175801343
+      enumerator 'P40564819207303340847894502572031' value changed from 23 to 40564819207303340847894502572031
+      enumerator 'P5192296858534827628530496329220095' value changed from 24 to 5192296858534827628530496329220095
+      enumerator 'P664613997892457936451903530140172287' value changed from 25 to 664613997892457936451903530140172287
+      enumerator 'P85070591730234615865843651857942052863' value changed from 26 to 85070591730234615865843651857942052863
+
+exit code 4
