@@ -70,17 +70,20 @@ enumeration {
   definition {
     underlying_type_id: 0x1b2272c0  # i128
     enumerator {
-      name: "N0"
-    }
-    enumerator {
       name: "N1"
       value: -1
       value: -1
       value: 0
     }
     enumerator {
-      name: "N127"
-      value: -127
+      name: "N2"
+      value: -2
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N8"
+      value: -8
       value: -1
       value: 0
     }
@@ -91,44 +94,8 @@ enumeration {
       value: 0
     }
     enumerator {
-      name: "N255"
-      value: -255
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N256"
-      value: -256
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N32767"
-      value: -32767
-      value: -1
-      value: 0
-    }
-    enumerator {
       name: "N32768"
       value: -32768
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N65535"
-      value: -65535
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N65536"
-      value: -65536
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N2147483647"
-      value: -2147483647
       value: -1
       value: 0
     }
@@ -139,51 +106,123 @@ enumeration {
       value: 0
     }
     enumerator {
-      name: "N4294967295"
-      value: -4294967295
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N4294967296"
-      value: -4294967296
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N9223372036854775807"
-      value: -9223372036854775807
-      value: -1
-      value: 0
-    }
-    enumerator {
       name: "N9223372036854775808"
       value: -9223372036854775808
       value: -1
       value: 0
     }
     enumerator {
-      name: "N18446744073709551615"
-      value: 1
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N18446744073709551616"
-      value: 0
-      value: -1
-      value: 0
-    }
-    enumerator {
-      name: "N170141183460469231731687303715884105727"
-      value: 1
-      value: -9223372036854775808
-      value: 0
-    }
-    enumerator {
       name: "N170141183460469231731687303715884105728"
       value: 0
       value: -9223372036854775808
+      value: 0
+    }
+    enumerator {
+      name: "N64"
+      value: -64
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N8192"
+      value: -8192
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N1048576"
+      value: -1048576
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N134217728"
+      value: -134217728
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N17179869184"
+      value: -17179869184
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N2199023255552"
+      value: -2199023255552
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N281474976710656"
+      value: -281474976710656
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N36028797018963968"
+      value: -36028797018963968
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N4611686018427387904"
+      value: -4611686018427387904
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "N590295810358705651712"
+      value: 0
+      value: -32
+      value: 0
+    }
+    enumerator {
+      name: "N75557863725914323419136"
+      value: 0
+      value: -4096
+      value: 0
+    }
+    enumerator {
+      name: "N9671406556917033397649408"
+      value: 0
+      value: -524288
+      value: 0
+    }
+    enumerator {
+      name: "N1237940039285380274899124224"
+      value: 0
+      value: -67108864
+      value: 0
+    }
+    enumerator {
+      name: "N158456325028528675187087900672"
+      value: 0
+      value: -8589934592
+      value: 0
+    }
+    enumerator {
+      name: "N20282409603651670423947251286016"
+      value: 0
+      value: -1099511627776
+      value: 0
+    }
+    enumerator {
+      name: "N2596148429267413814265248164610048"
+      value: 0
+      value: -140737488355328
+      value: 0
+    }
+    enumerator {
+      name: "N332306998946228968225951765070086144"
+      value: 0
+      value: -18014398509481984
+      value: 0
+    }
+    enumerator {
+      name: "N42535295865117307932921825928971026432"
+      value: 0
+      value: -2305843009213693952
       value: 0
     }
   }
@@ -194,35 +233,32 @@ enumeration {
   definition {
     underlying_type_id: 0x47ea5d8b  # i16
     enumerator {
-      name: "N0"
-    }
-    enumerator {
       name: "N1"
       value: -1
     }
     enumerator {
-      name: "N127"
-      value: -127
+      name: "N2"
+      value: -2
+    }
+    enumerator {
+      name: "N8"
+      value: -8
     }
     enumerator {
       name: "N128"
       value: -128
     }
     enumerator {
-      name: "N255"
-      value: -255
-    }
-    enumerator {
-      name: "N256"
-      value: -256
-    }
-    enumerator {
-      name: "N32767"
-      value: -32767
-    }
-    enumerator {
       name: "N32768"
       value: -32768
+    }
+    enumerator {
+      name: "N64"
+      value: -64
+    }
+    enumerator {
+      name: "N8192"
+      value: -8192
     }
   }
 }
@@ -232,51 +268,44 @@ enumeration {
   definition {
     underlying_type_id: 0xe5312866  # i32
     enumerator {
-      name: "N0"
-    }
-    enumerator {
       name: "N1"
       value: -1
     }
     enumerator {
-      name: "N127"
-      value: -127
+      name: "N2"
+      value: -2
+    }
+    enumerator {
+      name: "N8"
+      value: -8
     }
     enumerator {
       name: "N128"
       value: -128
     }
     enumerator {
-      name: "N255"
-      value: -255
-    }
-    enumerator {
-      name: "N256"
-      value: -256
-    }
-    enumerator {
-      name: "N32767"
-      value: -32767
-    }
-    enumerator {
       name: "N32768"
       value: -32768
     }
     enumerator {
-      name: "N65535"
-      value: -65535
-    }
-    enumerator {
-      name: "N65536"
-      value: -65536
-    }
-    enumerator {
-      name: "N2147483647"
-      value: -2147483647
-    }
-    enumerator {
       name: "N2147483648"
       value: -2147483648
+    }
+    enumerator {
+      name: "N64"
+      value: -64
+    }
+    enumerator {
+      name: "N8192"
+      value: -8192
+    }
+    enumerator {
+      name: "N1048576"
+      value: -1048576
+    }
+    enumerator {
+      name: "N134217728"
+      value: -134217728
     }
   }
 }
@@ -286,67 +315,68 @@ enumeration {
   definition {
     underlying_type_id: 0xedc43a15  # i64
     enumerator {
-      name: "N0"
-    }
-    enumerator {
       name: "N1"
       value: -1
     }
     enumerator {
-      name: "N127"
-      value: -127
+      name: "N2"
+      value: -2
+    }
+    enumerator {
+      name: "N8"
+      value: -8
     }
     enumerator {
       name: "N128"
       value: -128
     }
     enumerator {
-      name: "N255"
-      value: -255
-    }
-    enumerator {
-      name: "N256"
-      value: -256
-    }
-    enumerator {
-      name: "N32767"
-      value: -32767
-    }
-    enumerator {
       name: "N32768"
       value: -32768
-    }
-    enumerator {
-      name: "N65535"
-      value: -65535
-    }
-    enumerator {
-      name: "N65536"
-      value: -65536
-    }
-    enumerator {
-      name: "N2147483647"
-      value: -2147483647
     }
     enumerator {
       name: "N2147483648"
       value: -2147483648
     }
     enumerator {
-      name: "N4294967295"
-      value: -4294967295
-    }
-    enumerator {
-      name: "N4294967296"
-      value: -4294967296
-    }
-    enumerator {
-      name: "N9223372036854775807"
-      value: -9223372036854775807
-    }
-    enumerator {
       name: "N9223372036854775808"
       value: -9223372036854775808
+    }
+    enumerator {
+      name: "N64"
+      value: -64
+    }
+    enumerator {
+      name: "N8192"
+      value: -8192
+    }
+    enumerator {
+      name: "N1048576"
+      value: -1048576
+    }
+    enumerator {
+      name: "N134217728"
+      value: -134217728
+    }
+    enumerator {
+      name: "N17179869184"
+      value: -17179869184
+    }
+    enumerator {
+      name: "N2199023255552"
+      value: -2199023255552
+    }
+    enumerator {
+      name: "N281474976710656"
+      value: -281474976710656
+    }
+    enumerator {
+      name: "N36028797018963968"
+      value: -36028797018963968
+    }
+    enumerator {
+      name: "N4611686018427387904"
+      value: -4611686018427387904
     }
   }
 }
@@ -356,19 +386,24 @@ enumeration {
   definition {
     underlying_type_id: 0xd6c419f3  # i8
     enumerator {
-      name: "N0"
-    }
-    enumerator {
       name: "N1"
       value: -1
     }
     enumerator {
-      name: "N127"
-      value: -127
+      name: "N2"
+      value: -2
+    }
+    enumerator {
+      name: "N8"
+      value: -8
     }
     enumerator {
       name: "N128"
       value: -128
+    }
+    enumerator {
+      name: "N64"
+      value: -64
     }
   }
 }
@@ -378,68 +413,28 @@ enumeration {
   definition {
     underlying_type_id: 0x391703e7  # u128
     enumerator {
-      name: "P0"
-    }
-    enumerator {
       name: "P1"
       value: 1
     }
     enumerator {
-      name: "P127"
-      value: 127
+      name: "P3"
+      value: 3
     }
     enumerator {
-      name: "P128"
-      value: 128
+      name: "P15"
+      value: 15
     }
     enumerator {
       name: "P255"
       value: 255
     }
     enumerator {
-      name: "P256"
-      value: 256
-    }
-    enumerator {
-      name: "P32767"
-      value: 32767
-    }
-    enumerator {
-      name: "P32768"
-      value: 32768
-    }
-    enumerator {
       name: "P65535"
       value: 65535
     }
     enumerator {
-      name: "P65536"
-      value: 65536
-    }
-    enumerator {
-      name: "P2147483647"
-      value: 2147483647
-    }
-    enumerator {
-      name: "P2147483648"
-      value: 2147483648
-    }
-    enumerator {
       name: "P4294967295"
       value: 4294967295
-    }
-    enumerator {
-      name: "P4294967296"
-      value: 4294967296
-    }
-    enumerator {
-      name: "P9223372036854775807"
-      value: 9223372036854775807
-    }
-    enumerator {
-      name: "P9223372036854775808"
-      value: -9223372036854775808
-      value: 0
     }
     enumerator {
       name: "P18446744073709551615"
@@ -447,26 +442,94 @@ enumeration {
       value: 0
     }
     enumerator {
-      name: "P18446744073709551616"
-      value: 0
-      value: 1
-    }
-    enumerator {
-      name: "P170141183460469231731687303715884105727"
-      value: -1
-      value: 9223372036854775807
-    }
-    enumerator {
-      name: "P170141183460469231731687303715884105728"
-      value: 0
-      value: -9223372036854775808
-      value: 0
-    }
-    enumerator {
       name: "P340282366920938463463374607431768211455"
       value: -1
       value: -1
       value: 0
+    }
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P16383"
+      value: 16383
+    }
+    enumerator {
+      name: "P2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "P268435455"
+      value: 268435455
+    }
+    enumerator {
+      name: "P34359738367"
+      value: 34359738367
+    }
+    enumerator {
+      name: "P4398046511103"
+      value: 4398046511103
+    }
+    enumerator {
+      name: "P562949953421311"
+      value: 562949953421311
+    }
+    enumerator {
+      name: "P72057594037927935"
+      value: 72057594037927935
+    }
+    enumerator {
+      name: "P9223372036854775807"
+      value: 9223372036854775807
+    }
+    enumerator {
+      name: "P1180591620717411303423"
+      value: -1
+      value: 63
+    }
+    enumerator {
+      name: "P151115727451828646838271"
+      value: -1
+      value: 8191
+    }
+    enumerator {
+      name: "P19342813113834066795298815"
+      value: -1
+      value: 1048575
+    }
+    enumerator {
+      name: "P2475880078570760549798248447"
+      value: -1
+      value: 134217727
+    }
+    enumerator {
+      name: "P316912650057057350374175801343"
+      value: -1
+      value: 17179869183
+    }
+    enumerator {
+      name: "P40564819207303340847894502572031"
+      value: -1
+      value: 2199023255551
+    }
+    enumerator {
+      name: "P5192296858534827628530496329220095"
+      value: -1
+      value: 281474976710655
+    }
+    enumerator {
+      name: "P664613997892457936451903530140172287"
+      value: -1
+      value: 36028797018963967
+    }
+    enumerator {
+      name: "P85070591730234615865843651857942052863"
+      value: -1
+      value: 4611686018427387903
     }
   }
 }
@@ -476,39 +539,35 @@ enumeration {
   definition {
     underlying_type_id: 0x951c1ffe  # u16
     enumerator {
-      name: "P0"
-    }
-    enumerator {
       name: "P1"
       value: 1
     }
     enumerator {
-      name: "P127"
-      value: 127
+      name: "P3"
+      value: 3
     }
     enumerator {
-      name: "P128"
-      value: 128
+      name: "P15"
+      value: 15
     }
     enumerator {
       name: "P255"
       value: 255
     }
     enumerator {
-      name: "P256"
-      value: 256
-    }
-    enumerator {
-      name: "P32767"
-      value: 32767
-    }
-    enumerator {
-      name: "P32768"
-      value: 32768
-    }
-    enumerator {
       name: "P65535"
       value: 65535
+    }
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P16383"
+      value: 16383
     }
   }
 }
@@ -518,55 +577,47 @@ enumeration {
   definition {
     underlying_type_id: 0xd4bacb77  # u32
     enumerator {
-      name: "P0"
-    }
-    enumerator {
       name: "P1"
       value: 1
     }
     enumerator {
-      name: "P127"
-      value: 127
+      name: "P3"
+      value: 3
     }
     enumerator {
-      name: "P128"
-      value: 128
+      name: "P15"
+      value: 15
     }
     enumerator {
       name: "P255"
       value: 255
     }
     enumerator {
-      name: "P256"
-      value: 256
-    }
-    enumerator {
-      name: "P32767"
-      value: 32767
-    }
-    enumerator {
-      name: "P32768"
-      value: 32768
-    }
-    enumerator {
       name: "P65535"
       value: 65535
     }
     enumerator {
-      name: "P65536"
-      value: 65536
-    }
-    enumerator {
-      name: "P2147483647"
-      value: 2147483647
-    }
-    enumerator {
-      name: "P2147483648"
-      value: 2147483648
-    }
-    enumerator {
       name: "P4294967295"
       value: 4294967295
+    }
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P16383"
+      value: 16383
+    }
+    enumerator {
+      name: "P2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "P268435455"
+      value: 268435455
     }
   }
 }
@@ -576,73 +627,72 @@ enumeration {
   definition {
     underlying_type_id: 0x89d2d38c  # u64
     enumerator {
-      name: "P0"
-    }
-    enumerator {
       name: "P1"
       value: 1
     }
     enumerator {
-      name: "P127"
-      value: 127
+      name: "P3"
+      value: 3
     }
     enumerator {
-      name: "P128"
-      value: 128
+      name: "P15"
+      value: 15
     }
     enumerator {
       name: "P255"
       value: 255
     }
     enumerator {
-      name: "P256"
-      value: 256
-    }
-    enumerator {
-      name: "P32767"
-      value: 32767
-    }
-    enumerator {
-      name: "P32768"
-      value: 32768
-    }
-    enumerator {
       name: "P65535"
       value: 65535
-    }
-    enumerator {
-      name: "P65536"
-      value: 65536
-    }
-    enumerator {
-      name: "P2147483647"
-      value: 2147483647
-    }
-    enumerator {
-      name: "P2147483648"
-      value: 2147483648
     }
     enumerator {
       name: "P4294967295"
       value: 4294967295
     }
     enumerator {
-      name: "P4294967296"
-      value: 4294967296
+      name: "P18446744073709551615"
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P127"
+      value: 127
+    }
+    enumerator {
+      name: "P16383"
+      value: 16383
+    }
+    enumerator {
+      name: "P2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "P268435455"
+      value: 268435455
+    }
+    enumerator {
+      name: "P34359738367"
+      value: 34359738367
+    }
+    enumerator {
+      name: "P4398046511103"
+      value: 4398046511103
+    }
+    enumerator {
+      name: "P562949953421311"
+      value: 562949953421311
+    }
+    enumerator {
+      name: "P72057594037927935"
+      value: 72057594037927935
     }
     enumerator {
       name: "P9223372036854775807"
       value: 9223372036854775807
-    }
-    enumerator {
-      name: "P9223372036854775808"
-      value: -9223372036854775808
-      value: 0
-    }
-    enumerator {
-      name: "P18446744073709551615"
-      value: -1
-      value: 0
     }
   }
 }
@@ -652,23 +702,27 @@ enumeration {
   definition {
     underlying_type_id: 0x2d2f93e0  # u8
     enumerator {
-      name: "P0"
-    }
-    enumerator {
       name: "P1"
       value: 1
     }
     enumerator {
-      name: "P127"
-      value: 127
+      name: "P3"
+      value: 3
     }
     enumerator {
-      name: "P128"
-      value: 128
+      name: "P15"
+      value: 15
     }
     enumerator {
       name: "P255"
       value: 255
+    }
+    enumerator {
+      name: "P0"
+    }
+    enumerator {
+      name: "P127"
+      value: 127
     }
   }
 }
