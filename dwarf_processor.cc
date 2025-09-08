@@ -796,7 +796,8 @@ class Processor {
       auto child_tag = child.GetTag();
       switch (child_tag) {
         case DW_TAG_member: {
-          if (child.GetOffset() != discriminant_entry->GetOffset()) {
+          if (discriminant_entry == std::nullopt
+              || child.GetOffset() != discriminant_entry->GetOffset()) {
             Die() << "Encountered rogue member for variant: "
                   << EntryToString(entry);
           }
