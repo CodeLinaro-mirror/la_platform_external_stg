@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Siddharth Nayyar
+// Author: Giuliano Procida
 
 #include "proto_writer.h"
 
@@ -37,6 +38,7 @@
 #include "error.h"
 #include "graph.h"
 #include "naming.h"
+#include "number.h"
 #include "stable_hash.h"
 #include "stg.pb.h"
 
@@ -45,22 +47,9 @@ namespace proto {
 
 namespace {
 
-class StableId {
- public:
-  explicit StableId(const Graph& graph) : stable_hash_(graph) {}
-
-  uint32_t operator()(Id id) {
-    return stable_hash_(id).value;
-  }
-
- private:
-  StableHash stable_hash_;
-};
-
-template <typename MapId>
 struct Transform {
-  Transform(const Graph& graph, proto::STG& stg, MapId& map_id)
-      : graph(graph), stg(stg), map_id(map_id) {}
+  Transform(const Graph& graph, proto::STG& stg)
+      : graph(graph), stg(stg), stable_hash(graph) {}
 
   uint32_t operator()(Id);
 
@@ -82,15 +71,17 @@ struct Transform {
   void operator()(const stg::ElfSymbol&, uint32_t);
   void operator()(const stg::Interface&, uint32_t);
 
-  Special::Kind operator()(stg::Special::Kind);
-  PointerReference::Kind operator()(stg::PointerReference::Kind);
-  Qualified::Qualifier operator()(stg::Qualifier);
-  Primitive::Encoding operator()(stg::Primitive::Encoding);
-  BaseClass::Inheritance operator()(stg::BaseClass::Inheritance);
-  StructUnion::Kind operator()(stg::StructUnion::Kind);
-  ElfSymbol::SymbolType operator()(stg::ElfSymbol::SymbolType);
-  ElfSymbol::Binding operator()(stg::ElfSymbol::Binding);
-  ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility);
+  void operator()(const Number&, google::protobuf::RepeatedField<int64_t>&) const;
+
+  Special::Kind operator()(stg::Special::Kind) const;
+  PointerReference::Kind operator()(stg::PointerReference::Kind) const;
+  Qualified::Qualifier operator()(stg::Qualifier) const;
+  Primitive::Encoding operator()(stg::Primitive::Encoding) const;
+  BaseClass::Inheritance operator()(stg::BaseClass::Inheritance) const;
+  StructUnion::Kind operator()(stg::StructUnion::Kind) const;
+  ElfSymbol::SymbolType operator()(stg::ElfSymbol::SymbolType) const;
+  ElfSymbol::Binding operator()(stg::ElfSymbol::Binding) const;
+  ElfSymbol::Visibility operator()(stg::ElfSymbol::Visibility) const;
 
   std::unordered_map<uint32_t, Id> GetInternalIdByExternalIdMap() {
     std::unordered_map<uint32_t, Id> internal_id_map;
@@ -102,18 +93,15 @@ struct Transform {
 
   const Graph& graph;
   proto::STG& stg;
+  StableHash stable_hash;
   std::unordered_map<Id, uint32_t> external_id_by_internal_id;
   std::unordered_set<uint32_t> used_ids;
-
-  // Function object: Id -> uint32_t
-  MapId& map_id;
 };
 
-template <typename MapId>
-uint32_t Transform<MapId>::operator()(Id id) {
+uint32_t Transform::operator()(Id id) {
   auto [it, inserted] = external_id_by_internal_id.emplace(id, 0);
   if (inserted) {
-    uint32_t mapped_id = map_id(id);
+    uint32_t mapped_id = stable_hash(id).value;
 
     // Ensure uniqueness of external ids. It is best to probe here since id
     // generators will not in general guarantee that the mapping from internal
@@ -127,47 +115,41 @@ uint32_t Transform<MapId>::operator()(Id id) {
   return it->second;
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Special& x, uint32_t id) {
+void Transform::operator()(const stg::Special& x, uint32_t id) {
   auto& special = *stg.add_special();
   special.set_id(id);
   special.set_kind((*this)(x.kind));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::PointerReference& x, uint32_t id) {
+void Transform::operator()(const stg::PointerReference& x, uint32_t id) {
   auto& pointer_reference = *stg.add_pointer_reference();
   pointer_reference.set_id(id);
   pointer_reference.set_kind((*this)(x.kind));
   pointer_reference.set_pointee_type_id((*this)(x.pointee_type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::PointerToMember& x, uint32_t id) {
+void Transform::operator()(const stg::PointerToMember& x, uint32_t id) {
   auto& pointer_to_member = *stg.add_pointer_to_member();
   pointer_to_member.set_id(id);
   pointer_to_member.set_containing_type_id((*this)(x.containing_type_id));
   pointer_to_member.set_pointee_type_id((*this)(x.pointee_type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Typedef& x, uint32_t id) {
+void Transform::operator()(const stg::Typedef& x, uint32_t id) {
   auto& typedef_ = *stg.add_typedef_();
   typedef_.set_id(id);
   typedef_.set_name(x.name);
   typedef_.set_referred_type_id((*this)(x.referred_type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Qualified& x, uint32_t id) {
+void Transform::operator()(const stg::Qualified& x, uint32_t id) {
   auto& qualified = *stg.add_qualified();
   qualified.set_id(id);
   qualified.set_qualifier((*this)(x.qualifier));
   qualified.set_qualified_type_id((*this)(x.qualified_type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Primitive& x, uint32_t id) {
+void Transform::operator()(const stg::Primitive& x, uint32_t id) {
   auto& primitive = *stg.add_primitive();
   primitive.set_id(id);
   primitive.set_name(x.name);
@@ -177,16 +159,14 @@ void Transform<MapId>::operator()(const stg::Primitive& x, uint32_t id) {
   primitive.set_bytesize(x.bytesize);
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Array& x, uint32_t id) {
+void Transform::operator()(const stg::Array& x, uint32_t id) {
   auto& array = *stg.add_array();
   array.set_id(id);
   array.set_number_of_elements(x.number_of_elements);
   array.set_element_type_id((*this)(x.element_type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::BaseClass& x, uint32_t id) {
+void Transform::operator()(const stg::BaseClass& x, uint32_t id) {
   auto& base_class = *stg.add_base_class();
   base_class.set_id(id);
   base_class.set_type_id((*this)(x.type_id));
@@ -194,8 +174,7 @@ void Transform<MapId>::operator()(const stg::BaseClass& x, uint32_t id) {
   base_class.set_inheritance((*this)(x.inheritance));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Method& x, uint32_t id) {
+void Transform::operator()(const stg::Method& x, uint32_t id) {
   auto& method = *stg.add_method();
   method.set_id(id);
   method.set_mangled_name(x.mangled_name);
@@ -204,8 +183,7 @@ void Transform<MapId>::operator()(const stg::Method& x, uint32_t id) {
   method.set_type_id((*this)(x.type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Member& x, uint32_t id) {
+void Transform::operator()(const stg::Member& x, uint32_t id) {
   auto& member = *stg.add_member();
   member.set_id(id);
   member.set_name(x.name);
@@ -214,19 +192,22 @@ void Transform<MapId>::operator()(const stg::Member& x, uint32_t id) {
   member.set_bitsize(x.bitsize);
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::VariantMember& x, uint32_t id) {
+void Transform::operator()(const stg::VariantMember& x, uint32_t id) {
   auto& variant_member = *stg.add_variant_member();
   variant_member.set_id(id);
   variant_member.set_name(x.name);
   if (x.discriminant_value) {
-    variant_member.set_discriminant_value(*x.discriminant_value);
+    const auto& number = *x.discriminant_value;
+    if (number == Number()) {
+      variant_member.add_discriminant_value(0);
+    } else {
+      (*this)(number, *variant_member.mutable_discriminant_value());
+    }
   }
   variant_member.set_type_id((*this)(x.type_id));
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::StructUnion& x, uint32_t id) {
+void Transform::operator()(const stg::StructUnion& x, uint32_t id) {
   auto& struct_union = *stg.add_struct_union();
   struct_union.set_id(id);
   struct_union.set_kind((*this)(x.kind));
@@ -246,8 +227,7 @@ void Transform<MapId>::operator()(const stg::StructUnion& x, uint32_t id) {
   }
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Enumeration& x, uint32_t id) {
+void Transform::operator()(const stg::Enumeration& x, uint32_t id) {
   auto& enumeration = *stg.add_enumeration();
   enumeration.set_id(id);
   enumeration.set_name(x.name);
@@ -258,13 +238,12 @@ void Transform<MapId>::operator()(const stg::Enumeration& x, uint32_t id) {
     for (const auto& [name, value] : x.definition->enumerators) {
       auto& enumerator = *definition.add_enumerator();
       enumerator.set_name(name);
-      enumerator.set_value(value);
+      (*this)(value, *enumerator.mutable_value());
     }
   }
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
+void Transform::operator()(const stg::Variant& x, uint32_t id) {
   auto& variant = *stg.add_variant();
   variant.set_id(id);
   variant.set_name(x.name);
@@ -277,8 +256,7 @@ void Transform<MapId>::operator()(const stg::Variant& x, uint32_t id) {
   }
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Function& x, uint32_t id) {
+void Transform::operator()(const stg::Function& x, uint32_t id) {
   auto& function = *stg.add_function();
   function.set_id(id);
   function.set_return_type_id((*this)(x.return_type_id));
@@ -287,8 +265,7 @@ void Transform<MapId>::operator()(const stg::Function& x, uint32_t id) {
   }
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::ElfSymbol& x, uint32_t id) {
+void Transform::operator()(const stg::ElfSymbol& x, uint32_t id) {
   auto& elf_symbol = *stg.add_elf_symbol();
   elf_symbol.set_id(id);
   elf_symbol.set_name(x.symbol_name);
@@ -315,8 +292,7 @@ void Transform<MapId>::operator()(const stg::ElfSymbol& x, uint32_t id) {
   }
 }
 
-template <typename MapId>
-void Transform<MapId>::operator()(const stg::Interface& x, uint32_t id) {
+void Transform::operator()(const stg::Interface& x, uint32_t id) {
   auto& interface = *stg.add_interface();
   interface.set_id(id);
   for (const auto& [_, id] : x.symbols) {
@@ -327,9 +303,15 @@ void Transform<MapId>::operator()(const stg::Interface& x, uint32_t id) {
   }
 }
 
-template <typename MapId>
-PointerReference::Kind Transform<MapId>::operator()(
-    stg::PointerReference::Kind x) {
+void Transform::operator()(const Number& number,
+                           google::protobuf::RepeatedField<int64_t>& repeated) const {
+  for (auto chunk : Number::ToChunks<uint64_t>(number)) {
+    repeated.Add(static_cast<int64_t>(chunk));
+  }
+}
+
+PointerReference::Kind Transform::operator()(
+    stg::PointerReference::Kind x) const {
   switch (x) {
     case stg::PointerReference::Kind::POINTER:
       return PointerReference::POINTER;
@@ -340,9 +322,8 @@ PointerReference::Kind Transform<MapId>::operator()(
   }
 }
 
-template <typename MapId>
-Special::Kind Transform<MapId>::operator()(
-    stg::Special::Kind x) {
+Special::Kind Transform::operator()(
+    stg::Special::Kind x) const {
   switch (x) {
     case stg::Special::Kind::VOID:
       return Special::VOID;
@@ -353,8 +334,7 @@ Special::Kind Transform<MapId>::operator()(
   }
 }
 
-template <typename MapId>
-Qualified::Qualifier Transform<MapId>::operator()(stg::Qualifier x) {
+Qualified::Qualifier Transform::operator()(stg::Qualifier x) const {
   switch (x) {
     case stg::Qualifier::CONST:
       return Qualified::CONST;
@@ -367,8 +347,7 @@ Qualified::Qualifier Transform<MapId>::operator()(stg::Qualifier x) {
   }
 }
 
-template <typename MapId>
-Primitive::Encoding Transform<MapId>::operator()(stg::Primitive::Encoding x) {
+Primitive::Encoding Transform::operator()(stg::Primitive::Encoding x) const {
   switch (x) {
     case stg::Primitive::Encoding::BOOLEAN:
       return Primitive::BOOLEAN;
@@ -389,9 +368,8 @@ Primitive::Encoding Transform<MapId>::operator()(stg::Primitive::Encoding x) {
   }
 }
 
-template <typename MapId>
-BaseClass::Inheritance Transform<MapId>::operator()(
-    stg::BaseClass::Inheritance x) {
+BaseClass::Inheritance Transform::operator()(
+    stg::BaseClass::Inheritance x) const {
   switch (x) {
     case stg::BaseClass::Inheritance::NON_VIRTUAL:
       return BaseClass::NON_VIRTUAL;
@@ -400,8 +378,7 @@ BaseClass::Inheritance Transform<MapId>::operator()(
   }
 }
 
-template <typename MapId>
-StructUnion::Kind Transform<MapId>::operator()(stg::StructUnion::Kind x) {
+StructUnion::Kind Transform::operator()(stg::StructUnion::Kind x) const {
   switch (x) {
     case stg::StructUnion::Kind::STRUCT:
       return StructUnion::STRUCT;
@@ -410,9 +387,8 @@ StructUnion::Kind Transform<MapId>::operator()(stg::StructUnion::Kind x) {
   }
 }
 
-template <typename MapId>
-ElfSymbol::SymbolType Transform<MapId>::operator()(
-    stg::ElfSymbol::SymbolType x) {
+ElfSymbol::SymbolType Transform::operator()(
+    stg::ElfSymbol::SymbolType x) const {
   switch (x) {
     case stg::ElfSymbol::SymbolType::NOTYPE:
       return ElfSymbol::NOTYPE;
@@ -429,8 +405,7 @@ ElfSymbol::SymbolType Transform<MapId>::operator()(
   }
 }
 
-template <typename MapId>
-ElfSymbol::Binding Transform<MapId>::operator()(stg::ElfSymbol::Binding x) {
+ElfSymbol::Binding Transform::operator()(stg::ElfSymbol::Binding x) const {
   switch (x) {
     case stg::ElfSymbol::Binding::GLOBAL:
       return ElfSymbol::GLOBAL;
@@ -443,9 +418,8 @@ ElfSymbol::Binding Transform<MapId>::operator()(stg::ElfSymbol::Binding x) {
   }
 }
 
-template <typename MapId>
-ElfSymbol::Visibility Transform<MapId>::operator()(
-    stg::ElfSymbol::Visibility x) {
+ElfSymbol::Visibility Transform::operator()(
+    stg::ElfSymbol::Visibility x) const {
   switch (x) {
     case stg::ElfSymbol::Visibility::DEFAULT:
       return ElfSymbol::DEFAULT;
@@ -588,8 +562,7 @@ const std::array<const google::protobuf::FieldDescriptor*, 19> edge_descriptors 
 void Writer::Write(const Id& root, google::protobuf::io::ZeroCopyOutputStream& os,
                    bool annotate) {
   proto::STG stg;
-  StableId stable_id(graph_);
-  Transform<StableId> transform(graph_, stg, stable_id);
+  Transform transform(graph_, stg);
   stg.set_root_id(transform(root));
   SortNodes(stg);
   stg.set_version(kWrittenFormatVersion);
