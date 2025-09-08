@@ -39,7 +39,7 @@ struct Types {
   struct Symbol {
     std::string scoped_name;
     std::string linkage_name;
-    Location location;
+    std::vector<Location> locations;
     Id type_id;
   };
 
