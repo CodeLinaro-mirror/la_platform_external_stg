@@ -316,6 +316,24 @@ std::optional<Location> Entry::MaybeGetLocation(uint32_t attribute) {
   return Location{Location::Kind::ADDRESS, address};
 }
 
+std::vector<Location> Entry::MaybeGetRangeStarts() {
+  std::vector<Location> starts;
+
+  ptrdiff_t offset = 0;
+  Dwarf_Addr base;
+  Dwarf_Addr start;
+  Dwarf_Addr end;
+
+  // This function handles both DW_AT_low_pc and DW_AT_ranges cases.
+  while ((offset = dwarf_ranges(&die, offset, &base, &start, &end)) != 0) {
+    if (offset < 0) {
+      Die() << "dwarf_ranges returned error";
+    }
+    starts.emplace_back(Location::Kind::ADDRESS, start);
+  }
+  return starts;
+}
+
 std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
   auto attribute = GetAttribute(&die, DW_AT_data_member_location);
   if (!attribute) {

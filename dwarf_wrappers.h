@@ -76,6 +76,7 @@ struct Entry {
   bool GetFlag(uint32_t attribute);
   std::optional<Entry> MaybeGetReference(uint32_t attribute);
   std::optional<Location> MaybeGetLocation(uint32_t attribute);
+  std::vector<Location> MaybeGetRangeStarts();
   std::optional<uint64_t> MaybeGetMemberByteOffset();
   std::optional<uint64_t> MaybeGetVtableOffset();
   // Returns value of subrange element count if it is constant or nullopt if it
