@@ -1,0 +1,563 @@
+digraph "ABI diff" {
+  "0" [shape=rectangle, label="'interface'"]
+  "1" [label="'void discriminant_values::use_neg(variant discriminant_values::Neg8, variant discriminant_values::Neg16, variant discriminant_values::Neg32, variant discriminant_values::Neg64, variant discriminant_values::Neg128)' {_RNvCslq2M6p701eM_19discriminant_values7use_neg}"]
+  "2" [label="'void(variant discriminant_values::Neg8, variant discriminant_values::Neg16, variant discriminant_values::Neg32, variant discriminant_values::Neg64, variant discriminant_values::Neg128)'"]
+  "3" [shape=rectangle, label="'variant discriminant_values::Neg8'"]
+  "4" [color=red, label="'struct discriminant_values::Neg8::N1 N1'"]
+  "4" -> "4:0"
+  "4:0" [color=red, label="discriminant changed from 0 to 255"]
+  "3" -> "4" [label=""]
+  "5" [color=red, label="'struct discriminant_values::Neg8::N2 N2'"]
+  "5" -> "5:0"
+  "5:0" [color=red, label="discriminant changed from 1 to 254"]
+  "3" -> "5" [label=""]
+  "6" [color=red, label="'struct discriminant_values::Neg8::N8 N8'"]
+  "6" -> "6:0"
+  "6:0" [color=red, label="discriminant changed from 2 to 248"]
+  "3" -> "6" [label=""]
+  "7" [color=red, label="'struct discriminant_values::Neg8::N128 N128'"]
+  "7" -> "7:0"
+  "7:0" [color=red, label="discriminant changed from 3 to 128"]
+  "3" -> "7" [label=""]
+  "8" [color=red, label="'struct discriminant_values::Neg8::N64 N64'"]
+  "8" -> "8:0"
+  "8:0" [color=red, label="discriminant changed from 4 to 192"]
+  "3" -> "8" [label=""]
+  "2" -> "3" [label="parameter 1"]
+  "9" [shape=rectangle, label="'variant discriminant_values::Neg16'"]
+  "10" [color=red, label="'struct discriminant_values::Neg16::N1 N1'"]
+  "10" -> "10:0"
+  "10:0" [color=red, label="discriminant changed from 0 to 255"]
+  "9" -> "10" [label=""]
+  "11" [color=red, label="'struct discriminant_values::Neg16::N2 N2'"]
+  "11" -> "11:0"
+  "11:0" [color=red, label="discriminant changed from 1 to 254"]
+  "9" -> "11" [label=""]
+  "12" [color=red, label="'struct discriminant_values::Neg16::N8 N8'"]
+  "12" -> "12:0"
+  "12:0" [color=red, label="discriminant changed from 2 to 248"]
+  "9" -> "12" [label=""]
+  "13" [color=red, label="'struct discriminant_values::Neg16::N128 N128'"]
+  "13" -> "13:0"
+  "13:0" [color=red, label="discriminant changed from 3 to 128"]
+  "9" -> "13" [label=""]
+  "14" [color=red, label="'struct discriminant_values::Neg16::N32768 N32768'"]
+  "14" -> "14:0"
+  "14:0" [color=red, label="discriminant changed from 4 to 32768"]
+  "9" -> "14" [label=""]
+  "15" [color=red, label="'struct discriminant_values::Neg16::N64 N64'"]
+  "15" -> "15:0"
+  "15:0" [color=red, label="discriminant changed from 5 to 192"]
+  "9" -> "15" [label=""]
+  "16" [color=red, label="'struct discriminant_values::Neg16::N8192 N8192'"]
+  "16" -> "16:0"
+  "16:0" [color=red, label="discriminant changed from 6 to 57344"]
+  "9" -> "16" [label=""]
+  "2" -> "9" [label="parameter 2"]
+  "17" [shape=rectangle, label="'variant discriminant_values::Neg32'"]
+  "18" [color=red, label="'struct discriminant_values::Neg32::N1 N1'"]
+  "18" -> "18:0"
+  "18:0" [color=red, label="discriminant changed from 0 to 255"]
+  "17" -> "18" [label=""]
+  "19" [color=red, label="'struct discriminant_values::Neg32::N2 N2'"]
+  "19" -> "19:0"
+  "19:0" [color=red, label="discriminant changed from 1 to 254"]
+  "17" -> "19" [label=""]
+  "20" [color=red, label="'struct discriminant_values::Neg32::N8 N8'"]
+  "20" -> "20:0"
+  "20:0" [color=red, label="discriminant changed from 2 to 248"]
+  "17" -> "20" [label=""]
+  "21" [color=red, label="'struct discriminant_values::Neg32::N128 N128'"]
+  "21" -> "21:0"
+  "21:0" [color=red, label="discriminant changed from 3 to 128"]
+  "17" -> "21" [label=""]
+  "22" [color=red, label="'struct discriminant_values::Neg32::N32768 N32768'"]
+  "22" -> "22:0"
+  "22:0" [color=red, label="discriminant changed from 4 to 32768"]
+  "17" -> "22" [label=""]
+  "23" [color=red, label="'struct discriminant_values::Neg32::N2147483648 N2147483648'"]
+  "23" -> "23:0"
+  "23:0" [color=red, label="discriminant changed from 5 to 2147483648"]
+  "17" -> "23" [label=""]
+  "24" [color=red, label="'struct discriminant_values::Neg32::N64 N64'"]
+  "24" -> "24:0"
+  "24:0" [color=red, label="discriminant changed from 6 to 192"]
+  "17" -> "24" [label=""]
+  "25" [color=red, label="'struct discriminant_values::Neg32::N8192 N8192'"]
+  "25" -> "25:0"
+  "25:0" [color=red, label="discriminant changed from 7 to 57344"]
+  "17" -> "25" [label=""]
+  "26" [color=red, label="'struct discriminant_values::Neg32::N1048576 N1048576'"]
+  "26" -> "26:0"
+  "26:0" [color=red, label="discriminant changed from 8 to 4293918720"]
+  "17" -> "26" [label=""]
+  "27" [color=red, label="'struct discriminant_values::Neg32::N134217728 N134217728'"]
+  "27" -> "27:0"
+  "27:0" [color=red, label="discriminant changed from 9 to 4160749568"]
+  "17" -> "27" [label=""]
+  "2" -> "17" [label="parameter 3"]
+  "28" [shape=rectangle, label="'variant discriminant_values::Neg64'"]
+  "29" [color=red, label="'struct discriminant_values::Neg64::N1 N1'"]
+  "29" -> "29:0"
+  "29:0" [color=red, label="discriminant changed from 0 to 255"]
+  "28" -> "29" [label=""]
+  "30" [color=red, label="'struct discriminant_values::Neg64::N2 N2'"]
+  "30" -> "30:0"
+  "30:0" [color=red, label="discriminant changed from 1 to 254"]
+  "28" -> "30" [label=""]
+  "31" [color=red, label="'struct discriminant_values::Neg64::N8 N8'"]
+  "31" -> "31:0"
+  "31:0" [color=red, label="discriminant changed from 2 to 248"]
+  "28" -> "31" [label=""]
+  "32" [color=red, label="'struct discriminant_values::Neg64::N128 N128'"]
+  "32" -> "32:0"
+  "32:0" [color=red, label="discriminant changed from 3 to 128"]
+  "28" -> "32" [label=""]
+  "33" [color=red, label="'struct discriminant_values::Neg64::N32768 N32768'"]
+  "33" -> "33:0"
+  "33:0" [color=red, label="discriminant changed from 4 to 32768"]
+  "28" -> "33" [label=""]
+  "34" [color=red, label="'struct discriminant_values::Neg64::N2147483648 N2147483648'"]
+  "34" -> "34:0"
+  "34:0" [color=red, label="discriminant changed from 5 to 2147483648"]
+  "28" -> "34" [label=""]
+  "35" [color=red, label="'struct discriminant_values::Neg64::N9223372036854775808 N9223372036854775808'"]
+  "35" -> "35:0"
+  "35:0" [color=red, label="discriminant changed from 6 to 9223372036854775808"]
+  "28" -> "35" [label=""]
+  "36" [color=red, label="'struct discriminant_values::Neg64::N64 N64'"]
+  "36" -> "36:0"
+  "36:0" [color=red, label="discriminant changed from 7 to 192"]
+  "28" -> "36" [label=""]
+  "37" [color=red, label="'struct discriminant_values::Neg64::N8192 N8192'"]
+  "37" -> "37:0"
+  "37:0" [color=red, label="discriminant changed from 8 to 57344"]
+  "28" -> "37" [label=""]
+  "38" [color=red, label="'struct discriminant_values::Neg64::N1048576 N1048576'"]
+  "38" -> "38:0"
+  "38:0" [color=red, label="discriminant changed from 9 to 4293918720"]
+  "28" -> "38" [label=""]
+  "39" [color=red, label="'struct discriminant_values::Neg64::N134217728 N134217728'"]
+  "39" -> "39:0"
+  "39:0" [color=red, label="discriminant changed from 10 to 4160749568"]
+  "28" -> "39" [label=""]
+  "40" [color=red, label="'struct discriminant_values::Neg64::N17179869184 N17179869184'"]
+  "40" -> "40:0"
+  "40:0" [color=red, label="discriminant changed from 11 to 18446744056529682432"]
+  "28" -> "40" [label=""]
+  "41" [color=red, label="'struct discriminant_values::Neg64::N2199023255552 N2199023255552'"]
+  "41" -> "41:0"
+  "41:0" [color=red, label="discriminant changed from 12 to 18446741874686296064"]
+  "28" -> "41" [label=""]
+  "42" [color=red, label="'struct discriminant_values::Neg64::N281474976710656 N281474976710656'"]
+  "42" -> "42:0"
+  "42:0" [color=red, label="discriminant changed from 13 to 18446462598732840960"]
+  "28" -> "42" [label=""]
+  "43" [color=red, label="'struct discriminant_values::Neg64::N36028797018963968 N36028797018963968'"]
+  "43" -> "43:0"
+  "43:0" [color=red, label="discriminant changed from 14 to 18410715276690587648"]
+  "28" -> "43" [label=""]
+  "44" [color=red, label="'struct discriminant_values::Neg64::N4611686018427387904 N4611686018427387904'"]
+  "44" -> "44:0"
+  "44:0" [color=red, label="discriminant changed from 15 to 13835058055282163712"]
+  "28" -> "44" [label=""]
+  "2" -> "28" [label="parameter 4"]
+  "45" [shape=rectangle, label="'variant discriminant_values::Neg128'"]
+  "46" [color=red, label="'struct discriminant_values::Neg128::N1 N1'"]
+  "46" -> "46:0"
+  "46:0" [color=red, label="discriminant changed from 0 to 340282366920938463463374607431768211455"]
+  "45" -> "46" [label=""]
+  "47" [color=red, label="'struct discriminant_values::Neg128::N2 N2'"]
+  "47" -> "47:0"
+  "47:0" [color=red, label="discriminant changed from 1 to 340282366920938463463374607431768211454"]
+  "45" -> "47" [label=""]
+  "48" [color=red, label="'struct discriminant_values::Neg128::N8 N8'"]
+  "48" -> "48:0"
+  "48:0" [color=red, label="discriminant changed from 2 to 340282366920938463463374607431768211448"]
+  "45" -> "48" [label=""]
+  "49" [color=red, label="'struct discriminant_values::Neg128::N128 N128'"]
+  "49" -> "49:0"
+  "49:0" [color=red, label="discriminant changed from 3 to 340282366920938463463374607431768211328"]
+  "45" -> "49" [label=""]
+  "50" [color=red, label="'struct discriminant_values::Neg128::N32768 N32768'"]
+  "50" -> "50:0"
+  "50:0" [color=red, label="discriminant changed from 4 to 340282366920938463463374607431768178688"]
+  "45" -> "50" [label=""]
+  "51" [color=red, label="'struct discriminant_values::Neg128::N2147483648 N2147483648'"]
+  "51" -> "51:0"
+  "51:0" [color=red, label="discriminant changed from 5 to 340282366920938463463374607429620727808"]
+  "45" -> "51" [label=""]
+  "52" [color=red, label="'struct discriminant_values::Neg128::N9223372036854775808 N9223372036854775808'"]
+  "52" -> "52:0"
+  "52:0" [color=red, label="discriminant changed from 6 to 340282366920938463454151235394913435648"]
+  "45" -> "52" [label=""]
+  "53" [color=red, label="'struct discriminant_values::Neg128::N170141183460469231731687303715884105728 N170141183460469231731687303715884105728'"]
+  "53" -> "53:0"
+  "53:0" [color=red, label="discriminant changed from 7 to 170141183460469231731687303715884105728"]
+  "45" -> "53" [label=""]
+  "54" [color=red, label="'struct discriminant_values::Neg128::N64 N64'"]
+  "54" -> "54:0"
+  "54:0" [color=red, label="discriminant changed from 8 to 340282366920938463463374607431768211392"]
+  "45" -> "54" [label=""]
+  "55" [color=red, label="'struct discriminant_values::Neg128::N8192 N8192'"]
+  "55" -> "55:0"
+  "55:0" [color=red, label="discriminant changed from 9 to 340282366920938463463374607431768203264"]
+  "45" -> "55" [label=""]
+  "56" [color=red, label="'struct discriminant_values::Neg128::N1048576 N1048576'"]
+  "56" -> "56:0"
+  "56:0" [color=red, label="discriminant changed from 10 to 340282366920938463463374607431767162880"]
+  "45" -> "56" [label=""]
+  "57" [color=red, label="'struct discriminant_values::Neg128::N134217728 N134217728'"]
+  "57" -> "57:0"
+  "57:0" [color=red, label="discriminant changed from 11 to 340282366920938463463374607431633993728"]
+  "45" -> "57" [label=""]
+  "58" [color=red, label="'struct discriminant_values::Neg128::N17179869184 N17179869184'"]
+  "58" -> "58:0"
+  "58:0" [color=red, label="discriminant changed from 12 to 340282366920938463463374607414588342272"]
+  "45" -> "58" [label=""]
+  "59" [color=red, label="'struct discriminant_values::Neg128::N2199023255552 N2199023255552'"]
+  "59" -> "59:0"
+  "59:0" [color=red, label="discriminant changed from 13 to 340282366920938463463374605232744955904"]
+  "45" -> "59" [label=""]
+  "60" [color=red, label="'struct discriminant_values::Neg128::N281474976710656 N281474976710656'"]
+  "60" -> "60:0"
+  "60:0" [color=red, label="discriminant changed from 14 to 340282366920938463463374325956791500800"]
+  "45" -> "60" [label=""]
+  "61" [color=red, label="'struct discriminant_values::Neg128::N36028797018963968 N36028797018963968'"]
+  "61" -> "61:0"
+  "61:0" [color=red, label="discriminant changed from 15 to 340282366920938463463338578634749247488"]
+  "45" -> "61" [label=""]
+  "62" [color=red, label="'struct discriminant_values::Neg128::N4611686018427387904 N4611686018427387904'"]
+  "62" -> "62:0"
+  "62:0" [color=red, label="discriminant changed from 16 to 340282366920938463458762921413340823552"]
+  "45" -> "62" [label=""]
+  "63" [color=red, label="'struct discriminant_values::Neg128::N590295810358705651712 N590295810358705651712'"]
+  "63" -> "63:0"
+  "63:0" [color=red, label="discriminant changed from 17 to 340282366920938462873078797073062559744"]
+  "45" -> "63" [label=""]
+  "64" [color=red, label="'struct discriminant_values::Neg128::N75557863725914323419136 N75557863725914323419136'"]
+  "64" -> "64:0"
+  "64:0" [color=red, label="discriminant changed from 18 to 340282366920938387905510881517444792320"]
+  "45" -> "64" [label=""]
+  "65" [color=red, label="'struct discriminant_values::Neg128::N9671406556917033397649408 N9671406556917033397649408'"]
+  "65" -> "65:0"
+  "65:0" [color=red, label="discriminant changed from 19 to 340282366920928792056817690398370562048"]
+  "45" -> "65" [label=""]
+  "66" [color=red, label="'struct discriminant_values::Neg128::N1237940039285380274899124224 N1237940039285380274899124224'"]
+  "66" -> "66:0"
+  "66:0" [color=red, label="discriminant changed from 20 to 340282366919700523424089227156869087232"]
+  "45" -> "66" [label=""]
+  "67" [color=red, label="'struct discriminant_values::Neg128::N158456325028528675187087900672 N158456325028528675187087900672'"]
+  "67" -> "67:0"
+  "67:0" [color=red, label="discriminant changed from 21 to 340282366762482138434845932244680310784"]
+  "45" -> "67" [label=""]
+  "68" [color=red, label="'struct discriminant_values::Neg128::N20282409603651670423947251286016 N20282409603651670423947251286016'"]
+  "68" -> "68:0"
+  "68:0" [color=red, label="discriminant changed from 22 to 340282346638528859811704183484516925440"]
+  "45" -> "68" [label=""]
+  "69" [color=red, label="'struct discriminant_values::Neg128::N2596148429267413814265248164610048 N2596148429267413814265248164610048'"]
+  "69" -> "69:0"
+  "69:0" [color=red, label="discriminant changed from 23 to 340279770772509196049560342183603601408"]
+  "45" -> "69" [label=""]
+  "70" [color=red, label="'struct discriminant_values::Neg128::N332306998946228968225951765070086144 N332306998946228968225951765070086144'"]
+  "70" -> "70:0"
+  "70:0" [color=red, label="discriminant changed from 24 to 339950059921992234495148655666698125312"]
+  "45" -> "70" [label=""]
+  "71" [color=red, label="'struct discriminant_values::Neg128::N42535295865117307932921825928971026432 N42535295865117307932921825928971026432'"]
+  "71" -> "71:0"
+  "71:0" [color=red, label="discriminant changed from 25 to 297747071055821155530452781502797185024"]
+  "45" -> "71" [label=""]
+  "2" -> "45" [label="parameter 5"]
+  "1" -> "2" [label=""]
+  "0" -> "1" [label=""]
+  "72" [label="'void discriminant_values::use_pos(variant discriminant_values::Pos8, variant discriminant_values::Pos16, variant discriminant_values::Pos32, variant discriminant_values::Pos64, variant discriminant_values::Pos128)' {_RNvCslq2M6p701eM_19discriminant_values7use_pos}"]
+  "73" [label="'void(variant discriminant_values::Pos8, variant discriminant_values::Pos16, variant discriminant_values::Pos32, variant discriminant_values::Pos64, variant discriminant_values::Pos128)'"]
+  "74" [shape=rectangle, label="'variant discriminant_values::Pos8'"]
+  "75" [color=red, label="'struct discriminant_values::Pos8::P1 P1'"]
+  "75" -> "75:0"
+  "75:0" [color=red, label="discriminant changed from 0 to 1"]
+  "74" -> "75" [label=""]
+  "76" [color=red, label="'struct discriminant_values::Pos8::P3 P3'"]
+  "76" -> "76:0"
+  "76:0" [color=red, label="discriminant changed from 1 to 3"]
+  "74" -> "76" [label=""]
+  "77" [color=red, label="'struct discriminant_values::Pos8::P15 P15'"]
+  "77" -> "77:0"
+  "77:0" [color=red, label="discriminant changed from 2 to 15"]
+  "74" -> "77" [label=""]
+  "78" [color=red, label="'struct discriminant_values::Pos8::P255 P255'"]
+  "78" -> "78:0"
+  "78:0" [color=red, label="discriminant changed from 3 to 255"]
+  "74" -> "78" [label=""]
+  "79" [color=red, label="'struct discriminant_values::Pos8::P0 P0'"]
+  "79" -> "79:0"
+  "79:0" [color=red, label="discriminant changed from 4 to 0"]
+  "74" -> "79" [label=""]
+  "80" [color=red, label="'struct discriminant_values::Pos8::P127 P127'"]
+  "80" -> "80:0"
+  "80:0" [color=red, label="discriminant changed from 5 to 127"]
+  "74" -> "80" [label=""]
+  "73" -> "74" [label="parameter 1"]
+  "81" [shape=rectangle, label="'variant discriminant_values::Pos16'"]
+  "82" [color=red, label="'struct discriminant_values::Pos16::P1 P1'"]
+  "82" -> "82:0"
+  "82:0" [color=red, label="discriminant changed from 0 to 1"]
+  "81" -> "82" [label=""]
+  "83" [color=red, label="'struct discriminant_values::Pos16::P3 P3'"]
+  "83" -> "83:0"
+  "83:0" [color=red, label="discriminant changed from 1 to 3"]
+  "81" -> "83" [label=""]
+  "84" [color=red, label="'struct discriminant_values::Pos16::P15 P15'"]
+  "84" -> "84:0"
+  "84:0" [color=red, label="discriminant changed from 2 to 15"]
+  "81" -> "84" [label=""]
+  "85" [color=red, label="'struct discriminant_values::Pos16::P255 P255'"]
+  "85" -> "85:0"
+  "85:0" [color=red, label="discriminant changed from 3 to 255"]
+  "81" -> "85" [label=""]
+  "86" [color=red, label="'struct discriminant_values::Pos16::P65535 P65535'"]
+  "86" -> "86:0"
+  "86:0" [color=red, label="discriminant changed from 4 to 65535"]
+  "81" -> "86" [label=""]
+  "87" [color=red, label="'struct discriminant_values::Pos16::P0 P0'"]
+  "87" -> "87:0"
+  "87:0" [color=red, label="discriminant changed from 5 to 0"]
+  "81" -> "87" [label=""]
+  "88" [color=red, label="'struct discriminant_values::Pos16::P127 P127'"]
+  "88" -> "88:0"
+  "88:0" [color=red, label="discriminant changed from 6 to 127"]
+  "81" -> "88" [label=""]
+  "89" [color=red, label="'struct discriminant_values::Pos16::P16383 P16383'"]
+  "89" -> "89:0"
+  "89:0" [color=red, label="discriminant changed from 7 to 16383"]
+  "81" -> "89" [label=""]
+  "73" -> "81" [label="parameter 2"]
+  "90" [shape=rectangle, label="'variant discriminant_values::Pos32'"]
+  "91" [color=red, label="'struct discriminant_values::Pos32::P1 P1'"]
+  "91" -> "91:0"
+  "91:0" [color=red, label="discriminant changed from 0 to 1"]
+  "90" -> "91" [label=""]
+  "92" [color=red, label="'struct discriminant_values::Pos32::P3 P3'"]
+  "92" -> "92:0"
+  "92:0" [color=red, label="discriminant changed from 1 to 3"]
+  "90" -> "92" [label=""]
+  "93" [color=red, label="'struct discriminant_values::Pos32::P15 P15'"]
+  "93" -> "93:0"
+  "93:0" [color=red, label="discriminant changed from 2 to 15"]
+  "90" -> "93" [label=""]
+  "94" [color=red, label="'struct discriminant_values::Pos32::P255 P255'"]
+  "94" -> "94:0"
+  "94:0" [color=red, label="discriminant changed from 3 to 255"]
+  "90" -> "94" [label=""]
+  "95" [color=red, label="'struct discriminant_values::Pos32::P65535 P65535'"]
+  "95" -> "95:0"
+  "95:0" [color=red, label="discriminant changed from 4 to 65535"]
+  "90" -> "95" [label=""]
+  "96" [color=red, label="'struct discriminant_values::Pos32::P4294967295 P4294967295'"]
+  "96" -> "96:0"
+  "96:0" [color=red, label="discriminant changed from 5 to 4294967295"]
+  "90" -> "96" [label=""]
+  "97" [color=red, label="'struct discriminant_values::Pos32::P0 P0'"]
+  "97" -> "97:0"
+  "97:0" [color=red, label="discriminant changed from 6 to 0"]
+  "90" -> "97" [label=""]
+  "98" [color=red, label="'struct discriminant_values::Pos32::P127 P127'"]
+  "98" -> "98:0"
+  "98:0" [color=red, label="discriminant changed from 7 to 127"]
+  "90" -> "98" [label=""]
+  "99" [color=red, label="'struct discriminant_values::Pos32::P16383 P16383'"]
+  "99" -> "99:0"
+  "99:0" [color=red, label="discriminant changed from 8 to 16383"]
+  "90" -> "99" [label=""]
+  "100" [color=red, label="'struct discriminant_values::Pos32::P2097151 P2097151'"]
+  "100" -> "100:0"
+  "100:0" [color=red, label="discriminant changed from 9 to 2097151"]
+  "90" -> "100" [label=""]
+  "101" [color=red, label="'struct discriminant_values::Pos32::P268435455 P268435455'"]
+  "101" -> "101:0"
+  "101:0" [color=red, label="discriminant changed from 10 to 268435455"]
+  "90" -> "101" [label=""]
+  "73" -> "90" [label="parameter 3"]
+  "102" [shape=rectangle, label="'variant discriminant_values::Pos64'"]
+  "103" [color=red, label="'struct discriminant_values::Pos64::P1 P1'"]
+  "103" -> "103:0"
+  "103:0" [color=red, label="discriminant changed from 0 to 1"]
+  "102" -> "103" [label=""]
+  "104" [color=red, label="'struct discriminant_values::Pos64::P3 P3'"]
+  "104" -> "104:0"
+  "104:0" [color=red, label="discriminant changed from 1 to 3"]
+  "102" -> "104" [label=""]
+  "105" [color=red, label="'struct discriminant_values::Pos64::P15 P15'"]
+  "105" -> "105:0"
+  "105:0" [color=red, label="discriminant changed from 2 to 15"]
+  "102" -> "105" [label=""]
+  "106" [color=red, label="'struct discriminant_values::Pos64::P255 P255'"]
+  "106" -> "106:0"
+  "106:0" [color=red, label="discriminant changed from 3 to 255"]
+  "102" -> "106" [label=""]
+  "107" [color=red, label="'struct discriminant_values::Pos64::P65535 P65535'"]
+  "107" -> "107:0"
+  "107:0" [color=red, label="discriminant changed from 4 to 65535"]
+  "102" -> "107" [label=""]
+  "108" [color=red, label="'struct discriminant_values::Pos64::P4294967295 P4294967295'"]
+  "108" -> "108:0"
+  "108:0" [color=red, label="discriminant changed from 5 to 4294967295"]
+  "102" -> "108" [label=""]
+  "109" [color=red, label="'struct discriminant_values::Pos64::P18446744073709551615 P18446744073709551615'"]
+  "109" -> "109:0"
+  "109:0" [color=red, label="discriminant changed from 6 to 18446744073709551615"]
+  "102" -> "109" [label=""]
+  "110" [color=red, label="'struct discriminant_values::Pos64::P0 P0'"]
+  "110" -> "110:0"
+  "110:0" [color=red, label="discriminant changed from 7 to 0"]
+  "102" -> "110" [label=""]
+  "111" [color=red, label="'struct discriminant_values::Pos64::P127 P127'"]
+  "111" -> "111:0"
+  "111:0" [color=red, label="discriminant changed from 8 to 127"]
+  "102" -> "111" [label=""]
+  "112" [color=red, label="'struct discriminant_values::Pos64::P16383 P16383'"]
+  "112" -> "112:0"
+  "112:0" [color=red, label="discriminant changed from 9 to 16383"]
+  "102" -> "112" [label=""]
+  "113" [color=red, label="'struct discriminant_values::Pos64::P2097151 P2097151'"]
+  "113" -> "113:0"
+  "113:0" [color=red, label="discriminant changed from 10 to 2097151"]
+  "102" -> "113" [label=""]
+  "114" [color=red, label="'struct discriminant_values::Pos64::P268435455 P268435455'"]
+  "114" -> "114:0"
+  "114:0" [color=red, label="discriminant changed from 11 to 268435455"]
+  "102" -> "114" [label=""]
+  "115" [color=red, label="'struct discriminant_values::Pos64::P34359738367 P34359738367'"]
+  "115" -> "115:0"
+  "115:0" [color=red, label="discriminant changed from 12 to 34359738367"]
+  "102" -> "115" [label=""]
+  "116" [color=red, label="'struct discriminant_values::Pos64::P4398046511103 P4398046511103'"]
+  "116" -> "116:0"
+  "116:0" [color=red, label="discriminant changed from 13 to 4398046511103"]
+  "102" -> "116" [label=""]
+  "117" [color=red, label="'struct discriminant_values::Pos64::P562949953421311 P562949953421311'"]
+  "117" -> "117:0"
+  "117:0" [color=red, label="discriminant changed from 14 to 562949953421311"]
+  "102" -> "117" [label=""]
+  "118" [color=red, label="'struct discriminant_values::Pos64::P72057594037927935 P72057594037927935'"]
+  "118" -> "118:0"
+  "118:0" [color=red, label="discriminant changed from 15 to 72057594037927935"]
+  "102" -> "118" [label=""]
+  "119" [color=red, label="'struct discriminant_values::Pos64::P9223372036854775807 P9223372036854775807'"]
+  "119" -> "119:0"
+  "119:0" [color=red, label="discriminant changed from 16 to 9223372036854775807"]
+  "102" -> "119" [label=""]
+  "73" -> "102" [label="parameter 4"]
+  "120" [shape=rectangle, label="'variant discriminant_values::Pos128'"]
+  "121" [color=red, label="'struct discriminant_values::Pos128::P1 P1'"]
+  "121" -> "121:0"
+  "121:0" [color=red, label="discriminant changed from 0 to 1"]
+  "120" -> "121" [label=""]
+  "122" [color=red, label="'struct discriminant_values::Pos128::P3 P3'"]
+  "122" -> "122:0"
+  "122:0" [color=red, label="discriminant changed from 1 to 3"]
+  "120" -> "122" [label=""]
+  "123" [color=red, label="'struct discriminant_values::Pos128::P15 P15'"]
+  "123" -> "123:0"
+  "123:0" [color=red, label="discriminant changed from 2 to 15"]
+  "120" -> "123" [label=""]
+  "124" [color=red, label="'struct discriminant_values::Pos128::P255 P255'"]
+  "124" -> "124:0"
+  "124:0" [color=red, label="discriminant changed from 3 to 255"]
+  "120" -> "124" [label=""]
+  "125" [color=red, label="'struct discriminant_values::Pos128::P65535 P65535'"]
+  "125" -> "125:0"
+  "125:0" [color=red, label="discriminant changed from 4 to 65535"]
+  "120" -> "125" [label=""]
+  "126" [color=red, label="'struct discriminant_values::Pos128::P4294967295 P4294967295'"]
+  "126" -> "126:0"
+  "126:0" [color=red, label="discriminant changed from 5 to 4294967295"]
+  "120" -> "126" [label=""]
+  "127" [color=red, label="'struct discriminant_values::Pos128::P18446744073709551615 P18446744073709551615'"]
+  "127" -> "127:0"
+  "127:0" [color=red, label="discriminant changed from 6 to 18446744073709551615"]
+  "120" -> "127" [label=""]
+  "128" [color=red, label="'struct discriminant_values::Pos128::P340282366920938463463374607431768211455 P340282366920938463463374607431768211455'"]
+  "128" -> "128:0"
+  "128:0" [color=red, label="discriminant changed from 7 to 340282366920938463463374607431768211455"]
+  "120" -> "128" [label=""]
+  "129" [color=red, label="'struct discriminant_values::Pos128::P0 P0'"]
+  "129" -> "129:0"
+  "129:0" [color=red, label="discriminant changed from 8 to 0"]
+  "120" -> "129" [label=""]
+  "130" [color=red, label="'struct discriminant_values::Pos128::P127 P127'"]
+  "130" -> "130:0"
+  "130:0" [color=red, label="discriminant changed from 9 to 127"]
+  "120" -> "130" [label=""]
+  "131" [color=red, label="'struct discriminant_values::Pos128::P16383 P16383'"]
+  "131" -> "131:0"
+  "131:0" [color=red, label="discriminant changed from 10 to 16383"]
+  "120" -> "131" [label=""]
+  "132" [color=red, label="'struct discriminant_values::Pos128::P2097151 P2097151'"]
+  "132" -> "132:0"
+  "132:0" [color=red, label="discriminant changed from 11 to 2097151"]
+  "120" -> "132" [label=""]
+  "133" [color=red, label="'struct discriminant_values::Pos128::P268435455 P268435455'"]
+  "133" -> "133:0"
+  "133:0" [color=red, label="discriminant changed from 12 to 268435455"]
+  "120" -> "133" [label=""]
+  "134" [color=red, label="'struct discriminant_values::Pos128::P34359738367 P34359738367'"]
+  "134" -> "134:0"
+  "134:0" [color=red, label="discriminant changed from 13 to 34359738367"]
+  "120" -> "134" [label=""]
+  "135" [color=red, label="'struct discriminant_values::Pos128::P4398046511103 P4398046511103'"]
+  "135" -> "135:0"
+  "135:0" [color=red, label="discriminant changed from 14 to 4398046511103"]
+  "120" -> "135" [label=""]
+  "136" [color=red, label="'struct discriminant_values::Pos128::P562949953421311 P562949953421311'"]
+  "136" -> "136:0"
+  "136:0" [color=red, label="discriminant changed from 15 to 562949953421311"]
+  "120" -> "136" [label=""]
+  "137" [color=red, label="'struct discriminant_values::Pos128::P72057594037927935 P72057594037927935'"]
+  "137" -> "137:0"
+  "137:0" [color=red, label="discriminant changed from 16 to 72057594037927935"]
+  "120" -> "137" [label=""]
+  "138" [color=red, label="'struct discriminant_values::Pos128::P9223372036854775807 P9223372036854775807'"]
+  "138" -> "138:0"
+  "138:0" [color=red, label="discriminant changed from 17 to 9223372036854775807"]
+  "120" -> "138" [label=""]
+  "139" [color=red, label="'struct discriminant_values::Pos128::P1180591620717411303423 P1180591620717411303423'"]
+  "139" -> "139:0"
+  "139:0" [color=red, label="discriminant changed from 18 to 1180591620717411303423"]
+  "120" -> "139" [label=""]
+  "140" [color=red, label="'struct discriminant_values::Pos128::P151115727451828646838271 P151115727451828646838271'"]
+  "140" -> "140:0"
+  "140:0" [color=red, label="discriminant changed from 19 to 151115727451828646838271"]
+  "120" -> "140" [label=""]
+  "141" [color=red, label="'struct discriminant_values::Pos128::P19342813113834066795298815 P19342813113834066795298815'"]
+  "141" -> "141:0"
+  "141:0" [color=red, label="discriminant changed from 20 to 19342813113834066795298815"]
+  "120" -> "141" [label=""]
+  "142" [color=red, label="'struct discriminant_values::Pos128::P2475880078570760549798248447 P2475880078570760549798248447'"]
+  "142" -> "142:0"
+  "142:0" [color=red, label="discriminant changed from 21 to 2475880078570760549798248447"]
+  "120" -> "142" [label=""]
+  "143" [color=red, label="'struct discriminant_values::Pos128::P316912650057057350374175801343 P316912650057057350374175801343'"]
+  "143" -> "143:0"
+  "143:0" [color=red, label="discriminant changed from 22 to 316912650057057350374175801343"]
+  "120" -> "143" [label=""]
+  "144" [color=red, label="'struct discriminant_values::Pos128::P40564819207303340847894502572031 P40564819207303340847894502572031'"]
+  "144" -> "144:0"
+  "144:0" [color=red, label="discriminant changed from 23 to 40564819207303340847894502572031"]
+  "120" -> "144" [label=""]
+  "145" [color=red, label="'struct discriminant_values::Pos128::P5192296858534827628530496329220095 P5192296858534827628530496329220095'"]
+  "145" -> "145:0"
+  "145:0" [color=red, label="discriminant changed from 24 to 5192296858534827628530496329220095"]
+  "120" -> "145" [label=""]
+  "146" [color=red, label="'struct discriminant_values::Pos128::P664613997892457936451903530140172287 P664613997892457936451903530140172287'"]
+  "146" -> "146:0"
+  "146:0" [color=red, label="discriminant changed from 25 to 664613997892457936451903530140172287"]
+  "120" -> "146" [label=""]
+  "147" [color=red, label="'struct discriminant_values::Pos128::P85070591730234615865843651857942052863 P85070591730234615865843651857942052863'"]
+  "147" -> "147:0"
+  "147:0" [color=red, label="discriminant changed from 26 to 85070591730234615865843651857942052863"]
+  "120" -> "147" [label=""]
+  "73" -> "120" [label="parameter 5"]
+  "72" -> "73" [label=""]
+  "0" -> "72" [label=""]
+}
