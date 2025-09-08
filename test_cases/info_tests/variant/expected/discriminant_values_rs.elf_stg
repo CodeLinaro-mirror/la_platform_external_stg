@@ -123,2153 +123,2153 @@ member {
   offset: 64
 }
 variant_member {
-  id: 0x19fad935
+  id: 0x1928f29d
   name: "N0"
   discriminant_value: 0
-  type_id: 0x590eeacb  # struct discriminant_limits::Neg8::N0
+  type_id: 0x8b254212  # struct discriminant_values::Neg8::N0
 }
 variant_member {
-  id: 0xde1b3d89
+  id: 0xdea88b8f
   name: "N1"
   discriminant_value: 255
-  type_id: 0xf901eb05  # struct discriminant_limits::Neg8::N1
+  type_id: 0x4ab7ed3c  # struct discriminant_values::Neg8::N1
 }
 variant_member {
-  id: 0xb72ec2ec
+  id: 0xb735f790
   name: "N127"
   discriminant_value: 129
-  type_id: 0x72de3a6b  # struct discriminant_limits::Neg8::N127
+  type_id: 0x69eb4690  # struct discriminant_values::Neg8::N127
 }
 variant_member {
-  id: 0x67c59e71
+  id: 0x674b6070
   name: "N128"
   discriminant_value: 128
-  type_id: 0xc68d57ac  # struct discriminant_limits::Neg8::N128
+  type_id: 0x4873561b  # struct discriminant_values::Neg8::N128
 }
 variant_member {
-  id: 0x19f0205b
+  id: 0x190a833e
   name: "N0"
   discriminant_value: 0
-  type_id: 0x53f78476  # struct discriminant_limits::Neg16::N0
+  type_id: 0xa954e1a2  # struct discriminant_values::Neg16::N0
 }
 variant_member {
-  id: 0xde753147
+  id: 0xde94ddc4
   name: "N1"
   discriminant_value: 255
-  type_id: 0x970d2516  # struct discriminant_limits::Neg16::N1
+  type_id: 0x76e1a6b3  # struct discriminant_values::Neg16::N1
 }
 variant_member {
-  id: 0xb742ad13
+  id: 0xb7539e9e
   name: "N127"
   discriminant_value: 129
-  type_id: 0x1eb1c56f  # struct discriminant_limits::Neg16::N127
+  type_id: 0x0f824801  # struct discriminant_values::Neg16::N127
 }
 variant_member {
-  id: 0x674986ba
+  id: 0x676e8f6e
   name: "N128"
   discriminant_value: 128
-  type_id: 0x4a959c3a  # struct discriminant_limits::Neg16::N128
+  type_id: 0x6d9c48a6  # struct discriminant_values::Neg16::N128
 }
 variant_member {
-  id: 0x2faa286f
+  id: 0x2f7ffe3c
   name: "N255"
   discriminant_value: 65281
-  type_id: 0x295086e2  # struct discriminant_limits::Neg16::N255
+  type_id: 0xfc86d507  # struct discriminant_values::Neg16::N255
 }
 variant_member {
-  id: 0x6e4e807c
+  id: 0x6e79d00f
   name: "N256"
   discriminant_value: 65280
-  type_id: 0x0c1d0f9f  # struct discriminant_limits::Neg16::N256
+  type_id: 0x3b4d7cdd  # struct discriminant_values::Neg16::N256
 }
 variant_member {
-  id: 0x823c1213
+  id: 0x82c1db60
   name: "N32767"
   discriminant_value: 32769
-  type_id: 0xf486b054  # struct discriminant_limits::Neg16::N32767
+  type_id: 0x094fc37b  # struct discriminant_values::Neg16::N32767
 }
 variant_member {
-  id: 0x4abdc13d
+  id: 0x4a67b8e1
   name: "N32768"
   discriminant_value: 32768
-  type_id: 0x32eccb2f  # struct discriminant_limits::Neg16::N32768
+  type_id: 0xe89517c0  # struct discriminant_values::Neg16::N32768
 }
 variant_member {
-  id: 0x19b67320
+  id: 0x191188af
   name: "N0"
   discriminant_value: 0
-  type_id: 0x15a4ff42  # struct discriminant_limits::Neg32::N0
+  type_id: 0xb25f7033  # struct discriminant_values::Neg32::N0
 }
 variant_member {
-  id: 0xdee9a2cc
+  id: 0xdead6db7
   name: "N1"
   discriminant_value: 255
-  type_id: 0x0b9eaed2  # struct discriminant_limits::Neg32::N1
+  type_id: 0x4f51d5d1  # struct discriminant_values::Neg32::N1
 }
 variant_member {
-  id: 0xb7410638
+  id: 0xb7a10db8
   name: "N127"
   discriminant_value: 129
-  type_id: 0x1d1aee03  # struct discriminant_limits::Neg32::N127
+  type_id: 0xfd116e3c  # struct discriminant_values::Neg32::N127
 }
 variant_member {
-  id: 0x67da95df
+  id: 0x671a606a
   name: "N128"
   discriminant_value: 128
-  type_id: 0xd986f9e8  # struct discriminant_limits::Neg32::N128
+  type_id: 0x19734c67  # struct discriminant_values::Neg32::N128
 }
 variant_member {
-  id: 0x2f944f6b
+  id: 0x2f779a84
   name: "N255"
   discriminant_value: 65281
-  type_id: 0x173782fa  # struct discriminant_limits::Neg32::N255
+  type_id: 0xf4e26dc4  # struct discriminant_values::Neg32::N255
 }
 variant_member {
-  id: 0x6e30c972
+  id: 0x6eacf072
   name: "N256"
   discriminant_value: 65280
-  type_id: 0x7254015a  # struct discriminant_limits::Neg32::N256
+  type_id: 0xee6d010f  # struct discriminant_values::Neg32::N256
 }
 variant_member {
-  id: 0x825233cf
+  id: 0x82faefea
   name: "N32767"
   discriminant_value: 32769
-  type_id: 0x9aa76c5b  # struct discriminant_limits::Neg32::N32767
+  type_id: 0x327b49e0  # struct discriminant_values::Neg32::N32767
 }
 variant_member {
-  id: 0x4a2ea901
+  id: 0x4a653c2a
   name: "N32768"
   discriminant_value: 32768
-  type_id: 0xa184f74e  # struct discriminant_limits::Neg32::N32768
+  type_id: 0xea11dc83  # struct discriminant_values::Neg32::N32768
 }
 variant_member {
-  id: 0xfdc5b189
+  id: 0xfdd1bb3e
   name: "N65535"
   discriminant_value: 4294901761
-  type_id: 0x1a51e948  # struct discriminant_limits::Neg32::N65535
+  type_id: 0x0e5b5e23  # struct discriminant_values::Neg32::N65535
 }
 variant_member {
-  id: 0xbf417709
+  id: 0xbf056d18
   name: "N65536"
   discriminant_value: 4294901760
-  type_id: 0x5e790ef4  # struct discriminant_limits::Neg32::N65536
+  type_id: 0x1a631fcc  # struct discriminant_values::Neg32::N65536
 }
 variant_member {
-  id: 0xcb5f5fcc
+  id: 0xcb564a40
   name: "N2147483647"
   discriminant_value: 2147483649
-  type_id: 0xb1dc1e7c  # struct discriminant_limits::Neg32::N2147483647
+  type_id: 0xb8c9921c  # struct discriminant_values::Neg32::N2147483647
 }
 variant_member {
-  id: 0x88be9eb1
+  id: 0x88d3e2a7
   name: "N2147483648"
   discriminant_value: 2147483648
-  type_id: 0x11e8a789  # struct discriminant_limits::Neg32::N2147483648
+  type_id: 0x7c94b1bb  # struct discriminant_values::Neg32::N2147483648
 }
 variant_member {
-  id: 0x1981c7b4
+  id: 0x1918ef07
   name: "N0"
   discriminant_value: 0
-  type_id: 0x22106b67  # struct discriminant_limits::Neg64::N0
+  type_id: 0xbb38d817  # struct discriminant_values::Neg64::N0
 }
 variant_member {
-  id: 0xde016db2
+  id: 0xde79303f
   name: "N1"
   discriminant_value: 255
-  type_id: 0xe351d019  # struct discriminant_limits::Neg64::N1
+  type_id: 0x9b0c5d2d  # struct discriminant_values::Neg64::N1
 }
 variant_member {
-  id: 0xb76965a6
+  id: 0xb753f12d
   name: "N127"
   discriminant_value: 129
-  type_id: 0x3579705f  # struct discriminant_limits::Neg64::N127
+  type_id: 0x0fedfb57  # struct discriminant_values::Neg64::N127
 }
 variant_member {
-  id: 0x67baab42
+  id: 0x675bdb95
   name: "N128"
   discriminant_value: 128
-  type_id: 0xb9b86470  # struct discriminant_limits::Neg64::N128
+  type_id: 0x58c8b37e  # struct discriminant_values::Neg64::N128
 }
 variant_member {
-  id: 0x2fd1b1c7
+  id: 0x2fa66134
   name: "N255"
   discriminant_value: 65281
-  type_id: 0x52c92e1a  # struct discriminant_limits::Neg64::N255
+  type_id: 0x2519dda0  # struct discriminant_values::Neg64::N255
 }
 variant_member {
-  id: 0x6eac08a0
+  id: 0x6e96bfd1
   name: "N256"
   discriminant_value: 65280
-  type_id: 0xee95d3cd  # struct discriminant_limits::Neg64::N256
+  type_id: 0xd422a294  # struct discriminant_values::Neg64::N256
 }
 variant_member {
-  id: 0x82d61773
+  id: 0x82c75a59
   name: "N32767"
   discriminant_value: 32769
-  type_id: 0x1e83d078  # struct discriminant_limits::Neg64::N32767
+  type_id: 0x0fcefac4  # struct discriminant_values::Neg64::N32767
 }
 variant_member {
-  id: 0x4ac64be9
+  id: 0x4af8eb6b
   name: "N32768"
   discriminant_value: 32768
-  type_id: 0x49661fa1  # struct discriminant_limits::Neg64::N32768
+  type_id: 0x77c69d9f  # struct discriminant_values::Neg64::N32768
 }
 variant_member {
-  id: 0xfdc448ac
+  id: 0xfdcb6a0d
   name: "N65535"
   discriminant_value: 4294901761
-  type_id: 0x1ba8cc88  # struct discriminant_limits::Neg64::N65535
+  type_id: 0x148a6d00  # struct discriminant_values::Neg64::N65535
 }
 variant_member {
-  id: 0xbf8274a4
+  id: 0xbfea0124
   name: "N65536"
   discriminant_value: 4294901760
-  type_id: 0x9d7aa3a6  # struct discriminant_limits::Neg64::N65536
+  type_id: 0xf50f2374  # struct discriminant_values::Neg64::N65536
 }
 variant_member {
-  id: 0xcbcfdf92
+  id: 0xcb9fe9a4
   name: "N2147483647"
   discriminant_value: 2147483649
-  type_id: 0x215c400e  # struct discriminant_limits::Neg64::N2147483647
+  type_id: 0x716a76b2  # struct discriminant_values::Neg64::N2147483647
 }
 variant_member {
-  id: 0x8825b577
+  id: 0x88fc77d5
   name: "N2147483648"
   discriminant_value: 2147483648
-  type_id: 0x8ac361d3  # struct discriminant_limits::Neg64::N2147483648
+  type_id: 0x5301c3c5  # struct discriminant_values::Neg64::N2147483648
 }
 variant_member {
-  id: 0x2e83d54f
+  id: 0x2ed8d50d
   name: "N4294967295"
   discriminant_value: -4294967295
   discriminant_value: 0
-  type_id: 0xb2bf9705  # struct discriminant_limits::Neg64::N4294967295
+  type_id: 0xe9bfd59e  # struct discriminant_values::Neg64::N4294967295
 }
 variant_member {
-  id: 0xef6a5bbc
+  id: 0xef736bff
   name: "N4294967296"
   discriminant_value: -4294967296
   discriminant_value: 0
-  type_id: 0x9bd288c0  # struct discriminant_limits::Neg64::N4294967296
+  type_id: 0x82e2cb66  # struct discriminant_values::Neg64::N4294967296
 }
 variant_member {
-  id: 0xe0d13be4
+  id: 0xe0806f25
   name: "N9223372036854775807"
   discriminant_value: -9223372036854775807
   discriminant_value: 0
-  type_id: 0x1f462918  # struct discriminant_limits::Neg64::N9223372036854775807
+  type_id: 0x4e12e86f  # struct discriminant_values::Neg64::N9223372036854775807
 }
 variant_member {
-  id: 0x1c65d0c9
+  id: 0x1c36ffcb
   name: "N9223372036854775808"
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0xf6537027  # struct discriminant_limits::Neg64::N9223372036854775808
+  type_id: 0xa57c722a  # struct discriminant_values::Neg64::N9223372036854775808
 }
 variant_member {
-  id: 0x192d7bd4
+  id: 0x19ec2496
   name: "N0"
   discriminant_value: 0
-  type_id: 0x8eac0bfe  # struct discriminant_limits::Neg128::N0
+  type_id: 0x4ff349a1  # struct discriminant_values::Neg128::N0
 }
 variant_member {
-  id: 0xde8e1a94
+  id: 0xdec837a7
   name: "N1"
   discriminant_value: -1
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x6c20ff63  # struct discriminant_limits::Neg128::N1
+  type_id: 0x2a0dcc9d  # struct discriminant_values::Neg128::N1
 }
 variant_member {
-  id: 0xb7dce956
+  id: 0xb77de792
   name: "N127"
   discriminant_value: -127
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x80f88d92  # struct discriminant_limits::Neg128::N127
+  type_id: 0x21f6491e  # struct discriminant_values::Neg128::N127
 }
 variant_member {
-  id: 0x6706bc17
+  id: 0x67255b43
   name: "N128"
   discriminant_value: -128
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x05a19bed  # struct discriminant_limits::Neg128::N128
+  type_id: 0x2646cf4b  # struct discriminant_values::Neg128::N128
 }
 variant_member {
-  id: 0x2f463f3a
+  id: 0x2f8abbab
   name: "N255"
   discriminant_value: -255
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xc542a6f7  # struct discriminant_limits::Neg128::N255
+  type_id: 0x09c6370e  # struct discriminant_values::Neg128::N255
 }
 variant_member {
-  id: 0x6e8229aa
+  id: 0x6eea731a
   name: "N256"
   discriminant_value: -256
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xc0b57f07  # struct discriminant_limits::Neg128::N256
+  type_id: 0xa8efcf02  # struct discriminant_values::Neg128::N256
 }
 variant_member {
-  id: 0x823579f7
+  id: 0x82953e5d
   name: "N32767"
   discriminant_value: -32767
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xfde9685b  # struct discriminant_limits::Neg128::N32767
+  type_id: 0x5daec2de  # struct discriminant_values::Neg128::N32767
 }
 variant_member {
-  id: 0x4aa35481
+  id: 0x4a8b56ee
   name: "N32768"
   discriminant_value: -32768
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x2c7776e2  # struct discriminant_limits::Neg128::N32768
+  type_id: 0x04751921  # struct discriminant_values::Neg128::N32768
 }
 variant_member {
-  id: 0xfd2351da
+  id: 0xfdd7b765
   name: "N65535"
   discriminant_value: -65535
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xfcba6d89  # struct discriminant_limits::Neg128::N65535
+  type_id: 0x085cd269  # struct discriminant_values::Neg128::N65535
 }
 variant_member {
-  id: 0xbf85a816
+  id: 0xbfd50801
   name: "N65536"
   discriminant_value: -65536
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x9aa5b67d  # struct discriminant_limits::Neg128::N65536
+  type_id: 0xca05a193  # struct discriminant_values::Neg128::N65536
 }
 variant_member {
-  id: 0xcb656f0f
+  id: 0xcb9a9d19
   name: "N2147483647"
   discriminant_value: -2147483647
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x8bef855a  # struct discriminant_limits::Neg128::N2147483647
+  type_id: 0x741d9392  # struct discriminant_values::Neg128::N2147483647
 }
 variant_member {
-  id: 0x882c4b01
+  id: 0x883937ab
   name: "N2147483648"
   discriminant_value: -2147483648
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x83354813  # struct discriminant_limits::Neg128::N2147483648
+  type_id: 0x9649e205  # struct discriminant_values::Neg128::N2147483648
 }
 variant_member {
-  id: 0x2e1f1c57
+  id: 0x2e368efd
   name: "N4294967295"
   discriminant_value: -4294967295
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x2e768f12  # struct discriminant_limits::Neg128::N4294967295
+  type_id: 0x07e4259a  # struct discriminant_values::Neg128::N4294967295
 }
 variant_member {
-  id: 0xef02d55b
+  id: 0xef5f69d3
   name: "N4294967296"
   discriminant_value: -4294967296
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xf35c6ff6  # struct discriminant_limits::Neg128::N4294967296
+  type_id: 0xaee0e74d  # struct discriminant_values::Neg128::N4294967296
 }
 variant_member {
-  id: 0xe03707d4
+  id: 0xe01c5f22
   name: "N9223372036854775807"
   discriminant_value: -9223372036854775807
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xf97a194c  # struct discriminant_limits::Neg128::N9223372036854775807
+  type_id: 0xd222ef34  # struct discriminant_values::Neg128::N9223372036854775807
 }
 variant_member {
-  id: 0x1c4bfb94
+  id: 0x1c26fd47
   name: "N9223372036854775808"
   discriminant_value: -9223372036854775808
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xd8782d3d  # struct discriminant_limits::Neg128::N9223372036854775808
+  type_id: 0xb57efec7  # struct discriminant_values::Neg128::N9223372036854775808
 }
 variant_member {
-  id: 0xd231abf9
+  id: 0xd2c99556
   name: "N18446744073709551615"
   discriminant_value: 1
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x2727fa18  # struct discriminant_limits::Neg128::N18446744073709551615
+  type_id: 0xdf195527  # struct discriminant_values::Neg128::N18446744073709551615
 }
 variant_member {
-  id: 0x9cf248f6
+  id: 0x9cda533d
   name: "N18446744073709551616"
   discriminant_value: 0
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0xa5f86d7f  # struct discriminant_limits::Neg128::N18446744073709551616
+  type_id: 0x8de3a6a5  # struct discriminant_values::Neg128::N18446744073709551616
 }
 variant_member {
-  id: 0x89d98e76
+  id: 0x89a9629a
   name: "N170141183460469231731687303715884105727"
   discriminant_value: 1
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0x1ee6f88a  # struct discriminant_limits::Neg128::N170141183460469231731687303715884105727
+  type_id: 0x6e0a1459  # struct discriminant_values::Neg128::N170141183460469231731687303715884105727
 }
 variant_member {
-  id: 0xcaf76534
+  id: 0xca9c0e81
   name: "N170141183460469231731687303715884105728"
   discriminant_value: 0
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0xf1d862ad  # struct discriminant_limits::Neg128::N170141183460469231731687303715884105728
+  type_id: 0x9ab3d7fc  # struct discriminant_values::Neg128::N170141183460469231731687303715884105728
 }
 variant_member {
-  id: 0xaa80e97e
+  id: 0xaa97974c
   name: "P0"
   discriminant_value: 0
-  type_id: 0xf5071e71  # struct discriminant_limits::Pos8::P0
+  type_id: 0xe2792c87  # struct discriminant_values::Pos8::P0
 }
 variant_member {
-  id: 0x55e22ee6
+  id: 0x55176b26
   name: "P1"
   discriminant_value: 1
-  type_id: 0x5469a5e0  # struct discriminant_limits::Pos8::P1
+  type_id: 0xa12c653d  # struct discriminant_values::Pos8::P1
 }
 variant_member {
-  id: 0x98eafc11
+  id: 0x982d829a
   name: "P127"
   discriminant_value: 127
-  type_id: 0xf2fa4562  # struct discriminant_limits::Pos8::P127
+  type_id: 0x3584ce06  # struct discriminant_values::Pos8::P127
 }
 variant_member {
-  id: 0xf408473b
+  id: 0xf489b165
   name: "P128"
   discriminant_value: 128
-  type_id: 0xd6abc943  # struct discriminant_limits::Pos8::P128
+  type_id: 0x575d97f9  # struct discriminant_values::Pos8::P128
 }
 variant_member {
-  id: 0xbcde61df
+  id: 0xbc077e7d
   name: "P255"
   discriminant_value: 255
-  type_id: 0x88863e3d  # struct discriminant_limits::Pos8::P255
+  type_id: 0x51999c8c  # struct discriminant_values::Pos8::P255
 }
 variant_member {
-  id: 0xaaa9f35e
+  id: 0xaa32d72b
   name: "P0"
   discriminant_value: 0
-  type_id: 0xdc1d3ea1  # struct discriminant_limits::Pos16::P0
+  type_id: 0x47394b10  # struct discriminant_values::Pos16::P0
 }
 variant_member {
-  id: 0x55c9d96e
+  id: 0x553f540b
   name: "P1"
   discriminant_value: 1
-  type_id: 0x7f9e2d9d  # struct discriminant_limits::Pos16::P1
+  type_id: 0x891348e6  # struct discriminant_values::Pos16::P1
 }
 variant_member {
-  id: 0x984083d4
+  id: 0x98e02039
   name: "P127"
   discriminant_value: 127
-  type_id: 0x5885801e  # struct discriminant_limits::Pos16::P127
+  type_id: 0xf8266dd0  # struct discriminant_values::Pos16::P127
 }
 variant_member {
-  id: 0xf4e439f4
+  id: 0xf4b7f8b2
   name: "P128"
   discriminant_value: 128
-  type_id: 0x3ad5064b  # struct discriminant_limits::Pos16::P128
+  type_id: 0x6914407f  # struct discriminant_values::Pos16::P128
 }
 variant_member {
-  id: 0xbc026a7b
+  id: 0xbca0c0fd
   name: "P255"
   discriminant_value: 255
-  type_id: 0x548d9a0e  # struct discriminant_limits::Pos16::P255
+  type_id: 0xf6271cdb  # struct discriminant_values::Pos16::P255
 }
 variant_member {
-  id: 0x06610b05
+  id: 0x0640d4ee
   name: "P256"
   discriminant_value: 256
-  type_id: 0xf4d04e02  # struct discriminant_limits::Pos16::P256
+  type_id: 0xd50fa561  # struct discriminant_values::Pos16::P256
 }
 variant_member {
-  id: 0x1d0a2dd0
+  id: 0x1d64536e
   name: "P32767"
   discriminant_value: 32767
-  type_id: 0x8e2ac7de  # struct discriminant_limits::Pos16::P32767
+  type_id: 0xe05479b3  # struct discriminant_values::Pos16::P32767
 }
 variant_member {
-  id: 0x42254f33
+  id: 0x42f441ca
   name: "P32768"
   discriminant_value: 32768
-  type_id: 0xe4c86a21  # struct discriminant_limits::Pos16::P32768
+  type_id: 0x35c693e4  # struct discriminant_values::Pos16::P32768
 }
 variant_member {
-  id: 0x7188983b
+  id: 0x71d93194
   name: "P65535"
   discriminant_value: 65535
-  type_id: 0xb992a369  # struct discriminant_limits::Pos16::P65535
+  type_id: 0xe83b0cdc  # struct discriminant_values::Pos16::P65535
 }
 variant_member {
-  id: 0xaae53fc1
+  id: 0xaae1e5b1
   name: "P0"
   discriminant_value: 0
-  type_id: 0x90d1a10e  # struct discriminant_limits::Pos32::P0
+  type_id: 0x940bd105  # struct discriminant_values::Pos32::P0
 }
 variant_member {
-  id: 0x55e60897
+  id: 0x55232787
   name: "P1"
   discriminant_value: 1
-  type_id: 0x504fd433  # struct discriminant_limits::Pos32::P1
+  type_id: 0x9560c4cb  # struct discriminant_values::Pos32::P1
 }
 variant_member {
-  id: 0x989e7b84
+  id: 0x984fa5cb
   name: "P127"
   discriminant_value: 127
-  type_id: 0x867dd0e2  # struct discriminant_limits::Pos32::P127
+  type_id: 0x57a39f4a  # struct discriminant_values::Pos32::P127
 }
 variant_member {
-  id: 0xf49ba834
+  id: 0xf47a1d94
   name: "P128"
   discriminant_value: 128
-  type_id: 0x4544c63d  # struct discriminant_limits::Pos32::P128
+  type_id: 0xa4f16643  # struct discriminant_values::Pos32::P128
 }
 variant_member {
-  id: 0xbcf04bfb
+  id: 0xbc80ff48
   name: "P255"
   discriminant_value: 255
-  type_id: 0xa6ac1a67  # struct discriminant_limits::Pos32::P255
+  type_id: 0xd618a965  # struct discriminant_values::Pos32::P255
 }
 variant_member {
-  id: 0x06e99c40
+  id: 0x06ebcb0e
   name: "P256"
   discriminant_value: 256
-  type_id: 0x7c470bb7  # struct discriminant_limits::Pos32::P256
+  type_id: 0x7e10454b  # struct discriminant_values::Pos32::P256
 }
 variant_member {
-  id: 0x1db0201e
+  id: 0x1d0c825c
   name: "P32767"
   discriminant_value: 32767
-  type_id: 0x3427098b  # struct discriminant_limits::Pos32::P32767
+  type_id: 0x88854be1  # struct discriminant_values::Pos32::P32767
 }
 variant_member {
-  id: 0x42f1ae9f
+  id: 0x4221d526
   name: "P32768"
   discriminant_value: 32768
-  type_id: 0x3029c672  # struct discriminant_limits::Pos32::P32768
+  type_id: 0xe0527f20  # struct discriminant_values::Pos32::P32768
 }
 variant_member {
-  id: 0x71cab5b2
+  id: 0x71531905
   name: "P65535"
   discriminant_value: 65535
-  type_id: 0xfbbf2a99  # struct discriminant_limits::Pos32::P65535
+  type_id: 0x62139da3  # struct discriminant_values::Pos32::P65535
 }
 variant_member {
-  id: 0x3191062c
+  id: 0x3165cd35
   name: "P65536"
   discriminant_value: 65536
-  type_id: 0xff5ef64d  # struct discriminant_limits::Pos32::P65536
+  type_id: 0x0b95ef05  # struct discriminant_values::Pos32::P65536
 }
 variant_member {
-  id: 0x54fa8f5b
+  id: 0x54e79c26
   name: "P2147483647"
   discriminant_value: 2147483647
-  type_id: 0xa9d41d8a  # struct discriminant_limits::Pos32::P2147483647
+  type_id: 0xb4c7601d  # struct discriminant_values::Pos32::P2147483647
 }
 variant_member {
-  id: 0x34fdbb62
+  id: 0x340078f2
   name: "P2147483648"
   discriminant_value: 2147483648
-  type_id: 0x6ab347e3  # struct discriminant_limits::Pos32::P2147483648
+  type_id: 0x9770d7ca  # struct discriminant_values::Pos32::P2147483648
 }
 variant_member {
-  id: 0x4d7fd930
+  id: 0x4d74494a
   name: "P4294967295"
   discriminant_value: 4294967295
-  type_id: 0x5b34e082  # struct discriminant_limits::Pos32::P4294967295
+  type_id: 0x50a49a4b  # struct discriminant_values::Pos32::P4294967295
 }
 variant_member {
-  id: 0xaabfb281
+  id: 0xaaf0f712
   name: "P0"
   discriminant_value: 0
-  type_id: 0xca5ce12b  # struct discriminant_limits::Pos64::P0
+  type_id: 0x85197292  # struct discriminant_values::Pos64::P0
 }
 variant_member {
-  id: 0x55fd53f9
+  id: 0x552fe4f9
   name: "P1"
   discriminant_value: 1
-  type_id: 0x4b14ba16  # struct discriminant_limits::Pos64::P1
+  type_id: 0x99a3ba8c  # struct discriminant_values::Pos64::P1
 }
 variant_member {
-  id: 0x98aebb86
+  id: 0x9836cb40
   name: "P127"
   discriminant_value: 127
-  type_id: 0xb6bdd22c  # struct discriminant_limits::Pos64::P127
+  type_id: 0x2ecd14d7  # struct discriminant_values::Pos64::P127
 }
 variant_member {
-  id: 0xf42306c2
+  id: 0xf4209360
   name: "P128"
   discriminant_value: 128
-  type_id: 0xfdea308d  # struct discriminant_limits::Pos64::P128
+  type_id: 0xfe7f9276  # struct discriminant_values::Pos64::P128
 }
 variant_member {
-  id: 0xbc4a0391
+  id: 0xbc1835c3
   name: "P255"
   discriminant_value: 255
-  type_id: 0x1ce4706f  # struct discriminant_limits::Pos64::P255
+  type_id: 0x4ed2229f  # struct discriminant_values::Pos64::P255
 }
 variant_member {
-  id: 0x066bafc6
+  id: 0x0634f918
   name: "P256"
   discriminant_value: 256
-  type_id: 0xfe748d9d  # struct discriminant_limits::Pos64::P256
+  type_id: 0xa12253e2  # struct discriminant_values::Pos64::P256
 }
 variant_member {
-  id: 0x1d8b71e4
+  id: 0x1d38f620
   name: "P32767"
   discriminant_value: 32767
-  type_id: 0x0f76f310  # struct discriminant_limits::Pos64::P32767
+  type_id: 0xbcf13731  # struct discriminant_values::Pos64::P32767
 }
 variant_member {
-  id: 0x42e3147e
+  id: 0x424ad341
   name: "P32768"
   discriminant_value: 32768
-  type_id: 0x2293270b  # struct discriminant_limits::Pos64::P32768
+  type_id: 0x8b541862  # struct discriminant_values::Pos64::P32768
 }
 variant_member {
-  id: 0x718e5057
+  id: 0x714e46f6
   name: "P65535"
   discriminant_value: 65535
-  type_id: 0xbf5acfc7  # struct discriminant_limits::Pos64::P65535
+  type_id: 0x7f4c6e2b  # struct discriminant_values::Pos64::P65535
 }
 variant_member {
-  id: 0x31336a7b
+  id: 0x31f5da16
   name: "P65536"
   discriminant_value: 65536
-  type_id: 0x5d32a145  # struct discriminant_limits::Pos64::P65536
+  type_id: 0x9b82cc00  # struct discriminant_values::Pos64::P65536
 }
 variant_member {
-  id: 0x542ad397
+  id: 0x54007d54
   name: "P2147483647"
   discriminant_value: 2147483647
-  type_id: 0x7988d16a  # struct discriminant_limits::Pos64::P2147483647
+  type_id: 0x53261271  # struct discriminant_values::Pos64::P2147483647
 }
 variant_member {
-  id: 0x34c8e14c
+  id: 0x34b93358
   name: "P2147483648"
   discriminant_value: 2147483648
-  type_id: 0x5fe969cd  # struct discriminant_limits::Pos64::P2147483648
+  type_id: 0x2e3b7dae  # struct discriminant_values::Pos64::P2147483648
 }
 variant_member {
-  id: 0x4dfe4f5a
+  id: 0x4dbab8cf
   name: "P4294967295"
   discriminant_value: 4294967295
-  type_id: 0xdaa28a39  # struct discriminant_limits::Pos64::P4294967295
+  type_id: 0x9e551f12  # struct discriminant_values::Pos64::P4294967295
 }
 variant_member {
-  id: 0x0e537ea0
+  id: 0x0e10fb1c
   name: "P4294967296"
   discriminant_value: 4294967296
-  type_id: 0xb8a5764b  # struct discriminant_limits::Pos64::P4294967296
+  type_id: 0xfb20cabe  # struct discriminant_values::Pos64::P4294967296
 }
 variant_member {
-  id: 0x0f055776
+  id: 0x0fc136a7
   name: "P9223372036854775807"
   discriminant_value: 9223372036854775807
-  type_id: 0x00fff3a3  # struct discriminant_limits::Pos64::P9223372036854775807
+  type_id: 0xc49e229e  # struct discriminant_values::Pos64::P9223372036854775807
 }
 variant_member {
-  id: 0x7056cfeb
+  id: 0x708062cc
   name: "P9223372036854775808"
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0x1307f76a  # struct discriminant_limits::Pos64::P9223372036854775808
+  type_id: 0xc5aad051  # struct discriminant_values::Pos64::P9223372036854775808
 }
 variant_member {
-  id: 0x011bceb7
+  id: 0x01147d21
   name: "P18446744073709551615"
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x2046a569  # struct discriminant_limits::Pos64::P18446744073709551615
+  type_id: 0x2ff5332c  # struct discriminant_values::Pos64::P18446744073709551615
 }
 variant_member {
-  id: 0xaac4f2de
+  id: 0xaa01fe0b
   name: "P0"
   discriminant_value: 0
-  type_id: 0xb11cbe22  # struct discriminant_limits::Pos128::P0
+  type_id: 0x74106b9b  # struct discriminant_values::Pos128::P0
 }
 variant_member {
-  id: 0x55589f81
+  id: 0x55e3becd
   name: "P1"
   discriminant_value: 1
-  type_id: 0xeed8c272  # struct discriminant_limits::Pos128::P1
+  type_id: 0x55f98eb2  # struct discriminant_values::Pos128::P1
 }
 variant_member {
-  id: 0x98088acc
+  id: 0x98a8193a
   name: "P127"
   discriminant_value: 127
-  type_id: 0x108c98a3  # struct discriminant_limits::Pos128::P127
+  type_id: 0xb01f6ebb  # struct discriminant_values::Pos128::P127
 }
 variant_member {
-  id: 0xf4b0be55
+  id: 0xf48e0922
   name: "P128"
   discriminant_value: 128
-  type_id: 0x6e52a7c8  # struct discriminant_limits::Pos128::P128
+  type_id: 0x50e5d080  # struct discriminant_values::Pos128::P128
 }
 variant_member {
-  id: 0xbcae6186
+  id: 0xbc51d6b4
   name: "P255"
   discriminant_value: 255
-  type_id: 0xf886671a  # struct discriminant_limits::Pos128::P255
+  type_id: 0x073155a4  # struct discriminant_values::Pos128::P255
 }
 variant_member {
-  id: 0x06f4503f
+  id: 0x06f69df2
   name: "P256"
   discriminant_value: 256
-  type_id: 0x618b743a  # struct discriminant_limits::Pos128::P256
+  type_id: 0x6346b9a2  # struct discriminant_values::Pos128::P256
 }
 variant_member {
-  id: 0x1d4cfa51
+  id: 0x1d0f0ed2
   name: "P32767"
   discriminant_value: 32767
-  type_id: 0xc8fd463b  # struct discriminant_limits::Pos128::P32767
+  type_id: 0x8b09c5a2  # struct discriminant_values::Pos128::P32767
 }
 variant_member {
-  id: 0x42879847
+  id: 0x42c2b278
   name: "P32768"
   discriminant_value: 32768
-  type_id: 0x461f1eae  # struct discriminant_limits::Pos128::P32768
+  type_id: 0x033521f7  # struct discriminant_values::Pos128::P32768
 }
 variant_member {
-  id: 0x713069b0
+  id: 0x71a1d582
   name: "P65535"
   discriminant_value: 65535
-  type_id: 0x016328a8  # struct discriminant_limits::Pos128::P65535
+  type_id: 0x90df1a36  # struct discriminant_values::Pos128::P65535
 }
 variant_member {
-  id: 0x312f725d
+  id: 0x3113b03a
   name: "P65536"
   discriminant_value: 65536
-  type_id: 0x412a87d4  # struct discriminant_limits::Pos128::P65536
+  type_id: 0x7de8e0d8  # struct discriminant_values::Pos128::P65536
 }
 variant_member {
-  id: 0x54e74d32
+  id: 0x54fde86d
   name: "P2147483647"
   discriminant_value: 2147483647
-  type_id: 0xb416749c  # struct discriminant_limits::Pos128::P2147483647
+  type_id: 0xaeb32b7b  # struct discriminant_values::Pos128::P2147483647
 }
 variant_member {
-  id: 0x343a1ff8
+  id: 0x34c8bf44
   name: "P2147483648"
   discriminant_value: 2147483648
-  type_id: 0xad17dd29  # struct discriminant_limits::Pos128::P2147483648
+  type_id: 0x5fb7614e  # struct discriminant_values::Pos128::P2147483648
 }
 variant_member {
-  id: 0x4d7a3e76
+  id: 0x4d4c4853
   name: "P4294967295"
   discriminant_value: 4294967295
-  type_id: 0x5ed3a645  # struct discriminant_limits::Pos128::P4294967295
+  type_id: 0x68a58391  # struct discriminant_values::Pos128::P4294967295
 }
 variant_member {
-  id: 0x0e37f257
+  id: 0x0ec7a182
   name: "P4294967296"
   discriminant_value: 4294967296
-  type_id: 0xdc2981df  # struct discriminant_limits::Pos128::P4294967296
+  type_id: 0x2c7a542b  # struct discriminant_values::Pos128::P4294967296
 }
 variant_member {
-  id: 0x0fd5603d
+  id: 0x0ff9aae9
   name: "P9223372036854775807"
   discriminant_value: 9223372036854775807
-  type_id: 0xd0c8b86d  # struct discriminant_limits::Pos128::P9223372036854775807
+  type_id: 0xfc026c59  # struct discriminant_values::Pos128::P9223372036854775807
 }
 variant_member {
-  id: 0x70b14c0b
+  id: 0x707287e5
   name: "P9223372036854775808"
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0xf48417b0  # struct discriminant_limits::Pos128::P9223372036854775808
+  type_id: 0x374ff9b4  # struct discriminant_values::Pos128::P9223372036854775808
 }
 variant_member {
-  id: 0x0129df1a
+  id: 0x016d3448
   name: "P18446744073709551615"
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x125708d5  # struct discriminant_limits::Pos128::P18446744073709551615
+  type_id: 0x56bc5adb  # struct discriminant_values::Pos128::P18446744073709551615
 }
 variant_member {
-  id: 0xc6e9b506
+  id: 0xc61602b8
   name: "P18446744073709551616"
   discriminant_value: 0
   discriminant_value: 1
-  type_id: 0x12941933  # struct discriminant_limits::Pos128::P18446744073709551616
+  type_id: 0xed23a730  # struct discriminant_values::Pos128::P18446744073709551616
 }
 variant_member {
-  id: 0x8d5166dd
+  id: 0x8d049b34
   name: "P170141183460469231731687303715884105727"
   discriminant_value: -1
   discriminant_value: 9223372036854775807
-  type_id: 0x0272c83d  # struct discriminant_limits::Pos128::P170141183460469231731687303715884105727
+  type_id: 0x578f21f3  # struct discriminant_values::Pos128::P170141183460469231731687303715884105727
 }
 variant_member {
-  id: 0xc3b0140b
+  id: 0xc361dc34
   name: "P170141183460469231731687303715884105728"
   discriminant_value: 0
   discriminant_value: -9223372036854775808
   discriminant_value: 0
-  type_id: 0x2368856a  # struct discriminant_limits::Pos128::P170141183460469231731687303715884105728
+  type_id: 0xf2a0ba90  # struct discriminant_values::Pos128::P170141183460469231731687303715884105728
 }
 variant_member {
-  id: 0xe83b5b0a
+  id: 0xe8fa28a9
   name: "P340282366920938463463374607431768211455"
   discriminant_value: -1
   discriminant_value: -1
   discriminant_value: 0
-  type_id: 0x39fcfa4b  # struct discriminant_limits::Pos128::P340282366920938463463374607431768211455
+  type_id: 0xf88f5995  # struct discriminant_values::Pos128::P340282366920938463463374607431768211455
 }
 struct_union {
-  id: 0x8eac0bfe
+  id: 0x4ff349a1
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N0"
+  name: "discriminant_values::Neg128::N0"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x6c20ff63
+  id: 0x2a0dcc9d
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N1"
+  name: "discriminant_values::Neg128::N1"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x80f88d92
+  id: 0x21f6491e
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N127"
+  name: "discriminant_values::Neg128::N127"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x05a19bed
+  id: 0x2646cf4b
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N128"
+  name: "discriminant_values::Neg128::N128"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x1ee6f88a
+  id: 0x6e0a1459
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N170141183460469231731687303715884105727"
+  name: "discriminant_values::Neg128::N170141183460469231731687303715884105727"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xf1d862ad
+  id: 0x9ab3d7fc
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N170141183460469231731687303715884105728"
+  name: "discriminant_values::Neg128::N170141183460469231731687303715884105728"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x2727fa18
+  id: 0xdf195527
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N18446744073709551615"
+  name: "discriminant_values::Neg128::N18446744073709551615"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xa5f86d7f
+  id: 0x8de3a6a5
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N18446744073709551616"
+  name: "discriminant_values::Neg128::N18446744073709551616"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x8bef855a
+  id: 0x741d9392
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N2147483647"
+  name: "discriminant_values::Neg128::N2147483647"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x83354813
+  id: 0x9649e205
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N2147483648"
+  name: "discriminant_values::Neg128::N2147483648"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xc542a6f7
+  id: 0x09c6370e
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N255"
+  name: "discriminant_values::Neg128::N255"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xc0b57f07
+  id: 0xa8efcf02
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N256"
+  name: "discriminant_values::Neg128::N256"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xfde9685b
+  id: 0x5daec2de
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N32767"
+  name: "discriminant_values::Neg128::N32767"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x2c7776e2
+  id: 0x04751921
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N32768"
+  name: "discriminant_values::Neg128::N32768"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x2e768f12
+  id: 0x07e4259a
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N4294967295"
+  name: "discriminant_values::Neg128::N4294967295"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xf35c6ff6
+  id: 0xaee0e74d
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N4294967296"
+  name: "discriminant_values::Neg128::N4294967296"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xfcba6d89
+  id: 0x085cd269
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N65535"
+  name: "discriminant_values::Neg128::N65535"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x9aa5b67d
+  id: 0xca05a193
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N65536"
+  name: "discriminant_values::Neg128::N65536"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xf97a194c
+  id: 0xd222ef34
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N9223372036854775807"
+  name: "discriminant_values::Neg128::N9223372036854775807"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xd8782d3d
+  id: 0xb57efec7
   kind: STRUCT
-  name: "discriminant_limits::Neg128::N9223372036854775808"
+  name: "discriminant_values::Neg128::N9223372036854775808"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x53f78476
+  id: 0xa954e1a2
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N0"
+  name: "discriminant_values::Neg16::N0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x970d2516
+  id: 0x76e1a6b3
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N1"
+  name: "discriminant_values::Neg16::N1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x1eb1c56f
+  id: 0x0f824801
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N127"
+  name: "discriminant_values::Neg16::N127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x4a959c3a
+  id: 0x6d9c48a6
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N128"
+  name: "discriminant_values::Neg16::N128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x295086e2
+  id: 0xfc86d507
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N255"
+  name: "discriminant_values::Neg16::N255"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x0c1d0f9f
+  id: 0x3b4d7cdd
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N256"
+  name: "discriminant_values::Neg16::N256"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xf486b054
+  id: 0x094fc37b
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N32767"
+  name: "discriminant_values::Neg16::N32767"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x32eccb2f
+  id: 0xe89517c0
   kind: STRUCT
-  name: "discriminant_limits::Neg16::N32768"
+  name: "discriminant_values::Neg16::N32768"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x15a4ff42
+  id: 0xb25f7033
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N0"
+  name: "discriminant_values::Neg32::N0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x0b9eaed2
+  id: 0x4f51d5d1
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N1"
+  name: "discriminant_values::Neg32::N1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x1d1aee03
+  id: 0xfd116e3c
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N127"
+  name: "discriminant_values::Neg32::N127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xd986f9e8
+  id: 0x19734c67
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N128"
+  name: "discriminant_values::Neg32::N128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xb1dc1e7c
+  id: 0xb8c9921c
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N2147483647"
+  name: "discriminant_values::Neg32::N2147483647"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x11e8a789
+  id: 0x7c94b1bb
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N2147483648"
+  name: "discriminant_values::Neg32::N2147483648"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x173782fa
+  id: 0xf4e26dc4
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N255"
+  name: "discriminant_values::Neg32::N255"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x7254015a
+  id: 0xee6d010f
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N256"
+  name: "discriminant_values::Neg32::N256"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x9aa76c5b
+  id: 0x327b49e0
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N32767"
+  name: "discriminant_values::Neg32::N32767"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xa184f74e
+  id: 0xea11dc83
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N32768"
+  name: "discriminant_values::Neg32::N32768"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x1a51e948
+  id: 0x0e5b5e23
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N65535"
+  name: "discriminant_values::Neg32::N65535"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x5e790ef4
+  id: 0x1a631fcc
   kind: STRUCT
-  name: "discriminant_limits::Neg32::N65536"
+  name: "discriminant_values::Neg32::N65536"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x22106b67
+  id: 0xbb38d817
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N0"
+  name: "discriminant_values::Neg64::N0"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xe351d019
+  id: 0x9b0c5d2d
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N1"
+  name: "discriminant_values::Neg64::N1"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x3579705f
+  id: 0x0fedfb57
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N127"
+  name: "discriminant_values::Neg64::N127"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xb9b86470
+  id: 0x58c8b37e
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N128"
+  name: "discriminant_values::Neg64::N128"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x215c400e
+  id: 0x716a76b2
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N2147483647"
+  name: "discriminant_values::Neg64::N2147483647"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x8ac361d3
+  id: 0x5301c3c5
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N2147483648"
+  name: "discriminant_values::Neg64::N2147483648"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x52c92e1a
+  id: 0x2519dda0
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N255"
+  name: "discriminant_values::Neg64::N255"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xee95d3cd
+  id: 0xd422a294
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N256"
+  name: "discriminant_values::Neg64::N256"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x1e83d078
+  id: 0x0fcefac4
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N32767"
+  name: "discriminant_values::Neg64::N32767"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x49661fa1
+  id: 0x77c69d9f
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N32768"
+  name: "discriminant_values::Neg64::N32768"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xb2bf9705
+  id: 0xe9bfd59e
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N4294967295"
+  name: "discriminant_values::Neg64::N4294967295"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x9bd288c0
+  id: 0x82e2cb66
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N4294967296"
+  name: "discriminant_values::Neg64::N4294967296"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x1ba8cc88
+  id: 0x148a6d00
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N65535"
+  name: "discriminant_values::Neg64::N65535"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x9d7aa3a6
+  id: 0xf50f2374
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N65536"
+  name: "discriminant_values::Neg64::N65536"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x1f462918
+  id: 0x4e12e86f
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N9223372036854775807"
+  name: "discriminant_values::Neg64::N9223372036854775807"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xf6537027
+  id: 0xa57c722a
   kind: STRUCT
-  name: "discriminant_limits::Neg64::N9223372036854775808"
+  name: "discriminant_values::Neg64::N9223372036854775808"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x590eeacb
+  id: 0x8b254212
   kind: STRUCT
-  name: "discriminant_limits::Neg8::N0"
+  name: "discriminant_values::Neg8::N0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xf901eb05
+  id: 0x4ab7ed3c
   kind: STRUCT
-  name: "discriminant_limits::Neg8::N1"
+  name: "discriminant_values::Neg8::N1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x72de3a6b
+  id: 0x69eb4690
   kind: STRUCT
-  name: "discriminant_limits::Neg8::N127"
+  name: "discriminant_values::Neg8::N127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xc68d57ac
+  id: 0x4873561b
   kind: STRUCT
-  name: "discriminant_limits::Neg8::N128"
+  name: "discriminant_values::Neg8::N128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xb11cbe22
+  id: 0x74106b9b
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P0"
+  name: "discriminant_values::Pos128::P0"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xeed8c272
+  id: 0x55f98eb2
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P1"
+  name: "discriminant_values::Pos128::P1"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x108c98a3
+  id: 0xb01f6ebb
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P127"
+  name: "discriminant_values::Pos128::P127"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x6e52a7c8
+  id: 0x50e5d080
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P128"
+  name: "discriminant_values::Pos128::P128"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x0272c83d
+  id: 0x578f21f3
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P170141183460469231731687303715884105727"
+  name: "discriminant_values::Pos128::P170141183460469231731687303715884105727"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x2368856a
+  id: 0xf2a0ba90
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P170141183460469231731687303715884105728"
+  name: "discriminant_values::Pos128::P170141183460469231731687303715884105728"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x125708d5
+  id: 0x56bc5adb
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P18446744073709551615"
+  name: "discriminant_values::Pos128::P18446744073709551615"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x12941933
+  id: 0xed23a730
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P18446744073709551616"
+  name: "discriminant_values::Pos128::P18446744073709551616"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xb416749c
+  id: 0xaeb32b7b
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P2147483647"
+  name: "discriminant_values::Pos128::P2147483647"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xad17dd29
+  id: 0x5fb7614e
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P2147483648"
+  name: "discriminant_values::Pos128::P2147483648"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xf886671a
+  id: 0x073155a4
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P255"
+  name: "discriminant_values::Pos128::P255"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x618b743a
+  id: 0x6346b9a2
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P256"
+  name: "discriminant_values::Pos128::P256"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xc8fd463b
+  id: 0x8b09c5a2
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P32767"
+  name: "discriminant_values::Pos128::P32767"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x461f1eae
+  id: 0x033521f7
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P32768"
+  name: "discriminant_values::Pos128::P32768"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x39fcfa4b
+  id: 0xf88f5995
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P340282366920938463463374607431768211455"
+  name: "discriminant_values::Pos128::P340282366920938463463374607431768211455"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x5ed3a645
+  id: 0x68a58391
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P4294967295"
+  name: "discriminant_values::Pos128::P4294967295"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xdc2981df
+  id: 0x2c7a542b
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P4294967296"
+  name: "discriminant_values::Pos128::P4294967296"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x016328a8
+  id: 0x90df1a36
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P65535"
+  name: "discriminant_values::Pos128::P65535"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0x412a87d4
+  id: 0x7de8e0d8
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P65536"
+  name: "discriminant_values::Pos128::P65536"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xd0c8b86d
+  id: 0xfc026c59
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P9223372036854775807"
+  name: "discriminant_values::Pos128::P9223372036854775807"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xf48417b0
+  id: 0x374ff9b4
   kind: STRUCT
-  name: "discriminant_limits::Pos128::P9223372036854775808"
+  name: "discriminant_values::Pos128::P9223372036854775808"
   definition {
     bytesize: 32
     member_id: 0x976dc084  # u32 __0
   }
 }
 struct_union {
-  id: 0xdc1d3ea1
+  id: 0x47394b10
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P0"
+  name: "discriminant_values::Pos16::P0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x7f9e2d9d
+  id: 0x891348e6
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P1"
+  name: "discriminant_values::Pos16::P1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x5885801e
+  id: 0xf8266dd0
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P127"
+  name: "discriminant_values::Pos16::P127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x3ad5064b
+  id: 0x6914407f
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P128"
+  name: "discriminant_values::Pos16::P128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x548d9a0e
+  id: 0xf6271cdb
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P255"
+  name: "discriminant_values::Pos16::P255"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xf4d04e02
+  id: 0xd50fa561
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P256"
+  name: "discriminant_values::Pos16::P256"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x8e2ac7de
+  id: 0xe05479b3
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P32767"
+  name: "discriminant_values::Pos16::P32767"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xe4c86a21
+  id: 0x35c693e4
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P32768"
+  name: "discriminant_values::Pos16::P32768"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xb992a369
+  id: 0xe83b0cdc
   kind: STRUCT
-  name: "discriminant_limits::Pos16::P65535"
+  name: "discriminant_values::Pos16::P65535"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x90d1a10e
+  id: 0x940bd105
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P0"
+  name: "discriminant_values::Pos32::P0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x504fd433
+  id: 0x9560c4cb
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P1"
+  name: "discriminant_values::Pos32::P1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x867dd0e2
+  id: 0x57a39f4a
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P127"
+  name: "discriminant_values::Pos32::P127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x4544c63d
+  id: 0xa4f16643
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P128"
+  name: "discriminant_values::Pos32::P128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xa9d41d8a
+  id: 0xb4c7601d
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P2147483647"
+  name: "discriminant_values::Pos32::P2147483647"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x6ab347e3
+  id: 0x9770d7ca
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P2147483648"
+  name: "discriminant_values::Pos32::P2147483648"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xa6ac1a67
+  id: 0xd618a965
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P255"
+  name: "discriminant_values::Pos32::P255"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x7c470bb7
+  id: 0x7e10454b
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P256"
+  name: "discriminant_values::Pos32::P256"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x3427098b
+  id: 0x88854be1
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P32767"
+  name: "discriminant_values::Pos32::P32767"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x3029c672
+  id: 0xe0527f20
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P32768"
+  name: "discriminant_values::Pos32::P32768"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x5b34e082
+  id: 0x50a49a4b
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P4294967295"
+  name: "discriminant_values::Pos32::P4294967295"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xfbbf2a99
+  id: 0x62139da3
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P65535"
+  name: "discriminant_values::Pos32::P65535"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xff5ef64d
+  id: 0x0b95ef05
   kind: STRUCT
-  name: "discriminant_limits::Pos32::P65536"
+  name: "discriminant_values::Pos32::P65536"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xca5ce12b
+  id: 0x85197292
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P0"
+  name: "discriminant_values::Pos64::P0"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x4b14ba16
+  id: 0x99a3ba8c
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P1"
+  name: "discriminant_values::Pos64::P1"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xb6bdd22c
+  id: 0x2ecd14d7
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P127"
+  name: "discriminant_values::Pos64::P127"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xfdea308d
+  id: 0xfe7f9276
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P128"
+  name: "discriminant_values::Pos64::P128"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x2046a569
+  id: 0x2ff5332c
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P18446744073709551615"
+  name: "discriminant_values::Pos64::P18446744073709551615"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x7988d16a
+  id: 0x53261271
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P2147483647"
+  name: "discriminant_values::Pos64::P2147483647"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x5fe969cd
+  id: 0x2e3b7dae
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P2147483648"
+  name: "discriminant_values::Pos64::P2147483648"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x1ce4706f
+  id: 0x4ed2229f
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P255"
+  name: "discriminant_values::Pos64::P255"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xfe748d9d
+  id: 0xa12253e2
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P256"
+  name: "discriminant_values::Pos64::P256"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x0f76f310
+  id: 0xbcf13731
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P32767"
+  name: "discriminant_values::Pos64::P32767"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x2293270b
+  id: 0x8b541862
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P32768"
+  name: "discriminant_values::Pos64::P32768"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xdaa28a39
+  id: 0x9e551f12
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P4294967295"
+  name: "discriminant_values::Pos64::P4294967295"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xb8a5764b
+  id: 0xfb20cabe
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P4294967296"
+  name: "discriminant_values::Pos64::P4294967296"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xbf5acfc7
+  id: 0x7f4c6e2b
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P65535"
+  name: "discriminant_values::Pos64::P65535"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x5d32a145
+  id: 0x9b82cc00
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P65536"
+  name: "discriminant_values::Pos64::P65536"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x00fff3a3
+  id: 0xc49e229e
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P9223372036854775807"
+  name: "discriminant_values::Pos64::P9223372036854775807"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0x1307f76a
+  id: 0xc5aad051
   kind: STRUCT
-  name: "discriminant_limits::Pos64::P9223372036854775808"
+  name: "discriminant_values::Pos64::P9223372036854775808"
   definition {
     bytesize: 16
     member_id: 0x976dcda7  # u32 __0
   }
 }
 struct_union {
-  id: 0xf5071e71
+  id: 0xe2792c87
   kind: STRUCT
-  name: "discriminant_limits::Pos8::P0"
+  name: "discriminant_values::Pos8::P0"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x5469a5e0
+  id: 0xa12c653d
   kind: STRUCT
-  name: "discriminant_limits::Pos8::P1"
+  name: "discriminant_values::Pos8::P1"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xf2fa4562
+  id: 0x3584ce06
   kind: STRUCT
-  name: "discriminant_limits::Pos8::P127"
+  name: "discriminant_values::Pos8::P127"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0xd6abc943
+  id: 0x575d97f9
   kind: STRUCT
-  name: "discriminant_limits::Pos8::P128"
+  name: "discriminant_values::Pos8::P128"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 struct_union {
-  id: 0x88863e3d
+  id: 0x51999c8c
   kind: STRUCT
-  name: "discriminant_limits::Pos8::P255"
+  name: "discriminant_values::Pos8::P255"
   definition {
     bytesize: 8
     member_id: 0x976dc47d  # u32 __0
   }
 }
 variant {
-  id: 0xfcd23896
-  name: "discriminant_limits::Neg8"
+  id: 0xb49ace73
+  name: "discriminant_values::Neg8"
   bytesize: 8
   discriminant: 0x167a9a78
-  member_id: 0x19fad935
-  member_id: 0xde1b3d89
-  member_id: 0xb72ec2ec
-  member_id: 0x67c59e71
+  member_id: 0x1928f29d
+  member_id: 0xdea88b8f
+  member_id: 0xb735f790
+  member_id: 0x674b6070
 }
 variant {
-  id: 0x2732a619
-  name: "discriminant_limits::Neg16"
+  id: 0x9927599a
+  name: "discriminant_values::Neg16"
   bytesize: 8
   discriminant: 0x32310b66
-  member_id: 0x19f0205b
-  member_id: 0xde753147
-  member_id: 0xb742ad13
-  member_id: 0x674986ba
-  member_id: 0x2faa286f
-  member_id: 0x6e4e807c
-  member_id: 0x823c1213
-  member_id: 0x4abdc13d
+  member_id: 0x190a833e
+  member_id: 0xde94ddc4
+  member_id: 0xb7539e9e
+  member_id: 0x676e8f6e
+  member_id: 0x2f7ffe3c
+  member_id: 0x6e79d00f
+  member_id: 0x82c1db60
+  member_id: 0x4a67b8e1
 }
 variant {
-  id: 0xb96e53a0
-  name: "discriminant_limits::Neg32"
+  id: 0x827f8005
+  name: "discriminant_values::Neg32"
   bytesize: 8
   discriminant: 0x1a87d61d
-  member_id: 0x19b67320
-  member_id: 0xdee9a2cc
-  member_id: 0xb7410638
-  member_id: 0x67da95df
-  member_id: 0x2f944f6b
-  member_id: 0x6e30c972
-  member_id: 0x825233cf
-  member_id: 0x4a2ea901
-  member_id: 0xfdc5b189
-  member_id: 0xbf417709
-  member_id: 0xcb5f5fcc
-  member_id: 0x88be9eb1
+  member_id: 0x191188af
+  member_id: 0xdead6db7
+  member_id: 0xb7a10db8
+  member_id: 0x671a606a
+  member_id: 0x2f779a84
+  member_id: 0x6eacf072
+  member_id: 0x82faefea
+  member_id: 0x4a653c2a
+  member_id: 0xfdd1bb3e
+  member_id: 0xbf056d18
+  member_id: 0xcb564a40
+  member_id: 0x88d3e2a7
 }
 variant {
-  id: 0xb427dbe0
-  name: "discriminant_limits::Neg64"
+  id: 0x868cd01f
+  name: "discriminant_values::Neg64"
   bytesize: 16
   discriminant: 0x18ba9281
-  member_id: 0x1981c7b4
-  member_id: 0xde016db2
-  member_id: 0xb76965a6
-  member_id: 0x67baab42
-  member_id: 0x2fd1b1c7
-  member_id: 0x6eac08a0
-  member_id: 0x82d61773
-  member_id: 0x4ac64be9
-  member_id: 0xfdc448ac
-  member_id: 0xbf8274a4
-  member_id: 0xcbcfdf92
-  member_id: 0x8825b577
-  member_id: 0x2e83d54f
-  member_id: 0xef6a5bbc
-  member_id: 0xe0d13be4
-  member_id: 0x1c65d0c9
+  member_id: 0x1918ef07
+  member_id: 0xde79303f
+  member_id: 0xb753f12d
+  member_id: 0x675bdb95
+  member_id: 0x2fa66134
+  member_id: 0x6e96bfd1
+  member_id: 0x82c75a59
+  member_id: 0x4af8eb6b
+  member_id: 0xfdcb6a0d
+  member_id: 0xbfea0124
+  member_id: 0xcb9fe9a4
+  member_id: 0x88fc77d5
+  member_id: 0x2ed8d50d
+  member_id: 0xef736bff
+  member_id: 0xe0806f25
+  member_id: 0x1c36ffcb
 }
 variant {
-  id: 0x38bebfb6
-  name: "discriminant_limits::Neg128"
+  id: 0x11d37153
+  name: "discriminant_values::Neg128"
   bytesize: 32
   discriminant: 0x250300b4
-  member_id: 0x192d7bd4
-  member_id: 0xde8e1a94
-  member_id: 0xb7dce956
-  member_id: 0x6706bc17
-  member_id: 0x2f463f3a
-  member_id: 0x6e8229aa
-  member_id: 0x823579f7
-  member_id: 0x4aa35481
-  member_id: 0xfd2351da
-  member_id: 0xbf85a816
-  member_id: 0xcb656f0f
-  member_id: 0x882c4b01
-  member_id: 0x2e1f1c57
-  member_id: 0xef02d55b
-  member_id: 0xe03707d4
-  member_id: 0x1c4bfb94
-  member_id: 0xd231abf9
-  member_id: 0x9cf248f6
-  member_id: 0x89d98e76
-  member_id: 0xcaf76534
+  member_id: 0x19ec2496
+  member_id: 0xdec837a7
+  member_id: 0xb77de792
+  member_id: 0x67255b43
+  member_id: 0x2f8abbab
+  member_id: 0x6eea731a
+  member_id: 0x82953e5d
+  member_id: 0x4a8b56ee
+  member_id: 0xfdd7b765
+  member_id: 0xbfd50801
+  member_id: 0xcb9a9d19
+  member_id: 0x883937ab
+  member_id: 0x2e368efd
+  member_id: 0xef5f69d3
+  member_id: 0xe01c5f22
+  member_id: 0x1c26fd47
+  member_id: 0xd2c99556
+  member_id: 0x9cda533d
+  member_id: 0x89a9629a
+  member_id: 0xca9c0e81
 }
 variant {
-  id: 0xa7884aed
-  name: "discriminant_limits::Pos8"
+  id: 0x302b76f7
+  name: "discriminant_values::Pos8"
   bytesize: 8
   discriminant: 0x288078fc
-  member_id: 0xaa80e97e
-  member_id: 0x55e22ee6
-  member_id: 0x98eafc11
-  member_id: 0xf408473b
-  member_id: 0xbcde61df
+  member_id: 0xaa97974c
+  member_id: 0x55176b26
+  member_id: 0x982d829a
+  member_id: 0xf489b165
+  member_id: 0xbc077e7d
 }
 variant {
-  id: 0x51930295
-  name: "discriminant_limits::Pos16"
+  id: 0xa961a8b8
+  name: "discriminant_values::Pos16"
   bytesize: 8
   discriminant: 0x068c9bfb
-  member_id: 0xaaa9f35e
-  member_id: 0x55c9d96e
-  member_id: 0x984083d4
-  member_id: 0xf4e439f4
-  member_id: 0xbc026a7b
-  member_id: 0x06610b05
-  member_id: 0x1d0a2dd0
-  member_id: 0x42254f33
-  member_id: 0x7188983b
+  member_id: 0xaa32d72b
+  member_id: 0x553f540b
+  member_id: 0x98e02039
+  member_id: 0xf4b7f8b2
+  member_id: 0xbca0c0fd
+  member_id: 0x0640d4ee
+  member_id: 0x1d64536e
+  member_id: 0x42f441ca
+  member_id: 0x71d93194
 }
 variant {
-  id: 0xff91037c
-  name: "discriminant_limits::Pos32"
+  id: 0x2b8dd18c
+  name: "discriminant_values::Pos32"
   bytesize: 8
   discriminant: 0x16e52ed9
-  member_id: 0xaae53fc1
-  member_id: 0x55e60897
-  member_id: 0x989e7b84
-  member_id: 0xf49ba834
-  member_id: 0xbcf04bfb
-  member_id: 0x06e99c40
-  member_id: 0x1db0201e
-  member_id: 0x42f1ae9f
-  member_id: 0x71cab5b2
-  member_id: 0x3191062c
-  member_id: 0x54fa8f5b
-  member_id: 0x34fdbb62
-  member_id: 0x4d7fd930
+  member_id: 0xaae1e5b1
+  member_id: 0x55232787
+  member_id: 0x984fa5cb
+  member_id: 0xf47a1d94
+  member_id: 0xbc80ff48
+  member_id: 0x06ebcb0e
+  member_id: 0x1d0c825c
+  member_id: 0x4221d526
+  member_id: 0x71531905
+  member_id: 0x3165cd35
+  member_id: 0x54e79c26
+  member_id: 0x340078f2
+  member_id: 0x4d74494a
 }
 variant {
-  id: 0x966a07d2
-  name: "discriminant_limits::Pos64"
+  id: 0x206f8da5
+  name: "discriminant_values::Pos64"
   bytesize: 16
   discriminant: 0x01bf28e7
-  member_id: 0xaabfb281
-  member_id: 0x55fd53f9
-  member_id: 0x98aebb86
-  member_id: 0xf42306c2
-  member_id: 0xbc4a0391
-  member_id: 0x066bafc6
-  member_id: 0x1d8b71e4
-  member_id: 0x42e3147e
-  member_id: 0x718e5057
-  member_id: 0x31336a7b
-  member_id: 0x542ad397
-  member_id: 0x34c8e14c
-  member_id: 0x4dfe4f5a
-  member_id: 0x0e537ea0
-  member_id: 0x0f055776
-  member_id: 0x7056cfeb
-  member_id: 0x011bceb7
+  member_id: 0xaaf0f712
+  member_id: 0x552fe4f9
+  member_id: 0x9836cb40
+  member_id: 0xf4209360
+  member_id: 0xbc1835c3
+  member_id: 0x0634f918
+  member_id: 0x1d38f620
+  member_id: 0x424ad341
+  member_id: 0x714e46f6
+  member_id: 0x31f5da16
+  member_id: 0x54007d54
+  member_id: 0x34b93358
+  member_id: 0x4dbab8cf
+  member_id: 0x0e10fb1c
+  member_id: 0x0fc136a7
+  member_id: 0x708062cc
+  member_id: 0x01147d21
 }
 variant {
-  id: 0x77994e8f
-  name: "discriminant_limits::Pos128"
+  id: 0xc0abb9fe
+  name: "discriminant_values::Pos128"
   bytesize: 32
   discriminant: 0x2d8e5cfd
-  member_id: 0xaac4f2de
-  member_id: 0x55589f81
-  member_id: 0x98088acc
-  member_id: 0xf4b0be55
-  member_id: 0xbcae6186
-  member_id: 0x06f4503f
-  member_id: 0x1d4cfa51
-  member_id: 0x42879847
-  member_id: 0x713069b0
-  member_id: 0x312f725d
-  member_id: 0x54e74d32
-  member_id: 0x343a1ff8
-  member_id: 0x4d7a3e76
-  member_id: 0x0e37f257
-  member_id: 0x0fd5603d
-  member_id: 0x70b14c0b
-  member_id: 0x0129df1a
-  member_id: 0xc6e9b506
-  member_id: 0x8d5166dd
-  member_id: 0xc3b0140b
-  member_id: 0xe83b5b0a
+  member_id: 0xaa01fe0b
+  member_id: 0x55e3becd
+  member_id: 0x98a8193a
+  member_id: 0xf48e0922
+  member_id: 0xbc51d6b4
+  member_id: 0x06f69df2
+  member_id: 0x1d0f0ed2
+  member_id: 0x42c2b278
+  member_id: 0x71a1d582
+  member_id: 0x3113b03a
+  member_id: 0x54fde86d
+  member_id: 0x34c8bf44
+  member_id: 0x4d4c4853
+  member_id: 0x0ec7a182
+  member_id: 0x0ff9aae9
+  member_id: 0x707287e5
+  member_id: 0x016d3448
+  member_id: 0xc61602b8
+  member_id: 0x8d049b34
+  member_id: 0xc361dc34
+  member_id: 0xe8fa28a9
 }
 function {
-  id: 0x2f1c900a
+  id: 0x1e3d586c
   return_type_id: 0x48b5725f  # void
-  parameter_id: 0xfcd23896  # variant discriminant_limits::Neg8
-  parameter_id: 0x2732a619  # variant discriminant_limits::Neg16
-  parameter_id: 0xb96e53a0  # variant discriminant_limits::Neg32
-  parameter_id: 0xb427dbe0  # variant discriminant_limits::Neg64
-  parameter_id: 0x38bebfb6  # variant discriminant_limits::Neg128
+  parameter_id: 0x302b76f7  # variant discriminant_values::Pos8
+  parameter_id: 0xa961a8b8  # variant discriminant_values::Pos16
+  parameter_id: 0x2b8dd18c  # variant discriminant_values::Pos32
+  parameter_id: 0x206f8da5  # variant discriminant_values::Pos64
+  parameter_id: 0xc0abb9fe  # variant discriminant_values::Pos128
 }
 function {
-  id: 0x3801af2c
+  id: 0x3ff8fece
   return_type_id: 0x48b5725f  # void
-  parameter_id: 0xa7884aed  # variant discriminant_limits::Pos8
-  parameter_id: 0x51930295  # variant discriminant_limits::Pos16
-  parameter_id: 0xff91037c  # variant discriminant_limits::Pos32
-  parameter_id: 0x966a07d2  # variant discriminant_limits::Pos64
-  parameter_id: 0x77994e8f  # variant discriminant_limits::Pos128
+  parameter_id: 0xb49ace73  # variant discriminant_values::Neg8
+  parameter_id: 0x9927599a  # variant discriminant_values::Neg16
+  parameter_id: 0x827f8005  # variant discriminant_values::Neg32
+  parameter_id: 0x868cd01f  # variant discriminant_values::Neg64
+  parameter_id: 0x11d37153  # variant discriminant_values::Neg128
 }
 elf_symbol {
-  id: 0x711bca8d
-  name: "_RNvCsimMchmvBJNU_19discriminant_limits7use_neg"
+  id: 0xbc7bdb4e
+  name: "_RNvCslq2M6p701eM_19discriminant_values7use_neg"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x2f1c900a  # void(variant discriminant_limits::Neg8, variant discriminant_limits::Neg16, variant discriminant_limits::Neg32, variant discriminant_limits::Neg64, variant discriminant_limits::Neg128)
-  full_name: "discriminant_limits::use_neg"
+  type_id: 0x3ff8fece  # void(variant discriminant_values::Neg8, variant discriminant_values::Neg16, variant discriminant_values::Neg32, variant discriminant_values::Neg64, variant discriminant_values::Neg128)
+  full_name: "discriminant_values::use_neg"
 }
 elf_symbol {
-  id: 0x09a711a8
-  name: "_RNvCsimMchmvBJNU_19discriminant_limits7use_pos"
+  id: 0x8da8ab1d
+  name: "_RNvCslq2M6p701eM_19discriminant_values7use_pos"
   is_defined: true
   symbol_type: FUNCTION
-  type_id: 0x3801af2c  # void(variant discriminant_limits::Pos8, variant discriminant_limits::Pos16, variant discriminant_limits::Pos32, variant discriminant_limits::Pos64, variant discriminant_limits::Pos128)
-  full_name: "discriminant_limits::use_pos"
+  type_id: 0x1e3d586c  # void(variant discriminant_values::Pos8, variant discriminant_values::Pos16, variant discriminant_values::Pos32, variant discriminant_values::Pos64, variant discriminant_values::Pos128)
+  full_name: "discriminant_values::use_pos"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x711bca8d  # void discriminant_limits::use_neg(variant discriminant_limits::Neg8, variant discriminant_limits::Neg16, variant discriminant_limits::Neg32, variant discriminant_limits::Neg64, variant discriminant_limits::Neg128)
-  symbol_id: 0x09a711a8  # void discriminant_limits::use_pos(variant discriminant_limits::Pos8, variant discriminant_limits::Pos16, variant discriminant_limits::Pos32, variant discriminant_limits::Pos64, variant discriminant_limits::Pos128)
+  symbol_id: 0xbc7bdb4e  # void discriminant_values::use_neg(variant discriminant_values::Neg8, variant discriminant_values::Neg16, variant discriminant_values::Neg32, variant discriminant_values::Neg64, variant discriminant_values::Neg128)
+  symbol_id: 0x8da8ab1d  # void discriminant_values::use_pos(variant discriminant_values::Pos8, variant discriminant_values::Pos16, variant discriminant_values::Pos32, variant discriminant_values::Pos64, variant discriminant_values::Pos128)
 }
