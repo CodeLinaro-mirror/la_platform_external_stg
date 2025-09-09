@@ -83,6 +83,7 @@ cc_library_host_static {
         "graph.cc",
         "input.cc",
         "naming.cc",
+        "number.cc",
         "post_processing.cc",
         "proto_reader.cc",
         "proto_writer.cc",

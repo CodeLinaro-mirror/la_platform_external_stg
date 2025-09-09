@@ -939,8 +939,8 @@ struct CompareWorker {
   const Ignore ignore;
   const Graph& graph;
   Outcomes& outcomes;
-  std::unordered_map<Comparison, bool, HashComparison> known;
-  SCC<Comparison, HashComparison> scc;
+  std::unordered_map<Comparison, bool> known;
+  SCC<Comparison> scc;
   Counter queried;
   Counter already_compared;
   Counter being_compared;
