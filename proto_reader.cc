@@ -508,7 +508,7 @@ class ErrorSink : public google::protobuf::io::ErrorCollector {
  private:
   static void Moan(std::string_view which, int line,
                    google::protobuf::io::ColumnNumber column,
-                   const std::string& message) {
+                   std::string_view message) {
     Warn() << "google::protobuf::TextFormat " << which << " at line " << (line + 1)
            << " column " << (column + 1) << ": " << message;
   }
