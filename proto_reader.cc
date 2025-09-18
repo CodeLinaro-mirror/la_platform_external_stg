@@ -496,6 +496,16 @@ void CheckFormatVersion(uint32_t version) {
 
 class ErrorSink : public google::protobuf::io::ErrorCollector {
  public:
+#if GOOGLE_PROTOBUF_VERSION >= 4022000
+  void RecordError(int line, google::protobuf::io::ColumnNumber column,
+                   std::string_view message) final {
+    Moan("error", line, column, message);
+  }
+  void RecordWarning(int line, google::protobuf::io::ColumnNumber column,
+                     std::string_view message) final {
+    Moan("warning", line, column, message);
+  }
+#else
   void AddError(int line, google::protobuf::io::ColumnNumber column,
                 const std::string& message) final {
     Moan("error", line, column, message);
@@ -504,6 +514,7 @@ class ErrorSink : public google::protobuf::io::ErrorCollector {
                   const std::string& message) final {
     Moan("warning", line, column, message);
   }
+#endif
 
  private:
   static void Moan(std::string_view which, int line,
