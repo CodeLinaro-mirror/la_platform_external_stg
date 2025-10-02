@@ -190,7 +190,7 @@ struct StableHashWorker {
     return hash("interface");
   }
 
-  const Hash hash;
+  const Hash hash{};
   const Graph& graph;
   std::unordered_map<Id, HashValue>& cache;
 };
