@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "dwarf_wrappers.h"
@@ -46,6 +47,7 @@ struct Types {
   // Container for all named type IDs allocated during DWARF processing.
   std::vector<Id> named_type_ids;
   std::vector<Symbol> symbols;
+  std::vector<std::pair<Id, Id>> incomplete_to_full_types;
 };
 
 // Process every compilation unit from DWARF and returns processed STG along

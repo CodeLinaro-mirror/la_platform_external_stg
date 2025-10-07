@@ -47,7 +47,7 @@ Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
     }
     case InputFormat::BTF: {
       const Time read(runtime, "read BTF");
-      return btf::ReadFile(graph, input, options);
+      return btf::ReadFile(runtime, graph, input, options);
     }
     case InputFormat::ELF: {
       const Time read(runtime, "read ELF");

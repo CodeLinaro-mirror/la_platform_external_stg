@@ -6,7 +6,7 @@ variable symbol '_ZTS12VirtualToNon' was removed
 
 variable symbol '_ZTT12VirtualToNon' was removed
 
-variable symbol '_ZTV12VirtualToNon' was removed
+variable symbol 'void* VirtualToNon::_vtable$' {_ZTV12VirtualToNon} was removed
 
 function symbol 'void NonToVirtual::NonToVirtual(struct NonToVirtual*)' {_ZN12NonToVirtualC1Ev} was added
 
@@ -16,7 +16,7 @@ variable symbol '_ZTS12NonToVirtual' was added
 
 variable symbol '_ZTT12NonToVirtual' was added
 
-variable symbol '_ZTV12NonToVirtual' was added
+variable symbol 'void* NonToVirtual::_vtable$' {_ZTV12NonToVirtual} was added
 
 variable symbol 'struct NonToVirtual non_to_virtual' changed
   type 'struct NonToVirtual' changed

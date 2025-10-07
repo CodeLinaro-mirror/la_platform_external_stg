@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -352,6 +352,7 @@ class Processor {
         ProcessUnspecifiedType(entry);
         break;
       case DW_TAG_compile_unit:
+      case DW_TAG_type_unit:
         language_ = entry.MustGetUnsignedConstant(DW_AT_language);
         ProcessAllChildren(entry);
         break;
@@ -484,7 +485,16 @@ class Processor {
   }
 
   void ProcessStructUnion(Entry& entry, StructUnion::Kind kind) {
-    const auto type_name = GetNameOrEmpty(entry);
+    std::optional<Entry> signature_entry =
+        entry.MaybeGetReference(DW_AT_signature);
+    if (signature_entry) {
+      // Record a mapping from the current incomplete type to the full type
+      // referenced through DW_AT_signature.
+      result_.incomplete_to_full_types.emplace_back(
+          GetIdForEntry(entry), GetIdForEntry(*signature_entry));
+    }
+    const auto type_name =
+        GetNameOrEmpty(signature_entry ? *signature_entry : entry);
     const auto full_name =
         type_name.empty() ? type_name : scope_.name + type_name;
     const PushScopeName push_scope_name(scope_, kind, type_name);
@@ -590,13 +600,7 @@ class Processor {
   }
 
   void ProcessVariantMember(Entry& entry) {
-    // TODO: Process signed discriminant values.
-    auto dw_discriminant_value =
-        entry.MaybeGetUnsignedConstant(DW_AT_discr_value);
-    auto discriminant_value =
-        dw_discriminant_value
-            ? std::optional(static_cast<int64_t>(*dw_discriminant_value))
-            : std::nullopt;
+    const auto discriminant_value = entry.MaybeGetConstant(DW_AT_discr_value);
 
     auto children = entry.GetChildren();
     if (children.size() != 1) {
@@ -713,7 +717,16 @@ class Processor {
   }
 
   void ProcessEnum(Entry& entry) {
-    const auto type_name = GetNameOrEmpty(entry);
+    std::optional<Entry> signature_entry =
+        entry.MaybeGetReference(DW_AT_signature);
+    if (signature_entry) {
+      // Record a mapping from the current incomplete type to the full type
+      // referenced through DW_AT_signature.
+      result_.incomplete_to_full_types.emplace_back(
+          GetIdForEntry(entry), GetIdForEntry(*signature_entry));
+    }
+    const auto type_name =
+        GetNameOrEmpty(signature_entry ? *signature_entry : entry);
     const auto full_name =
         type_name.empty() ? type_name : scope_.name + type_name;
 
@@ -737,13 +750,12 @@ class Processor {
           const std::string enumerator_name = GetName(child);
           // TODO: detect signedness of underlying type and call
           // an appropriate method.
-          std::optional<size_t> value_optional =
-              child.MaybeGetUnsignedConstant(DW_AT_const_value);
+          std::optional<int64_t> value_optional =
+              child.MaybeGetConstant(DW_AT_const_value);
           Check(value_optional.has_value()) << "Enumerator should have value";
           // TODO: support both uint64_t and int64_t, depending on
           // signedness of underlying type.
-          enumerators.emplace_back(enumerator_name,
-                                   static_cast<int64_t>(*value_optional));
+          enumerators.emplace_back(enumerator_name, *value_optional);
           break;
         }
         case DW_TAG_subprogram:
@@ -969,13 +981,17 @@ class Processor {
         case DW_TAG_subprogram:
         case DW_TAG_variable:
         case DW_TAG_call_site:
-        case DW_TAG_GNU_call_site:
-          // TODO: Do not leak local types outside this scope.
+        case DW_TAG_GNU_call_site: {
           // TODO: It would be better to not process any
           // information that is function local but there is a dangling
           // reference Clang bug.
+          //
+          // This scope will be called "unnamed function" which is a little
+          // unfortunate, but it is nevertheless similarly inaccessible.
+          const PushScopeName anonymous(scope_, "function", std::string());
           Process(child);
           break;
+        }
         case DW_TAG_imported_declaration:
         case DW_TAG_imported_module:
           // For now information there is useless for ABI monitoring, but we

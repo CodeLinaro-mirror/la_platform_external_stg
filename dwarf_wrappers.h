@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -73,6 +73,7 @@ struct Entry {
   std::optional<std::string> MaybeGetDirectString(uint32_t attribute);
   std::optional<uint64_t> MaybeGetUnsignedConstant(uint32_t attribute);
   uint64_t MustGetUnsignedConstant(uint32_t attribute);
+  std::optional<int64_t> MaybeGetConstant(uint32_t attribute);
   bool GetFlag(uint32_t attribute);
   std::optional<Entry> MaybeGetReference(uint32_t attribute);
   std::optional<Location> MaybeGetLocation(uint32_t attribute);

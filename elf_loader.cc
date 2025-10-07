@@ -479,15 +479,18 @@ ElfSymbol::CRC ElfLoader::GetElfSymbolCRC(
 
   const auto address = GetAbsoluteAddress(symbol);
   Check(address >= header.sh_addr)
-      << "CRC symbol address is below CRC section start";
+      << "CRC symbol starts before CRC section start";
 
   const size_t offset = address - header.sh_addr;
   const size_t offset_end = offset + sizeof(uint32_t);
   Check(offset_end <= data->d_size && offset_end <= header.sh_size)
-      << "CRC symbol address is above CRC section end";
+      << "CRC symbol ends after CRC section end";
 
-  return ElfSymbol::CRC{*reinterpret_cast<uint32_t*>(
-      reinterpret_cast<char*>(data->d_buf) + offset)};
+  const char* start = reinterpret_cast<char*>(data->d_buf) + offset;
+  Check(reinterpret_cast<uintptr_t>(start) % sizeof(uint32_t) == 0)
+      << "CRC symbol is misaligned";
+
+  return ElfSymbol::CRC{*reinterpret_cast<const uint32_t*>(start)};
 }
 
 std::string_view ElfLoader::GetElfSymbolNamespace(

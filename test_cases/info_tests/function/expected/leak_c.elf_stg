@@ -1,0 +1,48 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+pointer_reference {
+  id: 0x1bf96464
+  kind: POINTER
+  pointee_type_id: 0x45a5770f  # struct foo
+}
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
+}
+struct_union {
+  id: 0x45a5770f
+  kind: STRUCT
+  name: "foo"
+}
+function {
+  id: 0x9b7eba36
+  return_type_id: 0x6720d32f  # int
+  parameter_id: 0x1bf96464  # struct foo*
+}
+function {
+  id: 0x9d80e32f
+  return_type_id: 0x6720d32f  # int
+}
+elf_symbol {
+  id: 0xa58ca0b6
+  name: "bar"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x9d80e32f  # int()
+  full_name: "bar"
+}
+elf_symbol {
+  id: 0xbf8fc404
+  name: "baz"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x9b7eba36  # int(struct foo*)
+  full_name: "baz"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0xa58ca0b6  # int bar()
+  symbol_id: 0xbf8fc404  # int baz(struct foo*)
+}
