@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Siddharth Nayyar
+// Author: Giuliano Procida
 
 #include "proto_reader.h"
 
@@ -41,6 +42,7 @@
 #include "error.h"
 #include "graph.h"
 #include "hex.h"
+#include "number.h"
 #include "runtime.h"
 #include "stg.pb.h"
 
@@ -86,21 +88,24 @@ struct Transformer {
   template <typename GetKey>
   std::map<std::string, Id> Transform(GetKey,
                                       const google::protobuf::RepeatedField<uint32_t>&);
-  stg::Special::Kind Transform(Special::Kind);
-  stg::PointerReference::Kind Transform(PointerReference::Kind);
-  stg::Qualifier Transform(Qualified::Qualifier);
-  stg::Primitive::Encoding Transform(Primitive::Encoding);
-  stg::BaseClass::Inheritance Transform(BaseClass::Inheritance);
-  stg::StructUnion::Kind Transform(StructUnion::Kind);
-  stg::ElfSymbol::SymbolType Transform(ElfSymbol::SymbolType);
-  stg::ElfSymbol::Binding Transform(ElfSymbol::Binding);
-  stg::ElfSymbol::Visibility Transform(ElfSymbol::Visibility);
-  stg::Enumeration::Enumerators Transform(
+
+  static Number Transform(const google::protobuf::RepeatedField<int64_t>&);
+
+  static stg::Special::Kind Transform(Special::Kind);
+  static stg::PointerReference::Kind Transform(PointerReference::Kind);
+  static stg::Qualifier Transform(Qualified::Qualifier);
+  static stg::Primitive::Encoding Transform(Primitive::Encoding);
+  static stg::BaseClass::Inheritance Transform(BaseClass::Inheritance);
+  static stg::StructUnion::Kind Transform(StructUnion::Kind);
+  static stg::ElfSymbol::SymbolType Transform(ElfSymbol::SymbolType);
+  static stg::ElfSymbol::Binding Transform(ElfSymbol::Binding);
+  static stg::ElfSymbol::Visibility Transform(ElfSymbol::Visibility);
+  static stg::Enumeration::Enumerators Transform(
       const google::protobuf::RepeatedPtrField<Enumeration::Enumerator>&);
   template <typename STGType, typename ProtoType>
-  std::optional<STGType> Transform(bool, const ProtoType&);
+  static std::optional<STGType> Transform(bool, const ProtoType&);
   template <typename Type>
-  Type Transform(const Type&);
+  static Type Transform(const Type&);
 
   uint32_t version;
   Graph& graph;
@@ -200,10 +205,10 @@ void Transformer::AddNode(const Member& x) {
 }
 
 void Transformer::AddNode(const VariantMember& x) {
-  const auto& discr_value = x.has_discriminant_value()
-                                ? std::make_optional(x.discriminant_value())
-                                : std::nullopt;
-  AddNode<stg::VariantMember>(x.id(), x.name(), discr_value,
+  const auto discriminant_value = x.discriminant_value().empty()
+      ? std::nullopt
+      : std::make_optional(Transform(x.discriminant_value()));
+  AddNode<stg::VariantMember>(x.id(), x.name(), discriminant_value,
                               GetId(x.type_id()));
 }
 
@@ -282,6 +287,14 @@ void Transformer::AddNode(const Interface& x) {
 template <typename STGType, typename... Args>
 void Transformer::AddNode(uint32_t id, Args&&... args) {
   maker.Set<STGType>(Hex(id), Transform(args)...);
+}
+
+Number Transformer::Transform(const google::protobuf::RepeatedField<int64_t>& repeated) {
+  std::vector<uint64_t> chunks;
+  for (auto chunk : repeated) {
+    chunks.push_back(static_cast<uint64_t>(chunk));
+  }
+  return Number::FromChunks(chunks);
 }
 
 std::vector<Id> Transformer::Transform(
@@ -448,7 +461,8 @@ stg::Enumeration::Enumerators Transformer::Transform(
   stg::Enumeration::Enumerators enumerators;
   enumerators.reserve(x.size());
   for (const auto& enumerator : x) {
-    enumerators.emplace_back(enumerator.name(), enumerator.value());
+    enumerators.emplace_back(enumerator.name(),
+                             Transform(enumerator.value()));
   }
   return enumerators;
 }
@@ -482,6 +496,16 @@ void CheckFormatVersion(uint32_t version) {
 
 class ErrorSink : public google::protobuf::io::ErrorCollector {
  public:
+#if GOOGLE_PROTOBUF_VERSION >= 4022000
+  void RecordError(int line, google::protobuf::io::ColumnNumber column,
+                   std::string_view message) final {
+    Moan("error", line, column, message);
+  }
+  void RecordWarning(int line, google::protobuf::io::ColumnNumber column,
+                     std::string_view message) final {
+    Moan("warning", line, column, message);
+  }
+#else
   void AddError(int line, google::protobuf::io::ColumnNumber column,
                 const std::string& message) final {
     Moan("error", line, column, message);
@@ -490,11 +514,12 @@ class ErrorSink : public google::protobuf::io::ErrorCollector {
                   const std::string& message) final {
     Moan("warning", line, column, message);
   }
+#endif
 
  private:
   static void Moan(std::string_view which, int line,
                    google::protobuf::io::ColumnNumber column,
-                   const std::string& message) {
+                   std::string_view message) {
     Warn() << "google::protobuf::TextFormat " << which << " at line " << (line + 1)
            << " column " << (column + 1) << ": " << message;
   }

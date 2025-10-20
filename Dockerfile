@@ -18,7 +18,7 @@
 # Author: Aleksei Vetrov
 
 ARG debian_version=stable-slim
-FROM debian:${debian_version} as builder
+FROM debian:${debian_version} AS builder
 # docker build -t stg .
 RUN apt-get update && \
     apt-get install -y \

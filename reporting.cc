@@ -144,7 +144,7 @@ constexpr size_t INDENT_INCREMENT = 2;
 
 class Plain {
   // unvisited (absent) -> started (false) -> finished (true)
-  using Seen = std::unordered_map<diff::Comparison, bool, diff::HashComparison>;
+  using Seen = std::unordered_map<diff::Comparison, bool>;
 
  public:
   Plain(const Reporting& reporting, std::ostream& output)
@@ -227,7 +227,7 @@ class Flat {
   const Reporting& reporting_;
   const bool full_;
   std::ostream& output_;
-  std::unordered_set<diff::Comparison, diff::HashComparison> seen_;
+  std::unordered_set<diff::Comparison> seen_;
   std::deque<diff::Comparison> todo_;
 
   bool Print(const diff::Comparison&, bool, std::ostream&, size_t,
@@ -309,16 +309,16 @@ void Flat::Report(const diff::Comparison& comparison) {
 }
 
 size_t VizId(
-    std::unordered_map<diff::Comparison, size_t, diff::HashComparison>& ids,
+    std::unordered_map<diff::Comparison, size_t>& ids,
     const diff::Comparison& comparison) {
   return ids.insert({comparison, ids.size()}).first->second;
 }
 
 void VizPrint(
     const Reporting& reporting, const diff::Comparison& comparison,
-    std::unordered_set<diff::Comparison, diff::HashComparison>& seen,
-    std::unordered_map<diff::Comparison, size_t, diff::HashComparison>& ids,
-    std::ostream& os) {
+    std::unordered_set<diff::Comparison>& seen,
+    std::unordered_map<diff::Comparison, size_t>& ids,
+              std::ostream& os) {
   if (!seen.insert(comparison).second) {
     return;
   }
@@ -383,8 +383,8 @@ void VizPrint(
 void ReportViz(const Reporting& reporting, const diff::Comparison& comparison,
                std::ostream& output) {
   output << "digraph \"ABI diff\" {\n";
-  std::unordered_set<diff::Comparison, diff::HashComparison> seen;
-  std::unordered_map<diff::Comparison, size_t, diff::HashComparison> ids;
+  std::unordered_set<diff::Comparison> seen;
+  std::unordered_map<diff::Comparison, size_t> ids;
   VizPrint(reporting, comparison, seen, ids, output);
   output << "}\n";
 }

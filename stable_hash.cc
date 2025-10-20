@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 // Author: Siddharth Nayyar
+// Author: Giuliano Procida
 
 #include "stable_hash.h"
 
@@ -27,6 +28,7 @@
 
 #include "graph.h"
 #include "hashing.h"
+#include "number.h"
 
 namespace stg {
 
@@ -153,7 +155,7 @@ struct StableHashWorker {
       return value;
     }
 
-    auto hash_enum = [this](const std::pair<std::string, int64_t>& e) {
+    auto hash_enum = [this](const std::pair<std::string, Number>& e) {
       return hash(e.first, e.second);
     };
     return DecayHashCombine<2>(value, DecayHashCombineInReverse<8>(
@@ -188,7 +190,7 @@ struct StableHashWorker {
     return hash("interface");
   }
 
-  const Hash hash;
+  const Hash hash{};
   const Graph& graph;
   std::unordered_map<Id, HashValue>& cache;
 };

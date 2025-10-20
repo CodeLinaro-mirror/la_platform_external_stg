@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
-# Copyright 2023 Google LLC
+# Copyright 2023-2025 Google LLC
 #
 # Licensed under the Apache License v2.0 with LLVM Exceptions (the
 # "License"); you may not use this file except in compliance with the
@@ -95,6 +95,7 @@ add_library(libstg OBJECT
   graph.cc
   input.cc
   naming.cc
+  number.cc
   post_processing.cc
   proto_reader.cc
   proto_writer.cc
