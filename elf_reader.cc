@@ -299,7 +299,9 @@ class Reader {
     SymbolIndex location_and_name_to_index;
     for (size_t i = 0; i < types.symbols.size(); ++i) {
       const auto& s = types.symbols[i];
-      location_and_name_to_index[{s.location, s.linkage_name}].push_back(i);
+      for (const auto& location : s.locations) {
+        location_and_name_to_index[{location, s.linkage_name}].push_back(i);
+      }
     }
 
     std::map<std::string, Id> symbols_map;
@@ -348,7 +350,7 @@ class Reader {
                       const dwarf::Types::Symbol& rhs) {
     return lhs.scoped_name == rhs.scoped_name
         && lhs.linkage_name == rhs.linkage_name
-        && lhs.location == rhs.location
+        && lhs.locations == rhs.locations
         && unification.Unify(lhs.type_id, rhs.type_id);
   }
 

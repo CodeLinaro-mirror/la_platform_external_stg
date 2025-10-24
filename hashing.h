@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2025 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -26,6 +26,8 @@
 #include <functional>
 #include <string>
 #include <string_view>
+
+#include "number.h"
 
 namespace stg {
 
@@ -71,6 +73,10 @@ struct Hash {
   // Hash signed 64 bits by casting to unsigned 64 bits.
   constexpr HashValue operator()(int64_t x) const {
     return (*this)(static_cast<uint64_t>(x));
+  }
+
+  constexpr HashValue operator()(const Number& x) const {
+    return (*this)(x.HashValue());
   }
 
   // See https://github.com/skeeto/hash-prospector.

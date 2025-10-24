@@ -131,6 +131,7 @@ enumeration {
     enumerator {
       name: "Je"
       value: -1
+      value: 0
     }
   }
 }

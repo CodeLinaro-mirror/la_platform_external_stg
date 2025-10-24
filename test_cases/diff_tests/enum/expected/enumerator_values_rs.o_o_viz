@@ -1,0 +1,297 @@
+digraph "ABI diff" {
+  "0" [shape=rectangle, label="'interface'"]
+  "1" [label="'void enumerator_values::use_neg(enum enumerator_values::Neg8, enum enumerator_values::Neg16, enum enumerator_values::Neg32, enum enumerator_values::Neg64, enum enumerator_values::Neg128)' {_RNvCs2kD5cA2qdLz_17enumerator_values7use_neg}"]
+  "2" [label="'void(enum enumerator_values::Neg8, enum enumerator_values::Neg16, enum enumerator_values::Neg32, enum enumerator_values::Neg64, enum enumerator_values::Neg128)'"]
+  "3" [color=red, shape=rectangle, label="'enum enumerator_values::Neg8'"]
+  "3" -> "3:0"
+  "3:0" [color=red, label="enumerator 'N1' value changed from 0 to -1"]
+  "3" -> "3:1"
+  "3:1" [color=red, label="enumerator 'N2' value changed from 1 to -2"]
+  "3" -> "3:2"
+  "3:2" [color=red, label="enumerator 'N8' value changed from 2 to -8"]
+  "3" -> "3:3"
+  "3:3" [color=red, label="enumerator 'N128' value changed from 3 to -128"]
+  "3" -> "3:4"
+  "3:4" [color=red, label="enumerator 'N64' value changed from 4 to -64"]
+  "2" -> "3" [label="parameter 1"]
+  "4" [color=red, shape=rectangle, label="'enum enumerator_values::Neg16'"]
+  "4" -> "4:0"
+  "4:0" [color=red, label="enumerator 'N1' value changed from 0 to -1"]
+  "4" -> "4:1"
+  "4:1" [color=red, label="enumerator 'N2' value changed from 1 to -2"]
+  "4" -> "4:2"
+  "4:2" [color=red, label="enumerator 'N8' value changed from 2 to -8"]
+  "4" -> "4:3"
+  "4:3" [color=red, label="enumerator 'N128' value changed from 3 to -128"]
+  "4" -> "4:4"
+  "4:4" [color=red, label="enumerator 'N32768' value changed from 4 to -32768"]
+  "4" -> "4:5"
+  "4:5" [color=red, label="enumerator 'N64' value changed from 5 to -64"]
+  "4" -> "4:6"
+  "4:6" [color=red, label="enumerator 'N8192' value changed from 6 to -8192"]
+  "2" -> "4" [label="parameter 2"]
+  "5" [color=red, shape=rectangle, label="'enum enumerator_values::Neg32'"]
+  "5" -> "5:0"
+  "5:0" [color=red, label="enumerator 'N1' value changed from 0 to -1"]
+  "5" -> "5:1"
+  "5:1" [color=red, label="enumerator 'N2' value changed from 1 to -2"]
+  "5" -> "5:2"
+  "5:2" [color=red, label="enumerator 'N8' value changed from 2 to -8"]
+  "5" -> "5:3"
+  "5:3" [color=red, label="enumerator 'N128' value changed from 3 to -128"]
+  "5" -> "5:4"
+  "5:4" [color=red, label="enumerator 'N32768' value changed from 4 to -32768"]
+  "5" -> "5:5"
+  "5:5" [color=red, label="enumerator 'N2147483648' value changed from 5 to -2147483648"]
+  "5" -> "5:6"
+  "5:6" [color=red, label="enumerator 'N64' value changed from 6 to -64"]
+  "5" -> "5:7"
+  "5:7" [color=red, label="enumerator 'N8192' value changed from 7 to -8192"]
+  "5" -> "5:8"
+  "5:8" [color=red, label="enumerator 'N1048576' value changed from 8 to -1048576"]
+  "5" -> "5:9"
+  "5:9" [color=red, label="enumerator 'N134217728' value changed from 9 to -134217728"]
+  "2" -> "5" [label="parameter 3"]
+  "6" [color=red, shape=rectangle, label="'enum enumerator_values::Neg64'"]
+  "6" -> "6:0"
+  "6:0" [color=red, label="enumerator 'N1' value changed from 0 to -1"]
+  "6" -> "6:1"
+  "6:1" [color=red, label="enumerator 'N2' value changed from 1 to -2"]
+  "6" -> "6:2"
+  "6:2" [color=red, label="enumerator 'N8' value changed from 2 to -8"]
+  "6" -> "6:3"
+  "6:3" [color=red, label="enumerator 'N128' value changed from 3 to -128"]
+  "6" -> "6:4"
+  "6:4" [color=red, label="enumerator 'N32768' value changed from 4 to -32768"]
+  "6" -> "6:5"
+  "6:5" [color=red, label="enumerator 'N2147483648' value changed from 5 to -2147483648"]
+  "6" -> "6:6"
+  "6:6" [color=red, label="enumerator 'N9223372036854775808' value changed from 6 to -9223372036854775808"]
+  "6" -> "6:7"
+  "6:7" [color=red, label="enumerator 'N64' value changed from 7 to -64"]
+  "6" -> "6:8"
+  "6:8" [color=red, label="enumerator 'N8192' value changed from 8 to -8192"]
+  "6" -> "6:9"
+  "6:9" [color=red, label="enumerator 'N1048576' value changed from 9 to -1048576"]
+  "6" -> "6:10"
+  "6:10" [color=red, label="enumerator 'N134217728' value changed from 10 to -134217728"]
+  "6" -> "6:11"
+  "6:11" [color=red, label="enumerator 'N17179869184' value changed from 11 to -17179869184"]
+  "6" -> "6:12"
+  "6:12" [color=red, label="enumerator 'N2199023255552' value changed from 12 to -2199023255552"]
+  "6" -> "6:13"
+  "6:13" [color=red, label="enumerator 'N281474976710656' value changed from 13 to -281474976710656"]
+  "6" -> "6:14"
+  "6:14" [color=red, label="enumerator 'N36028797018963968' value changed from 14 to -36028797018963968"]
+  "6" -> "6:15"
+  "6:15" [color=red, label="enumerator 'N4611686018427387904' value changed from 15 to -4611686018427387904"]
+  "2" -> "6" [label="parameter 4"]
+  "7" [color=red, shape=rectangle, label="'enum enumerator_values::Neg128'"]
+  "7" -> "7:0"
+  "7:0" [color=red, label="enumerator 'N1' value changed from 0 to 340282366920938463463374607431768211455"]
+  "7" -> "7:1"
+  "7:1" [color=red, label="enumerator 'N2' value changed from 1 to 340282366920938463463374607431768211454"]
+  "7" -> "7:2"
+  "7:2" [color=red, label="enumerator 'N8' value changed from 2 to 340282366920938463463374607431768211448"]
+  "7" -> "7:3"
+  "7:3" [color=red, label="enumerator 'N128' value changed from 3 to 340282366920938463463374607431768211328"]
+  "7" -> "7:4"
+  "7:4" [color=red, label="enumerator 'N32768' value changed from 4 to 340282366920938463463374607431768178688"]
+  "7" -> "7:5"
+  "7:5" [color=red, label="enumerator 'N2147483648' value changed from 5 to 340282366920938463463374607429620727808"]
+  "7" -> "7:6"
+  "7:6" [color=red, label="enumerator 'N9223372036854775808' value changed from 6 to 340282366920938463454151235394913435648"]
+  "7" -> "7:7"
+  "7:7" [color=red, label="enumerator 'N170141183460469231731687303715884105728' value changed from 7 to 170141183460469231731687303715884105728"]
+  "7" -> "7:8"
+  "7:8" [color=red, label="enumerator 'N64' value changed from 8 to 340282366920938463463374607431768211392"]
+  "7" -> "7:9"
+  "7:9" [color=red, label="enumerator 'N8192' value changed from 9 to 340282366920938463463374607431768203264"]
+  "7" -> "7:10"
+  "7:10" [color=red, label="enumerator 'N1048576' value changed from 10 to 340282366920938463463374607431767162880"]
+  "7" -> "7:11"
+  "7:11" [color=red, label="enumerator 'N134217728' value changed from 11 to 340282366920938463463374607431633993728"]
+  "7" -> "7:12"
+  "7:12" [color=red, label="enumerator 'N17179869184' value changed from 12 to 340282366920938463463374607414588342272"]
+  "7" -> "7:13"
+  "7:13" [color=red, label="enumerator 'N2199023255552' value changed from 13 to 340282366920938463463374605232744955904"]
+  "7" -> "7:14"
+  "7:14" [color=red, label="enumerator 'N281474976710656' value changed from 14 to 340282366920938463463374325956791500800"]
+  "7" -> "7:15"
+  "7:15" [color=red, label="enumerator 'N36028797018963968' value changed from 15 to 340282366920938463463338578634749247488"]
+  "7" -> "7:16"
+  "7:16" [color=red, label="enumerator 'N4611686018427387904' value changed from 16 to 340282366920938463458762921413340823552"]
+  "7" -> "7:17"
+  "7:17" [color=red, label="enumerator 'N590295810358705651712' value changed from 17 to 340282366920938462873078797073062559744"]
+  "7" -> "7:18"
+  "7:18" [color=red, label="enumerator 'N75557863725914323419136' value changed from 18 to 340282366920938387905510881517444792320"]
+  "7" -> "7:19"
+  "7:19" [color=red, label="enumerator 'N9671406556917033397649408' value changed from 19 to 340282366920928792056817690398370562048"]
+  "7" -> "7:20"
+  "7:20" [color=red, label="enumerator 'N1237940039285380274899124224' value changed from 20 to 340282366919700523424089227156869087232"]
+  "7" -> "7:21"
+  "7:21" [color=red, label="enumerator 'N158456325028528675187087900672' value changed from 21 to 340282366762482138434845932244680310784"]
+  "7" -> "7:22"
+  "7:22" [color=red, label="enumerator 'N20282409603651670423947251286016' value changed from 22 to 340282346638528859811704183484516925440"]
+  "7" -> "7:23"
+  "7:23" [color=red, label="enumerator 'N2596148429267413814265248164610048' value changed from 23 to 340279770772509196049560342183603601408"]
+  "7" -> "7:24"
+  "7:24" [color=red, label="enumerator 'N332306998946228968225951765070086144' value changed from 24 to 339950059921992234495148655666698125312"]
+  "7" -> "7:25"
+  "7:25" [color=red, label="enumerator 'N42535295865117307932921825928971026432' value changed from 25 to 297747071055821155530452781502797185024"]
+  "2" -> "7" [label="parameter 5"]
+  "1" -> "2" [label=""]
+  "0" -> "1" [label=""]
+  "8" [label="'void enumerator_values::use_pos(enum enumerator_values::Pos8, enum enumerator_values::Pos16, enum enumerator_values::Pos32, enum enumerator_values::Pos64, enum enumerator_values::Pos128)' {_RNvCs2kD5cA2qdLz_17enumerator_values7use_pos}"]
+  "9" [label="'void(enum enumerator_values::Pos8, enum enumerator_values::Pos16, enum enumerator_values::Pos32, enum enumerator_values::Pos64, enum enumerator_values::Pos128)'"]
+  "10" [color=red, shape=rectangle, label="'enum enumerator_values::Pos8'"]
+  "10" -> "10:0"
+  "10:0" [color=red, label="enumerator 'P1' value changed from 0 to 1"]
+  "10" -> "10:1"
+  "10:1" [color=red, label="enumerator 'P3' value changed from 1 to 3"]
+  "10" -> "10:2"
+  "10:2" [color=red, label="enumerator 'P15' value changed from 2 to 15"]
+  "10" -> "10:3"
+  "10:3" [color=red, label="enumerator 'P255' value changed from 3 to 255"]
+  "10" -> "10:4"
+  "10:4" [color=red, label="enumerator 'P0' value changed from 4 to 0"]
+  "10" -> "10:5"
+  "10:5" [color=red, label="enumerator 'P127' value changed from 5 to 127"]
+  "9" -> "10" [label="parameter 1"]
+  "11" [color=red, shape=rectangle, label="'enum enumerator_values::Pos16'"]
+  "11" -> "11:0"
+  "11:0" [color=red, label="enumerator 'P1' value changed from 0 to 1"]
+  "11" -> "11:1"
+  "11:1" [color=red, label="enumerator 'P3' value changed from 1 to 3"]
+  "11" -> "11:2"
+  "11:2" [color=red, label="enumerator 'P15' value changed from 2 to 15"]
+  "11" -> "11:3"
+  "11:3" [color=red, label="enumerator 'P255' value changed from 3 to 255"]
+  "11" -> "11:4"
+  "11:4" [color=red, label="enumerator 'P65535' value changed from 4 to 65535"]
+  "11" -> "11:5"
+  "11:5" [color=red, label="enumerator 'P0' value changed from 5 to 0"]
+  "11" -> "11:6"
+  "11:6" [color=red, label="enumerator 'P127' value changed from 6 to 127"]
+  "11" -> "11:7"
+  "11:7" [color=red, label="enumerator 'P16383' value changed from 7 to 16383"]
+  "9" -> "11" [label="parameter 2"]
+  "12" [color=red, shape=rectangle, label="'enum enumerator_values::Pos32'"]
+  "12" -> "12:0"
+  "12:0" [color=red, label="enumerator 'P1' value changed from 0 to 1"]
+  "12" -> "12:1"
+  "12:1" [color=red, label="enumerator 'P3' value changed from 1 to 3"]
+  "12" -> "12:2"
+  "12:2" [color=red, label="enumerator 'P15' value changed from 2 to 15"]
+  "12" -> "12:3"
+  "12:3" [color=red, label="enumerator 'P255' value changed from 3 to 255"]
+  "12" -> "12:4"
+  "12:4" [color=red, label="enumerator 'P65535' value changed from 4 to 65535"]
+  "12" -> "12:5"
+  "12:5" [color=red, label="enumerator 'P4294967295' value changed from 5 to 4294967295"]
+  "12" -> "12:6"
+  "12:6" [color=red, label="enumerator 'P0' value changed from 6 to 0"]
+  "12" -> "12:7"
+  "12:7" [color=red, label="enumerator 'P127' value changed from 7 to 127"]
+  "12" -> "12:8"
+  "12:8" [color=red, label="enumerator 'P16383' value changed from 8 to 16383"]
+  "12" -> "12:9"
+  "12:9" [color=red, label="enumerator 'P2097151' value changed from 9 to 2097151"]
+  "12" -> "12:10"
+  "12:10" [color=red, label="enumerator 'P268435455' value changed from 10 to 268435455"]
+  "9" -> "12" [label="parameter 3"]
+  "13" [color=red, shape=rectangle, label="'enum enumerator_values::Pos64'"]
+  "13" -> "13:0"
+  "13:0" [color=red, label="enumerator 'P1' value changed from 0 to 1"]
+  "13" -> "13:1"
+  "13:1" [color=red, label="enumerator 'P3' value changed from 1 to 3"]
+  "13" -> "13:2"
+  "13:2" [color=red, label="enumerator 'P15' value changed from 2 to 15"]
+  "13" -> "13:3"
+  "13:3" [color=red, label="enumerator 'P255' value changed from 3 to 255"]
+  "13" -> "13:4"
+  "13:4" [color=red, label="enumerator 'P65535' value changed from 4 to 65535"]
+  "13" -> "13:5"
+  "13:5" [color=red, label="enumerator 'P4294967295' value changed from 5 to 4294967295"]
+  "13" -> "13:6"
+  "13:6" [color=red, label="enumerator 'P18446744073709551615' value changed from 6 to 18446744073709551615"]
+  "13" -> "13:7"
+  "13:7" [color=red, label="enumerator 'P0' value changed from 7 to 0"]
+  "13" -> "13:8"
+  "13:8" [color=red, label="enumerator 'P127' value changed from 8 to 127"]
+  "13" -> "13:9"
+  "13:9" [color=red, label="enumerator 'P16383' value changed from 9 to 16383"]
+  "13" -> "13:10"
+  "13:10" [color=red, label="enumerator 'P2097151' value changed from 10 to 2097151"]
+  "13" -> "13:11"
+  "13:11" [color=red, label="enumerator 'P268435455' value changed from 11 to 268435455"]
+  "13" -> "13:12"
+  "13:12" [color=red, label="enumerator 'P34359738367' value changed from 12 to 34359738367"]
+  "13" -> "13:13"
+  "13:13" [color=red, label="enumerator 'P4398046511103' value changed from 13 to 4398046511103"]
+  "13" -> "13:14"
+  "13:14" [color=red, label="enumerator 'P562949953421311' value changed from 14 to 562949953421311"]
+  "13" -> "13:15"
+  "13:15" [color=red, label="enumerator 'P72057594037927935' value changed from 15 to 72057594037927935"]
+  "13" -> "13:16"
+  "13:16" [color=red, label="enumerator 'P9223372036854775807' value changed from 16 to 9223372036854775807"]
+  "9" -> "13" [label="parameter 4"]
+  "14" [color=red, shape=rectangle, label="'enum enumerator_values::Pos128'"]
+  "14" -> "14:0"
+  "14:0" [color=red, label="enumerator 'P1' value changed from 0 to 1"]
+  "14" -> "14:1"
+  "14:1" [color=red, label="enumerator 'P3' value changed from 1 to 3"]
+  "14" -> "14:2"
+  "14:2" [color=red, label="enumerator 'P15' value changed from 2 to 15"]
+  "14" -> "14:3"
+  "14:3" [color=red, label="enumerator 'P255' value changed from 3 to 255"]
+  "14" -> "14:4"
+  "14:4" [color=red, label="enumerator 'P65535' value changed from 4 to 65535"]
+  "14" -> "14:5"
+  "14:5" [color=red, label="enumerator 'P4294967295' value changed from 5 to 4294967295"]
+  "14" -> "14:6"
+  "14:6" [color=red, label="enumerator 'P18446744073709551615' value changed from 6 to 18446744073709551615"]
+  "14" -> "14:7"
+  "14:7" [color=red, label="enumerator 'P340282366920938463463374607431768211455' value changed from 7 to 340282366920938463463374607431768211455"]
+  "14" -> "14:8"
+  "14:8" [color=red, label="enumerator 'P0' value changed from 8 to 0"]
+  "14" -> "14:9"
+  "14:9" [color=red, label="enumerator 'P127' value changed from 9 to 127"]
+  "14" -> "14:10"
+  "14:10" [color=red, label="enumerator 'P16383' value changed from 10 to 16383"]
+  "14" -> "14:11"
+  "14:11" [color=red, label="enumerator 'P2097151' value changed from 11 to 2097151"]
+  "14" -> "14:12"
+  "14:12" [color=red, label="enumerator 'P268435455' value changed from 12 to 268435455"]
+  "14" -> "14:13"
+  "14:13" [color=red, label="enumerator 'P34359738367' value changed from 13 to 34359738367"]
+  "14" -> "14:14"
+  "14:14" [color=red, label="enumerator 'P4398046511103' value changed from 14 to 4398046511103"]
+  "14" -> "14:15"
+  "14:15" [color=red, label="enumerator 'P562949953421311' value changed from 15 to 562949953421311"]
+  "14" -> "14:16"
+  "14:16" [color=red, label="enumerator 'P72057594037927935' value changed from 16 to 72057594037927935"]
+  "14" -> "14:17"
+  "14:17" [color=red, label="enumerator 'P9223372036854775807' value changed from 17 to 9223372036854775807"]
+  "14" -> "14:18"
+  "14:18" [color=red, label="enumerator 'P1180591620717411303423' value changed from 18 to 1180591620717411303423"]
+  "14" -> "14:19"
+  "14:19" [color=red, label="enumerator 'P151115727451828646838271' value changed from 19 to 151115727451828646838271"]
+  "14" -> "14:20"
+  "14:20" [color=red, label="enumerator 'P19342813113834066795298815' value changed from 20 to 19342813113834066795298815"]
+  "14" -> "14:21"
+  "14:21" [color=red, label="enumerator 'P2475880078570760549798248447' value changed from 21 to 2475880078570760549798248447"]
+  "14" -> "14:22"
+  "14:22" [color=red, label="enumerator 'P316912650057057350374175801343' value changed from 22 to 316912650057057350374175801343"]
+  "14" -> "14:23"
+  "14:23" [color=red, label="enumerator 'P40564819207303340847894502572031' value changed from 23 to 40564819207303340847894502572031"]
+  "14" -> "14:24"
+  "14:24" [color=red, label="enumerator 'P5192296858534827628530496329220095' value changed from 24 to 5192296858534827628530496329220095"]
+  "14" -> "14:25"
+  "14:25" [color=red, label="enumerator 'P664613997892457936451903530140172287' value changed from 25 to 664613997892457936451903530140172287"]
+  "14" -> "14:26"
+  "14:26" [color=red, label="enumerator 'P85070591730234615865843651857942052863' value changed from 26 to 85070591730234615865843651857942052863"]
+  "9" -> "14" [label="parameter 5"]
+  "8" -> "9" [label=""]
+  "0" -> "8" [label=""]
+}

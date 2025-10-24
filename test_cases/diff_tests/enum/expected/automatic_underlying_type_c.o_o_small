@@ -7,7 +7,7 @@ type 'enum B' changed
 
 type 'enum C' changed
   underlying type changed from 'long' to 'unsigned long'
-  enumerator 'Ce' value changed from -9223372036854775808 to -1
+  enumerator 'Ce' value changed from -9223372036854775808 to 18446744073709551615
 
 type 'enum D' changed
   underlying type changed from 'int' to 'unsigned int'

@@ -38,6 +38,7 @@
 #include "filter.h"
 #include "hex.h"
 #include "graph.h"
+#include "number.h"
 #include "scope.h"
 
 namespace stg {
@@ -642,7 +643,7 @@ class Processor {
   void ProcessMethod(std::vector<Id>& methods, Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     auto id = maker_.Add<Function>(std::move(subprogram.node));
-    if (subprogram.external && subprogram.location) {
+    if (subprogram.external && !subprogram.locations.empty()) {
       // Only external functions with address are useful for ABI monitoring
       // TODO: cover virtual methods
       const auto new_symbol_idx = result_.symbols.size();
@@ -650,7 +651,7 @@ class Processor {
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = subprogram.linkage_name,
-          .location = *subprogram.location,
+          .locations = subprogram.locations,
           .type_id = id});
     }
     const auto virtuality = entry.MaybeGetUnsignedConstant(DW_AT_virtuality)
@@ -748,13 +749,9 @@ class Processor {
       switch (child_tag) {
         case DW_TAG_enumerator: {
           const std::string enumerator_name = GetName(child);
-          // TODO: detect signedness of underlying type and call
-          // an appropriate method.
-          std::optional<int64_t> value_optional =
+          std::optional<Number> value_optional =
               child.MaybeGetConstant(DW_AT_const_value);
           Check(value_optional.has_value()) << "Enumerator should have value";
-          // TODO: support both uint64_t and int64_t, depending on
-          // signedness of underlying type.
           enumerators.emplace_back(enumerator_name, *value_optional);
           break;
         }
@@ -799,7 +796,8 @@ class Processor {
       auto child_tag = child.GetTag();
       switch (child_tag) {
         case DW_TAG_member: {
-          if (child.GetOffset() != discriminant_entry->GetOffset()) {
+          if (discriminant_entry == std::nullopt
+              || child.GetOffset() != discriminant_entry->GetOffset()) {
             Die() << "Encountered rogue member for variant: "
                   << EntryToString(entry);
           }
@@ -914,7 +912,7 @@ class Processor {
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, name_with_context),
           .linkage_name = GetLinkageName(version_, entry),
-          .location = *location,
+          .locations = {*location},
           .type_id = referred_type_id});
     }
   }
@@ -922,14 +920,14 @@ class Processor {
   void ProcessFunction(Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     const Id id = AddProcessedNode<Function>(entry, std::move(subprogram.node));
-    if (subprogram.external && subprogram.location) {
+    if (subprogram.external && !subprogram.locations.empty()) {
       // Only external functions with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
               new_symbol_idx, subprogram.name_with_context),
           .linkage_name = std::move(subprogram.linkage_name),
-          .location = *subprogram.location,
+          .locations = subprogram.locations,
           .type_id = id});
     }
   }
@@ -938,7 +936,7 @@ class Processor {
     Function node;
     NameWithContext name_with_context;
     std::string linkage_name;
-    std::optional<Location> location;
+    std::vector<Location> locations;
     bool external;
   };
 
@@ -1022,10 +1020,13 @@ class Processor {
       }
     }
 
+    // This includes both DW_AT_low_pc and DW_AT_ranges starts.
+    std::vector<Location> locations = entry.MaybeGetRangeStarts();
+
     return Subprogram{.node = Function(return_type_id, parameters),
                       .name_with_context = GetNameWithContext(entry),
                       .linkage_name = GetLinkageName(version_, entry),
-                      .location = entry.MaybeGetLocation(DW_AT_low_pc),
+                      .locations = std::move(locations),
                       .external = entry.GetFlag(DW_AT_external)};
   }
 
