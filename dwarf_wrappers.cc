@@ -429,7 +429,7 @@ std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
     }
   }
 
-  Die() << "Unsupported member offset expression, " << Hex(GetOffset());
+  Die() << "Unsupported member offset expression at " << Hex(GetOffset());
 }
 
 std::optional<uint64_t> Entry::MaybeGetVtableOffset() {
@@ -453,7 +453,7 @@ std::optional<uint64_t> Entry::MaybeGetVtableOffset() {
     }
   }
 
-  Die() << "Unsupported vtable offset expression, " << Hex(GetOffset());
+  Die() << "Unsupported vtable offset expression at " << Hex(GetOffset());
 }
 
 std::optional<uint64_t> Entry::MaybeGetCount() {
