@@ -429,7 +429,13 @@ std::optional<uint64_t> Entry::MaybeGetMemberByteOffset() {
     }
   }
 
-  Die() << "Unsupported member offset expression, " << Hex(GetOffset());
+  // Parse rustc trait vtable offsets. It is unclear why these aren't plain
+  // struct member offsets.
+  if (expression.length == 1 && expression[0].atom == DW_OP_plus_uconst) {
+    return expression[0].number;
+  }
+
+  Die() << "Unsupported member offset expression at " << Hex(GetOffset());
 }
 
 std::optional<uint64_t> Entry::MaybeGetVtableOffset() {
@@ -453,7 +459,7 @@ std::optional<uint64_t> Entry::MaybeGetVtableOffset() {
     }
   }
 
-  Die() << "Unsupported vtable offset expression, " << Hex(GetOffset());
+  Die() << "Unsupported vtable offset expression at " << Hex(GetOffset());
 }
 
 std::optional<uint64_t> Entry::MaybeGetCount() {
