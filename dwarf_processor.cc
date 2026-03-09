@@ -479,7 +479,7 @@ class Processor {
       if (name.starts_with(kBuiltinPrefix)) {
         return true;
       }
-      Die() << "File filter is provided, but " << name << " ("
+      Die() << "File filter is provided, but '" << name << "' ("
             << EntryToString(entry) << ") doesn't have DW_AT_decl_file";
     }
     return (*file_filter_)(*file);
@@ -885,8 +885,8 @@ class Processor {
     //     specification in one DIE" is rejected.
     if (name.scoped_name) {
       if (name.specification) {
-        Die() << "Entry has name " << *name.scoped_name
-              << " and specification " << Hex(*name.specification);
+        Die() << "Entry has name '" << *name.scoped_name
+              << "' and specification " << Hex(*name.specification);
       }
       return *name.scoped_name;
     }
