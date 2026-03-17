@@ -1,4 +1,11 @@
+function symbol changed from 'int a()' {b} to 'int b()'
+  full name changed from a to b
+
 function symbol changed from 'int a()' {c} to 'int b()' {c}
   binding changed from weak to global
+  full name changed from a to b
+
+variable symbol changed from 'int x' {y} to 'int y'
+  full name changed from x to y
 
 exit code 4
