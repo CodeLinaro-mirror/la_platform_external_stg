@@ -864,6 +864,11 @@ class Processor {
       // This allows us to fill and register scoped_name (also empty string) to
       // be used in references.
       result.unscoped_name = std::string();
+    } else if (result.unscoped_name
+               && (result.unscoped_name == "_vtable$"
+                   || result.unscoped_name == "__clang_vtable")) {
+      // Clang cannot make up its mind. Normalise these.
+      result.unscoped_name = "{vtable}";
     }
     if (result.unscoped_name) {
       result.scoped_name = scope_.name + *result.unscoped_name;
