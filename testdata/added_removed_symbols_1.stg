@@ -1,0 +1,68 @@
+version: 0x00000002
+root_id: 0x84ea5130
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  bytesize: 0x00000004
+}
+array {
+  id: 0x47af3bc1
+  number_of_elements: 10
+  element_type_id: 0xc1147dbd
+}
+member {
+  id: 0xa0d54b05
+  name: "x"
+  type_id: 0x6720d32f
+}
+member {
+  id: 0xff14276c
+  name: "y"
+  type_id: 0x6720d32f
+  offset: 32
+}
+struct_union {
+  id: 0xc1147dbd
+  kind: STRUCT
+  name: "A"
+  definition {
+    bytesize: 8
+    member_id: 0xa0d54b05
+    member_id: 0xff14276c
+  }
+}
+function {
+  id: 0x8448d7e4
+  return_type_id: 0x6720d32f
+  parameter_id: 0x6720d32f
+}
+elf_symbol {
+  id: 0xa7b0241d
+  name: "a"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x47af3bc1
+  full_name: "a"
+}
+elf_symbol {
+  id: 0x2230fb28
+  name: "c"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "c"
+}
+elf_symbol {
+  id: 0x213764e1
+  name: "g"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x8448d7e4
+  full_name: "g"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0xa7b0241d
+  symbol_id: 0x2230fb28
+  symbol_id: 0x213764e1
+}
