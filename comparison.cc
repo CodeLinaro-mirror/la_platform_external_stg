@@ -910,6 +910,7 @@ struct CompareWorker {
     }
     result.MaybeAddNodeDiff("namespace", x1.ns, x2.ns);
 
+    result.MaybeAddNodeDiff("full name", x1.full_name, x2.full_name);
     if (x1.type_id && x2.type_id) {
       result.MaybeAddEdgeDiff("", (*this)(*x1.type_id, *x2.type_id));
     } else if (x1.type_id) {
