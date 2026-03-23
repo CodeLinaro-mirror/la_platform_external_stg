@@ -15,7 +15,7 @@ stg
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...
   [{-o|--output} {filename|-}] ...
   [-A|--annotate]
-implicit defaults: --abi
+implicit defaults: --elf
 filter syntax:
   <filter>   ::= <term>          |  <expression> '|' <term>
   <term>     ::= <factor>        |  <term> '&' <factor>

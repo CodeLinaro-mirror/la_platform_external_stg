@@ -130,7 +130,7 @@ int main(int argc, char* argv[]) {
   std::unique_ptr<stg::Filter> opt_file_filter;
   std::unique_ptr<stg::Filter> opt_symbol_filter;
   stg::ReadOptions opt_read_options;
-  stg::InputFormat opt_input_format = stg::InputFormat::ABI;
+  stg::InputFormat opt_input_format = stg::InputFormat::ELF;
   std::vector<std::pair<stg::InputFormat, const char*>> inputs;
   std::vector<const char*> outputs;
   bool opt_annotate = false;
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] [file] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
               << "  [-A|--annotate]\n"
-              << "implicit defaults: --abi\n";
+              << "implicit defaults: --elf\n";
     stg::FilterUsage(std::cerr);
     return 1;
   };
