@@ -479,7 +479,7 @@ class Processor {
       if (name.starts_with(kBuiltinPrefix)) {
         return true;
       }
-      Die() << "File filter is provided, but " << name << " ("
+      Die() << "File filter is provided, but '" << name << "' ("
             << EntryToString(entry) << ") doesn't have DW_AT_decl_file";
     }
     return (*file_filter_)(*file);
@@ -864,6 +864,11 @@ class Processor {
       // This allows us to fill and register scoped_name (also empty string) to
       // be used in references.
       result.unscoped_name = std::string();
+    } else if (result.unscoped_name
+               && (result.unscoped_name == "_vtable$"
+                   || result.unscoped_name == "__clang_vtable")) {
+      // Clang cannot make up its mind. Normalise these.
+      result.unscoped_name = "{vtable}";
     }
     if (result.unscoped_name) {
       result.scoped_name = scope_.name + *result.unscoped_name;
@@ -885,8 +890,8 @@ class Processor {
     //     specification in one DIE" is rejected.
     if (name.scoped_name) {
       if (name.specification) {
-        Die() << "Entry has name " << *name.scoped_name
-              << " and specification " << Hex(*name.specification);
+        Die() << "Entry has name '" << *name.scoped_name
+              << "' and specification " << Hex(*name.specification);
       }
       return *name.scoped_name;
     }
@@ -1085,7 +1090,6 @@ Types Process(Dwarf* dwarf, bool is_little_endian_binary,
 
   const Id void_id = graph.Add<Special>(Special::Kind::VOID);
   const Id variadic_id = graph.Add<Special>(Special::Kind::VARIADIC);
-  // TODO: Scope Processor to compilation units?
   Processor processor(graph, void_id, variadic_id, is_little_endian_binary,
                       file_filter, result);
   for (auto& compilation_unit : GetCompilationUnits(*dwarf)) {

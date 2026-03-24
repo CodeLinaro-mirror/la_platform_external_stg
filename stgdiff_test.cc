@@ -37,9 +37,7 @@ namespace {
 
 struct IgnoreTestCase {
   const std::string name;
-  const InputFormat format0;
   const std::string file0;
-  const InputFormat format1;
   const std::string file1;
   const diff::Ignore ignore;
   const std::string expected_output;
@@ -50,9 +48,8 @@ std::string filename_to_path(const std::string& f) {
   return std::filesystem::path("testdata") / f;
 }
 
-Id Read(Runtime& runtime, Graph& graph, InputFormat format,
-        const std::string& input) {
-  return Read(runtime, graph, format, filename_to_path(input).c_str(),
+Id Read(Runtime& runtime, Graph& graph, const std::string& input) {
+  return Read(runtime, graph, InputFormat::STG, filename_to_path(input).c_str(),
               ReadOptions(), nullptr);
 }
 
@@ -60,180 +57,140 @@ TEST_CASE("ignore") {
   const auto test = GENERATE(
       IgnoreTestCase(
           {"symbol type presence change",
-           InputFormat::ABI,
-           "symbol_type_presence_0.xml",
-           InputFormat::ABI,
-           "symbol_type_presence_1.xml",
+           "symbol_type_presence_0.stg",
+           "symbol_type_presence_1.stg",
            diff::Ignore(),
            "symbol_type_presence_small_diff",
            false}),
       IgnoreTestCase(
           {"symbol type presence change pruned",
-           InputFormat::ABI,
-           "symbol_type_presence_0.xml",
-           InputFormat::ABI,
-           "symbol_type_presence_1.xml",
+           "symbol_type_presence_0.stg",
+           "symbol_type_presence_1.stg",
            diff::Ignore(diff::Ignore::SYMBOL_TYPE_PRESENCE),
            "empty",
            true}),
       IgnoreTestCase(
           {"type declaration status change",
-           InputFormat::ABI,
-           "type_declaration_status_0.xml",
-           InputFormat::ABI,
-           "type_declaration_status_1.xml",
+           "type_declaration_status_0.stg",
+           "type_declaration_status_1.stg",
            diff::Ignore(),
            "type_declaration_status_small_diff",
            false}),
       IgnoreTestCase(
           {"type declaration status change pruned",
-           InputFormat::ABI,
-           "type_declaration_status_0.xml",
-           InputFormat::ABI,
-           "type_declaration_status_1.xml",
+           "type_declaration_status_0.stg",
+           "type_declaration_status_1.stg",
            diff::Ignore(diff::Ignore::TYPE_DECLARATION_STATUS),
            "empty",
            true}),
       IgnoreTestCase(
           {"primitive type encoding",
-           InputFormat::STG,
            "primitive_type_encoding_0.stg",
-           InputFormat::STG,
            "primitive_type_encoding_1.stg",
            diff::Ignore(),
            "primitive_type_encoding_small_diff",
            false}),
       IgnoreTestCase(
           {"primitive type encoding ignored",
-           InputFormat::STG,
            "primitive_type_encoding_0.stg",
-           InputFormat::STG,
            "primitive_type_encoding_1.stg",
            diff::Ignore(diff::Ignore::PRIMITIVE_TYPE_ENCODING),
            "empty",
            true}),
       IgnoreTestCase(
           {"member size",
-           InputFormat::STG,
            "member_size_0.stg",
-           InputFormat::STG,
            "member_size_1.stg",
            diff::Ignore(),
            "member_size_small_diff",
            false}),
       IgnoreTestCase(
           {"member size ignored",
-           InputFormat::STG,
            "member_size_0.stg",
-           InputFormat::STG,
            "member_size_1.stg",
            diff::Ignore(diff::Ignore::MEMBER_SIZE),
            "empty",
            true}),
       IgnoreTestCase(
           {"enum underlying type",
-           InputFormat::STG,
            "enum_underlying_type_0.stg",
-           InputFormat::STG,
            "enum_underlying_type_1.stg",
            diff::Ignore(),
            "enum_underlying_type_small_diff",
            false}),
       IgnoreTestCase(
           {"enum underlying type ignored",
-           InputFormat::STG,
            "enum_underlying_type_0.stg",
-           InputFormat::STG,
            "enum_underlying_type_1.stg",
            diff::Ignore(diff::Ignore::ENUM_UNDERLYING_TYPE),
            "empty",
            true}),
       IgnoreTestCase(
           {"qualifier",
-           InputFormat::STG,
            "qualifier_0.stg",
-           InputFormat::STG,
            "qualifier_1.stg",
            diff::Ignore(),
            "qualifier_small_diff",
            false}),
       IgnoreTestCase(
           {"qualifier ignored",
-           InputFormat::STG,
            "qualifier_0.stg",
-           InputFormat::STG,
            "qualifier_1.stg",
            diff::Ignore(diff::Ignore::QUALIFIER),
            "empty",
            true}),
       IgnoreTestCase(
           {"CRC change",
-           InputFormat::STG,
            "crc_change_0.stg",
-           InputFormat::STG,
            "crc_change_1.stg",
            diff::Ignore(),
            "crc_change_small_diff",
            false}),
       IgnoreTestCase(
           {"CRC change ignored",
-           InputFormat::STG,
            "crc_change_0.stg",
-           InputFormat::STG,
            "crc_change_1.stg",
            diff::Ignore(diff::Ignore::SYMBOL_CRC),
            "empty",
            true}),
       IgnoreTestCase(
           {"interface addition",
-           InputFormat::STG,
            "interface_addition_0.stg",
-           InputFormat::STG,
            "interface_addition_1.stg",
            diff::Ignore(),
            "interface_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"interface addition ignored",
-           InputFormat::STG,
            "interface_addition_0.stg",
-           InputFormat::STG,
            "interface_addition_1.stg",
            diff::Ignore(diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
           {"type addition",
-           InputFormat::STG,
            "type_addition_0.stg",
-           InputFormat::STG,
            "type_addition_1.stg",
            diff::Ignore(),
            "type_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"type addition ignored",
-           InputFormat::STG,
            "type_addition_0.stg",
-           InputFormat::STG,
            "type_addition_1.stg",
            diff::Ignore(diff::Ignore::INTERFACE_ADDITION),
            "empty",
            true}),
       IgnoreTestCase(
           {"type definition addition",
-           InputFormat::STG,
            "type_addition_1.stg",
-           InputFormat::STG,
            "type_addition_2.stg",
            diff::Ignore(),
            "type_definition_addition_small_diff",
            false}),
       IgnoreTestCase(
           {"type definition addition ignored",
-           InputFormat::STG,
            "type_addition_1.stg",
-           InputFormat::STG,
            "type_addition_2.stg",
            diff::Ignore(diff::Ignore::TYPE_DEFINITION_ADDITION),
            "empty",
@@ -246,8 +203,8 @@ TEST_CASE("ignore") {
 
     // Read inputs.
     Graph graph;
-    const Id id0 = Read(runtime, graph, test.format0, test.file0);
-    const Id id1 = Read(runtime, graph, test.format1, test.file1);
+    const Id id0 = Read(runtime, graph, test.file0);
+    const Id id1 = Read(runtime, graph, test.file1);
 
     // Compute differences.
     stg::diff::Outcomes outcomes;
@@ -276,7 +233,6 @@ TEST_CASE("ignore") {
 
 struct ShortReportTestCase {
   const std::string name;
-  InputFormat format;
   const std::string file0;
   const std::string file1;
   const std::string expected_output;
@@ -285,26 +241,22 @@ struct ShortReportTestCase {
 TEST_CASE("short report") {
   const auto test = GENERATE(
       ShortReportTestCase(
-          {"crc changes", InputFormat::ABI, "crc_0.xml", "crc_1.xml",
-           "crc_changes_short_diff"}),
+          {"crc changes", "crc_0.stg", "crc_1.stg", "crc_changes_short_diff"}),
       ShortReportTestCase(
-          {"only crc changes", InputFormat::ABI, "crc_only_0.xml",
-           "crc_only_1.xml", "crc_only_changes_short_diff"}),
+          {"only crc changes", "crc_only_0.stg", "crc_only_1.stg",
+           "crc_only_changes_short_diff"}),
       ShortReportTestCase(
-          {"offset changes", InputFormat::ABI, "offset_0.xml",
-           "offset_1.xml", "offset_changes_short_diff"}),
+          {"offset changes", "offset_0.stg", "offset_1.stg",
+           "offset_changes_short_diff"}),
       ShortReportTestCase(
-          {"symbols added and removed", InputFormat::ABI,
-           "added_removed_symbols_0.xml", "added_removed_symbols_1.xml",
-           "added_removed_symbols_short_diff"}),
+          {"symbols added and removed", "added_removed_symbols_0.stg",
+           "added_removed_symbols_1.stg", "added_removed_symbols_short_diff"}),
       ShortReportTestCase(
-          {"symbols added and removed only", InputFormat::ABI,
-           "added_removed_symbols_only_0.xml",
-           "added_removed_symbols_only_1.xml",
+          {"symbols added and removed only", "added_removed_symbols_only_0.stg",
+           "added_removed_symbols_only_1.stg",
            "added_removed_symbols_only_short_diff"}),
       ShortReportTestCase(
-          {"enumerators added and removed", stg::InputFormat::STG,
-           "added_removed_enumerators_0.stg",
+          {"enumerators added and removed", "added_removed_enumerators_0.stg",
            "added_removed_enumerators_1.stg",
            "added_removed_enumerators_short_diff"}));
 
@@ -314,8 +266,8 @@ TEST_CASE("short report") {
 
     // Read inputs.
     Graph graph;
-    const Id id0 = Read(runtime, graph, test.format, test.file0);
-    const Id id1 = Read(runtime, graph, test.format, test.file1);
+    const Id id0 = Read(runtime, graph, test.file0);
+    const Id id1 = Read(runtime, graph, test.file1);
 
     // Compute differences.
     stg::diff::Outcomes outcomes;
@@ -348,8 +300,8 @@ TEST_CASE("fidelity diff") {
 
   // Read inputs.
   Graph graph;
-  const Id id0 = Read(runtime, graph, InputFormat::STG, "fidelity_diff_0.stg");
-  const Id id1 = Read(runtime, graph, InputFormat::STG, "fidelity_diff_1.stg");
+  const Id id0 = Read(runtime, graph, "fidelity_diff_0.stg");
+  const Id id1 = Read(runtime, graph, "fidelity_diff_1.stg");
 
   // Compute fidelity diff.
   auto fidelity_diff = GetFidelityTransitions(graph, id0, id1);
