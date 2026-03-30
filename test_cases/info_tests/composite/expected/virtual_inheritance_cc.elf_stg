@@ -198,7 +198,7 @@ elf_symbol {
   symbol_type: OBJECT
   binding: WEAK
   type_id: 0x18bd6530  # void*
-  full_name: "NonToVirtual::_vtable$"
+  full_name: "NonToVirtual::{vtable}"
 }
 elf_symbol {
   id: 0x486f617d
@@ -228,7 +228,7 @@ interface {
   symbol_id: 0x19ce5ac1  # _ZTS1B
   symbol_id: 0xbc82394c  # _ZTS4Base
   symbol_id: 0xd4bd55f3  # _ZTT12NonToVirtual
-  symbol_id: 0xdebc2088  # void* NonToVirtual::_vtable$
+  symbol_id: 0xdebc2088  # void* NonToVirtual::{vtable}
   symbol_id: 0x486f617d  # struct NonToVirtual non_to_virtual
   symbol_id: 0x2d368ead  # struct VirtualToNon virtual_to_non
 }
