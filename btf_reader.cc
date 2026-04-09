@@ -350,6 +350,14 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       unification_.Union(GetId(btf_index), GetId(t->type));
       break;
     }
+    case BTF_KIND_DECL_TAG: {
+      // DECL_TAGs are used to attach metadata to declarations.
+      //
+      // We can just ignore them as they are root nodes which are not relevant
+      // for the ABI.
+      memory.Pull<struct btf_decl_tag>();
+      break;
+    }
     case BTF_KIND_ARRAY: {
       const auto* array = memory.Pull<struct btf_array>();
       Set<Array>(btf_index, array->nelems, GetId(array->type));
