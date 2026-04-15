@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
   stg::ReadOptions opt_read_options;
   std::optional<const char*> opt_fidelity = std::nullopt;
   stg::diff::Ignore opt_ignore;
-  stg::InputFormat opt_input_format = stg::InputFormat::ABI;
+  stg::InputFormat opt_input_format = stg::InputFormat::STG;
   stg::reporting::OutputFormat opt_output_format =
       stg::reporting::OutputFormat::SMALL;
   Inputs inputs;
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
               << "  [{-f|--format} <output-format>] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
               << "  [{-F|--fidelity} {filename|-}]\n"
-              << "implicit defaults: --abi --format small\n"
+              << "implicit defaults: --stg --format small\n"
               << "--exact (node equality) cannot be combined with --output\n"
               << stg::reporting::OutputFormatUsage()
               << stg::diff::IgnoreUsage();

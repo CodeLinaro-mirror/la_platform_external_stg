@@ -102,7 +102,7 @@ elf_symbol {
   is_defined: true
   symbol_type: OBJECT
   type_id: 0x18bd6530  # void*
-  full_name: "Foo::_vtable$"
+  full_name: "Foo::{vtable}"
 }
 elf_symbol {
   id: 0x06f8338c
@@ -118,6 +118,6 @@ interface {
   symbol_id: 0x39ee62e8  # int Foo::baz(struct Foo*)
   symbol_id: 0x263987d0  # _ZTI3Foo
   symbol_id: 0x264c5a0d  # _ZTS3Foo
-  symbol_id: 0x9e36cb56  # void* Foo::_vtable$
+  symbol_id: 0x9e36cb56  # void* Foo::{vtable}
   symbol_id: 0x06f8338c  # struct Foo foo
 }

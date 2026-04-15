@@ -326,8 +326,8 @@ class Reader {
       }
     }
 
-    const Id root = graph_.Add<Interface>(
-        std::move(symbols_map), std::move(types_map));
+    const Id root =
+        graph_.Add<Interface>(std::move(symbols_map), std::move(types_map));
 
     // Use all named types and DWARF declarations as roots for type resolution.
     std::vector<Id> roots;
@@ -345,30 +345,28 @@ class Reader {
     return unification.Find(root);
   }
 
-  static bool IsEqual(Unification& unification,
-                      const dwarf::Types::Symbol& lhs,
+  static bool IsEqual(Unification& unification, const dwarf::Types::Symbol& lhs,
                       const dwarf::Types::Symbol& rhs) {
     return lhs.scoped_name == rhs.scoped_name
-        && lhs.linkage_name == rhs.linkage_name
-        && lhs.locations == rhs.locations
-        && unification.Unify(lhs.type_id, rhs.type_id);
+           && lhs.linkage_name == rhs.linkage_name
+           && lhs.locations == rhs.locations
+           && unification.Unify(lhs.type_id, rhs.type_id);
   }
 
-  static ElfSymbol SymbolTableEntryToElfSymbol(
-      const CRCValuesMap& crc_values, const NamespacesMap& namespaces,
-      const SymbolTableEntry& symbol) {
-    return {
-        /* symbol_name = */ std::string(symbol.name),
-        /* version_info = */ std::nullopt,
-        /* is_defined = */
-        symbol.value_type != SymbolTableEntry::ValueType::UNDEFINED,
-        /* symbol_type = */ ConvertSymbolType(symbol.symbol_type),
-        /* binding = */ symbol.binding,
-        /* visibility = */ symbol.visibility,
-        /* crc = */ MaybeGet(crc_values, std::string(symbol.name)),
-        /* ns = */ MaybeGet(namespaces, std::string(symbol.name)),
-        /* type_id = */ std::nullopt,
-        /* full_name = */ std::nullopt};
+  static ElfSymbol SymbolTableEntryToElfSymbol(const CRCValuesMap& crc_values,
+                                               const NamespacesMap& namespaces,
+                                               const SymbolTableEntry& symbol) {
+    return {/* symbol_name = */ std::string(symbol.name),
+            /* version_info = */ std::nullopt,
+            /* is_defined = */
+            symbol.value_type != SymbolTableEntry::ValueType::UNDEFINED,
+            /* symbol_type = */ ConvertSymbolType(symbol.symbol_type),
+            /* binding = */ symbol.binding,
+            /* visibility = */ symbol.visibility,
+            /* crc = */ MaybeGet(crc_values, std::string(symbol.name)),
+            /* ns = */ MaybeGet(namespaces, std::string(symbol.name)),
+            /* type_id = */ std::nullopt,
+            /* full_name = */ std::nullopt};
   }
 
   static void MaybeAddTypeInfo(
@@ -482,8 +480,8 @@ void Reader::GetUserspaceSymbols(
 Id Reader::Read() {
   const auto all_symbols = elf_.GetElfSymbols();
   const auto get_symbols = elf_.IsLinuxKernelBinary()
-                           ? &Reader::GetLinuxKernelSymbols
-                           : &Reader::GetUserspaceSymbols;
+                               ? &Reader::GetLinuxKernelSymbols
+                               : &Reader::GetUserspaceSymbols;
   std::vector<std::pair<ElfSymbol, dwarf::Location>> symbols;
   symbols.reserve(all_symbols.size());
   (this->*get_symbols)(all_symbols, symbols);
