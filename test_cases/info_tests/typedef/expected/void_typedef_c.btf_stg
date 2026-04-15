@@ -23,6 +23,7 @@ elf_symbol {
   name: "foo"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xd6101c84  # nil*()
 }
 interface {

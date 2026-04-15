@@ -94,6 +94,7 @@ elf_symbol {
   name: "register_ops6"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x8c4b85b9  # int(struct containing)
 }
 elf_symbol {
@@ -101,6 +102,7 @@ elf_symbol {
   name: "register_ops7"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9b5634e3  # int(struct containing*)
 }
 elf_symbol {
@@ -108,6 +110,7 @@ elf_symbol {
   name: "register_ops8"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xa5d8fd10  # int(struct referring)
 }
 elf_symbol {
@@ -115,6 +118,7 @@ elf_symbol {
   name: "register_ops9"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9132eac9  # int(struct referring*)
 }
 interface {

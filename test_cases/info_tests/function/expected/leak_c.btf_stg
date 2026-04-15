@@ -39,6 +39,7 @@ elf_symbol {
   name: "bar"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 elf_symbol {
@@ -46,6 +47,7 @@ elf_symbol {
   name: "baz"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x94ac18a9  # int(struct foo*)
 }
 interface {

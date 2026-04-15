@@ -13,6 +13,7 @@ elf_symbol {
   name: "x"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x10985193  # void()
 }
 interface {

@@ -39,6 +39,7 @@ elf_symbol {
   name: "getEnum"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x97c8da2d  # enum Foo(enum Foo)
 }
 interface {

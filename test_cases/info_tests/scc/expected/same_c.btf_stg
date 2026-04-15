@@ -42,6 +42,7 @@ elf_symbol {
   name: "loop"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9710c531  # int(struct M*)
 }
 interface {

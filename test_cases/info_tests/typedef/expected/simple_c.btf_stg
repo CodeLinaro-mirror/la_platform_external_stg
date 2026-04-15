@@ -46,6 +46,7 @@ elf_symbol {
   name: "id1"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x8903ec25  # long(struct foo)
 }
 elf_symbol {
@@ -53,6 +54,7 @@ elf_symbol {
   name: "id2"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xa0bc035e  # long(large)
 }
 interface {

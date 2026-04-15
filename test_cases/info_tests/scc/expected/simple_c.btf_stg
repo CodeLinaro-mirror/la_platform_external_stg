@@ -68,6 +68,7 @@ elf_symbol {
   name: "fun"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xa56992b1  # int(struct N, struct N*)
 }
 interface {

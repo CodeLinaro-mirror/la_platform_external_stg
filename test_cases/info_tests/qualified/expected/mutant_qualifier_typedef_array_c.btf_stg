@@ -211,6 +211,7 @@ elf_symbol {
   name: "fun"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x1d6b8045  # void(struct S*)
 }
 interface {

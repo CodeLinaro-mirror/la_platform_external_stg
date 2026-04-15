@@ -413,11 +413,30 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       break;
     }
     case BTF_KIND_FUNC: {
+      bool is_defined;
+      ElfSymbol::Binding binding;
+
+      switch (vlen) {
+        case BTF_FUNC_STATIC:
+          is_defined = true;
+          binding = ElfSymbol::Binding::LOCAL;
+          break;
+        case BTF_FUNC_GLOBAL:
+          is_defined = true;
+          binding = ElfSymbol::Binding::GLOBAL;
+          break;
+        case BTF_FUNC_EXTERN:
+          is_defined = false;
+          binding = ElfSymbol::Binding::GLOBAL;
+          break;
+        default:
+          Die() << "unknown BTF function linkage: " << static_cast<int>(vlen);
+      }
+
       const auto name = GetName(t->name_off);
-      // TODO: map linkage (vlen) to symbol properties
-      Set<ElfSymbol>(btf_index, name, std::nullopt, true,
+      Set<ElfSymbol>(btf_index, name, std::nullopt, is_defined,
                      ElfSymbol::SymbolType::FUNCTION,
-                     ElfSymbol::Binding::GLOBAL,
+                     binding,
                      ElfSymbol::Visibility::DEFAULT,
                      std::nullopt,
                      std::nullopt,
@@ -435,14 +454,32 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       break;
     }
     case BTF_KIND_VAR: {
-      // NOTE: global variables are not yet emitted by pahole -J
       const auto* variable = memory.Pull<struct btf_var>();
+      bool is_defined;
+      ElfSymbol::Binding binding;
+
+      switch (variable->linkage) {
+        case BTF_VAR_STATIC:
+          is_defined = true;
+          binding = ElfSymbol::Binding::LOCAL;
+          break;
+        case BTF_VAR_GLOBAL_ALLOCATED:
+          is_defined = true;
+          binding = ElfSymbol::Binding::GLOBAL;
+          break;
+        case BTF_VAR_GLOBAL_EXTERN:
+          is_defined = false;
+          binding = ElfSymbol::Binding::GLOBAL;
+          break;
+        default:
+          Die() << "unknown BTF variable linkage: "
+                << static_cast<int>(variable->linkage);
+      }
+
       const auto name = GetName(t->name_off);
-      // TODO: map variable->linkage to symbol properties
-      (void) variable;
-      Set<ElfSymbol>(btf_index, name, std::nullopt, true,
+      Set<ElfSymbol>(btf_index, name, std::nullopt, is_defined,
                      ElfSymbol::SymbolType::OBJECT,
-                     ElfSymbol::Binding::GLOBAL,
+                     binding,
                      ElfSymbol::Visibility::DEFAULT,
                      std::nullopt,
                      std::nullopt,
