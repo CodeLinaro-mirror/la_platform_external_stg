@@ -1,0 +1,9 @@
+digraph "ABI diff" {
+  "0" [shape=rectangle, label="'interface'"]
+  "1" [label="'int x[6]' → 'int x[12]'"]
+  "2" [color=red, label="'int[6]' → 'int[12]'"]
+  "2" -> "2:0"
+  "2:0" [color=red, label="number of elements changed from 6 to 12"]
+  "1" -> "2" [label=""]
+  "0" -> "1" [label=""]
+}

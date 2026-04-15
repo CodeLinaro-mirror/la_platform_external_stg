@@ -1,5 +1,40 @@
 version: 0x00000002
 root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x2b903cc5
+  name: "enum-underlying-unsigned-32"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+enumeration {
+  id: 0x52d563df
+  definition {
+    underlying_type_id: 0x2b903cc5  # enum-underlying-unsigned-32
+    enumerator {
+      name: "FOO_ZERO"
+    }
+    enumerator {
+      name: "FOO_ONE"
+      value: 1
+    }
+    enumerator {
+      name: "FOO_TWO"
+      value: 2
+    }
+    enumerator {
+      name: "FOO_THREE"
+      value: 3
+    }
+  }
+}
+elf_symbol {
+  id: 0x06f8338c
+  name: "foo"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x52d563df  # enum { FOO_ZERO = 0, FOO_ONE = 1, FOO_TWO = 2, FOO_THREE = 3, }
+}
 interface {
   id: 0x84ea5130
+  symbol_id: 0x06f8338c  # enum { FOO_ZERO = 0, FOO_ONE = 1, FOO_TWO = 2, FOO_THREE = 3, } foo
 }
