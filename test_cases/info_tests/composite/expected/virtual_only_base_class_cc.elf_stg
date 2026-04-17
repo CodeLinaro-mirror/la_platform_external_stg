@@ -195,7 +195,7 @@ elf_symbol {
   is_defined: true
   symbol_type: OBJECT
   type_id: 0x18bd6530  # void*
-  full_name: "Y::_vtable$"
+  full_name: "Y::{vtable}"
 }
 interface {
   id: 0x84ea5130
@@ -207,5 +207,5 @@ interface {
   symbol_id: 0x8f2ed63c  # void Y::Y(struct Y*)
   symbol_id: 0x62dbf9a8  # _ZTI1Y
   symbol_id: 0x68f7d82f  # _ZTS1Y
-  symbol_id: 0x4df3aa88  # void* Y::_vtable$
+  symbol_id: 0x4df3aa88  # void* Y::{vtable}
 }
