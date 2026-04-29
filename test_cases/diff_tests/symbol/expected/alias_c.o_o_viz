@@ -1,7 +1,17 @@
 digraph "ABI diff" {
   "0" [shape=rectangle, label="'interface'"]
-  "1" [color=red, label="'int a()' {c} → 'int b()' {c}"]
+  "1" [color=red, label="'int a()' {b} → 'int b()'"]
   "1" -> "1:0"
-  "1:0" [color=red, label="binding changed from weak to global"]
+  "1:0" [color=red, label="full name changed from a to b"]
   "0" -> "1" [label=""]
+  "2" [color=red, label="'int a()' {c} → 'int b()' {c}"]
+  "2" -> "2:0"
+  "2:0" [color=red, label="binding changed from weak to global"]
+  "2" -> "2:1"
+  "2:1" [color=red, label="full name changed from a to b"]
+  "0" -> "2" [label=""]
+  "3" [color=red, label="'int x' {y} → 'int y'"]
+  "3" -> "3:0"
+  "3:0" [color=red, label="full name changed from x to y"]
+  "0" -> "3" [label=""]
 }

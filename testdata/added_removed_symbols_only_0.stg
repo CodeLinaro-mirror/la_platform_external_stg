@@ -1,0 +1,58 @@
+version: 0x00000002
+root_id: 0x84ea5130
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  bytesize: 0x00000004
+}
+elf_symbol {
+  id: 0xa7b0c0b4
+  name: "a"
+  version_info {
+    name: "version"
+  }
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "a"
+}
+elf_symbol {
+  id: 0xe371117a
+  name: "b"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "b"
+}
+elf_symbol {
+  id: 0x2230fb28
+  name: "c"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "c"
+}
+elf_symbol {
+  id: 0x63f6f9b1
+  name: "d"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "d"
+}
+elf_symbol {
+  id: 0xa2b65a7e
+  name: "e"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f
+  full_name: "e"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0xa7b0c0b4
+  symbol_id: 0xe371117a
+  symbol_id: 0x2230fb28
+  symbol_id: 0x63f6f9b1
+  symbol_id: 0xa2b65a7e
+}
