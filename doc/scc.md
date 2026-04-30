@@ -121,7 +121,7 @@ Node lifecycle:
 3.  not open + visited (closed)
 
 This scheme also requires separate `is_open` and `really_open` operations as
-nodes musn't be reopened (-simplicity, -efficiency). It does allow the user to
+nodes mustn't be reopened (-simplicity, -efficiency). It does allow the user to
 mark nodes as visited any time between open and close (-simplicity, +power).
 
 ```c++

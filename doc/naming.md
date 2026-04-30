@@ -1,6 +1,6 @@
 # C Type Names
 
-This is implementated in `naming.{h,cc}`.
+This is implemented in `naming.{h,cc}`.
 
 STG does not contain full type names for every type node in the graph. In order
 to meaningfully describe type changes, STG needs to be able to render C and C++
@@ -178,7 +178,7 @@ in typical output, this is a big win.
 
 NOTE: C type qualifiers are a significant extra complication and are omitted
 from this sketch. They must appear to the left or right of (the left part of) a
-type name. Which side can be determined by the current precendence.
+type name. Which side can be determined by the current precedence.
 
 NOTE: Whitespace can be emitted sparingly as specific side / precedence contexts
 can imply the impossibility of inadvertently joining two words.

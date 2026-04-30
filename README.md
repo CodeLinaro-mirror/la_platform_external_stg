@@ -12,7 +12,7 @@ The ABI diff tool, `stgdiff`, supports multiple reporting options.
 STG has a versioned native file format. Older formats can be read and
 rewritten as the latest.
 
-NOTE: STG is under active developement. Tool arguments and behaviour are
+NOTE: STG is under active development. Tool arguments and behaviour are
 subject to change.
 
 ## Getting STG
@@ -38,7 +38,7 @@ Instructions are included for local and Docker builds.
 ### Dependencies
 
 STG is written in C++20. It is known to compile with GCC 11, Clang 15 or
-later versions. Mininum requirements for a local build are:
+later versions. Minimum requirements for a local build are:
 
 | *Dependency*  | *Debian*          | *RedHat*          | *Version* |
 | ------------- | ----------------- | ----------------- | --------- |
