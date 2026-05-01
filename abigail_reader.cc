@@ -770,7 +770,7 @@ void Tidy(xmlNodePtr root) {
   RemoveDuplicateMembers(root);
 
   // Eliminate complete duplicates and extra fragments of types.
-  // Report conflicting duplicate defintions.
+  // Report conflicting duplicate definitions.
   // Record whether there are conflicting duplicate definitions.
   HandleDuplicateTypes(root);
 }

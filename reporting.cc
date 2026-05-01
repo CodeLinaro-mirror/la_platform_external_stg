@@ -215,7 +215,7 @@ void Plain::Report(const diff::Comparison& comparison) {
 // nodes that can themselves hold diffs, queuing such nodes for subsequent
 // printing. Optionally, avoid printing "uninteresting" nodes - those that have
 // no diff and no path to a diff that does not pass through a node that can hold
-// diffs. Return whether the diff node's tree was intrinisically interesting.
+// diffs. Return whether the diff node's tree was intrinsically interesting.
 class Flat {
  public:
   Flat(const Reporting& reporting, bool full, std::ostream& output)
