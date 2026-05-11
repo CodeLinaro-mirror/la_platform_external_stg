@@ -46,7 +46,7 @@ Items ReadAbigail(const std::string& filename) {
   static constexpr std::string_view kSectionSuffix = "list";
   Items items;
   std::ifstream file(filename);
-  Check(file.good()) << "error opening filter file '" << filename << ": "
+  Check(file.good()) << "error opening filter file '" << filename << "': "
                      << Error(errno);
   bool in_filter_section = false;
   std::string line;
@@ -80,7 +80,7 @@ Items ReadAbigail(const std::string& filename) {
       items.insert(std::string(&line[start], limit - start));
     }
   }
-  Check(file.eof()) << "error reading filter file '" << filename << ": "
+  Check(file.eof()) << "error reading filter file '" << filename << "': "
                     << Error(errno);
   return items;
 }
@@ -179,7 +179,7 @@ std::queue<std::string> Tokenise(const std::string& filter) {
       }
       result.emplace(&*name, it - name);
     } else {
-      Die() << "unexpected character in filter: '" << *it;
+      Die() << "unexpected character in filter: '" << *it << "'";
     }
   }
 
