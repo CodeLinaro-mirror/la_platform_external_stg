@@ -247,7 +247,6 @@ std::vector<Id> Structs::BuildParams(const struct btf_param* params,
   std::vector<Id> result;
   result.reserve(vlen);
   for (size_t i = 0; i < vlen; ++i) {
-    const auto name = GetName(params[i].name_off);
     const auto type = params[i].type;
     result.push_back(GetParameterId(type));
   }
