@@ -1010,7 +1010,7 @@ void Abigail::ProcessSymbol(xmlNodePtr symbol) {
     std::string item;
     while (std::getline(is, item, ',')) {
       Check(alias_to_main_.insert({item, elf_symbol_id}).second)
-          << "multiple aliases with id " << elf_symbol_id;
+          << "multiple aliases with id " << item;
     }
   }
 }
