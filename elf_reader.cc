@@ -84,7 +84,7 @@ SymbolNameList GetKsymtabSymbols(const SymbolTable& symbols) {
   SymbolNameList result;
   result.reserve(symbols.size() / 2);
   for (const auto& symbol : symbols) {
-    if (symbol.name.substr(0, kKsymtabPrefix.size()) == kKsymtabPrefix) {
+    if (symbol.name.starts_with(kKsymtabPrefix)) {
       result.emplace(symbol.name.substr(kKsymtabPrefix.size()));
     }
   }
@@ -98,7 +98,7 @@ CRCValuesMap GetCRCValuesMap(const SymbolTable& symbols, const ElfLoader& elf) {
 
   for (const auto& symbol : symbols) {
     const std::string_view name = symbol.name;
-    if (name.substr(0, kCRCPrefix.size()) == kCRCPrefix) {
+    if (name.starts_with(kCRCPrefix)) {
       const std::string_view name_suffix = name.substr(kCRCPrefix.size());
       if (!crc_values.emplace(name_suffix, elf.GetElfSymbolCRC(symbol))
                .second) {
@@ -118,7 +118,7 @@ NamespacesMap GetNamespacesMap(const SymbolTable& symbols,
 
   for (const auto& symbol : symbols) {
     const std::string_view name = symbol.name;
-    if (name.substr(0, kNSPrefix.size()) == kNSPrefix) {
+    if (name.starts_with(kNSPrefix)) {
       const std::string_view name_suffix = name.substr(kNSPrefix.size());
       const std::string_view ns = elf.GetElfSymbolNamespace(symbol);
       if (ns.empty()) {
