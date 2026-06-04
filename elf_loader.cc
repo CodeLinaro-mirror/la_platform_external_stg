@@ -180,7 +180,7 @@ std::vector<Elf_Scn*> GetSectionsIf(
   return result;
 }
 
-std::vector<Elf_Scn*> GetSectionsByName(Elf* elf, const std::string& name) {
+std::vector<Elf_Scn*> GetSectionsByName(Elf* elf, std::string_view name) {
   size_t shdr_strtab_index;
   Check(elf_getshdrstrndx(elf, &shdr_strtab_index) == 0)
       << "could not get ELF section header string table index";
@@ -191,7 +191,7 @@ std::vector<Elf_Scn*> GetSectionsByName(Elf* elf, const std::string& name) {
   });
 }
 
-Elf_Scn* MaybeGetSectionByName(Elf* elf, const std::string& name) {
+Elf_Scn* MaybeGetSectionByName(Elf* elf, std::string_view name) {
   const auto sections = GetSectionsByName(elf, name);
   if (sections.empty()) {
     return nullptr;
@@ -201,7 +201,7 @@ Elf_Scn* MaybeGetSectionByName(Elf* elf, const std::string& name) {
   return sections[0];
 }
 
-Elf_Scn* GetSectionByName(Elf* elf, const std::string& name) {
+Elf_Scn* GetSectionByName(Elf* elf, std::string_view name) {
   Elf_Scn* section = MaybeGetSectionByName(elf, name);
   Check(section != nullptr) << "no section found with name '" << name << "'";
   return section;
