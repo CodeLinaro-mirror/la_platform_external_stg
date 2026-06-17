@@ -9,7 +9,6 @@ static int (*resolve_func())(int) {
 
 namespace ns {
 
-// TODO: Add support for tracking type information
 int func_changed(int new_arg) __attribute__((ifunc("_ZL12resolve_funcv")));
 
 int func_added(int new_arg) __attribute__((ifunc("_ZL12resolve_funcv")));

@@ -1,11 +1,11 @@
 digraph "ABI diff" {
   "0" [shape=rectangle, label="'interface'"]
-  "1" [color=red, label="removed(_ZN2ns12func_changedEv)"]
+  "1" [color=red, label="removed(int _ZN2ns12func_changedEv())"]
   "0" -> "1" [label=""]
-  "2" [color=red, label="removed(_ZN2ns12func_removedEv)"]
+  "2" [color=red, label="removed(int _ZN2ns12func_removedEv())"]
   "0" -> "2" [label=""]
-  "3" [color=red, label="added(_ZN2ns10func_addedEi)"]
+  "3" [color=red, label="added(int _ZN2ns10func_addedEi(int))"]
   "0" -> "3" [label=""]
-  "4" [color=red, label="added(_ZN2ns12func_changedEi)"]
+  "4" [color=red, label="added(int _ZN2ns12func_changedEi(int))"]
   "0" -> "4" [label=""]
 }

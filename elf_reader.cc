@@ -235,6 +235,35 @@ bool IsLinuxKernelFunctionOrVariable(const SymbolNameList& ksymtab,
 
 namespace {
 
+struct GetEffectiveIfuncType1 {
+  std::optional<Id> operator()(const stg::PointerReference& x) const {
+    if (x.kind == stg::PointerReference::Kind::POINTER) {
+      return x.pointee_type_id;
+    }
+    return std::nullopt;
+  }
+
+  template <typename Node>
+  std::optional<Id> operator()(const Node&) const {
+    return std::nullopt;
+  }
+};
+
+struct GetEffectiveIfuncType {
+  std::optional<Id> operator()(const stg::Function& x,
+                               const Graph& graph) const {
+    if (x.parameters.empty()) {
+      return graph.Apply(GetEffectiveIfuncType1{}, x.return_type_id);
+    }
+    return std::nullopt;
+  }
+
+  template <typename Node>
+  std::optional<Id> operator()(const Node&, const Graph&) const {
+    return std::nullopt;
+  }
+};
+
 class Reader {
  public:
   Reader(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
@@ -310,7 +339,7 @@ class Reader {
       // TODO: check for uniqueness of SymbolKey in map after
       // support for version info
       MaybeAddTypeInfo(location_and_name_to_index, types.symbols, address,
-                       symbol, unification);
+                       graph_, unification, symbol);
       symbols_map.emplace(VersionedSymbolName(symbol),
                           graph_.Add<ElfSymbol>(symbol));
     }
@@ -372,7 +401,8 @@ class Reader {
   static void MaybeAddTypeInfo(
       const SymbolIndex& location_and_name_to_index,
       const std::vector<dwarf::Types::Symbol>& dwarf_symbols,
-      dwarf::Location location, ElfSymbol& node, Unification& unification) {
+      dwarf::Location location, const Graph& graph, Unification& unification,
+      ElfSymbol& node) {
     // try to find the first symbol with given location
     const auto start_it = location_and_name_to_index.lower_bound(
         std::make_pair(location, std::string()));
@@ -422,8 +452,22 @@ class Reader {
           << "Multiple candidate symbols without matching name: location="
           << best_symbols_it->first.first
           << ", name=" << best_symbols_it->first.second;
+
       node.type_id = best_symbol.type_id;
       node.full_name = best_symbol.scoped_name;
+
+      if (node.symbol_type == ElfSymbol::SymbolType::GNU_IFUNC
+          && node.type_id) {
+        const auto effective_type
+            = graph.Apply(GetEffectiveIfuncType{}, *node.type_id, graph);
+        if (effective_type) {
+          node.type_id = *effective_type;
+          node.full_name = node.symbol_name;
+        } else {
+          Warn() << "Could not determine effective type of IFUNC '"
+                 << node.symbol_name << "'";
+        }
+      }
     }
   }
 

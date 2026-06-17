@@ -1,7 +1,13 @@
 digraph "ABI diff" {
   "0" [shape=rectangle, label="'interface'"]
-  "1" [color=red, label="removed(func_removed)"]
+  "1" [color=red, label="removed(int func_removed())"]
   "0" -> "1" [label=""]
-  "2" [color=red, label="added(func_added)"]
+  "2" [color=red, label="added(int func_added(int))"]
   "0" -> "2" [label=""]
+  "3" [label="'int func_changed()' → 'int func_changed(int)'"]
+  "4" [label="'int()' → 'int(int)'"]
+  "5" [color=red, label="added(int)"]
+  "4" -> "5" [label="parameter 1 of"]
+  "3" -> "4" [label=""]
+  "0" -> "3" [label=""]
 }
