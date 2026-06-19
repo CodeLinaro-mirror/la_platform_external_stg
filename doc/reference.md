@@ -160,10 +160,10 @@ support is not complete.
 
 *   split BTF is not supported at all
 *   any `.BTF.ext` section is just ignored
-*   some kinds of BTF node are not handled:
+*   some kinds of BTF node are not processed:
     *   `BTF_KIND_DATASEC` - skip
-    *   `BTF_KIND_DECL_TAG` - abort
-    *   `BTF_KIND_TYPE_TAG` - abort
+    *   `BTF_KIND_DECL_TAG` - skip
+    *   `BTF_KIND_TYPE_TAG` - replace references with referent
 
 The BTF reader has these distinct phases of operation:
 
