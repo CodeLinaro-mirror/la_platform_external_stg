@@ -1,0 +1,9 @@
+indirect (ifunc) function symbol '_ZN2ns12func_changedEv' was removed
+
+indirect (ifunc) function symbol '_ZN2ns12func_removedEv' was removed
+
+indirect (ifunc) function symbol '_ZN2ns10func_addedEi' was added
+
+indirect (ifunc) function symbol '_ZN2ns12func_changedEi' was added
+
+exit code 4
