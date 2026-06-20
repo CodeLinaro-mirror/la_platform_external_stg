@@ -15,4 +15,12 @@ function symbol changed from 'int baz(int(*)(struct foo))' to 'int baz(int(* vol
         pointed-to type changed from 'int(struct foo)' to 'int(const volatile struct foo*)'
           parameter 1 type changed from 'struct foo' to 'const volatile struct foo*'
 
+variable symbol changed from 'int(* quux)(struct foo)' to 'int(* volatile const quux)(const volatile struct foo*)'
+  type changed from 'int(*)(struct foo)' to 'int(* volatile const)(const volatile struct foo*)'
+    qualifier const added
+    qualifier volatile added
+    underlying type changed from 'int(*)(struct foo)' to 'int(*)(const volatile struct foo*)'
+      pointed-to type changed from 'int(struct foo)' to 'int(const volatile struct foo*)'
+        parameter 1 type changed from 'struct foo' to 'const volatile struct foo*'
+
 exit code 4

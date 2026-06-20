@@ -84,9 +84,17 @@ elf_symbol {
   symbol_type: FUNCTION
   type_id: 0xa37fb2ac  # int(int(* volatile const)(const volatile struct foo*))
 }
+elf_symbol {
+  id: 0x4602d7e1
+  name: "quux"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xfbfd460f  # int(* volatile const)(const volatile struct foo*)
+}
 interface {
   id: 0x84ea5130
   symbol_id: 0xa58ca0b6  # int bar(const volatile struct foo*)
   symbol_id: 0xe89bbaac  # int bar_2(struct foo*)
   symbol_id: 0xbf8fc404  # int baz(int(* volatile const)(const volatile struct foo*))
+  symbol_id: 0x4602d7e1  # int(* volatile const quux)(const volatile struct foo*)
 }

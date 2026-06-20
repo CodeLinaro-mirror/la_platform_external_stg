@@ -1,5 +1,94 @@
 version: 0x00000002
 root_id: 0x84ea5130  # interface
+pointer_reference {
+  id: 0x13580d6c
+  kind: POINTER
+  pointee_type_id: 0x6720d32f  # int
+}
+pointer_reference {
+  id: 0x3be64ffd
+  kind: POINTER
+  pointee_type_id: 0xc5d9d969  # const int
+}
+qualified {
+  id: 0x4008d327
+  qualifier: RESTRICT
+  qualified_type_id: 0x13580d6c  # int*
+}
+qualified {
+  id: 0x4a274383
+  qualifier: RESTRICT
+  qualified_type_id: 0x3be64ffd  # const int*
+}
+qualified {
+  id: 0xc5d9d969
+  qualifier: CONST
+  qualified_type_id: 0x6720d32f  # int
+}
+qualified {
+  id: 0xcc13d96b
+  qualifier: CONST
+  qualified_type_id: 0x4008d327  # int* restrict
+}
+qualified {
+  id: 0xd8c7eef9
+  qualifier: CONST
+  qualified_type_id: 0x13580d6c  # int*
+}
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
+}
+elf_symbol {
+  id: 0xa7b0241d
+  name: "a"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x3be64ffd  # const int*
+}
+elf_symbol {
+  id: 0xe371117a
+  name: "b"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xd8c7eef9  # int* const
+}
+elf_symbol {
+  id: 0x2230fb28
+  name: "c"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x4008d327  # int* restrict
+}
+elf_symbol {
+  id: 0x63f6f9b1
+  name: "d"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x4a274383  # const int* restrict
+}
+elf_symbol {
+  id: 0xa2b65a7e
+  name: "e"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xcc13d96b  # int* restrict const
+}
+elf_symbol {
+  id: 0xe0778f95
+  name: "f"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xcc13d96b  # int* restrict const
+}
 interface {
   id: 0x84ea5130
+  symbol_id: 0xa7b0241d  # const int* a
+  symbol_id: 0xe371117a  # int* const b
+  symbol_id: 0x2230fb28  # int* restrict c
+  symbol_id: 0x63f6f9b1  # const int* restrict d
+  symbol_id: 0xa2b65a7e  # int* restrict const e
+  symbol_id: 0xe0778f95  # int* restrict const f
 }

@@ -1,0 +1,33 @@
+variable symbol 'struct S s' changed
+  type 'struct S' changed
+
+type 'struct S' changed
+  member changed from 'int* const(* f03)(...)' to 'int*(* f03)(...)'
+    type changed from 'int* const(*)(...)' to 'int*(*)(...)'
+      pointed-to type changed from 'int* const(...)' to 'int*(...)'
+        return type changed from 'int* const' to 'int*'
+          qualifier const removed
+  member changed from 'int* restrict(* f04)(...)' to 'int*(* f04)(...)'
+    type changed from 'int* restrict(*)(...)' to 'int*(*)(...)'
+      pointed-to type changed from 'int* restrict(...)' to 'int*(...)'
+        return type changed from 'int* restrict' to 'int*'
+          qualifier restrict removed
+  member changed from 'const int* restrict(* f05)(...)' to 'const int*(* f05)(...)'
+    type changed from 'const int* restrict(*)(...)' to 'const int*(*)(...)'
+      pointed-to type changed from 'const int* restrict(...)' to 'const int*(...)'
+        return type changed from 'const int* restrict' to 'const int*'
+          qualifier restrict removed
+  member changed from 'int* restrict const(* f06)(...)' to 'int*(* f06)(...)'
+    type changed from 'int* restrict const(*)(...)' to 'int*(*)(...)'
+      pointed-to type changed from 'int* restrict const(...)' to 'int*(...)'
+        return type changed from 'int* restrict const' to 'int*'
+          qualifier const removed
+          qualifier restrict removed
+  member changed from 'int* restrict const(* f07)(...)' to 'int*(* f07)(...)'
+    type changed from 'int* restrict const(*)(...)' to 'int*(*)(...)'
+      pointed-to type changed from 'int* restrict const(...)' to 'int*(...)'
+        return type changed from 'int* restrict const' to 'int*'
+          qualifier const removed
+          qualifier restrict removed
+
+exit code 4

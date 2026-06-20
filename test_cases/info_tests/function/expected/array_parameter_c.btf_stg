@@ -15,9 +15,20 @@ pointer_reference {
   kind: POINTER
   pointee_type_id: 0xfc0e1dbd  # long
 }
+qualified {
+  id: 0xd0ccb483
+  qualifier: CONST
+  qualified_type_id: 0x33756485  # unsigned long
+}
 primitive {
   id: 0x15053314
   name: "double"
+  encoding: REAL_NUMBER
+  bytesize: 0x00000008
+}
+primitive {
+  id: 0x33756485
+  name: "unsigned long"
   encoding: UNSIGNED_INTEGER
   bytesize: 0x00000008
 }
@@ -72,6 +83,13 @@ elf_symbol {
   type_id: 0x0fbdff1a  # char(long*)
 }
 elf_symbol {
+  id: 0x6df237e3
+  name: "l"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0xd0ccb483  # const unsigned long
+}
+elf_symbol {
   id: 0x4602d7e1
   name: "quux"
   is_defined: true
@@ -96,6 +114,7 @@ interface {
   id: 0x84ea5130
   symbol_id: 0xa58ca0b6  # char bar(long*)
   symbol_id: 0x06f8338c  # char foo(long*)
+  symbol_id: 0x6df237e3  # const unsigned long l
   symbol_id: 0x4602d7e1  # char quux(unsigned int, double*)
   symbol_id: 0x376a8db4  # char spong(unsigned int, double*)
   symbol_id: 0x3579f91c  # char wibble(unsigned int, unsigned int, char*)

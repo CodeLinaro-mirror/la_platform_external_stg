@@ -1,0 +1,5 @@
+variable symbol changed from 'int x[6]' to 'int x[12]'
+  type changed from 'int[6]' to 'int[12]'
+    number of elements changed from 6 to 12
+
+exit code 4

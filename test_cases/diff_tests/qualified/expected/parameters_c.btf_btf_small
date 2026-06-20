@@ -1,0 +1,30 @@
+type 'struct S' changed
+  member changed from 'int(* f03)(int* const)' to 'int(* f03)(int*)'
+    type changed from 'int(*)(int* const)' to 'int(*)(int*)'
+      pointed-to type changed from 'int(int* const)' to 'int(int*)'
+        parameter 1 type changed from 'int* const' to 'int*'
+          qualifier const removed
+  member changed from 'int(* f04)(int* restrict)' to 'int(* f04)(int*)'
+    type changed from 'int(*)(int* restrict)' to 'int(*)(int*)'
+      pointed-to type changed from 'int(int* restrict)' to 'int(int*)'
+        parameter 1 type changed from 'int* restrict' to 'int*'
+          qualifier restrict removed
+  member changed from 'int(* f05)(const int* restrict)' to 'int(* f05)(const int*)'
+    type changed from 'int(*)(const int* restrict)' to 'int(*)(const int*)'
+      pointed-to type changed from 'int(const int* restrict)' to 'int(const int*)'
+        parameter 1 type changed from 'const int* restrict' to 'const int*'
+          qualifier restrict removed
+  member changed from 'int(* f06)(int* restrict const)' to 'int(* f06)(int*)'
+    type changed from 'int(*)(int* restrict const)' to 'int(*)(int*)'
+      pointed-to type changed from 'int(int* restrict const)' to 'int(int*)'
+        parameter 1 type changed from 'int* restrict const' to 'int*'
+          qualifier const removed
+          qualifier restrict removed
+  member changed from 'int(* f07)(int* restrict const)' to 'int(* f07)(int*)'
+    type changed from 'int(*)(int* restrict const)' to 'int(*)(int*)'
+      pointed-to type changed from 'int(int* restrict const)' to 'int(int*)'
+        parameter 1 type changed from 'int* restrict const' to 'int*'
+          qualifier const removed
+          qualifier restrict removed
+
+exit code 4

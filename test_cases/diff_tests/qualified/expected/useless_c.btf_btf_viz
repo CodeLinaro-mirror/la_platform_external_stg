@@ -25,4 +25,7 @@ digraph "ABI diff" {
   "7" -> "8" [label="parameter 1"]
   "6" -> "7" [label=""]
   "0" -> "6" [label=""]
+  "11" [label="'int(* quux)(struct foo)' → 'int(* volatile const quux)(const volatile struct foo*)'"]
+  "11" -> "8" [label=""]
+  "0" -> "11" [label=""]
 }
