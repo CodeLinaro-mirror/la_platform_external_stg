@@ -283,7 +283,6 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
                            MemoryRange& memory) {
   const auto kind = BTF_INFO_KIND(t->info);
   const auto vlen = BTF_INFO_VLEN(t->info);
-  Check(kind < NR_BTF_KINDS) << "Unknown BTF kind: " << static_cast<int>(kind);
 
   switch (kind) {
     case BTF_KIND_INT: {
