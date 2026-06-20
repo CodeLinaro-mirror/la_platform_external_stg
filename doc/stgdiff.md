@@ -87,7 +87,7 @@ in how much (DWARF) information they preserve.
 
 *   `primitive_type_encoding`
 
-    Ignore primitve type encodings during comparison. BTF provides a subset of
+    Ignore primitive type encodings during comparison. BTF provides a subset of
     encoding information. libabigail XML lacks encoding information.
 
 *   `member_size`

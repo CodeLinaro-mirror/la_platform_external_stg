@@ -110,10 +110,10 @@ There are two types of filters that can be applied to STG output:
 
 The basic syntactical elements are:
 
-*   `glob` - a **glob**(7) pattern supporting `?`, `*` and `[ ... ]` wilcards
+*   `glob` - a **glob**(7) pattern supporting `?`, `*` and `[ ... ]` wildcards
 *   `:filename` - the name of a file containing a libabigail format filter list
 
-Filter expressions can be combined with infix disjuction (`|`) and conjunction
+Filter expressions can be combined with infix disjunction (`|`) and conjunction
 (`&`) operators and negated with the prefix (`!`) operator; these obey the usual
 precedence rules. Parentheses (`( ... )`) can be used to enclose subexpressions.
 Whitespace is not significant, except as a string delimiter.
