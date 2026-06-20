@@ -1,10 +1,12 @@
-static void my_func() {}
+static int my_func(void) {
+  return 0;
+}
 
 __attribute__((__used__))
-static void (*resolve_func(void))(void) {
+static int (*resolve_func(void))(void) {
   return my_func;
 }
 
-void func_changed() __attribute__((ifunc("resolve_func")));
+int func_changed(void) __attribute__((ifunc("resolve_func")));
 
-void func_removed() __attribute__((ifunc("resolve_func")));
+int func_removed(void) __attribute__((ifunc("resolve_func")));
