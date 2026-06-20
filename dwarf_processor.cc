@@ -645,7 +645,6 @@ class Processor {
     auto id = maker_.Add<Function>(std::move(subprogram.node));
     if (subprogram.external && !subprogram.locations.empty()) {
       // Only external functions with address are useful for ABI monitoring
-      // TODO: cover virtual methods
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
