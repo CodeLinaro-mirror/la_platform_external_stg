@@ -43,7 +43,7 @@ namespace std {
 
 template <>
 struct hash<stg::HashValue> {
-  size_t operator()(const stg::HashValue& hv) const {
+  size_t operator()(const stg::HashValue& hv) const noexcept {
     // do not overhash
     return hv.value;
   }
@@ -54,24 +54,24 @@ struct hash<stg::HashValue> {
 namespace stg {
 
 struct Hash {
-  constexpr HashValue operator()(HashValue hash_value) const {
+  constexpr HashValue operator()(HashValue hash_value) const noexcept {
     return hash_value;
   }
 
   // Hash boolean by converting to int.
-  constexpr HashValue operator()(bool x) const {
+  constexpr HashValue operator()(bool x) const noexcept {
     return x ? (*this)(1) : (*this)(0);
   }
 
   // Hash unsigned 64 bits by splitting, hashing and combining.
-  constexpr HashValue operator()(uint64_t x) const {
+  constexpr HashValue operator()(uint64_t x) const noexcept {
     const uint32_t lo = x;
     const uint32_t hi = x >> 32;
     return (*this)(lo, hi);
   }
 
   // Hash signed 64 bits by casting to unsigned 64 bits.
-  constexpr HashValue operator()(int64_t x) const {
+  constexpr HashValue operator()(int64_t x) const noexcept {
     return (*this)(static_cast<uint64_t>(x));
   }
 
@@ -80,7 +80,7 @@ struct Hash {
   }
 
   // See https://github.com/skeeto/hash-prospector.
-  constexpr HashValue operator()(uint32_t x) const {
+  constexpr HashValue operator()(uint32_t x) const noexcept {
     x ^= x >> 16;
     x *= 0x21f0aaad;
     x ^= x >> 15;
@@ -90,17 +90,17 @@ struct Hash {
   }
 
   // Hash signed 32 bits by casting to unsigned 32 bits.
-  constexpr HashValue operator()(int32_t x) const {
+  constexpr HashValue operator()(int32_t x) const noexcept {
     return (*this)(static_cast<uint32_t>(x));
   }
 
   // Hash 8 bits by zero extending to 32 bits.
-  constexpr HashValue operator()(char x) const {
+  constexpr HashValue operator()(char x) const noexcept {
     return (*this)(static_cast<uint32_t>(static_cast<unsigned char>(x)));
   }
 
   // 32-bit FNV-1a. See https://wikipedia.org/wiki/Fowler-Noll-Vo_hash_function.
-  constexpr HashValue operator()(const std::string_view x) const {
+  constexpr HashValue operator()(const std::string_view x) const noexcept {
     uint32_t h = 0x811c9dc5;
     for (auto ch : x) {
       h ^= static_cast<unsigned char>(ch);
@@ -110,12 +110,12 @@ struct Hash {
   }
 
   // Hash std::string by constructing a std::string_view.
-  HashValue operator()(const std::string& x) const {
+  HashValue operator()(const std::string& x) const noexcept {
     return (*this)(std::string_view(x));
   }
 
   // Hash C string by constructing a std::string_view.
-  constexpr HashValue operator()(const char* x) const {
+  constexpr HashValue operator()(const char* x) const noexcept {
     return (*this)(std::string_view(x));
   }
 
