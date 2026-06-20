@@ -1,5 +1,9 @@
-indirect (ifunc) function symbol 'func_removed' was removed
+indirect (ifunc) function symbol 'int func_removed()' was removed
 
-indirect (ifunc) function symbol 'func_added' was added
+indirect (ifunc) function symbol 'int func_added(int)' was added
+
+indirect (ifunc) function symbol changed from 'int func_changed()' to 'int func_changed(int)'
+  type changed from 'int()' to 'int(int)'
+    parameter 1 of type 'int' was added
 
 exit code 4

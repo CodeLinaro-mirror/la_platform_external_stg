@@ -924,8 +924,8 @@ class Processor {
   void ProcessFunction(Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     const Id id = AddProcessedNode<Function>(entry, std::move(subprogram.node));
-    if (subprogram.external && !subprogram.locations.empty()) {
-      // Only external functions with address are useful for ABI monitoring
+    if (!subprogram.locations.empty()) {
+      // Only functions with address are useful for ABI monitoring
       const auto new_symbol_idx = result_.symbols.size();
       result_.symbols.push_back(Types::Symbol{
           .scoped_name = GetScopedNameForSymbol(
