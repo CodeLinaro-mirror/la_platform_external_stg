@@ -38,11 +38,14 @@ template <typename T> Hex(const T&) -> Hex<T>;
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Hex<T>& hex_value) {
-  // not quite right if an exception is thrown
-  const auto flags = os.flags();
-  os << "0x" << std::hex << hex_value.value;
-  os.flags(flags);
-  return os;
+  // TODO: use std::scope_exit once available
+  const struct FlagsSaver {
+    std::ostream& os;
+    const std::ios_base::fmtflags flags;
+    ~FlagsSaver() { os.flags(flags); }
+  } saver{os, os.flags()};
+
+  return os << "0x" << std::hex << hex_value.value;
 }
 
 }  // namespace stg
