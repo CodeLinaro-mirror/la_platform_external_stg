@@ -15,6 +15,7 @@ elf_symbol {
   name: "a"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 elf_symbol {
@@ -22,6 +23,7 @@ elf_symbol {
   name: "b"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 elf_symbol {
@@ -29,6 +31,7 @@ elf_symbol {
   name: "c"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 elf_symbol {
@@ -36,6 +39,7 @@ elf_symbol {
   name: "d"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 interface {

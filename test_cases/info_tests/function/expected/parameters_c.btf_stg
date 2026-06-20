@@ -138,6 +138,7 @@ elf_symbol {
   name: "f01"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85d454a8  # int(int, int)
 }
 elf_symbol {
@@ -145,6 +146,7 @@ elf_symbol {
   name: "f02"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85d454a8  # int(int, int)
 }
 elf_symbol {
@@ -152,6 +154,7 @@ elf_symbol {
   name: "f03"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85d454a8  # int(int, int)
 }
 elf_symbol {
@@ -159,6 +162,7 @@ elf_symbol {
   name: "f04"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cd9c9c  # int(int, int, int)
 }
 elf_symbol {
@@ -166,6 +170,7 @@ elf_symbol {
   name: "f05"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cd9c9c  # int(int, int, int)
 }
 elf_symbol {
@@ -173,6 +178,7 @@ elf_symbol {
   name: "f06"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cd9c9c  # int(int, int, int)
 }
 elf_symbol {
@@ -180,6 +186,7 @@ elf_symbol {
   name: "f07"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cd9c9c  # int(int, int, int)
 }
 elf_symbol {
@@ -187,6 +194,7 @@ elf_symbol {
   name: "f08"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cd9c9c  # int(int, int, int)
 }
 elf_symbol {
@@ -194,6 +202,7 @@ elf_symbol {
   name: "f09"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cc001f  # int(int, int, int, int)
 }
 elf_symbol {
@@ -201,6 +210,7 @@ elf_symbol {
   name: "f10"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cc001f  # int(int, int, int, int)
 }
 elf_symbol {
@@ -208,6 +218,7 @@ elf_symbol {
   name: "f11"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cc001f  # int(int, int, int, int)
 }
 elf_symbol {
@@ -215,6 +226,7 @@ elf_symbol {
   name: "f12"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x85cc001f  # int(int, int, int, int)
 }
 elf_symbol {

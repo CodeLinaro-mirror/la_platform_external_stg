@@ -22,6 +22,7 @@ elf_symbol {
   name: "my_func"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x10985193  # void()
 }
 elf_symbol {
@@ -29,6 +30,7 @@ elf_symbol {
   name: "resolve_func"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xc76a0666  # void(*())()
 }
 interface {

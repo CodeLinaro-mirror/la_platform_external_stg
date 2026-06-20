@@ -45,6 +45,7 @@ elf_symbol {
   name: "getEnum"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xcbe2d488  # Foo(const Foo)
 }
 interface {

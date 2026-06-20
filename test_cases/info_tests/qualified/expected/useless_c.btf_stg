@@ -68,6 +68,7 @@ elf_symbol {
   name: "bar"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x900d2508  # int(const volatile struct foo*)
 }
 elf_symbol {
@@ -75,6 +76,7 @@ elf_symbol {
   name: "bar_2"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x94ac18a9  # int(struct foo*)
 }
 elf_symbol {
@@ -82,6 +84,7 @@ elf_symbol {
   name: "baz"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xa37fb2ac  # int(int(* volatile const)(const volatile struct foo*))
 }
 elf_symbol {

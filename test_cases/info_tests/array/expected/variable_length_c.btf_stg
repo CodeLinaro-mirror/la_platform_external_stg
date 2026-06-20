@@ -16,6 +16,7 @@ elf_symbol {
   name: "bar"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x8448d7e4  # int(int)
 }
 interface {

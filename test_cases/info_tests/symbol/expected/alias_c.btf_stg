@@ -15,6 +15,7 @@ elf_symbol {
   name: "a"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x9d80e32f  # int()
 }
 elf_symbol {

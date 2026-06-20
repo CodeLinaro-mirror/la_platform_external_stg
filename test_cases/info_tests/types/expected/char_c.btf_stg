@@ -38,6 +38,7 @@ elf_symbol {
   name: "x"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x903bc575  # signed char(signed char)
 }
 elf_symbol {
@@ -45,6 +46,7 @@ elf_symbol {
   name: "y"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x0ccacff7  # char(char)
 }
 elf_symbol {
@@ -52,6 +54,7 @@ elf_symbol {
   name: "z"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xdab9eed2  # unsigned char(unsigned char)
 }
 interface {

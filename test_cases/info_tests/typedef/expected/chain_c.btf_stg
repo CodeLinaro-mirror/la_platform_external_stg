@@ -45,6 +45,7 @@ elf_symbol {
   name: "func"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0xe0f8a947  # unsigned int(struct foo)
 }
 interface {

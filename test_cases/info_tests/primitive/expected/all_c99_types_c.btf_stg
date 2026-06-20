@@ -321,6 +321,7 @@ elf_symbol {
   name: "fun"
   is_defined: true
   symbol_type: FUNCTION
+  binding: LOCAL
   type_id: 0x31a5d232  # void(struct Z)
 }
 elf_symbol {
