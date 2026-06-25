@@ -58,6 +58,9 @@ struct GetInterface {
 };
 
 Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
+  if (roots.size() == 1) {
+    return roots[0];
+  }
   bool failed = false;
   // this rewrites the graph on destruction
   Unification unification(runtime, graph, Id(0), graph.Limit());
@@ -222,8 +225,7 @@ int main(int argc, char* argv[]) {
       roots.push_back(stg::Read(runtime, graph, format, input, opt_read_options,
                                 opt_file_filter));
     }
-    stg::Id root =
-        roots.size() == 1 ? roots[0] : stg::Merge(runtime, graph, roots);
+    stg::Id root = stg::Merge(runtime, graph, roots);
     if (opt_symbol_filter) {
       stg::FilterSymbols(graph, root, *opt_symbol_filter);
     }
