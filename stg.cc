@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::pair<stg::InputFormat, const char*>> inputs;
   std::vector<const char*> outputs;
   bool opt_annotate = false;
-  static option opts[] = {
+  static const option opts[] = {
       {"metrics",         no_argument,       nullptr, 'm'},
       {"keep-duplicates", no_argument,       nullptr, 'd'},
       {"types",           no_argument,       nullptr, 't'},
