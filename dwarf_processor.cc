@@ -263,8 +263,8 @@ size_t GetDataBitOffset(Entry& entry, size_t bit_size,
 class Processor {
  public:
   Processor(Graph& graph, Id void_id, Id variadic_id,
-            bool is_little_endian_binary,
-            const std::unique_ptr<Filter>& file_filter, Types& result)
+            bool is_little_endian_binary, const Filter* file_filter,
+            Types& result)
       : maker_(graph),
         void_id_(void_id),
         variadic_id_(variadic_id),
@@ -1067,7 +1067,7 @@ class Processor {
   Id void_id_;
   Id variadic_id_;
   bool is_little_endian_binary_;
-  const std::unique_ptr<Filter>& file_filter_;
+  const Filter* file_filter_;
   Types& result_;
   std::vector<std::pair<Dwarf_Off, std::string>> scoped_names_;
   std::vector<std::pair<Dwarf_Off, size_t>> unresolved_symbol_specifications_;
@@ -1080,7 +1080,7 @@ class Processor {
 };
 
 Types Process(Dwarf* dwarf, bool is_little_endian_binary,
-              const std::unique_ptr<Filter>& file_filter, Graph& graph) {
+              const Filter* file_filter, Graph& graph) {
   Types result;
 
   if (dwarf == nullptr) {

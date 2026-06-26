@@ -54,7 +54,7 @@ struct Types {
 // with information needed for matching to ELF symbols.
 // If DWARF is missing, returns empty result.
 Types Process(Dwarf* dwarf, bool is_little_endian_binary,
-              const std::unique_ptr<Filter>& file_filter, Graph& graph);
+              const Filter* file_filter, Graph& graph);
 
 }  // namespace dwarf
 }  // namespace stg

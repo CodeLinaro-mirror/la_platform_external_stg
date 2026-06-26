@@ -39,7 +39,7 @@ namespace {
 
 Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
                 const char* input, ReadOptions options,
-                const std::unique_ptr<Filter>& file_filter) {
+                const Filter* file_filter) {
   switch (format) {
     case InputFormat::ABI: {
       const Time read(runtime, "read ABI");
@@ -64,7 +64,7 @@ Id ReadInternal(Runtime& runtime, Graph& graph, InputFormat format,
 }  // namespace
 
 Id Read(Runtime& runtime, Graph& graph, InputFormat format, const char* input,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
+        ReadOptions options, const Filter* file_filter) {
   try {
     return ReadInternal(runtime, graph, format, input, options, file_filter);
   } catch (Exception& e) {

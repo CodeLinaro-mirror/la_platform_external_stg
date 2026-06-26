@@ -267,7 +267,7 @@ struct GetEffectiveIfuncType {
 class Reader {
  public:
   Reader(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
-         ReadOptions options, const std::unique_ptr<Filter>& file_filter)
+         ReadOptions options, const Filter* file_filter)
       : graph_(graph),
         elf_dwarf_handle_(elf_dwarf_handle),
         elf_(elf_dwarf_handle_.GetElf()),
@@ -475,7 +475,7 @@ class Reader {
   ElfDwarfHandle& elf_dwarf_handle_;
   ElfLoader elf_;
   ReadOptions options_;
-  const std::unique_ptr<Filter>& file_filter_;
+  const Filter* file_filter_;
   Runtime& runtime_;
 };
 
@@ -542,7 +542,7 @@ Id Reader::Read() {
 }  // namespace internal
 
 Id Read(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter) {
+        ReadOptions options, const Filter* file_filter) {
   return internal::Reader(runtime, graph, elf_dwarf_handle, options,
                           file_filter)
       .Read();
