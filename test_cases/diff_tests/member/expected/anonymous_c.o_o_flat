@@ -1,0 +1,10 @@
+variable symbol changed from 'struct { struct { struct { }; }; struct { }; } x' to 'struct { struct { }; struct { struct { }; }; } x'
+  type changed from 'struct { struct { struct { }; }; struct { }; }' to 'struct { struct { }; struct { struct { }; }; }'
+    member changed from 'struct { struct { }; }' to 'struct { }'
+      type changed from 'struct { struct { }; }' to 'struct { }'
+        member 'struct { }' was removed
+    member changed from 'struct { }' to 'struct { struct { }; }'
+      type changed from 'struct { }' to 'struct { struct { }; }'
+        member 'struct { }' was added
+
+exit code 4
