@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2023 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -232,7 +232,8 @@ int main(int argc, char* argv[]) {
     if (!opt_keep_duplicates) {
       {
         stg::Unification unification(runtime, graph, stg::Id(0), graph.Limit());
-        stg::ResolveTypes(runtime, graph, unification, {root});
+        stg::UnifyingGraph unifying_graph(graph, unification);
+        stg::ResolveTypes(runtime, unifying_graph, {root});
         root = unification.Find(root);
       }
       const auto hashes = stg::Fingerprint(runtime, graph, root);
