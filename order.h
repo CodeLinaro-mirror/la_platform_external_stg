@@ -22,8 +22,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <numeric>
-#include <optional>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -33,57 +31,16 @@
 
 namespace stg {
 
-// Combines two orderings of unique items, eliminating duplicates between the
-// sequences, preserving the relative positions of the items in the second
-// ordering and incorporating as much of the first's order as is compatible.
+// Match and reorder two collections using a key-extraction lambda.
+// Invokes callbacks on-the-fly for unmatched and matched elements in a
+// greedy, order-preserving manner.
 //
 // The two orderings are reconciled by examining each item from the first
 // sequence in turn. If it is not present in the second sequence, it is greedily
-// appended to the combined sequence. If it is present but hasn't yet been
-// appended, then all items from the current position in the second sequence up
-// to and including it are appended in bulk. Otherwise it is skipped. Finally,
-// all items from the current position in the second sequence are appended.
-//
-// This guarantees that the second sequence is a subsequence of the combined
-// sequence and that items unique to the first subsequence are output as early
-// as possible and only out of order if they are one of the extra items appended
-// in bulk.
-//
-// Example, before and after:
-//
-// indexes1: rose, george, emily
-// indexes2: george, ted, emily
-//
-// combined: rose, george, ted, emily
-template <typename T>
-std::vector<T> CombineOrders(const std::vector<T>& indexes1,
-                             const std::vector<T>& indexes2,
-                             size_t combined_size) {
-  std::vector<T> combined;
-  combined.reserve(combined_size);
-  // keep track of where we are up to in indexes2
-  auto position = indexes2.begin();
-  for (const auto& value : indexes1) {
-    auto found = std::find(indexes2.begin(), indexes2.end(), value);
-    if (found == indexes2.end()) {
-      // value not found in the second ordering, append immediately
-      combined.push_back(value);
-    } else {
-      // copy up to and including found value, if not yet copied
-      for (; position <= found; ++position) {
-        combined.push_back(*position);
-      }
-    }
-  }
-  // copy any remaining values unique to indexes2
-  for (; position < indexes2.end(); ++position) {
-    combined.push_back(*position);
-  }
-  return combined;
-}
-
-// Match and reorder two collections using a key-extraction lambda.
-// Invokes callbacks on-the-fly for unmatched and matched elements.
+// output as removed. If it is present but hasn't yet been output, then all
+// items from the current position in the second sequence up to and including it
+// are output in bulk (as added or in-both). Otherwise it is skipped. Finally,
+// all remaining items from the second sequence are output as added.
 template <typename T, typename ExtractKey, typename Removed, typename Added,
           typename InBoth>
 void MatchReorderForEach(const std::vector<T>& items1,
@@ -114,11 +71,8 @@ void MatchReorderForEach(const std::vector<T>& items1,
     Check(inserted) << "MatchReorderForEach: duplicate key in items2";
   }
 
-  // build index pairs: (removed, _), (_, added), (in, both)
-  std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>> pairs;
-  pairs.reserve(std::max(size1, size2));
-
   std::vector<size_t> indexes2(size2);
+  size_t unmatched2_id = size1;
 
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
     const auto key = extract_key(items1[ix1]);
@@ -127,33 +81,44 @@ void MatchReorderForEach(const std::vector<T>& items1,
       auto& match = it->second;
       Check(!match.matched) << "MatchReorderForEach: duplicate key in items1";
       match.matched = true;
-      indexes2[match.index] = pairs.size();
-      pairs.emplace_back(ix1, match.index);
-    } else {
-      pairs.emplace_back(ix1, std::nullopt);
+      indexes2[match.index] = ix1;
     }
   }
 
   for (const auto& [key, match] : key_to_index2) {
     if (!match.matched) {
-      indexes2[match.index] = pairs.size();
-      pairs.emplace_back(std::nullopt, match.index);
+      indexes2[match.index] = unmatched2_id++;
     }
   }
 
-  std::vector<size_t> indexes1(size1);
-  std::iota(indexes1.begin(), indexes1.end(), 0);
-
-  const auto permutation = CombineOrders(indexes1, indexes2, pairs.size());
-
-  for (const size_t index : permutation) {
-    const auto& [ix1, ix2] = pairs[index];
-    if (ix1 && !ix2) {
-      removed(items1[*ix1]);
-    } else if (!ix1 && ix2) {
-      added(items2[*ix2]);
-    } else if (ix1 && ix2) {
-      in_both(items1[*ix1], items2[*ix2]);
+  // Reconcile orderings greedily, invoking callbacks on-the-fly.
+  // indexes1 is implicitly [0, size1).
+  auto position = indexes2.begin();
+  for (size_t ix1 = 0; ix1 < size1; ++ix1) {
+    const auto found = std::find(indexes2.begin(), indexes2.end(), ix1);
+    if (found == indexes2.end()) {
+      // ix1 not found in the second ordering (unique to items1)
+      removed(items1[ix1]);
+    } else {
+      // output items in items2 up to and including found value (if not already
+      // output)
+      for (; position <= found; ++position) {
+        const size_t ix2 = position - indexes2.begin();
+        if (*position < size1) {
+          in_both(items1[*position], items2[ix2]);
+        } else {
+          added(items2[ix2]);
+        }
+      }
+    }
+  }
+  // output any remaining items in items2
+  for (; position < indexes2.end(); ++position) {
+    const size_t ix2 = position - indexes2.begin();
+    if (*position < size1) {
+      in_both(items1[*position], items2[ix2]);
+    } else {
+      added(items2[ix2]);
     }
   }
 }
