@@ -27,11 +27,14 @@ namespace stg {
 
 // Keep track of which nodes are pending substitution and rewrite the graph on
 // destruction.
-class Unification {
+class UnifyingGraph {
  public:
-  Unification(Runtime& runtime, Graph& graph, Id start, Id limit);
+  UnifyingGraph(Runtime& runtime, Graph& graph, Id start, Id limit);
+  ~UnifyingGraph() noexcept(false);
 
-  ~Unification() noexcept(false);
+  const Graph& graph() const {
+    return graph_;
+  }
 
   // id2 will always be preferred as a parent node; interpreted as a
   // substitution, id1 will be replaced by id2
@@ -39,45 +42,9 @@ class Unification {
 
   Id Find(Id id);
 
-  // attempt to unify, recursively, allowing types declarations to be replaced
-  // by definitions
-  bool Unify(Id id1, Id id2);
-
- private:
-  Graph& graph_;
-  Id start_;
-  DenseIdMapping mapping_;
-  Runtime& runtime_;
-  Counter find_query_;
-  Counter find_halved_;
-  Counter union_known_;
-  Counter union_unknown_;
-};
-
-class UnifyingGraph {
- public:
-  UnifyingGraph(Graph& graph, Unification& unification)
-      : graph_(graph), unification_(unification) {}
-
-  const Graph& graph() const {
-    return graph_;
-  }
-
-  Id Find(Id id) const {
-    return unification_.Find(id);
-  }
-
-  // id2 will always be preferred as a parent node; interpreted as a
-  // substitution, id1 will be replaced by id2
-  void Union(Id id1, Id id2) {
-    unification_.Union(id1, id2);
-  }
-
   // attempt to unify, recursively, allowing type declarations to be replaced
   // by definitions
-  bool Unify(Id id1, Id id2) {
-    return unification_.Unify(id1, id2);
-  }
+  bool Unify(Id id1, Id id2);
 
   template <typename FunctionObject, typename... Args>
   decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) {
@@ -93,7 +60,13 @@ class UnifyingGraph {
 
  private:
   Graph& graph_;
-  Unification& unification_;
+  Id start_;
+  DenseIdMapping mapping_;
+  Runtime& runtime_;
+  Counter find_query_;
+  Counter find_halved_;
+  Counter union_known_;
+  Counter union_unknown_;
 };
 
 }  // namespace stg

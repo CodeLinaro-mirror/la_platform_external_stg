@@ -63,7 +63,7 @@ Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
   }
   bool failed = false;
   // this rewrites the graph on destruction
-  Unification unification(runtime, graph, Id(0), graph.Limit());
+  UnifyingGraph unifying_graph(runtime, graph, Id(0), graph.Limit());
   std::map<std::string, Id> symbols;
   std::map<std::string, Id> types;
   const GetInterface get;
@@ -78,7 +78,7 @@ Id Merge(Runtime& runtime, Graph& graph, const std::vector<Id>& roots) {
     // TODO: test type roots merge
     for (const auto& x : interface.types) {
       const auto [it, inserted] = types.insert(x);
-      if (!inserted && !unification.Unify(x.second, it->second)) {
+      if (!inserted && !unifying_graph.Unify(x.second, it->second)) {
         Warn() << "type conflict during merge: " << x.first;
         failed = true;
       }
@@ -231,10 +231,10 @@ int main(int argc, char* argv[]) {
     }
     if (!opt_keep_duplicates) {
       {
-        stg::Unification unification(runtime, graph, stg::Id(0), graph.Limit());
-        stg::UnifyingGraph unifying_graph(graph, unification);
+        stg::UnifyingGraph unifying_graph(runtime, graph, stg::Id(0),
+                                          graph.Limit());
         stg::ResolveTypes(runtime, unifying_graph, {root});
-        root = unification.Find(root);
+        root = unifying_graph.Find(root);
       }
       const auto hashes = stg::Fingerprint(runtime, graph, root);
       root = stg::Deduplicate(runtime, graph, root, hashes);
