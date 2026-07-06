@@ -360,7 +360,7 @@ class Graph {
   void Set(Id id, Args&&... args) {
     auto& reference = indirection_[id.ix_];
     if (reference.first != Which::ABSENT) {
-      Die() << "node value already set: " << id;
+      Die() << "node value already set";
     }
     if constexpr (std::is_same_v<Node, Special>) {
       reference = {Which::SPECIAL, special_.size()};
@@ -433,7 +433,7 @@ class Graph {
   void Unset(Id id) {
     auto& reference = indirection_[id.ix_];
     if (reference.first == Which::ABSENT) {
-      Die() << "node value already unset: " << id;
+      Die() << "node value already unset";
     }
     reference = {Which::ABSENT, 0};
   }
@@ -512,7 +512,7 @@ decltype(auto) Graph::Apply(
   const auto& [which, ix] = indirection_[id.ix_];
   switch (which) {
     case Which::ABSENT:
-      Die() << "undefined node: " << id;
+      Die() << "undefined node";
     case Which::SPECIAL:
       return function(special_[ix], std::forward<Args>(args)...);
     case Which::POINTER_REFERENCE:
@@ -560,7 +560,7 @@ decltype(auto) Graph::Apply2(
   }
   switch (which1) {
     case Which::ABSENT:
-      Die() << "undefined nodes: " << id1 << ", " << id2;
+      Die() << "undefined nodes";
     case Which::SPECIAL:
       return function(special_[ix1], special_[ix2],
                       std::forward<Args>(args)...);
@@ -688,7 +688,7 @@ class DenseIdSet {
   bool Insert(Id id) {
     const auto ix = id.ix_;
     if (ix < offset_) {
-      Die() << "DenseIdSet: out of range access to " << id;
+      Die() << "DenseIdSet: out of range access";
     }
     const auto offset_ix = ix - offset_;
     if (offset_ix >= ids_.size()) {
@@ -716,7 +716,7 @@ class DenseIdMapping {
   Id& operator[](Id id) {
     const auto ix = id.ix_;
     if (ix < offset_) {
-      Die() << "DenseIdMapping: out of range access to " << id;
+      Die() << "DenseIdMapping: out of range access";
     }
     Populate(ix + 1);
     return ids_[ix - offset_];
