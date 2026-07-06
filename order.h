@@ -81,58 +81,8 @@ std::vector<T> CombineOrders(const std::vector<T>& indexes1,
   return combined;
 }
 
-// Permutes the data array according to the permutation.
-//
-// The vectors must be the same size and permutation must contain [0, size()).
-//
-// Each data[i] <- data[permutation[i]].
-//
-// Each permutation[i] <- i.
-//
-// Example (where the permutation consists of a single cycle), step by step:
-//
-// data: emily, george, rose, ted
-// permutation: 2, 1, 3, 0
-//
-// from = 0
-// initialise to = 0
-// resolve cycle by swapping elements
-//
-// permutation[to = 0] = 2 != from = 2
-//   want data[2] = rose at data[0] = emily, swap them
-//   also swap to = 0 with permutation[to] = 2
-//   data: rose, george, emily, ted
-//   permutation 0, 1, 3, 0
-//   to = 2
-//
-// permutation[to = 2] = 3 != from = 0
-//   want data[3] = ted at data[2] = emily, swap them
-//   also swap to = 2 with permutation[2] = 3
-//   data: rose, george, ted, emily
-//   permutation 0, 1, 2, 0
-//   to = 3
-//
-// permutation[to = 3] = 0 == from = 0
-//   emily is now in right position
-//   finish the cycle and set permutation[to = 3] = to = 3
-//   permutation 0, 1, 2, 3
-template <typename T>
-void Permute(std::vector<T>& data, std::vector<size_t>& permutation) {
-  const size_t size = permutation.size();
-  Check(data.size() == size) << "internal error: bad Permute vectors";
-  for (size_t from = 0; from < size; ++from) {
-    size_t to = from;
-    while (permutation[to] != from) {
-      Check(permutation[to] < size) << "internal error: bad Permute index";
-      using std::swap;
-      swap(data[to], data[permutation[to]]);
-      swap(to, permutation[to]);
-    }
-    permutation[to] = to;
-  }
-}
-
-// Reorders the data array according to its implicit ordering constraints.
+// Returns a permutation that reorders the data array according to its implicit
+// ordering constraints.
 //
 // At least one of each pair of positions must be present.
 //
@@ -141,7 +91,7 @@ void Permute(std::vector<T>& data, std::vector<size_t>& permutation) {
 // The first and second positions are interpreted separately, with the second
 // implied ordering having precedence over the first in the event of a conflict.
 //
-// The real work is done by CombineOrders and Permute.
+// The real work is done by CombineOrders.
 //
 // In practice the input data are the output of a matching process, consider:
 //
@@ -173,19 +123,12 @@ void Permute(std::vector<T>& data, std::vector<size_t>& permutation) {
 // indexes1: 2, 1, 0
 // indexes2: 1, 3, 0
 //
-// Finally a consistent ordering is made:
+// Finally a consistent ordering is made and returned:
 //
-// indexes1: 2, 1, 3, 0
-//
-// And this is used to permute the original matching sequence, for clarity
-// including the implicit keys here:
-//
-// rose:   {{0}, {} }
-// george: {{1}, {0}}
-// ted:    {{},  {1}}
-// emily:  {{2}, {2}}
+// 2, 1, 3, 0
 template <typename T>
-void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
+std::vector<size_t> Reorder(
+    const std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   const auto size = data.size();
   // Split out the ordering constraints as position-index pairs.
   std::vector<std::pair<T, size_t>> positions1;
@@ -217,9 +160,7 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
     indexes2.push_back(ordered_index.second);
   }
   // Merge the two orderings of indexes, giving preference to the second.
-  auto combined = CombineOrders(indexes1, indexes2, size);
-  // Use this to permute the original data array.
-  Permute(data, combined);
+  return CombineOrders(indexes1, indexes2, size);
 }
 
 // Match and reorder two collections using a key-extraction lambda.
@@ -277,9 +218,10 @@ void MatchReorderForEach(const std::vector<T>& items1,
     }
   }
 
-  Reorder(pairs);
+  const auto permutation = Reorder(pairs);
 
-  for (const auto& [ix1, ix2] : pairs) {
+  for (const size_t index : permutation) {
+    const auto& [ix1, ix2] = pairs[index];
     if (ix1 && !ix2) {
       removed(items1[*ix1]);
     } else if (!ix1 && ix2) {

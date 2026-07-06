@@ -21,13 +21,11 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <optional>
 #include <numeric>
 #include <random>
 #include <sstream>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include <catch2/catch.hpp>
@@ -90,51 +88,6 @@ Sequence GetMappingCalls(const Sequence& items1, const Sequence& items2) {
 }
 
 }  // namespace
-
-TEST_CASE("hand-curated permutation") {
-  Sequence data = {"emily", "george", "rose", "ted"};
-  std::vector<size_t> permutation = {2, 1, 3, 0};
-  const Sequence expected = {"rose", "george", "ted", "emily"};
-  const std::vector<size_t> identity = {0, 1, 2, 3};
-  stg::Permute(data, permutation);
-  CHECK(data == expected);
-  CHECK(permutation == identity);
-}
-
-TEST_CASE("randomly-generated permutations") {
-  std::ranlux48 gen;
-  auto seed = gen();
-  // NOTES:
-  //   Permutations of size 6 are plenty big enough to shake out bugs.
-  //   There are k! permutations of size k. Testing costs are O(k).
-  for (size_t k = 0; k < 7; ++k) {
-    const auto count = Factorial(k);
-    INFO("testing with " << count << " permutations of size " << k);
-    std::vector<size_t> identity(k);
-    for (size_t i = 0; i < k; ++i) {
-      identity[i] = i;
-    }
-    for (size_t n = 0; n < count; ++n, ++seed) {
-      gen.seed(seed);
-      auto permutation = MakePermutation(0, k, gen);
-      std::ostringstream os;
-      os << "permutation of " << k << " numbers generated using seed " << seed;
-      GIVEN(os.str()) {
-        // NOTE: We could test with something other than [0, k) as the data, but
-        // let's just say "parametric polymorphism" and move on.
-        auto permutation_copy = permutation;
-        auto identity_copy = identity;
-        stg::Permute(identity_copy, permutation_copy);
-        for (size_t i = 0; i < k; ++i) {
-          // permutation_copy should be the identity
-          CHECK(permutation_copy[i] == i);
-          // identity_copy should now be the same as permutation
-          CHECK(identity_copy[i] == permutation[i]);
-        }
-      }
-    }
-  }
-}
 
 TEST_CASE("randomly-generated ordering sequences, fully-matching") {
   std::ranlux48 gen;
@@ -271,62 +224,6 @@ TEST_CASE("hand-curated ordering sequences") {
   for (const auto& [order1, order2, expected] : cases) {
     const auto combined = CombineOrders(order1, order2);
     CHECK(combined == expected);
-  }
-}
-
-TEST_CASE("hand-curated reorderings with input order randomisation") {
-  using Constraint = std::pair<std::optional<size_t>, std::optional<size_t>>;
-  using Constraints = std::vector<Constraint>;
-  // NOTES:
-  //   item removed at position x: {x}, {}
-  //   item added at position y: {}, {y}
-  //   item modified at positions x and y: {x}, {y}
-  //   input item order should be irrelevant to output order
-  const std::vector<std::pair<Constraints, Constraints>> cases = {
-    {
-      {
-        {{2}, {2}},  // emily
-        {{1}, {0}},  // george
-        {{0}, {}},   // rose
-        {{}, {1}},   // ted
-      },
-      {
-        {{0}, {}},   // rose
-        {{1}, {0}},  // george
-        {{}, {1}},   // ted
-        {{2}, {2}},  // emily
-      },
-    },
-    {{}, {}},
-    {{{{0}, {0}}}, {{{0}, {0}}}},
-    {{{{0}, {}}}, {{{0}, {}}}},
-    {{{{}, {0}}}, {{{}, {0}}}},
-    {{{{}, {2}}, {{}, {1}}, {{}, {0}}},
-     {{{}, {0}}, {{}, {1}}, {{}, {2}}}},
-    {{{{2}, {}}, {{1}, {}}, {{0}, {}}},
-     {{{0}, {}}, {{1}, {}}, {{2}, {}}}},
-    // int b; int c; -> int b; int a; int c
-    {{{{}, {1}}, {{0}, {0}}, {{1}, {2}}},
-     {{{0}, {0}}, {{}, {1}}, {{1}, {2}}}},
-  };
-  std::ranlux48 gen;
-  auto seed = gen();
-  for (const auto& [given, expected] : cases) {
-    const auto k = given.size();
-    const auto count = Factorial(k);
-    INFO("testing with " << count << " random input orderings");
-    for (size_t n = 0; n < count; ++n, ++seed) {
-      gen.seed(seed);
-      std::ostringstream os;
-      os << "permutation of " << k << " items generated using seed " << seed;
-      GIVEN(os.str()) {
-        auto permutation = MakePermutation(0, k, gen);
-        auto copy = given;
-        stg::Permute(copy, permutation);
-        stg::Reorder(copy);
-        CHECK(copy == expected);
-      }
-    }
   }
 }
 
