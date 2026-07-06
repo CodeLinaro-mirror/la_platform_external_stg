@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2024 Google LLC
+// Copyright 2021-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -217,6 +217,77 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   auto combined = CombineOrders(indexes1, indexes2, size);
   // Use this to permute the original data array.
   Permute(data, combined);
+}
+
+using KeyIndexPairs = std::vector<std::pair<std::string, size_t>>;
+
+using MatchedPairs =
+    std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
+
+MatchedPairs PairUp(KeyIndexPairs keys1, KeyIndexPairs keys2) {
+  std::stable_sort(keys1.begin(), keys1.end());
+  std::stable_sort(keys2.begin(), keys2.end());
+  MatchedPairs pairs;
+  pairs.reserve(std::max(keys1.size(), keys2.size()));
+  auto it1 = keys1.begin();
+  auto it2 = keys2.begin();
+  const auto end1 = keys1.end();
+  const auto end2 = keys2.end();
+  while (it1 != end1 || it2 != end2) {
+    if (it2 == end2 || (it1 != end1 && it1->first < it2->first)) {
+      // removed
+      pairs.push_back({{it1->second}, {}});
+      ++it1;
+    } else if (it1 == end1 || (it2 != end2 && it1->first > it2->first)) {
+      // added
+      pairs.push_back({{}, {it2->second}});
+      ++it2;
+    } else {
+      // in both
+      pairs.push_back({{it1->second}, {it2->second}});
+      ++it1;
+      ++it2;
+    }
+  }
+  return pairs;
+}
+
+template <typename T, typename ExtractKey, typename Removed, typename Added,
+          typename InBoth>
+void MatchReorderForEach(const std::vector<T>& items1,
+                         const std::vector<T>& items2, ExtractKey&& extract_key,
+                         Removed&& removed, Added&& added, InBoth&& in_both) {
+  // Copy the key extractor to ensure that if it is stateful (e.g. anonymous
+  // counter), both phases (building the map and matching) start with the same
+  // state and thus generate the same keys for matching.
+  auto extract_key2 = extract_key;
+
+  KeyIndexPairs keys1;
+  keys1.reserve(items1.size());
+  for (size_t ix = 0; ix < items1.size(); ++ix) {
+    keys1.emplace_back(extract_key(items1[ix]), ix);
+  }
+
+  KeyIndexPairs keys2;
+  keys2.reserve(items2.size());
+  for (size_t ix = 0; ix < items2.size(); ++ix) {
+    keys2.emplace_back(extract_key2(items2[ix]), ix);
+  }
+
+  auto pairs = PairUp(std::move(keys1), std::move(keys2));
+  Reorder(pairs);
+
+  for (const auto& [ix1, ix2] : pairs) {
+    if (ix1 && !ix2) {
+      removed(items1[*ix1]);
+    } else if (!ix1 && ix2) {
+      added(items2[*ix2]);
+    } else if (ix1 && ix2) {
+      in_both(items1[*ix1], items2[*ix2]);
+    } else {
+      Die() << "MatchReorderForEach: impossible pair";
+    }
+  }
 }
 
 }  // namespace stg
