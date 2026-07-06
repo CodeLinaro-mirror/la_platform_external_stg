@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -50,8 +50,24 @@ namespace {
 struct Unifier {
   enum Winner { Neither, Right, Left };  // makes p ? Right : Neither a no-op
 
-  Unifier(const Graph& graph, Unification& unification)
-      : graph(graph), unification(unification) {}
+  explicit Unifier(UnifyingGraph& unifying_graph)
+      : unifying_graph(unifying_graph) {}
+
+  Id Find(Id id) {
+    // Ensure id is canonicalised before querying the local speculative mapping,
+    // as mapping keys are stored as canonical IDs.
+    id = unifying_graph.Find(id);
+    while (true) {
+      auto it = mapping.find(id);
+      if (it != mapping.end()) {
+        // Canonicalise the target of the speculative mapping before attempting
+        // next lookup.
+        id = unifying_graph.Find(it->second);
+        continue;
+      }
+      return id;
+    }
+  }
 
   bool operator()(Id id1, Id id2) {
     Id fid1 = Find(id1);
@@ -69,7 +85,7 @@ struct Unifier {
       return true;
     }
 
-    const auto winner = graph.Apply2(*this, fid1, fid2);
+    const auto winner = unifying_graph.graph().Apply2(*this, fid1, fid2);
     if (winner == Neither) {
       return false;
     }
@@ -264,24 +280,7 @@ struct Unifier {
     return Neither;
   }
 
-  Id Find(Id id) {
-    // Ensure id is canonicalised before querying the local speculative mapping,
-    // as mapping keys are stored as canonical IDs.
-    id = unification.Find(id);
-    while (true) {
-      auto it = mapping.find(id);
-      if (it != mapping.end()) {
-        // Canonicalise the target of the speculative mapping before attempting
-        // next lookup.
-        id = unification.Find(it->second);
-        continue;
-      }
-      return id;
-    }
-  }
-
-  const Graph& graph;
-  Unification& unification;
+  UnifyingGraph& unifying_graph;
   std::unordered_set<Pair> seen;
   std::unordered_map<Id, Id> mapping;
 };
@@ -357,8 +356,8 @@ Id Unification::Find(Id id) {
 }
 
 bool Unification::Unify(Id id1, Id id2) {
-  // TODO: Unifier only needs access to Unification::Find
-  Unifier unifier(graph_, *this);
+  UnifyingGraph unifying_graph(graph_, *this);
+  Unifier unifier(unifying_graph);
   if (unifier(id1, id2)) {
     // commit
     for (const auto& s : unifier.mapping) {

@@ -73,7 +73,7 @@ class UnifyingGraph {
     unification_.Union(id1, id2);
   }
 
-  // attempt to unify, recursively, allowing types declarations to be replaced
+  // attempt to unify, recursively, allowing type declarations to be replaced
   // by definitions
   bool Unify(Id id1, Id id2) {
     return unification_.Unify(id1, id2);
@@ -86,7 +86,7 @@ class UnifyingGraph {
 
   template <typename FunctionObject, typename... Args>
   decltype(auto) Apply2(FunctionObject&& function, Id id1, Id id2,
-                        Args&&... args) const {
+                        Args&&... args) {
     return graph_.Apply2(function, Find(id1), Find(id2),
                          std::forward<Args>(args)...);
   }
