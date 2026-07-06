@@ -1,0 +1,767 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+special {
+  id: 0x48b5725f
+  kind: VOID
+}
+primitive {
+  id: 0x33756485
+  name: "unsigned long"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000008
+}
+primitive {
+  id: 0x4585663f
+  name: "unsigned int"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000004
+}
+primitive {
+  id: 0x5ab350f8
+  name: "signed char"
+  encoding: SIGNED_CHARACTER
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0x5d8155a5
+  name: "unsigned char"
+  encoding: UNSIGNED_CHARACTER
+  bytesize: 0x00000001
+}
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
+}
+primitive {
+  id: 0x7c89493c
+  name: "unsigned __int128"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000010
+}
+primitive {
+  id: 0xb0312d5a
+  name: "short"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000002
+}
+primitive {
+  id: 0xc6151e62
+  name: "__int128"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000010
+}
+primitive {
+  id: 0xc93e017b
+  name: "unsigned short"
+  encoding: UNSIGNED_INTEGER
+  bytesize: 0x00000002
+}
+primitive {
+  id: 0xfc0e1dbd
+  name: "long"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000008
+}
+enumeration {
+  id: 0x684bcf2b
+  name: "neg128"
+  definition {
+    underlying_type_id: 0xc6151e62  # __int128
+    enumerator {
+      name: "n1"
+      value: -1
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n2"
+      value: -2
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n8"
+      value: -8
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n128"
+      value: -128
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n32768"
+      value: -32768
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n2147483648"
+      value: -2147483648
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n9223372036854775808"
+      value: -9223372036854775808
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n170141183460469231731687303715884105728"
+      value: 0
+      value: -9223372036854775808
+      value: 0
+    }
+    enumerator {
+      name: "n64"
+      value: -64
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n8192"
+      value: -8192
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n1048576"
+      value: -1048576
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n134217728"
+      value: -134217728
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n17179869184"
+      value: -17179869184
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n2199023255552"
+      value: -2199023255552
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n281474976710656"
+      value: -281474976710656
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n36028797018963968"
+      value: -36028797018963968
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n4611686018427387904"
+      value: -4611686018427387904
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "n590295810358705651712"
+      value: 0
+      value: -32
+      value: 0
+    }
+    enumerator {
+      name: "n75557863725914323419136"
+      value: 0
+      value: -4096
+      value: 0
+    }
+    enumerator {
+      name: "n9671406556917033397649408"
+      value: 0
+      value: -524288
+      value: 0
+    }
+    enumerator {
+      name: "n1237940039285380274899124224"
+      value: 0
+      value: -67108864
+      value: 0
+    }
+    enumerator {
+      name: "n158456325028528675187087900672"
+      value: 0
+      value: -8589934592
+      value: 0
+    }
+    enumerator {
+      name: "n20282409603651670423947251286016"
+      value: 0
+      value: -1099511627776
+      value: 0
+    }
+    enumerator {
+      name: "n2596148429267413814265248164610048"
+      value: 0
+      value: -140737488355328
+      value: 0
+    }
+    enumerator {
+      name: "n332306998946228968225951765070086144"
+      value: 0
+      value: -18014398509481984
+      value: 0
+    }
+    enumerator {
+      name: "n42535295865117307932921825928971026432"
+      value: 0
+      value: -2305843009213693952
+      value: 0
+    }
+  }
+}
+enumeration {
+  id: 0x7ac2b331
+  name: "neg16"
+  definition {
+    underlying_type_id: 0xb0312d5a  # short
+    enumerator {
+      name: "n1"
+      value: -1
+    }
+    enumerator {
+      name: "n2"
+      value: -2
+    }
+    enumerator {
+      name: "n8"
+      value: -8
+    }
+    enumerator {
+      name: "n128"
+      value: -128
+    }
+    enumerator {
+      name: "n32768"
+      value: -32768
+    }
+    enumerator {
+      name: "n64"
+      value: -64
+    }
+    enumerator {
+      name: "n8192"
+      value: -8192
+    }
+  }
+}
+enumeration {
+  id: 0x44f16816
+  name: "neg32"
+  definition {
+    underlying_type_id: 0x6720d32f  # int
+    enumerator {
+      name: "n1"
+      value: -1
+    }
+    enumerator {
+      name: "n2"
+      value: -2
+    }
+    enumerator {
+      name: "n8"
+      value: -8
+    }
+    enumerator {
+      name: "n128"
+      value: -128
+    }
+    enumerator {
+      name: "n32768"
+      value: -32768
+    }
+    enumerator {
+      name: "n2147483648"
+      value: -2147483648
+    }
+    enumerator {
+      name: "n64"
+      value: -64
+    }
+    enumerator {
+      name: "n8192"
+      value: -8192
+    }
+    enumerator {
+      name: "n1048576"
+      value: -1048576
+    }
+    enumerator {
+      name: "n134217728"
+      value: -134217728
+    }
+  }
+}
+enumeration {
+  id: 0x50418265
+  name: "neg64"
+  definition {
+    underlying_type_id: 0xfc0e1dbd  # long
+    enumerator {
+      name: "n1"
+      value: -1
+    }
+    enumerator {
+      name: "n2"
+      value: -2
+    }
+    enumerator {
+      name: "n8"
+      value: -8
+    }
+    enumerator {
+      name: "n128"
+      value: -128
+    }
+    enumerator {
+      name: "n32768"
+      value: -32768
+    }
+    enumerator {
+      name: "n2147483648"
+      value: -2147483648
+    }
+    enumerator {
+      name: "n9223372036854775808"
+      value: -9223372036854775808
+    }
+    enumerator {
+      name: "n64"
+      value: -64
+    }
+    enumerator {
+      name: "n8192"
+      value: -8192
+    }
+    enumerator {
+      name: "n1048576"
+      value: -1048576
+    }
+    enumerator {
+      name: "n134217728"
+      value: -134217728
+    }
+    enumerator {
+      name: "n17179869184"
+      value: -17179869184
+    }
+    enumerator {
+      name: "n2199023255552"
+      value: -2199023255552
+    }
+    enumerator {
+      name: "n281474976710656"
+      value: -281474976710656
+    }
+    enumerator {
+      name: "n36028797018963968"
+      value: -36028797018963968
+    }
+    enumerator {
+      name: "n4611686018427387904"
+      value: -4611686018427387904
+    }
+  }
+}
+enumeration {
+  id: 0x56d6bc4b
+  name: "neg8"
+  definition {
+    underlying_type_id: 0x5ab350f8  # signed char
+    enumerator {
+      name: "n1"
+      value: -1
+    }
+    enumerator {
+      name: "n2"
+      value: -2
+    }
+    enumerator {
+      name: "n8"
+      value: -8
+    }
+    enumerator {
+      name: "n128"
+      value: -128
+    }
+    enumerator {
+      name: "n64"
+      value: -64
+    }
+  }
+}
+enumeration {
+  id: 0xd4a9c675
+  name: "pos128"
+  definition {
+    underlying_type_id: 0x7c89493c  # unsigned __int128
+    enumerator {
+      name: "p1"
+      value: 1
+    }
+    enumerator {
+      name: "p3"
+      value: 3
+    }
+    enumerator {
+      name: "p15"
+      value: 15
+    }
+    enumerator {
+      name: "p255"
+      value: 255
+    }
+    enumerator {
+      name: "p65535"
+      value: 65535
+    }
+    enumerator {
+      name: "p4294967295"
+      value: 4294967295
+    }
+    enumerator {
+      name: "p18446744073709551615"
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "p340282366920938463463374607431768211455"
+      value: -1
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "p0"
+    }
+    enumerator {
+      name: "p127"
+      value: 127
+    }
+    enumerator {
+      name: "p16383"
+      value: 16383
+    }
+    enumerator {
+      name: "p2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "p268435455"
+      value: 268435455
+    }
+    enumerator {
+      name: "p34359738367"
+      value: 34359738367
+    }
+    enumerator {
+      name: "p4398046511103"
+      value: 4398046511103
+    }
+    enumerator {
+      name: "p562949953421311"
+      value: 562949953421311
+    }
+    enumerator {
+      name: "p72057594037927935"
+      value: 72057594037927935
+    }
+    enumerator {
+      name: "p9223372036854775807"
+      value: 9223372036854775807
+    }
+    enumerator {
+      name: "p1180591620717411303423"
+      value: -1
+      value: 63
+    }
+    enumerator {
+      name: "p151115727451828646838271"
+      value: -1
+      value: 8191
+    }
+    enumerator {
+      name: "p19342813113834066795298815"
+      value: -1
+      value: 1048575
+    }
+    enumerator {
+      name: "p2475880078570760549798248447"
+      value: -1
+      value: 134217727
+    }
+    enumerator {
+      name: "p316912650057057350374175801343"
+      value: -1
+      value: 17179869183
+    }
+    enumerator {
+      name: "p40564819207303340847894502572031"
+      value: -1
+      value: 2199023255551
+    }
+    enumerator {
+      name: "p5192296858534827628530496329220095"
+      value: -1
+      value: 281474976710655
+    }
+    enumerator {
+      name: "p664613997892457936451903530140172287"
+      value: -1
+      value: 36028797018963967
+    }
+    enumerator {
+      name: "p85070591730234615865843651857942052863"
+      value: -1
+      value: 4611686018427387903
+    }
+  }
+}
+enumeration {
+  id: 0xaa5c1f63
+  name: "pos16"
+  definition {
+    underlying_type_id: 0xc93e017b  # unsigned short
+    enumerator {
+      name: "p1"
+      value: 1
+    }
+    enumerator {
+      name: "p3"
+      value: 3
+    }
+    enumerator {
+      name: "p15"
+      value: 15
+    }
+    enumerator {
+      name: "p255"
+      value: 255
+    }
+    enumerator {
+      name: "p65535"
+      value: 65535
+    }
+    enumerator {
+      name: "p0"
+    }
+    enumerator {
+      name: "p127"
+      value: 127
+    }
+    enumerator {
+      name: "p16383"
+      value: 16383
+    }
+  }
+}
+enumeration {
+  id: 0x08216724
+  name: "pos32"
+  definition {
+    underlying_type_id: 0x4585663f  # unsigned int
+    enumerator {
+      name: "p1"
+      value: 1
+    }
+    enumerator {
+      name: "p3"
+      value: 3
+    }
+    enumerator {
+      name: "p15"
+      value: 15
+    }
+    enumerator {
+      name: "p255"
+      value: 255
+    }
+    enumerator {
+      name: "p65535"
+      value: 65535
+    }
+    enumerator {
+      name: "p4294967295"
+      value: 4294967295
+    }
+    enumerator {
+      name: "p0"
+    }
+    enumerator {
+      name: "p127"
+      value: 127
+    }
+    enumerator {
+      name: "p16383"
+      value: 16383
+    }
+    enumerator {
+      name: "p2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "p268435455"
+      value: 268435455
+    }
+  }
+}
+enumeration {
+  id: 0xc0277653
+  name: "pos64"
+  definition {
+    underlying_type_id: 0x33756485  # unsigned long
+    enumerator {
+      name: "p1"
+      value: 1
+    }
+    enumerator {
+      name: "p3"
+      value: 3
+    }
+    enumerator {
+      name: "p15"
+      value: 15
+    }
+    enumerator {
+      name: "p255"
+      value: 255
+    }
+    enumerator {
+      name: "p65535"
+      value: 65535
+    }
+    enumerator {
+      name: "p4294967295"
+      value: 4294967295
+    }
+    enumerator {
+      name: "p18446744073709551615"
+      value: -1
+      value: 0
+    }
+    enumerator {
+      name: "p0"
+    }
+    enumerator {
+      name: "p127"
+      value: 127
+    }
+    enumerator {
+      name: "p16383"
+      value: 16383
+    }
+    enumerator {
+      name: "p2097151"
+      value: 2097151
+    }
+    enumerator {
+      name: "p268435455"
+      value: 268435455
+    }
+    enumerator {
+      name: "p34359738367"
+      value: 34359738367
+    }
+    enumerator {
+      name: "p4398046511103"
+      value: 4398046511103
+    }
+    enumerator {
+      name: "p562949953421311"
+      value: 562949953421311
+    }
+    enumerator {
+      name: "p72057594037927935"
+      value: 72057594037927935
+    }
+    enumerator {
+      name: "p9223372036854775807"
+      value: 9223372036854775807
+    }
+  }
+}
+enumeration {
+  id: 0xf68caca9
+  name: "pos8"
+  definition {
+    underlying_type_id: 0x5d8155a5  # unsigned char
+    enumerator {
+      name: "p1"
+      value: 1
+    }
+    enumerator {
+      name: "p3"
+      value: 3
+    }
+    enumerator {
+      name: "p15"
+      value: 15
+    }
+    enumerator {
+      name: "p255"
+      value: 255
+    }
+    enumerator {
+      name: "p0"
+    }
+    enumerator {
+      name: "p127"
+      value: 127
+    }
+  }
+}
+function {
+  id: 0x04d69303
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0x56d6bc4b  # enum neg8
+  parameter_id: 0x7ac2b331  # enum neg16
+  parameter_id: 0x44f16816  # enum neg32
+  parameter_id: 0x50418265  # enum neg64
+  parameter_id: 0x684bcf2b  # enum neg128
+}
+function {
+  id: 0x2f93372a
+  return_type_id: 0x48b5725f  # void
+  parameter_id: 0xf68caca9  # enum pos8
+  parameter_id: 0xaa5c1f63  # enum pos16
+  parameter_id: 0x08216724  # enum pos32
+  parameter_id: 0xc0277653  # enum pos64
+  parameter_id: 0xd4a9c675  # enum pos128
+}
+elf_symbol {
+  id: 0x85350e42
+  name: "_Z7use_neg4neg85neg165neg325neg646neg128"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x04d69303  # void(enum neg8, enum neg16, enum neg32, enum neg64, enum neg128)
+  full_name: "use_neg"
+}
+elf_symbol {
+  id: 0x3470db4e
+  name: "_Z7use_pos4pos85pos165pos325pos646pos128"
+  is_defined: true
+  symbol_type: FUNCTION
+  type_id: 0x2f93372a  # void(enum pos8, enum pos16, enum pos32, enum pos64, enum pos128)
+  full_name: "use_pos"
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x85350e42  # void use_neg(enum neg8, enum neg16, enum neg32, enum neg64, enum neg128)
+  symbol_id: 0x3470db4e  # void use_pos(enum pos8, enum pos16, enum pos32, enum pos64, enum pos128)
+}
