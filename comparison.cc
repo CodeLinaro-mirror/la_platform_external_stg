@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2024 Google LLC
+// Copyright 2020-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -301,7 +301,6 @@ KeyIndexPairs MatchingKeys(const Graph& graph, const std::vector<Id>& ids) {
     }
     keys.emplace_back(key, ix);
   }
-  std::stable_sort(keys.begin(), keys.end());
   return keys;
 }
 
@@ -313,14 +312,15 @@ KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
     const auto& name = enums[ix].first;
     names.emplace_back(name, ix);
   }
-  std::stable_sort(names.begin(), names.end());
   return names;
 }
 
 using MatchedPairs =
     std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
 
-MatchedPairs PairUp(const KeyIndexPairs& keys1, const KeyIndexPairs& keys2) {
+MatchedPairs PairUp(KeyIndexPairs keys1, KeyIndexPairs keys2) {
+  std::stable_sort(keys1.begin(), keys1.end());
+  std::stable_sort(keys2.begin(), keys2.end());
   MatchedPairs pairs;
   pairs.reserve(std::max(keys1.size(), keys2.size()));
   auto it1 = keys1.begin();
