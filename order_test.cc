@@ -55,6 +55,40 @@ std::vector<size_t> MakePermutation(size_t k, size_t n, G& gen) {
   return result;
 }
 
+template <typename T>
+std::vector<T> CombineOrders(const std::vector<T>& items1,
+                             const std::vector<T>& items2) {
+  std::vector<T> combined;
+  const auto extract = [](const T& x) { return x; };
+  const auto removed = [&](const T& x) { combined.push_back(x); };
+  const auto added = [&](const T& x) { combined.push_back(x); };
+  const auto in_both = [&](const T& x, const T&) { combined.push_back(x); };
+  stg::MatchReorderForEach(items1, items2, extract, removed, added, in_both);
+  return combined;
+}
+
+template <typename Extract>
+Sequence GetMappingCalls(const Sequence& items1, const Sequence& items2,
+                         Extract extract) {
+  Sequence calls;
+  const auto removed = [&](const std::string& left) {
+    calls.push_back(left + ">");
+  };
+  const auto added = [&](const std::string& right) {
+    calls.push_back("<" + right);
+  };
+  const auto in_both = [&](const std::string& left, const std::string& right) {
+    calls.push_back(left + "=" + right);
+  };
+  stg::MatchReorderForEach(items1, items2, extract, removed, added, in_both);
+  return calls;
+}
+
+Sequence GetMappingCalls(const Sequence& items1, const Sequence& items2) {
+  const auto identity = [](const std::string& s) { return s; };
+  return GetMappingCalls(items1, items2, identity);
+}
+
 }  // namespace
 
 TEST_CASE("hand-curated permutation") {
@@ -118,7 +152,7 @@ TEST_CASE("randomly-generated ordering sequences, fully-matching") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        const auto combined = stg::CombineOrders(order1, order2, k);
+        const auto combined = CombineOrders(order1, order2);
         // combined should be identical to order2
         CHECK(combined == order2);
       }
@@ -142,7 +176,7 @@ TEST_CASE("randomly-generated ordering sequences, no overlap") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        const auto combined = stg::CombineOrders(order1, order2, 2 * k);
+        const auto combined = CombineOrders(order1, order2);
         for (size_t i = 0; i < k; ++i) {
           // order1 should appear as the first part
           CHECK(combined[i] == order1[i]);
@@ -171,7 +205,7 @@ TEST_CASE("randomly-generated ordering sequences, single overlap") {
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
-        const auto combined = stg::CombineOrders(order1, order2, 2 * k - 1);
+        const auto combined = CombineOrders(order1, order2);
         CHECK(combined.size() == 2 * k - 1);
         // order1 pre, order2 pre, pivot, order1 post, order2 post
         size_t ix = 0;
@@ -217,7 +251,7 @@ TEST_CASE("hand-curated ordering sequences") {
       {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
-    const auto combined = stg::CombineOrders(order1, order2, expected.size());
+    const auto combined = CombineOrders(order1, order2);
     CHECK(combined == expected);
   }
 }
@@ -276,6 +310,65 @@ TEST_CASE("hand-curated reorderings with input order randomisation") {
       }
     }
   }
+}
+
+TEST_CASE("MatchReorderForEach with collections") {
+  const Sequence items1 = {"rose", "george", "emily"};
+  const Sequence items2 = {"george", "ted", "emily"};
+
+  const auto calls = GetMappingCalls(items1, items2);
+
+  const Sequence expected = {
+      "rose>",
+      "george=george",
+      "<ted",
+      "emily=emily",
+  };
+  CHECK(calls == expected);
+}
+
+TEST_CASE("MatchReorderForEach with duplicate keys") {
+  const Sequence unique = {"a", "b", "c"};
+  const Sequence duplicate = {"a", "b", "a"};
+
+  const auto extract = [](const std::string& s) { return s; };
+  const auto ignore = [](auto&&...) {};
+
+  // duplicate in first container (items1)
+  CHECK_THROWS(stg::MatchReorderForEach(duplicate, unique, extract, ignore,
+                                        ignore, ignore));
+
+  // duplicate in second container (items2)
+  CHECK_THROWS(stg::MatchReorderForEach(unique, duplicate, extract, ignore,
+                                        ignore, ignore));
+}
+
+TEST_CASE("MatchReorderForEach with anonymous items") {
+  const Sequence items1 = {"", "", "namedA"};
+  const Sequence items2 = {"", "", "namedB"};
+
+  size_t anonymous_ix = 0;
+  auto extract = [anonymous_ix](const std::string& s) mutable {
+    if (s.empty()) {
+      return "#anon#" + std::to_string(anonymous_ix++);
+    }
+    return s;
+  };
+
+  const auto calls = GetMappingCalls(items1, items2, extract);
+
+  // We expect anonymous items to match by position:
+  // anon0 (index 0) matches anon0 (index 0) -> "="
+  // anon1 (index 1) matches anon1 (index 1) -> "="
+  // namedA (index 2) is removed -> "namedA>"
+  // namedB (index 2) is added -> "<namedB"
+  const Sequence expected = {
+      "=",
+      "=",
+      "namedA>",
+      "<namedB",
+  };
+  CHECK(calls == expected);
 }
 
 }  // namespace Test
