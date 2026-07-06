@@ -23,12 +23,15 @@
 #include <algorithm>
 #include <cstddef>
 #include <optional>
+#include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "error.h"
 
 namespace stg {
+
 // Combines two orderings of unique items, eliminating duplicates between the
 // sequences, preserving the relative positions of the items in the second
 // ordering and incorporating as much of the first's order as is compatible.
@@ -219,12 +222,8 @@ void Reorder(std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
   Permute(data, combined);
 }
 
-template <typename Key>
-using KeyIndexPairs = std::vector<std::pair<Key, size_t>>;
-
-using MatchedPairs =
-    std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
-
+// Match and reorder two collections using a key-extraction lambda.
+// Invokes callbacks on-the-fly for unmatched and matched elements.
 template <typename T, typename ExtractKey, typename Removed, typename Added,
           typename InBoth>
 void MatchReorderForEach(const std::vector<T>& items1,
@@ -237,41 +236,44 @@ void MatchReorderForEach(const std::vector<T>& items1,
   // state and thus generate the same keys for matching.
   auto extract_key2 = extract_key;
 
-  KeyIndexPairs<Key> keys1;
-  keys1.reserve(items1.size());
-  for (size_t ix = 0; ix < items1.size(); ++ix) {
-    keys1.emplace_back(extract_key(items1[ix]), ix);
+  const size_t size1 = items1.size();
+  const size_t size2 = items2.size();
+
+  struct IndexMatch {
+    size_t index;
+    bool matched;
+  };
+
+  // map Key to index in items2
+  std::unordered_map<Key, IndexMatch> key_to_index2;
+  key_to_index2.reserve(size2);
+
+  for (size_t ix2 = 0; ix2 < size2; ++ix2) {
+    const auto [it, inserted] = key_to_index2.emplace(extract_key2(items2[ix2]),
+                                                      IndexMatch{ix2, false});
+    Check(inserted) << "MatchReorderForEach: duplicate key in items2";
   }
 
-  KeyIndexPairs<Key> keys2;
-  keys2.reserve(items2.size());
-  for (size_t ix = 0; ix < items2.size(); ++ix) {
-    keys2.emplace_back(extract_key2(items2[ix]), ix);
-  }
+  // build index pairs: (removed, _), (_, added), (in, both)
+  std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>> pairs;
+  pairs.reserve(std::max(size1, size2));
 
-  std::stable_sort(keys1.begin(), keys1.end());
-  std::stable_sort(keys2.begin(), keys2.end());
-
-  MatchedPairs pairs;
-  pairs.reserve(std::max(keys1.size(), keys2.size()));
-  auto it1 = keys1.begin();
-  auto it2 = keys2.begin();
-  const auto end1 = keys1.end();
-  const auto end2 = keys2.end();
-  while (it1 != end1 || it2 != end2) {
-    if (it2 == end2 || (it1 != end1 && it1->first < it2->first)) {
-      // removed
-      pairs.push_back({{it1->second}, {}});
-      ++it1;
-    } else if (it1 == end1 || (it2 != end2 && it1->first > it2->first)) {
-      // added
-      pairs.push_back({{}, {it2->second}});
-      ++it2;
+  for (size_t ix1 = 0; ix1 < size1; ++ix1) {
+    const auto key = extract_key(items1[ix1]);
+    const auto it = key_to_index2.find(key);
+    if (it != key_to_index2.end()) {
+      auto& match = it->second;
+      Check(!match.matched) << "MatchReorderForEach: duplicate key in items1";
+      match.matched = true;
+      pairs.emplace_back(ix1, match.index);
     } else {
-      // in both
-      pairs.push_back({{it1->second}, {it2->second}});
-      ++it1;
-      ++it2;
+      pairs.emplace_back(ix1, std::nullopt);
+    }
+  }
+
+  for (const auto& [key, match] : key_to_index2) {
+    if (!match.matched) {
+      pairs.emplace_back(std::nullopt, match.index);
     }
   }
 
