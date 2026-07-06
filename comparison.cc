@@ -289,32 +289,6 @@ struct MatchingKey {
 
 using KeyIndexPairs = std::vector<std::pair<std::string, size_t>>;
 
-KeyIndexPairs MatchingKeys(const Graph& graph, const std::vector<Id>& ids) {
-  KeyIndexPairs keys;
-  const auto size = ids.size();
-  keys.reserve(size);
-  size_t anonymous_ix = 0;
-  for (size_t ix = 0; ix < size; ++ix) {
-    auto key = MatchingKey(graph)(ids[ix]);
-    if (key.empty()) {
-      key = "#anon#" + std::to_string(anonymous_ix++);
-    }
-    keys.emplace_back(key, ix);
-  }
-  return keys;
-}
-
-KeyIndexPairs MatchingKeys(const Enumeration::Enumerators& enums) {
-  KeyIndexPairs names;
-  const auto size = enums.size();
-  names.reserve(size);
-  for (size_t ix = 0; ix < size; ++ix) {
-    const auto& name = enums[ix].first;
-    names.emplace_back(name, ix);
-  }
-  return names;
-}
-
 using MatchedPairs =
     std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>>;
 
@@ -344,6 +318,44 @@ MatchedPairs PairUp(KeyIndexPairs keys1, KeyIndexPairs keys2) {
     }
   }
   return pairs;
+}
+
+template <typename T, typename ExtractKey, typename Removed, typename Added,
+          typename InBoth>
+void MatchReorderForEach(const std::vector<T>& items1,
+                         const std::vector<T>& items2, ExtractKey&& extract_key,
+                         Removed&& removed, Added&& added, InBoth&& in_both) {
+  // Copy the key extractor to ensure that if it is stateful (e.g. anonymous
+  // counter), both phases (building the map and matching) start with the same
+  // state and thus generate the same keys for matching.
+  auto extract_key2 = extract_key;
+
+  KeyIndexPairs keys1;
+  keys1.reserve(items1.size());
+  for (size_t ix = 0; ix < items1.size(); ++ix) {
+    keys1.emplace_back(extract_key(items1[ix]), ix);
+  }
+
+  KeyIndexPairs keys2;
+  keys2.reserve(items2.size());
+  for (size_t ix = 0; ix < items2.size(); ++ix) {
+    keys2.emplace_back(extract_key2(items2[ix]), ix);
+  }
+
+  auto pairs = PairUp(std::move(keys1), std::move(keys2));
+  Reorder(pairs);
+
+  for (const auto& [ix1, ix2] : pairs) {
+    if (ix1 && !ix2) {
+      removed(items1[*ix1]);
+    } else if (!ix1 && ix2) {
+      added(items2[*ix2]);
+    } else if (ix1 && ix2) {
+      in_both(items1[*ix1], items2[*ix2]);
+    } else {
+      Die() << "MatchReorderForEach: impossible pair";
+    }
+  }
 }
 
 std::string QualifiersMessage(Qualifier qualifier, const std::string& action) {
@@ -525,28 +537,25 @@ struct CompareWorker {
 
   void Nodes(const std::vector<Id>& ids1, const std::vector<Id>& ids2,
              Result& result) {
-    const auto keys1 = MatchingKeys(graph, ids1);
-    const auto keys2 = MatchingKeys(graph, ids2);
-    auto pairs = PairUp(keys1, keys2);
-    Reorder(pairs);
-    for (const auto& [index1, index2] : pairs) {
-      if (index1 && !index2) {
-        // removed
-        const auto& x1 = ids1[*index1];
-        result.AddEdgeDiff("", Removed(x1));
-      } else if (!index1 && index2) {
-        // added
-        const auto& x2 = ids2[*index2];
-        result.AddEdgeDiff("", Added(x2));
-      } else if (index1 && index2) {
-        // in both
-        const auto& x1 = ids1[*index1];
-        const auto& x2 = ids2[*index2];
-        result.MaybeAddEdgeDiff("", (*this)(x1, x2));
-      } else {
-        Die() << "CompareWorker::Nodes: impossible pair";
+    size_t anonymous_ix = 0;
+    // captured and passed by value to avoid sharing the counter
+    auto extract_key = [this, anonymous_ix](Id id) mutable {
+      auto key = MatchingKey(graph)(id);
+      if (key.empty()) {
+        key = "#anon#" + std::to_string(anonymous_ix++);
       }
-    }
+      return key;
+    };
+    auto removed = [&](const Id& id1) {
+      result.AddEdgeDiff("", Removed(id1));
+    };
+    auto added = [&](const Id& id2) {
+      result.AddEdgeDiff("", Added(id2));
+    };
+    auto in_both =[&](const Id& id1, const Id& id2) {
+      result.MaybeAddEdgeDiff("", (*this)(id1, id2));
+    };
+    MatchReorderForEach(ids1, ids2, extract_key, removed, added, in_both);
   }
 
   void Nodes(const std::map<std::string, Id>& x1,
@@ -745,40 +754,30 @@ struct CompareWorker {
         result.MaybeAddEdgeDiff("underlying", type_diff);
       }
 
-      const auto enums1 = definition1->enumerators;
-      const auto enums2 = definition2->enumerators;
-      const auto keys1 = MatchingKeys(enums1);
-      const auto keys2 = MatchingKeys(enums2);
-      auto pairs = PairUp(keys1, keys2);
-      Reorder(pairs);
-      for (const auto& [index1, index2] : pairs) {
-        if (index1 && !index2) {
-          // removed
-          const auto& enum1 = enums1[*index1];
-          std::ostringstream os;
-          os << "enumerator '" << enum1.first
-             << "' (" << enum1.second << ") was removed";
-          result.AddNodeDiff(os.str());
-        } else if (!index1 && index2) {
-          // added
-          const auto& enum2 = enums2[*index2];
-          std::ostringstream os;
-          os << "enumerator '" << enum2.first
-             << "' (" << enum2.second << ") was added";
-          result.AddNodeDiff(os.str());
-        } else if (index1 && index2) {
-          // in both
-          const auto& enum1 = enums1[*index1];
-          const auto& enum2 = enums2[*index2];
-          result.MaybeAddNodeDiff(
-              [&](std::ostream& os) {
-                os << "enumerator '" << enum1.first << "' value";
-              },
-              enum1.second, enum2.second);
-        } else {
-          Die() << "CompareWorker(Enumeration): impossible pair";
-        }
-      }
+      auto extract_key = [](const auto& enumerator) {
+        return enumerator.first;
+      };
+      auto removed = [&](const auto& enumerator1) {
+        std::ostringstream os;
+        os << "enumerator '" << enumerator1.first << "' ("
+           << enumerator1.second << ") was removed";
+        result.AddNodeDiff(os.str());
+      };
+      auto added = [&](const auto& enumerator2) {
+        std::ostringstream os;
+        os << "enumerator '" << enumerator2.first << "' ("
+           << enumerator2.second << ") was added";
+        result.AddNodeDiff(os.str());
+      };
+      auto in_both = [&](const auto& enumerator1, const auto& enumerator2) {
+        result.MaybeAddNodeDiff(
+            [&](std::ostream& os) {
+              os << "enumerator '" << enumerator1.first << "' value";
+            },
+            enumerator1.second, enumerator2.second);
+      };
+      MatchReorderForEach(definition1->enumerators, definition2->enumerators,
+                          extract_key, removed, added, in_both);
     }
 
     return result;
