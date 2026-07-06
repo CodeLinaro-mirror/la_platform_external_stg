@@ -236,6 +236,7 @@ TEST_CASE("hand-curated ordering sequences") {
   //   The output sequence MUST include the second sequence as a subsequence.
   //   The first sequence's ordering is respected as far as possible.
   const std::vector<std::tuple<Sequence, Sequence, Sequence>> cases = {
+      // these cases have a unique ordering that respects both inputs
       {{"rose", "george", "emily"},
        {"george", "ted", "emily"},
        {"rose", "george", "ted", "emily"}},
@@ -248,6 +249,11 @@ TEST_CASE("hand-curated ordering sequences") {
       {{"a", "b", "d"}, {"b", "c", "d"}, {"a", "b", "c", "d"}},
       {{"a", "c", "d"}, {"a", "b", "c"}, {"a", "b", "c", "d"}},
       {{"b", "c", "d"}, {"a", "b"}, {"a", "b", "c", "d"}},
+
+      // this case has no ordering that respects both inputs
+      // * q has to come after a
+      // * z and a could go either way, but the current algorithm always prefers
+      //     the second sequence's order
       {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
