@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <optional>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -34,13 +35,6 @@ namespace stg {
 // Match and reorder two collections using a key-extraction lambda.
 // Invokes callbacks on-the-fly for unmatched and matched elements in a
 // greedy, order-preserving manner.
-//
-// The two orderings are reconciled by examining each item from the first
-// sequence in turn. If it is not present in the second sequence, it is greedily
-// output as removed. If it is present but hasn't yet been output, then all
-// items from the current position in the second sequence up to and including it
-// are output in bulk (as added or in-both). Otherwise it is skipped. Finally,
-// all remaining items from the second sequence are output as added.
 template <typename T, typename ExtractKey, typename Removed, typename Added,
           typename InBoth>
 void MatchReorderForEach(const std::vector<T>& items1,
@@ -71,8 +65,10 @@ void MatchReorderForEach(const std::vector<T>& items1,
     Check(inserted) << "MatchReorderForEach: duplicate key in items2";
   }
 
-  std::vector<size_t> indexes2(size2);
-  size_t unmatched2_id = size1;
+  // map index in items1 to index in items2 (if matched)
+  std::vector<std::optional<size_t>> ix1_to_ix2(size1, std::nullopt);
+  // map index in items2 to index in items1 (if matched)
+  std::vector<std::optional<size_t>> ix2_to_ix1(size2, std::nullopt);
 
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
     const auto key = extract_key(items1[ix1]);
@@ -81,44 +77,45 @@ void MatchReorderForEach(const std::vector<T>& items1,
       auto& match = it->second;
       Check(!match.matched) << "MatchReorderForEach: duplicate key in items1";
       match.matched = true;
-      indexes2[match.index] = ix1;
+      ix1_to_ix2[ix1] = match.index;
+      ix2_to_ix1[match.index] = ix1;
     }
   }
 
-  for (const auto& [key, match] : key_to_index2) {
-    if (!match.matched) {
-      indexes2[match.index] = unmatched2_id++;
-    }
-  }
+  // keep track of where we are up to in items2
+  size_t position2 = 0;
 
-  // Reconcile orderings greedily, invoking callbacks on-the-fly.
-  // indexes1 is implicitly [0, size1).
-  auto position = indexes2.begin();
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
-    const auto found = std::find(indexes2.begin(), indexes2.end(), ix1);
-    if (found == indexes2.end()) {
-      // ix1 not found in the second ordering (unique to items1)
+    const auto match_ix2 = ix1_to_ix2[ix1];
+    if (!match_ix2) {
+      // ix1 is unmatched (removed)
       removed(items1[ix1]);
     } else {
-      // output items in items2 up to and including found value (if not already
-      // output)
-      for (; position <= found; ++position) {
-        const size_t ix2 = position - indexes2.begin();
-        if (*position < size1) {
-          in_both(items1[*position], items2[ix2]);
-        } else {
-          added(items2[ix2]);
+      // ix1 is matched at match_ix2
+      // If match_ix2 is already output (because we pulled it forward), do
+      // nothing.
+      if (*match_ix2 >= position2) {
+        // output all items in items2 from position2 up to match_ix2 (inclusive)
+        for (size_t i = position2; i <= *match_ix2; ++i) {
+          const auto match_ix1 = ix2_to_ix1[i];
+          if (!match_ix1) {
+            added(items2[i]);
+          } else {
+            in_both(items1[*match_ix1], items2[i]);
+          }
         }
+        position2 = *match_ix2 + 1;
       }
     }
   }
-  // output any remaining items in items2
-  for (; position < indexes2.end(); ++position) {
-    const size_t ix2 = position - indexes2.begin();
-    if (*position < size1) {
-      in_both(items1[*position], items2[ix2]);
+
+  // output remaining items in items2
+  for (size_t i = position2; i < size2; ++i) {
+    const auto match_ix1 = ix2_to_ix1[i];
+    if (!match_ix1) {
+      added(items2[i]);
     } else {
-      added(items2[ix2]);
+      in_both(items1[*match_ix1], items2[i]);
     }
   }
 }
