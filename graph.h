@@ -485,6 +485,49 @@ class Graph {
     INTERFACE,
   };
 
+  template <typename Self, typename FunctionObject>
+  static decltype(auto) WithVector(
+      Self& self, Which which, FunctionObject&& function) {
+    switch (which) {
+      case Which::ABSENT:
+        Die() << "undefined node";
+      case Which::SPECIAL:
+        return function(self.special_);
+      case Which::POINTER_REFERENCE:
+        return function(self.pointer_reference_);
+      case Which::POINTER_TO_MEMBER:
+        return function(self.pointer_to_member_);
+      case Which::TYPEDEF:
+        return function(self.typedef_);
+      case Which::QUALIFIED:
+        return function(self.qualified_);
+      case Which::PRIMITIVE:
+        return function(self.primitive_);
+      case Which::ARRAY:
+        return function(self.array_);
+      case Which::BASE_CLASS:
+        return function(self.base_class_);
+      case Which::METHOD:
+        return function(self.method_);
+      case Which::MEMBER:
+        return function(self.member_);
+      case Which::VARIANT_MEMBER:
+        return function(self.variant_member_);
+      case Which::STRUCT_UNION:
+        return function(self.struct_union_);
+      case Which::ENUMERATION:
+        return function(self.enumeration_);
+      case Which::VARIANT:
+        return function(self.variant_);
+      case Which::FUNCTION:
+        return function(self.function_);
+      case Which::ELF_SYMBOL:
+        return function(self.elf_symbol_);
+      case Which::INTERFACE:
+        return function(self.interface_);
+    }
+  }
+
   std::vector<std::pair<Which, size_t>> indirection_;
 
   std::vector<Special> special_;
@@ -510,44 +553,9 @@ template <typename FunctionObject, typename... Args>
 decltype(auto) Graph::Apply(
     FunctionObject&& function, Id id, Args&&... args) const {
   const auto& [which, ix] = indirection_[id.ix_];
-  switch (which) {
-    case Which::ABSENT:
-      Die() << "undefined node";
-    case Which::SPECIAL:
-      return function(special_[ix], std::forward<Args>(args)...);
-    case Which::POINTER_REFERENCE:
-      return function(pointer_reference_[ix], std::forward<Args>(args)...);
-    case Which::POINTER_TO_MEMBER:
-      return function(pointer_to_member_[ix], std::forward<Args>(args)...);
-    case Which::TYPEDEF:
-      return function(typedef_[ix], std::forward<Args>(args)...);
-    case Which::QUALIFIED:
-      return function(qualified_[ix], std::forward<Args>(args)...);
-    case Which::PRIMITIVE:
-      return function(primitive_[ix], std::forward<Args>(args)...);
-    case Which::ARRAY:
-      return function(array_[ix], std::forward<Args>(args)...);
-    case Which::BASE_CLASS:
-      return function(base_class_[ix], std::forward<Args>(args)...);
-    case Which::METHOD:
-      return function(method_[ix], std::forward<Args>(args)...);
-    case Which::MEMBER:
-      return function(member_[ix], std::forward<Args>(args)...);
-    case Which::VARIANT_MEMBER:
-      return function(variant_member_[ix], std::forward<Args>(args)...);
-    case Which::STRUCT_UNION:
-      return function(struct_union_[ix], std::forward<Args>(args)...);
-    case Which::ENUMERATION:
-      return function(enumeration_[ix], std::forward<Args>(args)...);
-    case Which::VARIANT:
-      return function(variant_[ix], std::forward<Args>(args)...);
-    case Which::FUNCTION:
-      return function(function_[ix], std::forward<Args>(args)...);
-    case Which::ELF_SYMBOL:
-      return function(elf_symbol_[ix], std::forward<Args>(args)...);
-    case Which::INTERFACE:
-      return function(interface_[ix], std::forward<Args>(args)...);
-  }
+  return WithVector(*this, which, [&](const auto& vector) -> decltype(auto) {
+    return function(vector[ix], std::forward<Args>(args)...);
+  });
 }
 
 template <typename FunctionObject, typename... Args>
@@ -558,61 +566,9 @@ decltype(auto) Graph::Apply2(
   if (which1 != which2) {
     return function.Mismatch(std::forward<Args>(args)...);
   }
-  switch (which1) {
-    case Which::ABSENT:
-      Die() << "undefined nodes";
-    case Which::SPECIAL:
-      return function(special_[ix1], special_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::POINTER_REFERENCE:
-      return function(pointer_reference_[ix1], pointer_reference_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::POINTER_TO_MEMBER:
-      return function(pointer_to_member_[ix1], pointer_to_member_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::TYPEDEF:
-      return function(typedef_[ix1], typedef_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::QUALIFIED:
-      return function(qualified_[ix1], qualified_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::PRIMITIVE:
-      return function(primitive_[ix1], primitive_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::ARRAY:
-      return function(array_[ix1], array_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::BASE_CLASS:
-      return function(base_class_[ix1], base_class_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::METHOD:
-      return function(method_[ix1], method_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::MEMBER:
-      return function(member_[ix1], member_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::VARIANT_MEMBER:
-      return function(variant_member_[ix1], variant_member_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::STRUCT_UNION:
-      return function(struct_union_[ix1], struct_union_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::ENUMERATION:
-      return function(enumeration_[ix1], enumeration_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::VARIANT:
-      return function(variant_[ix1], variant_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::FUNCTION:
-      return function(function_[ix1], function_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::ELF_SYMBOL:
-      return function(elf_symbol_[ix1], elf_symbol_[ix2],
-                      std::forward<Args>(args)...);
-    case Which::INTERFACE:
-      return function(interface_[ix1], interface_[ix2],
-                      std::forward<Args>(args)...);
-  }
+  return WithVector(*this, which1, [&](const auto& vector) -> decltype(auto) {
+    return function(vector[ix1], vector[ix2], std::forward<Args>(args)...);
+  });
 }
 
 template <typename FunctionObject, typename... Args>
