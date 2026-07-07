@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -52,6 +52,48 @@ class Unification {
   Counter find_halved_;
   Counter union_known_;
   Counter union_unknown_;
+};
+
+class UnifyingGraph {
+ public:
+  UnifyingGraph(Graph& graph, Unification& unification)
+      : graph_(graph), unification_(unification) {}
+
+  const Graph& graph() const {
+    return graph_;
+  }
+
+  Id Find(Id id) const {
+    return unification_.Find(id);
+  }
+
+  // id2 will always be preferred as a parent node; interpreted as a
+  // substitution, id1 will be replaced by id2
+  void Union(Id id1, Id id2) {
+    unification_.Union(id1, id2);
+  }
+
+  // attempt to unify, recursively, allowing types declarations to be replaced
+  // by definitions
+  bool Unify(Id id1, Id id2) {
+    return unification_.Unify(id1, id2);
+  }
+
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) {
+    return graph_.Apply(function, Find(id), std::forward<Args>(args)...);
+  }
+
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply2(FunctionObject&& function, Id id1, Id id2,
+                        Args&&... args) const {
+    return graph_.Apply2(function, Find(id1), Find(id2),
+                         std::forward<Args>(args)...);
+  }
+
+ private:
+  Graph& graph_;
+  Unification& unification_;
 };
 
 }  // namespace stg
