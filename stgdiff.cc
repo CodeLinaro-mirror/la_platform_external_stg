@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
       stg::reporting::OutputFormat::SMALL;
   Inputs inputs;
   Outputs outputs;
-  static option opts[] = {
+  static const option opts[] = {
       {"metrics",        no_argument,       nullptr, 'm'},
       {"abi",            no_argument,       nullptr, 'a'},
       {"btf",            no_argument,       nullptr, 'b'},
