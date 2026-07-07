@@ -255,6 +255,18 @@ TEST_CASE("hand-curated ordering sequences") {
       // * z and a could go either way, but the current algorithm always prefers
       //     the second sequence's order
       {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
+
+      // this case has two orderings that respect both inputs
+      // * Emily could come before Zoë or vice versa, but the current algorithm
+      //   always prefers the second sequence's order so Emily comes before Zoë
+      // * Steven comes last regardless
+      {{"emily", "steven"}, {"zoë", "steven"}, {"emily", "zoë", "steven"}},
+      // the same case permutated to show that only position and identity matter
+      {{"zoë", "steven"}, {"emily", "steven"}, {"zoë", "emily", "steven"}},
+      {{"steven", "zoë"}, {"emily", "zoë"}, {"steven", "emily", "zoë"}},
+      {{"emily", "zoë"}, {"steven", "zoë"}, {"emily", "steven", "zoë"}},
+      {{"zoë", "emily"}, {"steven", "emily"}, {"zoë", "steven", "emily"}},
+      {{"steven", "emily"}, {"zoë", "emily"}, {"steven", "zoë", "emily"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
     const auto combined = CombineOrders(order1, order2);
