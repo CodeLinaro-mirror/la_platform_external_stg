@@ -109,14 +109,9 @@ void MatchReorderForEach(const std::vector<T>& items1,
     }
   }
 
-  // output remaining items in items2
+  // output remaining items in items2 (all unmatched)
   for (size_t i = position2; i < size2; ++i) {
-    const auto match_ix1 = ix2_to_ix1[i];
-    if (!match_ix1) {
-      added(items2[i]);
-    } else {
-      in_both(items1[*match_ix1], items2[i]);
-    }
+    added(items2[i]);
   }
 }
 
