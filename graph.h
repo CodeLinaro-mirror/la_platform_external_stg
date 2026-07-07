@@ -444,18 +444,7 @@ class Graph {
   }
 
   template <typename FunctionObject, typename... Args>
-  struct ConstAdapter {
-    explicit ConstAdapter(FunctionObject& function) : function(function) {}
-    template <typename Node>
-    decltype(auto) operator()(const Node& node, Args&&... args) {
-      return function(const_cast<Node&>(node), std::forward<Args>(args)...);
-    }
-    FunctionObject& function;
-  };
-
-  template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(
-      FunctionObject&& function, Id id, Args&&... args) const {
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) const {
     const auto& [which, ix] = indirection_[id.ix_];
     return WithVector(*this, which, [&](const auto& vector) -> decltype(auto) {
       return function(vector[ix], std::forward<Args>(args)...);
@@ -464,9 +453,10 @@ class Graph {
 
   template <typename FunctionObject, typename... Args>
   decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) {
-    ConstAdapter<FunctionObject, Args&&...> adapter(function);
-    return static_cast<const Graph&>(*this).Apply(
-        adapter, id, std::forward<Args>(args)...);
+    const auto& [which, ix] = indirection_[id.ix_];
+    return WithVector(*this, which, [&](auto& vector) -> decltype(auto) {
+      return function(vector[ix], std::forward<Args>(args)...);
+    });
   }
 
   template <typename FunctionObject, typename... Args>
