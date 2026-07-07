@@ -51,33 +51,38 @@ Items ReadAbigail(const std::string& filename) {
   bool in_filter_section = false;
   std::string line;
   while (std::getline(file, line)) {
-    size_t start = 0;
-    size_t limit = line.size();
+    std::string_view sv = line;
+
     // Strip leading whitespace.
-    while (start < limit && std::isspace(line[start])) {
-      ++start;
+    while (!sv.empty() && std::isspace(sv.front())) {
+      sv.remove_prefix(1);
     }
+
     // Skip comment lines.
-    if (start < limit && line[start] == '#') {
+    if (!sv.empty() && sv.front() == '#') {
       continue;
     }
+
     // Strip trailing whitespace.
-    while (start < limit && std::isspace(line[limit - 1])) {
-      --limit;
+    while (!sv.empty() && std::isspace(sv.back())) {
+      sv.remove_suffix(1);
     }
+
     // Skip empty lines.
-    if (start == limit) {
+    if (sv.empty()) {
       continue;
     }
+
     // See if we are entering a filter list section.
-    if (line[start] == '[' && line[limit - 1] == ']') {
-      const std::string_view section(&line[start + 1], limit - start - 2);
+    if (sv.front() == '[' && sv.back() == ']') {
+      const std::string_view section = sv.substr(1, sv.size() - 2);
       in_filter_section = section.ends_with(kSectionSuffix);
       continue;
     }
+
     // Add item.
     if (in_filter_section) {
-      items.insert(std::string(&line[start], limit - start));
+      items.emplace(sv);
     }
   }
   Check(file.eof()) << "error reading filter file '" << filename << "': "
@@ -168,16 +173,16 @@ std::queue<std::string> Tokenise(const std::string& filter) {
     if (std::isspace(*it)) {
       ++it;
     } else if (std::strchr(kTokenCharacters, *it)) {
-      result.emplace(&*it, 1);
+      result.emplace(it, it + 1);
       ++it;
     } else if (std::isgraph(*it)) {
       auto name = it;
       ++it;
-      while (it != end && std::isgraph(*it)
-             && !std::strchr(kTokenCharacters, *it)) {
+      while (it != end && std::isgraph(*it) &&
+             !std::strchr(kTokenCharacters, *it)) {
         ++it;
       }
-      result.emplace(&*name, it - name);
+      result.emplace(name, it);
     } else {
       Die() << "unexpected character in filter: '" << *it << "'";
     }
