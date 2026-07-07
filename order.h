@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <numeric>
 #include <optional>
 #include <type_traits>
 #include <unordered_map>
@@ -81,88 +82,6 @@ std::vector<T> CombineOrders(const std::vector<T>& indexes1,
   return combined;
 }
 
-// Returns a permutation that reorders the data array according to its implicit
-// ordering constraints.
-//
-// At least one of each pair of positions must be present.
-//
-// Each pair gives 1 or 2 abstract positions for the corresponding data item.
-//
-// The first and second positions are interpreted separately, with the second
-// implied ordering having precedence over the first in the event of a conflict.
-//
-// The real work is done by CombineOrders.
-//
-// In practice the input data are the output of a matching process, consider:
-//
-// sequence1: rose, george, emily
-// sequence2: george, ted, emily
-//
-// These have the corresponding matches (here just ordered by the matching key;
-// this algorithm gives the same result independent of this ordering):
-//
-// emily:  {{2}, {2}}
-// george: {{1}, {0}}
-// rose:   {{0}, {} }
-// ted:    {{},  {1}}
-//
-// Now ignore the matching keys.
-//
-// This function processes the matches into intermediate data structures:
-//
-// positions1: {{2, 0}, {1, 1}, {0, 2},        }
-// positions2: {{2, 0}, {0, 1},         {1, 3},}
-//
-// The indexes (.second) are sorted by the positions (.first):
-//
-// positions1: {{0, 2}, {1, 1}, {2, 0}}
-// positions2: {{0, 1}, {1, 3}, {2, 0}}
-//
-// And the positions are discarded:
-//
-// indexes1: 2, 1, 0
-// indexes2: 1, 3, 0
-//
-// Finally a consistent ordering is made and returned:
-//
-// 2, 1, 3, 0
-template <typename T>
-std::vector<size_t> Reorder(
-    const std::vector<std::pair<std::optional<T>, std::optional<T>>>& data) {
-  const auto size = data.size();
-  // Split out the ordering constraints as position-index pairs.
-  std::vector<std::pair<T, size_t>> positions1;
-  positions1.reserve(size);
-  std::vector<std::pair<T, size_t>> positions2;
-  positions2.reserve(size);
-  for (size_t index = 0; index < size; ++index) {
-    const auto& [position1, position2] = data[index];
-    Check(position1 || position2)
-        << "internal error: Reorder constraint with no positions";
-    if (position1) {
-      positions1.push_back({*position1, index});
-    }
-    if (position2) {
-      positions2.push_back({*position2, index});
-    }
-  }
-  // Order the indexes by the desired positions.
-  std::stable_sort(positions1.begin(), positions1.end());
-  std::stable_sort(positions2.begin(), positions2.end());
-  std::vector<size_t> indexes1;
-  indexes1.reserve(positions1.size());
-  std::vector<size_t> indexes2;
-  indexes2.reserve(positions2.size());
-  for (const auto& ordered_index : positions1) {
-    indexes1.push_back(ordered_index.second);
-  }
-  for (const auto& ordered_index : positions2) {
-    indexes2.push_back(ordered_index.second);
-  }
-  // Merge the two orderings of indexes, giving preference to the second.
-  return CombineOrders(indexes1, indexes2, size);
-}
-
 // Match and reorder two collections using a key-extraction lambda.
 // Invokes callbacks on-the-fly for unmatched and matched elements.
 template <typename T, typename ExtractKey, typename Removed, typename Added,
@@ -199,6 +118,8 @@ void MatchReorderForEach(const std::vector<T>& items1,
   std::vector<std::pair<std::optional<size_t>, std::optional<size_t>>> pairs;
   pairs.reserve(std::max(size1, size2));
 
+  std::vector<size_t> indexes2(size2);
+
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
     const auto key = extract_key(items1[ix1]);
     const auto it = key_to_index2.find(key);
@@ -206,6 +127,7 @@ void MatchReorderForEach(const std::vector<T>& items1,
       auto& match = it->second;
       Check(!match.matched) << "MatchReorderForEach: duplicate key in items1";
       match.matched = true;
+      indexes2[match.index] = pairs.size();
       pairs.emplace_back(ix1, match.index);
     } else {
       pairs.emplace_back(ix1, std::nullopt);
@@ -214,11 +136,15 @@ void MatchReorderForEach(const std::vector<T>& items1,
 
   for (const auto& [key, match] : key_to_index2) {
     if (!match.matched) {
+      indexes2[match.index] = pairs.size();
       pairs.emplace_back(std::nullopt, match.index);
     }
   }
 
-  const auto permutation = Reorder(pairs);
+  std::vector<size_t> indexes1(size1);
+  std::iota(indexes1.begin(), indexes1.end(), 0);
+
+  const auto permutation = CombineOrders(indexes1, indexes2, pairs.size());
 
   for (const size_t index : permutation) {
     const auto& [ix1, ix2] = pairs[index];
