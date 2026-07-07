@@ -287,7 +287,7 @@ struct Unifier {
 
 }  // namespace
 
-Unification::Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
+UnifyingGraph::UnifyingGraph(Runtime& runtime, Graph& graph, Id start, Id limit)
     : graph_(graph),
       start_(start),
       mapping_(start, limit),
@@ -297,7 +297,7 @@ Unification::Unification(Runtime& runtime, Graph& graph, Id start, Id limit)
       union_known_(runtime, "unification.union_known"),
       union_unknown_(runtime, "unification.union_unknown") {}
 
-Unification::~Unification() noexcept(false) {
+UnifyingGraph::~UnifyingGraph() noexcept(false) {
   if (std::uncaught_exceptions() > 0) {
     // abort unification
     return;
@@ -325,7 +325,7 @@ Unification::~Unification() noexcept(false) {
   });
 }
 
-void Unification::Union(Id id1, Id id2) {
+void UnifyingGraph::Union(Id id1, Id id2) {
   // always prefer Find(id2) as a parent
   const Id fid1 = Find(id1);
   const Id fid2 = Find(id2);
@@ -337,7 +337,7 @@ void Unification::Union(Id id1, Id id2) {
   ++union_unknown_;
 }
 
-Id Unification::Find(Id id) {
+Id UnifyingGraph::Find(Id id) {
   ++find_query_;
   // path halving - tiny performance gain
   while (true) {
@@ -355,9 +355,8 @@ Id Unification::Find(Id id) {
   }
 }
 
-bool Unification::Unify(Id id1, Id id2) {
-  UnifyingGraph unifying_graph(graph_, *this);
-  Unifier unifier(unifying_graph);
+bool UnifyingGraph::Unify(Id id1, Id id2) {
+  Unifier unifier(*this);
   if (unifier(id1, id2)) {
     // commit
     for (const auto& s : unifier.mapping) {

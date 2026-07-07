@@ -290,8 +290,8 @@ class Reader {
 
   Id BuildRoot(
       const std::vector<std::pair<ElfSymbol, dwarf::Location>>& symbols) {
-    // On destruction, the unification object will remove or rewrite each graph
-    // node for which it has a mapping.
+    // On destruction, the unifying graph object will remove or rewrite each
+    // graph node for which it has a mapping.
     //
     // Graph rewriting is expensive so an important optimisation is to restrict
     // the nodes in consideration to the ones allocated by the DWARF processor
@@ -305,12 +305,12 @@ class Reader {
 
     // A less important optimisation is avoiding copying the mapping array as it
     // is populated. This is done by reserving space to the new graph limit.
-    Unification unification(runtime_, graph_, start, graph_.Limit());
+    UnifyingGraph unifying_graph(runtime_, graph_, start, graph_.Limit());
 
     // Replace incomplete types with the full type.
     for (const auto [incomplete_type_id, full_type_id] :
          types.incomplete_to_full_types) {
-      unification.Unify(incomplete_type_id, full_type_id);
+      unifying_graph.Unify(incomplete_type_id, full_type_id);
     }
 
     // fill location to id
@@ -339,7 +339,7 @@ class Reader {
       // TODO: check for uniqueness of SymbolKey in map after
       // support for version info
       MaybeAddTypeInfo(location_and_name_to_index, types.symbols, address,
-                       graph_, unification, symbol);
+                       graph_, unifying_graph, symbol);
       symbols_map.emplace(VersionedSymbolName(symbol),
                           graph_.Add<ElfSymbol>(symbol));
     }
@@ -349,7 +349,7 @@ class Reader {
       const InterfaceKey get_key(graph_);
       for (const auto id : types.named_type_ids) {
         const auto [it, inserted] = types_map.emplace(get_key(id), id);
-        if (!inserted && !unification.Unify(id, it->second)) {
+        if (!inserted && !unifying_graph.Unify(id, it->second)) {
           Die() << "found conflicting interface type: " << it->first;
         }
       }
@@ -369,18 +369,18 @@ class Reader {
     }
     roots.push_back(root);
 
-    stg::UnifyingGraph unifying_graph(graph_, unification);
     stg::ResolveTypes(runtime_, unifying_graph, {roots});
 
-    return unification.Find(root);
+    return unifying_graph.Find(root);
   }
 
-  static bool IsEqual(Unification& unification, const dwarf::Types::Symbol& lhs,
+  static bool IsEqual(UnifyingGraph& unifying_graph,
+                      const dwarf::Types::Symbol& lhs,
                       const dwarf::Types::Symbol& rhs) {
-    return lhs.scoped_name == rhs.scoped_name
-           && lhs.linkage_name == rhs.linkage_name
-           && lhs.locations == rhs.locations
-           && unification.Unify(lhs.type_id, rhs.type_id);
+    return lhs.scoped_name == rhs.scoped_name &&
+           lhs.linkage_name == rhs.linkage_name &&
+           lhs.locations == rhs.locations &&
+           unifying_graph.Unify(lhs.type_id, rhs.type_id);
   }
 
   static ElfSymbol SymbolTableEntryToElfSymbol(const CRCValuesMap& crc_values,
@@ -402,8 +402,8 @@ class Reader {
   static void MaybeAddTypeInfo(
       const SymbolIndex& location_and_name_to_index,
       const std::vector<dwarf::Types::Symbol>& dwarf_symbols,
-      dwarf::Location location, const Graph& graph, Unification& unification,
-      ElfSymbol& node) {
+      dwarf::Location location, const Graph& graph,
+      UnifyingGraph& unifying_graph, ElfSymbol& node) {
     // try to find the first symbol with given location
     const auto start_it = location_and_name_to_index.lower_bound(
         std::make_pair(location, std::string()));
@@ -434,7 +434,7 @@ class Reader {
         const auto& other = dwarf_symbols[best_symbols[i]];
         // TODO: allow "compatible" duplicates, for example
         // "void foo(int bar)" vs "void foo(const int bar)"
-        if (!IsEqual(unification, best_symbol, other)) {
+        if (!IsEqual(unifying_graph, best_symbol, other)) {
           Die() << "Duplicate DWARF symbol: location="
                 << best_symbols_it->first.first
                 << ", name=" << best_symbols_it->first.second;

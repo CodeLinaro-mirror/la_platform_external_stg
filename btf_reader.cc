@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2020-2025 Google LLC
+// Copyright 2020-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -94,7 +94,7 @@ class Structs {
   Id BuildEnumUnderlyingType(size_t size, bool is_signed);
   std::string GetName(uint32_t name_off);
 
-  Unification unification_;
+  UnifyingGraph unifying_graph_;
 };
 
 bool Structs::MemoryRange::Empty() const {
@@ -110,7 +110,7 @@ const T* Structs::MemoryRange::Pull(size_t count) {
 }
 
 Structs::Structs(Runtime& runtime, Graph& graph)
-    : maker_(graph), unification_(runtime, graph, Id{0}, Id{0}) {}
+    : maker_(graph), unifying_graph_(runtime, graph, Id{0}, Id{0}) {}
 
 // Get the index of the void type, creating one if needed.
 Id Structs::GetVoid() {
@@ -345,7 +345,7 @@ void Structs::BuildOneType(const btf_type* t, uint32_t btf_index,
       // tracking. Refactoring ownership and lifetime of the union mapping would
       // be one way of avoiding this.
       Set<Special>(btf_index, Special::Kind::VOID);
-      unification_.Union(GetId(btf_index), GetId(t->type));
+      unifying_graph_.Union(GetId(btf_index), GetId(t->type));
       break;
     }
     case BTF_KIND_DECL_TAG: {
