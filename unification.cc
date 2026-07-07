@@ -265,11 +265,15 @@ struct Unifier {
   }
 
   Id Find(Id id) {
+    // Ensure id is canonicalised before querying the local speculative mapping,
+    // as mapping keys are stored as canonical IDs.
+    id = unification.Find(id);
     while (true) {
-      id = unification.Find(id);
       auto it = mapping.find(id);
       if (it != mapping.end()) {
-        id = it->second;
+        // Canonicalise the target of the speculative mapping before attempting
+        // next lookup.
+        id = unification.Find(it->second);
         continue;
       }
       return id;
