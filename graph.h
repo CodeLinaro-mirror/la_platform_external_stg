@@ -444,14 +444,43 @@ class Graph {
   }
 
   template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) const;
+  struct ConstAdapter {
+    explicit ConstAdapter(FunctionObject& function) : function(function) {}
+    template <typename Node>
+    decltype(auto) operator()(const Node& node, Args&&... args) {
+      return function(const_cast<Node&>(node), std::forward<Args>(args)...);
+    }
+    FunctionObject& function;
+  };
+
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply(
+      FunctionObject&& function, Id id, Args&&... args) const {
+    const auto& [which, ix] = indirection_[id.ix_];
+    return WithVector(*this, which, [&](const auto& vector) -> decltype(auto) {
+      return function(vector[ix], std::forward<Args>(args)...);
+    });
+  }
+
+  template <typename FunctionObject, typename... Args>
+  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) {
+    ConstAdapter<FunctionObject, Args&&...> adapter(function);
+    return static_cast<const Graph&>(*this).Apply(
+        adapter, id, std::forward<Args>(args)...);
+  }
 
   template <typename FunctionObject, typename... Args>
   decltype(auto) Apply2(
-      FunctionObject&& function, Id id1, Id id2, Args&&... args) const;
-
-  template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args);
+      FunctionObject&& function, Id id1, Id id2, Args&&... args) const {
+    const auto& [which1, ix1] = indirection_[id1.ix_];
+    const auto& [which2, ix2] = indirection_[id2.ix_];
+    if (which1 != which2) {
+      return function.Mismatch(std::forward<Args>(args)...);
+    }
+    return WithVector(*this, which1, [&](const auto& vector) -> decltype(auto) {
+      return function(vector[ix1], vector[ix2], std::forward<Args>(args)...);
+    });
+  }
 
   template <typename FunctionObject>
   void ForEach(Id start, Id limit, FunctionObject&& function) const {
@@ -548,45 +577,6 @@ class Graph {
   std::vector<ElfSymbol> elf_symbol_;
   std::vector<Interface> interface_;
 };
-
-template <typename FunctionObject, typename... Args>
-decltype(auto) Graph::Apply(
-    FunctionObject&& function, Id id, Args&&... args) const {
-  const auto& [which, ix] = indirection_[id.ix_];
-  return WithVector(*this, which, [&](const auto& vector) -> decltype(auto) {
-    return function(vector[ix], std::forward<Args>(args)...);
-  });
-}
-
-template <typename FunctionObject, typename... Args>
-decltype(auto) Graph::Apply2(
-    FunctionObject&& function, Id id1, Id id2, Args&&... args) const {
-  const auto& [which1, ix1] = indirection_[id1.ix_];
-  const auto& [which2, ix2] = indirection_[id2.ix_];
-  if (which1 != which2) {
-    return function.Mismatch(std::forward<Args>(args)...);
-  }
-  return WithVector(*this, which1, [&](const auto& vector) -> decltype(auto) {
-    return function(vector[ix1], vector[ix2], std::forward<Args>(args)...);
-  });
-}
-
-template <typename FunctionObject, typename... Args>
-struct ConstAdapter {
-  explicit ConstAdapter(FunctionObject& function) : function(function) {}
-  template <typename Node>
-  decltype(auto) operator()(const Node& node, Args&&... args) {
-    return function(const_cast<Node&>(node), std::forward<Args>(args)...);
-  }
-  FunctionObject& function;
-};
-
-template <typename FunctionObject, typename... Args>
-decltype(auto) Graph::Apply(FunctionObject&& function, Id id, Args&&... args) {
-  ConstAdapter<FunctionObject, Args&&...> adapter(function);
-  return static_cast<const Graph&>(*this).Apply(
-      adapter, id, std::forward<Args>(args)...);
-}
 
 struct InterfaceKey {
   explicit InterfaceKey(const Graph& graph) : graph(graph) {}
