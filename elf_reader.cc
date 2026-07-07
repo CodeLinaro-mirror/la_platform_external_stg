@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -369,7 +369,8 @@ class Reader {
     }
     roots.push_back(root);
 
-    stg::ResolveTypes(runtime_, graph_, unification, {roots});
+    stg::UnifyingGraph unifying_graph(graph_, unification);
+    stg::ResolveTypes(runtime_, unifying_graph, {roots});
 
     return unification.Find(root);
   }

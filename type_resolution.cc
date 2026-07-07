@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022-2024 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -194,12 +194,12 @@ struct NamedTypes {
 
 }  // namespace
 
-void ResolveTypes(Runtime& runtime, Graph& graph, Unification& unification,
+void ResolveTypes(Runtime& runtime, UnifyingGraph& unifying_graph,
                   const std::vector<Id>& roots) {
   const Time total(runtime, "resolve.total");
 
   // collect named types
-  NamedTypes named_types(runtime, graph);
+  NamedTypes named_types(runtime, unifying_graph.graph());
   {
     const Time time(runtime, "resolve.collection");
     for (const Id& root : roots) {
@@ -221,7 +221,7 @@ void ResolveTypes(Runtime& runtime, Graph& graph, Unification& unification,
         std::vector<Id> todo;
         distinct_definitions.push_back(candidate);
         for (size_t i = 1; i < definitions.size(); ++i) {
-          if (unification.Unify(definitions[i], candidate)) {
+          if (unifying_graph.Unify(definitions[i], candidate)) {
             // unification succeeded
             ++definition_unified;
           } else {
@@ -236,7 +236,7 @@ void ResolveTypes(Runtime& runtime, Graph& graph, Unification& unification,
       if (distinct_definitions.size() == 1) {
         const Id candidate = distinct_definitions[0];
         for (auto id : info.declarations) {
-          unification.Union(id, candidate);
+          unifying_graph.Union(id, candidate);
           ++declaration_unified;
         }
       }
