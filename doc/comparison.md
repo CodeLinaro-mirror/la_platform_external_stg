@@ -119,9 +119,7 @@ STG compares edge aggregates as follows:
     matching keys, reporting removals and additions of unmatched items
 *   otherwise synthesise a key for comparison, compare by key, report
     differences in the original order of items being compared (favouring the
-    second list's order over the first's); the reordering is an *O(n²)*
-    operation and it might be possible to adapt the more general Myers diff
-    algorithm to reduce this
+    second list's order over the first's); the reordering is an *O(n)* operation
 
 ## Implementation Details
 
