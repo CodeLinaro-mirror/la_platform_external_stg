@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) {
     roots.reserve(inputs.size());
     for (auto& [format, input] : inputs) {
       roots.push_back(stg::Read(runtime, graph, format, input, opt_read_options,
-                                opt_file_filter));
+                                opt_file_filter.get()));
     }
     stg::Id root = stg::Merge(runtime, graph, roots);
     if (opt_symbol_filter) {

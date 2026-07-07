@@ -39,7 +39,7 @@ namespace stg {
 namespace elf {
 
 Id Read(Runtime& runtime, Graph& graph, ElfDwarfHandle& elf_dwarf_handle,
-        ReadOptions options, const std::unique_ptr<Filter>& file_filter);
+        ReadOptions options, const Filter* file_filter);
 
 // For unit tests only
 namespace internal {
