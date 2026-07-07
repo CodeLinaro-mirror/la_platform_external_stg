@@ -511,9 +511,9 @@ std::string_view ElfLoader::GetElfSymbolNamespace(
       << "Namespace symbol address is above namespace section end";
 
   const char* begin = reinterpret_cast<const char*>(data->d_buf) + offset;
-  // TODO: replace strnlen with something in a standard library
-  const size_t length = strnlen(begin, data->d_size - offset);
-  Check(offset + length < data->d_size)
+  const std::string_view rest(begin, data->d_size - offset);
+  const size_t length = rest.find('\0');
+  Check(length != std::string_view::npos)
       << "Namespace string should be null-terminated";
 
   return {begin, length};
