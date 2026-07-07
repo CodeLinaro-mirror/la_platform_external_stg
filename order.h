@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <optional>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -65,10 +64,10 @@ void MatchReorderForEach(const std::vector<T>& items1,
     Check(inserted) << "MatchReorderForEach: duplicate key in items2";
   }
 
-  // map index in items1 to index in items2 (if matched)
-  std::vector<std::optional<size_t>> ix1_to_ix2(size1, std::nullopt);
-  // map index in items2 to index in items1 (if matched)
-  std::vector<std::optional<size_t>> ix2_to_ix1(size2, std::nullopt);
+  // map index in items1 to index in items2 (or size2 if unmatched)
+  std::vector<size_t> ix1_to_ix2(size1, size2);
+  // map index in items2 to index in items1 (or size1 if unmatched)
+  std::vector<size_t> ix2_to_ix1(size2, size1);
 
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
     const auto key = extract_key(items1[ix1]);
@@ -87,24 +86,24 @@ void MatchReorderForEach(const std::vector<T>& items1,
 
   for (size_t ix1 = 0; ix1 < size1; ++ix1) {
     const auto match_ix2 = ix1_to_ix2[ix1];
-    if (!match_ix2) {
+    if (match_ix2 == size2) {
       // ix1 is unmatched (removed)
       removed(items1[ix1]);
     } else {
       // ix1 is matched at match_ix2
       // If match_ix2 is already output (because we pulled it forward), do
       // nothing.
-      if (*match_ix2 >= position2) {
+      if (match_ix2 >= position2) {
         // output all items in items2 from position2 up to match_ix2 (inclusive)
-        for (size_t i = position2; i <= *match_ix2; ++i) {
+        for (size_t i = position2; i <= match_ix2; ++i) {
           const auto match_ix1 = ix2_to_ix1[i];
-          if (!match_ix1) {
+          if (match_ix1 == size1) {
             added(items2[i]);
           } else {
-            in_both(items1[*match_ix1], items2[i]);
+            in_both(items1[match_ix1], items2[i]);
           }
         }
-        position2 = *match_ix2 + 1;
+        position2 = match_ix2 + 1;
       }
     }
   }
