@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2021-2024 Google LLC
+// Copyright 2021-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -19,8 +19,10 @@
 
 #include "order.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <optional>
+#include <numeric>
 #include <random>
 #include <sstream>
 #include <string>
@@ -32,6 +34,10 @@
 
 namespace Test {
 
+using Sequence = std::vector<std::string>;
+
+namespace {
+
 // Safe for small k!
 size_t Factorial(size_t k) {
   size_t count = 1;
@@ -41,30 +47,24 @@ size_t Factorial(size_t k) {
   return count;
 }
 
+template <typename G>
+std::vector<size_t> MakePermutation(size_t k, size_t n, G& gen) {
+  std::vector<size_t> result(n);
+  std::iota(result.begin(), result.end(), k);
+  std::shuffle(result.begin(), result.end(), gen);
+  return result;
+}
+
+}  // namespace
+
 TEST_CASE("hand-curated permutation") {
-  std::vector<std::string> data = {"emily", "george", "rose", "ted"};
+  Sequence data = {"emily", "george", "rose", "ted"};
   std::vector<size_t> permutation = {2, 1, 3, 0};
-  const std::vector<std::string> expected = {"rose", "george", "ted", "emily"};
+  const Sequence expected = {"rose", "george", "ted", "emily"};
   const std::vector<size_t> identity = {0, 1, 2, 3};
   stg::Permute(data, permutation);
   CHECK(data == expected);
   CHECK(permutation == identity);
-}
-
-template <typename G>
-std::vector<size_t> MakePermutation(size_t k, G& gen) {
-  std::vector<size_t> result(k);
-  for (size_t i = 0; i < k; ++i) {
-    result[i] = i;
-  }
-  for (size_t i = 0; i < k; ++i) {
-    // pick one of [i, k)
-    std::uniform_int_distribution<size_t> toss(i, k - 1);
-    const auto pick = toss(gen);
-    using std::swap;
-    swap(result[i], result[pick]);
-  }
-  return result;
 }
 
 TEST_CASE("randomly-generated permutations") {
@@ -72,7 +72,7 @@ TEST_CASE("randomly-generated permutations") {
   auto seed = gen();
   // NOTES:
   //   Permutations of size 6 are plenty big enough to shake out bugs.
-  ///  There are k! permutations of size k. Testing costs are O(k).
+  //   There are k! permutations of size k. Testing costs are O(k).
   for (size_t k = 0; k < 7; ++k) {
     const auto count = Factorial(k);
     INFO("testing with " << count << " permutations of size " << k);
@@ -82,7 +82,7 @@ TEST_CASE("randomly-generated permutations") {
     }
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
-      auto permutation = MakePermutation(k, gen);
+      auto permutation = MakePermutation(0, k, gen);
       std::ostringstream os;
       os << "permutation of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
@@ -102,19 +102,19 @@ TEST_CASE("randomly-generated permutations") {
   }
 }
 
-TEST_CASE("randomly-generating ordering sequences, fully-matching") {
+TEST_CASE("randomly-generated ordering sequences, fully-matching") {
   std::ranlux48 gen;
   auto seed = gen();
   // NOTES:
   //   Permutations of size 6 are plenty big enough to shake out bugs.
-  ///  There are k! permutations of size k. Testing costs are O(k^2).
+  //   There are k! permutations of size k. Testing costs are O(k^2).
   for (size_t k = 0; k < 7; ++k) {
     const auto count = Factorial(k);
     INFO("testing with " << count << " random orderings of size " << k);
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
-      const auto order1 = MakePermutation(k, gen);
-      const auto order2 = MakePermutation(k, gen);
+      const auto order1 = MakePermutation(0, k, gen);
+      const auto order2 = MakePermutation(0, k, gen);
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
@@ -126,22 +126,19 @@ TEST_CASE("randomly-generating ordering sequences, fully-matching") {
   }
 }
 
-TEST_CASE("randomly-generating ordering sequences, disjoint") {
+TEST_CASE("randomly-generated ordering sequences, no overlap") {
   std::ranlux48 gen;
   auto seed = gen();
   // NOTES:
   //   Orderings of size 4 are plenty big enough to shake out bugs.
-  ///  There are k! permutations of size k. Testing costs are O(k^2).
+  //   There are k! permutations of size k. Testing costs are O(k^2).
   for (size_t k = 0; k < 5; ++k) {
     const auto count = Factorial(k);
     INFO("testing with " << count << " random orderings of size " << k);
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
-      const auto order1 = MakePermutation(k, gen);
-      auto order2 = MakePermutation(k, gen);
-      for (size_t i = 0; i < k; ++i) {
-        order2[i] += k;
-      }
+      const auto order1 = MakePermutation(0, k, gen);
+      const auto order2 = MakePermutation(k, k, gen);
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
       GIVEN(os.str()) {
@@ -157,22 +154,19 @@ TEST_CASE("randomly-generating ordering sequences, disjoint") {
   }
 }
 
-TEST_CASE("randomly-generating ordering sequences, single overlap") {
+TEST_CASE("randomly-generated ordering sequences, single overlap") {
   std::ranlux48 gen;
   auto seed = gen();
   // NOTES:
   //   Orderings of size 4 are plenty big enough to shake out bugs.
-  ///  There are k! permutations of size k. Testing costs are O(k^2).
+  //   There are k! permutations of size k. Testing costs are O(k^2).
   for (size_t k = 1; k < 5; ++k) {
     const auto count = Factorial(k);
     INFO("testing with " << count << " random orderings of size " << k);
     for (size_t n = 0; n < count; ++n, ++seed) {
       gen.seed(seed);
-      const auto order1 = MakePermutation(k, gen);
-      auto order2 = MakePermutation(k, gen);
-      for (size_t i = 0; i < k; ++i) {
-        order2[i] += k - 1;
-      }
+      const auto order1 = MakePermutation(0, k, gen);
+      const auto order2 = MakePermutation(k - 1, k, gen);
       const auto pivot = k - 1;
       std::ostringstream os;
       os << "orderings of " << k << " numbers generated using seed " << seed;
@@ -204,23 +198,23 @@ TEST_CASE("randomly-generating ordering sequences, single overlap") {
 }
 
 TEST_CASE("hand-curated ordering sequences") {
-  using Sequence = std::vector<std::string>;
   // NOTES:
   //   The output sequence MUST include the second sequence as a subsequence.
   //   The first sequence's ordering is respected as far as possible.
   const std::vector<std::tuple<Sequence, Sequence, Sequence>> cases = {
-    {{"rose", "george", "emily"}, {"george", "ted", "emily"},
-      {"rose", "george", "ted", "emily"}},
-    {{}, {}, {}},
-    {{"a"}, {}, {"a"}},
-    {{}, {"a"}, {"a"}},
-    {{"a", "z"}, {}, {"a", "z"}},
-    {{}, {"a", "z"}, {"a", "z"}},
-    {{"a", "b", "c"}, {"c", "d"}, {"a", "b", "c", "d"}},
-    {{"a", "b", "d"}, {"b", "c", "d"}, {"a", "b", "c", "d"}},
-    {{"a", "c", "d"}, {"a", "b", "c"}, {"a", "b", "c", "d"}},
-    {{"b", "c", "d"}, {"a", "b"}, {"a", "b", "c", "d"}},
-    {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
+      {{"rose", "george", "emily"},
+       {"george", "ted", "emily"},
+       {"rose", "george", "ted", "emily"}},
+      {{}, {}, {}},
+      {{"a"}, {}, {"a"}},
+      {{}, {"a"}, {"a"}},
+      {{"a", "z"}, {}, {"a", "z"}},
+      {{}, {"a", "z"}, {"a", "z"}},
+      {{"a", "b", "c"}, {"c", "d"}, {"a", "b", "c", "d"}},
+      {{"a", "b", "d"}, {"b", "c", "d"}, {"a", "b", "c", "d"}},
+      {{"a", "c", "d"}, {"a", "b", "c"}, {"a", "b", "c", "d"}},
+      {{"b", "c", "d"}, {"a", "b"}, {"a", "b", "c", "d"}},
+      {{"z", "a", "q"}, {"a", "z"}, {"a", "z", "q"}},
   };
   for (const auto& [order1, order2, expected] : cases) {
     const auto combined = stg::CombineOrders(order1, order2, expected.size());
@@ -274,7 +268,7 @@ TEST_CASE("hand-curated reorderings with input order randomisation") {
       std::ostringstream os;
       os << "permutation of " << k << " items generated using seed " << seed;
       GIVEN(os.str()) {
-        auto permutation = MakePermutation(k, gen);
+        auto permutation = MakePermutation(0, k, gen);
         auto copy = given;
         stg::Permute(copy, permutation);
         stg::Reorder(copy);
