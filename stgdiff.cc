@@ -84,7 +84,7 @@ int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
              const std::vector<stg::Id>& roots) {
   struct PairCache {
     bool Query(const stg::Pair& comparison) const {
-      return equalities.find(comparison) != equalities.end();
+      return equalities.contains(comparison);
     }
     void Record(const stg::Pair& comparison) {
       equalities.insert(comparison);
