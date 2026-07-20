@@ -86,10 +86,8 @@ int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
     bool Query(const stg::Pair& comparison) const {
       return equalities.find(comparison) != equalities.end();
     }
-    void AllSame(const std::vector<stg::Pair>& comparisons) {
-      for (const auto& comparison : comparisons) {
-        equalities.insert(comparison);
-      }
+    void Record(const stg::Pair& comparison) {
+      equalities.insert(comparison);
     }
     std::unordered_set<stg::Pair> equalities;
   };

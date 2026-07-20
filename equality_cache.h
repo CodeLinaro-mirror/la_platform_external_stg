@@ -78,10 +78,9 @@ struct EqualityCache {
     return false;
   }
 
-  void AllSame(const std::vector<Pair>& comparisons) {
-    for (const auto& [id1, id2] : comparisons) {
-      Union(id1, id2);
-    }
+  void Record(const Pair& comparison) {
+    const auto& [id1, id2] = comparison;
+    dsu.Union(id1, id2);
   }
 
   Id Find(Id id) {

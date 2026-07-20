@@ -72,7 +72,9 @@ struct Equals {
     // Note that result is the conjunction of every equality in the SCC via the
     // DFS spanning tree.
     if (result) {
-      equality_cache.AllSame(comparisons);
+      for (const auto& comparison : comparisons) {
+        equality_cache.Record(comparison);
+      }
     }
     return result;
   }
