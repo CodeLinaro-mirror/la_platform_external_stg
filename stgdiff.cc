@@ -93,7 +93,6 @@ int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
         equalities.insert(comparison);
       }
     }
-    void AllDifferent(const std::vector<stg::Pair>&) {}
     std::unordered_set<stg::Pair> equalities;
   };
 

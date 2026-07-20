@@ -218,7 +218,6 @@ TEST_CASE("Tidy") {
         return std::nullopt;
       }
       void AllSame(const std::vector<stg::Pair>&) {}
-      void AllDifferent(const std::vector<stg::Pair>&) {}
     };
 
     // Check exact equality.
