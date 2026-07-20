@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "graph.h"
+#include "runtime.h"
 
 namespace stg {
 
@@ -152,6 +153,24 @@ struct Substitute {
 
 template <class Updater>
 Substitute(Graph&, const Updater& updater) -> Substitute<decltype(updater)>;
+
+// Applies node ID substitutions and removes redundant nodes from a graph.
+//
+// find - map a node ID to its canonical representative ID.
+// for_each - invoke a function for each candidate node ID.
+void Rewrite(Graph& graph, auto&& find, auto&& for_each, Counter& retained,
+             Counter& removed) {
+  const Substitute substitute(graph, find);
+  for_each([&](Id id) {
+    if (find(id) == id) {
+      substitute(id);
+      ++retained;
+    } else {
+      graph.Remove(id);
+      ++removed;
+    }
+  });
+}
 
 }  // namespace stg
 
