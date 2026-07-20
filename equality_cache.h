@@ -26,6 +26,7 @@
 
 #include "graph.h"
 #include "runtime.h"
+#include "union_find.h"
 
 namespace stg {
 
@@ -54,14 +55,12 @@ class SparseIdMapping {
 // It caches equalities (symmetrically) using union-find with path halving.
 struct EqualityCache {
   explicit EqualityCache(Runtime& runtime)
-      : query_count(runtime, "cache.query_count"),
+      : dsu(runtime, mapping),
+        query_count(runtime, "cache.query_count"),
         query_equal_ids(runtime, "cache.query_equal_ids"),
         query_equal_representatives(runtime,
                                     "cache.query_equal_representatives"),
-        query_not_found(runtime, "cache.query_not_found"),
-        find_halved(runtime, "cache.find_halved"),
-        union_known(runtime, "cache.union_known"),
-        union_unknown(runtime, "cache.union_unknown") {}
+        query_not_found(runtime, "cache.query_not_found") {}
 
   std::optional<bool> Query(const Pair& comparison) {
     ++query_count;
@@ -87,41 +86,20 @@ struct EqualityCache {
   }
 
   Id Find(Id id) {
-    // path halving
-    while (true) {
-      auto& parent = mapping.Get(id);
-      if (parent == id) {
-        return id;
-      }
-      const auto parent_parent = mapping.Get(parent);
-      if (parent_parent == parent) {
-        return parent;
-      }
-      id = parent = parent_parent;
-      ++find_halved;
-    }
+    return dsu.Find(id);
   }
 
   void Union(Id id1, Id id2) {
-    Id fid1 = Find(id1);
-    Id fid2 = Find(id2);
-    if (fid1 == fid2) {
-      ++union_known;
-      return;
-    }
-    mapping.Add(fid1, fid2);
-    ++union_unknown;
+    dsu.Union(id1, id2);
   }
 
   SparseIdMapping mapping;
+  UnionFind<SparseIdMapping> dsu;
 
   Counter query_count;
   Counter query_equal_ids;
   Counter query_equal_representatives;
   Counter query_not_found;
-  Counter find_halved;
-  Counter union_known;
-  Counter union_unknown;
 };
 
 }  // namespace stg

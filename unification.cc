@@ -291,11 +291,8 @@ UnifyingGraph::UnifyingGraph(Runtime& runtime, Graph& graph, Id start, Id limit)
     : graph_(graph),
       start_(start),
       mapping_(start, limit),
-      runtime_(runtime),
-      find_query_(runtime, "unification.find_query"),
-      find_halved_(runtime, "unification.find_halved"),
-      union_known_(runtime, "unification.union_known"),
-      union_unknown_(runtime, "unification.union_unknown") {}
+      dsu_(runtime, mapping_),
+      runtime_(runtime) {}
 
 UnifyingGraph::~UnifyingGraph() noexcept(false) {
   if (std::uncaught_exceptions() > 0) {
@@ -326,33 +323,11 @@ UnifyingGraph::~UnifyingGraph() noexcept(false) {
 }
 
 void UnifyingGraph::Union(Id id1, Id id2) {
-  // always prefer Find(id2) as a parent
-  const Id fid1 = Find(id1);
-  const Id fid2 = Find(id2);
-  if (fid1 == fid2) {
-    ++union_known_;
-    return;
-  }
-  mapping_.Add(fid1, fid2);
-  ++union_unknown_;
+  dsu_.Union(id1, id2);
 }
 
 Id UnifyingGraph::Find(Id id) {
-  ++find_query_;
-  // path halving - tiny performance gain
-  while (true) {
-    // note: safe to take a reference as mapping cannot grow after this
-    auto& parent = mapping_.Get(id);
-    if (parent == id) {
-      return id;
-    }
-    const auto parent_parent = mapping_.Get(parent);
-    if (parent_parent == parent) {
-      return parent;
-    }
-    id = parent = parent_parent;
-    ++find_halved_;
-  }
+  return dsu_.Find(id);
 }
 
 bool UnifyingGraph::Unify(Id id1, Id id2) {
