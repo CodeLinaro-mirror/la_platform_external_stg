@@ -29,6 +29,26 @@
 
 namespace stg {
 
+// Roughly equivalent to std::map<Id, Id>, defaulted to the identity mapping,
+// backed by an unordered map.
+class SparseIdMapping {
+ public:
+  Id& Get(Id& id) {
+    const auto it = mapping_.find(id);
+    if (it == mapping_.end()) {
+      return id;
+    }
+    return it->second;
+  }
+
+  void Add(Id child, Id parent) {
+    mapping_.emplace(child, parent);
+  }
+
+ private:
+  std::unordered_map<Id, Id> mapping_;
+};
+
 // Equality cache - for use with the Equals function object
 //
 // It caches equalities (symmetrically) using union-find with path halving.
@@ -69,16 +89,14 @@ struct EqualityCache {
   Id Find(Id id) {
     // path halving
     while (true) {
-      auto it = mapping.find(id);
-      if (it == mapping.end()) {
+      auto& parent = mapping.Get(id);
+      if (parent == id) {
         return id;
       }
-      auto& parent = it->second;
-      auto parent_it = mapping.find(parent);
-      if (parent_it == mapping.end()) {
+      const auto parent_parent = mapping.Get(parent);
+      if (parent_parent == parent) {
         return parent;
       }
-      auto parent_parent = parent_it->second;
       id = parent = parent_parent;
       ++find_halved;
     }
@@ -91,11 +109,11 @@ struct EqualityCache {
       ++union_known;
       return;
     }
-    mapping.insert({fid1, fid2});
+    mapping.Add(fid1, fid2);
     ++union_unknown;
   }
 
-  std::unordered_map<Id, Id> mapping;
+  SparseIdMapping mapping;
 
   Counter query_count;
   Counter query_equal_ids;
