@@ -31,7 +31,6 @@
 #include <vector>
 
 #include "comparison.h"
-#include "equality.h"
 #include "error.h"
 #include "fidelity.h"
 #include "graph.h"
@@ -78,25 +77,6 @@ int RunFidelity(const char* filename, const stg::Graph& graph,
   }
   std::ofstream output(filename);
   return write(output);
-}
-
-int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
-             const std::vector<stg::Id>& roots) {
-  struct PairCache {
-    bool Query(const stg::Pair& comparison) const {
-      return equalities.contains(comparison);
-    }
-    void Record(const stg::Pair& comparison) {
-      equalities.insert(comparison);
-    }
-    std::unordered_set<stg::Pair> equalities;
-  };
-
-  const stg::Time compute(runtime, "equality check");
-  PairCache equalities;
-  return stg::Equals<PairCache>(graph, equalities)(roots[0], roots[1])
-             ? 0
-             : kAbiChange;
 }
 
 int Run(stg::Runtime& runtime, const stg::Graph& graph,
@@ -151,7 +131,6 @@ int Run(stg::Runtime& runtime, const stg::Graph& graph,
 int main(int argc, char* argv[]) {
   // Process arguments.
   bool opt_metrics = false;
-  bool opt_exact = false;
   stg::ReadOptions opt_read_options;
   std::optional<const char*> opt_fidelity = std::nullopt;
   stg::diff::Ignore opt_ignore;
@@ -166,7 +145,6 @@ int main(int argc, char* argv[]) {
       {"btf",            no_argument,       nullptr, 'b'},
       {"elf",            no_argument,       nullptr, 'e'},
       {"stg",            no_argument,       nullptr, 's'},
-      {"exact",          no_argument,       nullptr, 'x'},
       {"types",          no_argument,       nullptr, 't'},
       {"ignore",         required_argument, nullptr, 'i'},
       {"format",         required_argument, nullptr, 'f'},
@@ -179,21 +157,19 @@ int main(int argc, char* argv[]) {
               << "  [-m|--metrics]\n"
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file1\n"
               << "  [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file2\n"
-              << "  [-x|--exact]\n"
               << "  [-t|--types]\n"
               << "  [{-i|--ignore} <ignore-option>] ...\n"
               << "  [{-f|--format} <output-format>] ...\n"
               << "  [{-o|--output} {filename|-}] ...\n"
               << "  [{-F|--fidelity} {filename|-}]\n"
               << "implicit defaults: --stg --format small\n"
-              << "--exact (node equality) cannot be combined with --output\n"
               << stg::reporting::OutputFormatUsage()
               << stg::diff::IgnoreUsage();
     return 1;
   };
   while (true) {
     int ix;
-    const int c = getopt_long(argc, argv, "-mabesxti:f:o:F:", opts, &ix);
+    const int c = getopt_long(argc, argv, "-mabesti:f:o:F:", opts, &ix);
     if (c == -1) {
       break;
     }
@@ -213,9 +189,6 @@ int main(int argc, char* argv[]) {
         break;
       case 's':
         opt_input_format = stg::InputFormat::STG;
-        break;
-      case 'x':
-        opt_exact = true;
         break;
       case 't':
         opt_read_options.Set(stg::ReadOptions::TYPE_ROOTS);
@@ -251,7 +224,7 @@ int main(int argc, char* argv[]) {
         return usage();
     }
   }
-  if (inputs.size() != 2 || opt_exact > outputs.empty()) {
+  if (inputs.size() != 2) {
     return usage();
   }
 
@@ -259,9 +232,7 @@ int main(int argc, char* argv[]) {
     stg::Runtime runtime(std::cerr, opt_metrics);
     stg::Graph graph;
     const auto roots = Read(runtime, inputs, graph, opt_read_options);
-    return opt_exact ? RunExact(runtime, graph, roots)
-                     : Run(runtime, graph, roots, outputs, opt_ignore,
-                           opt_fidelity);
+    return Run(runtime, graph, roots, outputs, opt_ignore, opt_fidelity);
   } catch (const stg::Exception& e) {
     std::cerr << e.what();
     return 1;

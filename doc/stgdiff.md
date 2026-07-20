@@ -10,14 +10,12 @@ stgdiff
   [-m|--metrics]
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file1
   [-a|--abi|-b|--btf|-e|--elf|-s|--stg] file2
-  [-x|--exact]
   [-t|--types]
   [{-i|--ignore} <ignore-option>] ...
   [{-f|--format} <output-format>] ...
   [{-o|--output} {filename|-}] ...
   [{-F|--fidelity} {filename|-}]
 implicit defaults: --stg --format small
---exact (node equality) cannot be combined with --output
 output formats: plain flat small short viz
 ignore options: type_declaration_status symbol_type_presence primitive_type_encoding member_size enum_underlying_type qualifier linux_symbol_crc interface_addition type_definition_addition
 ```
@@ -237,19 +235,13 @@ different formats.
     }
     ```
 
-## Exact Node Equality
-
-*   `-x|--exact`: perform exact node equality (ignoring node identity) instead
-    of generating an ABI equivalence diff graph; no outputs may be specified.
-
 ## Other options:
 
 *   `-m|--metrics`: print duration of ABI parsing, comparison and reporting.
 
 ## Return code
 
-If input files' ABIs are equivalent (or equal with `--exact`), `stgdiff` will
-return 0. Otherwise:
+If input files' ABIs are equivalent, `stgdiff` will return 0. Otherwise:
 
 *   Return code 1: there was an exception during comparison, see `stderr` for
     the exception reason.
