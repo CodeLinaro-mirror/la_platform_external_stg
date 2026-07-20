@@ -644,7 +644,19 @@ class DenseIdMapping {
   DenseIdMapping(Id start, Id limit) : offset_(start.ix_) {
     ids_.reserve(limit.ix_ - offset_);
   }
-  Id& operator[](Id id) {
+
+  // returns an updatable reference
+  Id& Get(Id& id) {
+    return At(id);
+  }
+
+  // records a new mapping
+  void Add(Id child, Id parent) {
+    At(child) = parent;
+  }
+
+ private:
+  Id& At(Id id) {
     const auto ix = id.ix_;
     if (ix < offset_) {
       Die() << "DenseIdMapping: out of range access";
@@ -653,7 +665,6 @@ class DenseIdMapping {
     return ids_[ix - offset_];
   }
 
- private:
   void Populate(size_t size) {
     for (size_t ix = offset_ + ids_.size(); ix < size; ++ix) {
       ids_.emplace_back(ix);
