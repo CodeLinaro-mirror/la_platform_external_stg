@@ -32,8 +32,8 @@ namespace stg {
 // determining the nodes to which substitution should apply (e.g., excluding
 // orphaned nodes).
 //
-// The caller must provide a reference to a callable object which should update
-// its Id argument only when needed (i.e., when the new value is different).
+// The caller must provide a reference to a callable object which maps an Id to
+// a new Id.
 //
 // The Update helpers may be used to update external node id references.
 template <typename Updater>
@@ -42,7 +42,11 @@ struct Substitute {
       : graph(graph), updater(updater) {}
 
   void Update(Id& id) const {
-    updater(id);
+    // update id to representative id, avoiding silent stores
+    const Id new_id = updater(id);
+    if (new_id != id) {
+      id = new_id;
+    }
   }
 
   void Update(std::vector<Id>& ids) const {

@@ -303,13 +303,7 @@ UnifyingGraph::~UnifyingGraph() noexcept(false) {
   const Time time(runtime_, "unification.rewrite");
   Counter removed(runtime_, "unification.removed");
   Counter retained(runtime_, "unification.retained");
-  const auto remap = [&](Id& id) {
-    // update id to representative id, avoiding silent stores
-    const Id fid = Find(id);
-    if (fid != id) {
-      id = fid;
-    }
-  };
+  const auto remap = [&](Id id) { return Find(id); };
   const Substitute substitute(graph_, remap);
   graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
     if (Find(id) != id) {
