@@ -43,10 +43,9 @@ struct Equals {
   bool operator()(Id id1, Id id2) {
     const Pair comparison = {id1, id2};
 
-    // Check if the comparison has an already known result.
-    const auto check = equality_cache.Query(comparison);
-    if (check.has_value()) {
-      return check.value();
+    // Check if the nodes are known to be equal.
+    if (equality_cache.Query(comparison)) {
+      return true;
     }
 
     // Record the comparison with Strongly-Connected Component finder.

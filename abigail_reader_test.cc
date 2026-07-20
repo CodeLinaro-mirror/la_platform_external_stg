@@ -20,7 +20,6 @@
 #include <cstddef>
 #include <filesystem>
 #include <iostream>
-#include <optional>
 #include <vector>
 
 #include <catch2/catch.hpp>
@@ -214,8 +213,8 @@ TEST_CASE("Tidy") {
 
     // Useless equality cache.
     struct NoCache {
-      static std::optional<bool> Query(const stg::Pair&) {
-        return std::nullopt;
+      static bool Query(const stg::Pair&) {
+        return false;
       }
       void AllSame(const std::vector<stg::Pair>&) {}
     };

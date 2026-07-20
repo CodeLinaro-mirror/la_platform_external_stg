@@ -83,10 +83,8 @@ int RunFidelity(const char* filename, const stg::Graph& graph,
 int RunExact(stg::Runtime& runtime, const stg::Graph& graph,
              const std::vector<stg::Id>& roots) {
   struct PairCache {
-    std::optional<bool> Query(const stg::Pair& comparison) const {
-      return equalities.find(comparison) != equalities.end()
-          ? std::make_optional(true)
-          : std::nullopt;
+    bool Query(const stg::Pair& comparison) const {
+      return equalities.find(comparison) != equalities.end();
     }
     void AllSame(const std::vector<stg::Pair>& comparisons) {
       for (const auto& comparison : comparisons) {
