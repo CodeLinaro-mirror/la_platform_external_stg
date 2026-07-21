@@ -121,24 +121,21 @@ Id Deduplicate(Runtime& runtime, Graph& graph, Id root) {
   Counter(runtime, "deduplicate.nodes") = hashes.size();
   Counter(runtime, "deduplicate.hashes") = partitions.size();
 
-  Histogram hash_partition_size(runtime, "deduplicate.hash_partition_size");
-  Counter min_comparisons(runtime, "deduplicate.min_comparisons");
-  Counter max_comparisons(runtime, "deduplicate.max_comparisons");
-  for (const auto& [fp, ids] : partitions) {
-    const auto n = ids.size();
-    hash_partition_size.Add(n);
-    min_comparisons += n - 1;
-    max_comparisons += n * (n - 1) / 2;
-  }
-
   // Refine partitions of nodes with the same fingerprints.
   EqualityCache cache(runtime);
   Equals<EqualityCache> equals(graph, cache);
+  Histogram hash_partition_size(runtime, "deduplicate.hash_partition_size");
+  Counter min_comparisons(runtime, "deduplicate.min_comparisons");
+  Counter max_comparisons(runtime, "deduplicate.max_comparisons");
   Counter equalities(runtime, "deduplicate.equalities");
   Counter inequalities(runtime, "deduplicate.inequalities");
   {
     const Time x(runtime, "find duplicates");
     for (auto& [fp, ids] : partitions) {
+      const auto n = ids.size();
+      hash_partition_size.Add(n);
+      min_comparisons += n - 1;
+      max_comparisons += n * (n - 1) / 2;
       while (ids.size() > 1) {
         std::vector<Id> todo;
         const Id candidate = ids[0];
