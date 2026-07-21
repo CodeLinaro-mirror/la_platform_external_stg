@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "equality.h"
+#include "fingerprint.h"
 #include "graph.h"
 #include "hashing.h"
 #include "runtime.h"
@@ -107,8 +108,9 @@ struct EqualityCache {
 
 }  // namespace
 
-Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes) {
+Id Deduplicate(Runtime& runtime, Graph& graph, Id root) {
   // Partition the nodes by hash.
+  const auto hashes = stg::Fingerprint(runtime, graph, root);
   std::unordered_map<HashValue, std::vector<Id>> partitions;
   {
     const Time x(runtime, "partition nodes");
