@@ -443,25 +443,24 @@ class Graph {
     Deallocate(id);
   }
 
-  template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) const {
+  template <typename... Args>
+  decltype(auto) Apply(auto&& function, Id id, Args&&... args) const {
     const auto& [which, ix] = indirection_[id.ix_];
     return WithVector(*this, which, [&](const auto& vector) -> decltype(auto) {
       return function(vector[ix], std::forward<Args>(args)...);
     });
   }
 
-  template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply(FunctionObject&& function, Id id, Args&&... args) {
+  template <typename... Args>
+  decltype(auto) Apply(auto&& function, Id id, Args&&... args) {
     const auto& [which, ix] = indirection_[id.ix_];
     return WithVector(*this, which, [&](auto& vector) -> decltype(auto) {
       return function(vector[ix], std::forward<Args>(args)...);
     });
   }
 
-  template <typename FunctionObject, typename... Args>
-  decltype(auto) Apply2(
-      FunctionObject&& function, Id id1, Id id2, Args&&... args) const {
+  template <typename... Args>
+  decltype(auto) Apply2(auto&& function, Id id1, Id id2, Args&&... args) const {
     const auto& [which1, ix1] = indirection_[id1.ix_];
     const auto& [which2, ix2] = indirection_[id2.ix_];
     if (which1 != which2) {
@@ -472,8 +471,7 @@ class Graph {
     });
   }
 
-  template <typename FunctionObject>
-  void ForEach(Id start, Id limit, FunctionObject&& function) const {
+  void ForEach(Id start, Id limit, auto&& function) const {
     for (size_t ix = start.ix_; ix < limit.ix_; ++ix) {
       const Id id(ix);
       if (Is(id)) {
@@ -504,9 +502,8 @@ class Graph {
     INTERFACE,
   };
 
-  template <typename Self, typename FunctionObject>
-  static decltype(auto) WithVector(
-      Self& self, Which which, FunctionObject&& function) {
+  template <typename Self>
+  static decltype(auto) WithVector(Self& self, Which which, auto&& function) {
     switch (which) {
       case Which::ABSENT:
         Die() << "undefined node";
