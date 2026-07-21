@@ -156,25 +156,22 @@ Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes) {
   // Keep one representative of each set of duplicates.
   Counter unique(runtime, "deduplicate.unique");
   Counter duplicate(runtime, "deduplicate.duplicate");
-  const auto remap = [&cache](Id id) { return cache.Find(id); };
-  const Substitute substitute(graph, remap);
   {
     const Time x(runtime, "rewrite");
-    for (const auto& [id, fp] : hashes) {
-      const Id fid = cache.Find(id);
-      if (fid != id) {
-        graph.Remove(id);
-        ++duplicate;
-      } else {
-        substitute(id);
-        ++unique;
-      }
-    }
+    Rewrite(graph,
+            [&](Id id) {
+              return cache.Find(id);
+            },
+            [&](auto&& update) {
+              for (const auto& [id, _] : hashes) {
+                update(id);
+              }
+            },
+            unique, duplicate);
   }
 
   // In case the root node was remapped.
-  substitute.Update(root);
-  return root;
+  return cache.Find(root);
 }
 
 }  // namespace stg

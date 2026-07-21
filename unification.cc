@@ -300,20 +300,19 @@ UnifyingGraph::~UnifyingGraph() noexcept(false) {
     return;
   }
   // apply substitutions to the entire graph
-  const Time time(runtime_, "unification.rewrite");
-  Counter removed(runtime_, "unification.removed");
   Counter retained(runtime_, "unification.retained");
-  const auto remap = [&](Id id) { return Find(id); };
-  const Substitute substitute(graph_, remap);
-  graph_.ForEach(start_, graph_.Limit(), [&](Id id) {
-    if (Find(id) != id) {
-      graph_.Remove(id);
-      ++removed;
-    } else {
-      substitute(id);
-      ++retained;
-    }
-  });
+  Counter removed(runtime_, "unification.removed");
+  {
+    const Time x(runtime_, "unification.rewrite");
+    Rewrite(graph_,
+            [&](Id id) {
+              return Find(id);
+            },
+            [&](auto&& update) {
+              graph_.ForEach(start_, graph_.Limit(), update);
+            },
+            retained, removed);
+  }
 }
 
 void UnifyingGraph::Union(Id id1, Id id2) {
