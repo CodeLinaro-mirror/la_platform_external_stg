@@ -56,7 +56,7 @@ Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes) {
   }
 
   // Refine partitions of nodes with the same fingerprints.
-  EqualityCache cache(runtime, hashes);
+  EqualityCache cache(runtime);
   Equals<EqualityCache> equals(graph, cache);
   Counter equalities(runtime, "deduplicate.equalities");
   Counter inequalities(runtime, "deduplicate.inequalities");
