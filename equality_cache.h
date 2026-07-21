@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -223,45 +223,6 @@ struct EqualityCache {
   Counter disunion_known_hash;
   Counter disunion_known_inequality;
   Counter disunion_unknown;
-};
-
-struct SimpleEqualityCache {
-  explicit SimpleEqualityCache(Runtime& runtime)
-      : query_count(runtime, "simple_cache.query_count"),
-        query_equal_ids(runtime, "simple_cache.query_equal_ids"),
-        query_known_equality(runtime, "simple_cache.query_known_equality"),
-        known_equality_inserts(runtime, "simple_cache.known_equality_inserts") {
-  }
-
-  std::optional<bool> Query(const Pair& comparison) {
-    ++query_count;
-    const auto& [id1, id2] = comparison;
-    if (id1 == id2) {
-      ++query_equal_ids;
-      return {true};
-    }
-    if (known_equalities.contains(comparison)) {
-      ++query_known_equality;
-      return {true};
-    }
-    return std::nullopt;
-  }
-
-  void AllSame(const std::vector<Pair>& comparisons) {
-    for (const auto& comparison : comparisons) {
-      ++known_equality_inserts;
-      known_equalities.insert(comparison);
-    }
-  }
-
-  void AllDifferent(const std::vector<Pair>&) {}
-
-  std::unordered_set<Pair> known_equalities;
-
-  Counter query_count;
-  Counter query_equal_ids;
-  Counter query_known_equality;
-  Counter known_equality_inserts;
 };
 
 }  // namespace stg
