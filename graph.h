@@ -502,8 +502,7 @@ class Graph {
     INTERFACE,
   };
 
-  template <typename Self>
-  static decltype(auto) WithVector(Self& self, Which which, auto&& function) {
+  static decltype(auto) WithVector(auto& self, Which which, auto&& function) {
     switch (which) {
       case Which::ABSENT:
         Die() << "undefined node";
@@ -603,8 +602,7 @@ struct InterfaceKey {
     return VersionedSymbolName(x);
   }
 
-  template <typename Node>
-  std::string operator()(const Node&) const {
+  std::string operator()(const auto&) const {
     Die() << "unexpected interface type";
   }
 
