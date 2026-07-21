@@ -20,7 +20,6 @@
 #ifndef STG_EQUALITY_CACHE_H_
 #define STG_EQUALITY_CACHE_H_
 
-#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -62,21 +61,21 @@ struct EqualityCache {
                                     "cache.query_equal_representatives"),
         query_not_found(runtime, "cache.query_not_found") {}
 
-  std::optional<bool> Query(const Pair& comparison) {
+  bool Query(const Pair& comparison) {
     ++query_count;
     const auto& [id1, id2] = comparison;
     if (id1 == id2) {
       ++query_equal_ids;
-      return std::make_optional(true);
+      return true;
     }
     const Id fid1 = Find(id1);
     const Id fid2 = Find(id2);
     if (fid1 == fid2) {
       ++query_equal_representatives;
-      return std::make_optional(true);
+      return true;
     }
     ++query_not_found;
-    return std::nullopt;
+    return false;
   }
 
   void AllSame(const std::vector<Pair>& comparisons) {
