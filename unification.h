@@ -22,6 +22,7 @@
 
 #include "graph.h"
 #include "runtime.h"
+#include "union_find.h"
 
 namespace stg {
 
@@ -62,11 +63,8 @@ class UnifyingGraph {
   Graph& graph_;
   Id start_;
   DenseIdMapping mapping_;
+  UnionFind<DenseIdMapping> dsu_;
   Runtime& runtime_;
-  Counter find_query_;
-  Counter find_halved_;
-  Counter union_known_;
-  Counter union_unknown_;
 };
 
 }  // namespace stg
