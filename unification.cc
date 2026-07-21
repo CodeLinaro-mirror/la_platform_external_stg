@@ -333,7 +333,7 @@ void UnifyingGraph::Union(Id id1, Id id2) {
     ++union_known_;
     return;
   }
-  mapping_[fid1] = fid2;
+  mapping_.Add(fid1, fid2);
   ++union_unknown_;
 }
 
@@ -342,11 +342,11 @@ Id UnifyingGraph::Find(Id id) {
   // path halving - tiny performance gain
   while (true) {
     // note: safe to take a reference as mapping cannot grow after this
-    auto& parent = mapping_[id];
+    auto& parent = mapping_.Get(id);
     if (parent == id) {
       return id;
     }
-    const auto parent_parent = mapping_[parent];
+    const auto parent_parent = mapping_.Get(parent);
     if (parent_parent == parent) {
       return parent;
     }
