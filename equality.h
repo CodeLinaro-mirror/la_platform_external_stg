@@ -74,8 +74,6 @@ struct Equals {
     // DFS spanning tree.
     if (result) {
       equality_cache.AllSame(comparisons);
-    } else {
-      equality_cache.AllDifferent(comparisons);
     }
     return result;
   }

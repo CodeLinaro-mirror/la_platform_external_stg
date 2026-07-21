@@ -85,8 +85,6 @@ struct EqualityCache {
     }
   }
 
-  void AllDifferent(const std::vector<Pair>&) {}
-
   bool DistinctHashes(Id id1, Id id2) {
     const auto it1 = hashes.find(id1);
     const auto it2 = hashes.find(id2);
