@@ -216,7 +216,7 @@ TEST_CASE("Tidy") {
       static bool Query(const stg::Pair&) {
         return false;
       }
-      void AllSame(const std::vector<stg::Pair>&) {}
+      void Record(const stg::Pair&) {}
     };
 
     // Check exact equality.
