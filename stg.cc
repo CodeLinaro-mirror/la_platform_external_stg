@@ -231,11 +231,13 @@ int main(int argc, char* argv[]) {
     }
     if (!opt_keep_duplicates) {
       {
+        const stg::Time x(runtime, "final type resolution");
         stg::UnifyingGraph unifying_graph(runtime, graph, stg::Id(0),
                                           graph.Limit());
         stg::ResolveTypes(runtime, unifying_graph, {root});
         root = unifying_graph.Find(root);
       }
+      const stg::Time x(runtime, "final node deduplication");
       const auto hashes = stg::Fingerprint(runtime, graph, root);
       root = stg::Deduplicate(runtime, graph, root, hashes);
     }
