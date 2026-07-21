@@ -44,9 +44,9 @@ namespace stg {
 struct Id {
   // defined in graph.cc as maximum value for index type
   static const Id kInvalid;
-  explicit Id(size_t ix) : ix_(ix) {}
+  explicit Id(uint32_t ix) : ix_(ix) {}
   auto operator<=>(const Id&) const = default;
-  size_t ix_;
+  uint32_t ix_;
 };
 
 std::ostream& operator<<(std::ostream& os, Id id);
@@ -543,7 +543,7 @@ class Graph {
     }
   }
 
-  std::vector<std::pair<Which, size_t>> indirection_;
+  std::vector<std::pair<Which, uint32_t>> indirection_;
 
   std::vector<Special> special_;
   std::vector<PointerReference> pointer_reference_;
