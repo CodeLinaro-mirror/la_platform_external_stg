@@ -34,7 +34,6 @@
 #include "error.h"
 #include "file_descriptor.h"
 #include "filter.h"
-#include "fingerprint.h"
 #include "graph.h"
 #include "input.h"
 #include "proto_writer.h"
@@ -238,8 +237,7 @@ int main(int argc, char* argv[]) {
         root = unifying_graph.Find(root);
       }
       const stg::Time x(runtime, "final node deduplication");
-      const auto hashes = stg::Fingerprint(runtime, graph, root);
-      root = stg::Deduplicate(runtime, graph, root, hashes);
+      root = stg::Deduplicate(runtime, graph, root);
     }
     for (auto output : outputs) {
       stg::Write(runtime, graph, root, output, opt_annotate);

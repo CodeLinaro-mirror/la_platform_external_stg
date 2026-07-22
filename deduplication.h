@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 // -*- mode: C++ -*-
 //
-// Copyright 2022 Google LLC
+// Copyright 2022-2026 Google LLC
 //
 // Licensed under the Apache License v2.0 with LLVM Exceptions (the
 // "License"); you may not use this file except in compliance with the
@@ -20,17 +20,12 @@
 #ifndef STG_DEDUPLICATION_H_
 #define STG_DEDUPLICATION_H_
 
-#include <unordered_map>
-
 #include "graph.h"
-#include "hashing.h"
 #include "runtime.h"
 
 namespace stg {
 
-using Hashes = std::unordered_map<Id, HashValue>;
-
-Id Deduplicate(Runtime& runtime, Graph& graph, Id root, const Hashes& hashes);
+Id Deduplicate(Runtime& runtime, Graph& graph, Id root);
 
 }  // namespace stg
 
