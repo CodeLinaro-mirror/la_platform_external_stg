@@ -333,6 +333,8 @@ Special::Kind Transform::operator()(
       return Special::DECLTYPE_NULLPTR;
     case stg::Special::Kind::DECLTYPE_AUTO:
       return Special::DECLTYPE_AUTO;
+    case stg::Special::Kind::AUTO:
+      return Special::AUTO;
   }
 }
 

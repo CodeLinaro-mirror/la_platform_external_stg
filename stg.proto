@@ -59,6 +59,7 @@ message Special {
     VARIADIC = 2;
     DECLTYPE_NULLPTR = 3;
     DECLTYPE_AUTO = 4;
+    AUTO = 5;
   }
 
   fixed32 id = 1;
