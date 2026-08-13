@@ -329,8 +329,8 @@ Special::Kind Transform::operator()(
       return Special::VOID;
     case stg::Special::Kind::VARIADIC:
       return Special::VARIADIC;
-    case stg::Special::Kind::NULLPTR:
-      return Special::NULLPTR;
+    case stg::Special::Kind::DECLTYPE_NULLPTR:
+      return Special::DECLTYPE_NULLPTR;
   }
 }
 

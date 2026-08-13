@@ -87,7 +87,7 @@ struct Special {
   enum class Kind {
     VOID,
     VARIADIC,
-    NULLPTR,
+    DECLTYPE_NULLPTR,
   };
   explicit Special(Kind kind)
       : kind(kind) {}

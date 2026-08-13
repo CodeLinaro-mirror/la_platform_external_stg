@@ -50,7 +50,7 @@ struct Hasher {
         return hash('O');
       case Special::Kind::VARIADIC:
         return hash('V');
-      case Special::Kind::NULLPTR:
+      case Special::Kind::DECLTYPE_NULLPTR:
         return hash('L');
     }
   }
