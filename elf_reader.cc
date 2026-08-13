@@ -449,8 +449,10 @@ class Reader {
           << best_symbols_it->first.first
           << ", name=" << best_symbols_it->first.second;
 
-      node.type_id = best_symbol.type_id;
-      node.full_name = best_symbol.scoped_name;
+      if (!best_symbol.scoped_name.empty()) {
+        node.type_id = best_symbol.type_id;
+        node.full_name = best_symbol.scoped_name;
+      }
 
       if (node.symbol_type == ElfSymbol::SymbolType::GNU_IFUNC
           && node.type_id) {
