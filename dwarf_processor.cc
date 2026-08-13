@@ -467,6 +467,8 @@ class Processor {
       AddProcessedNode<Special>(entry, Special::Kind::DECLTYPE_NULLPTR);
     } else if (type_name == "decltype(auto)") {
       AddProcessedNode<Special>(entry, Special::Kind::DECLTYPE_AUTO);
+    } else if (type_name == "auto") {
+      AddProcessedNode<Special>(entry, Special::Kind::AUTO);
     } else {
       Die() << "Unsupported DW_TAG_unspecified_type: " << type_name;
     }
