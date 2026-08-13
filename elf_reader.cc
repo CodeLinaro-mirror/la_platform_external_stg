@@ -440,11 +440,6 @@ class Reader {
                 << ", name=" << best_symbols_it->first.second;
         }
       }
-      if (best_symbol.scoped_name.empty()) {
-        Die() << "Anonymous DWARF symbol: location="
-              << best_symbols_it->first.first
-              << ", name=" << best_symbols_it->first.second;
-      }
       // There may be multiple DWARF symbols with same address (zero-length
       // arrays), or ELF symbol has different name from DWARF symbol (aliases).
       // But if we have both situations at once, we can't match ELF to DWARF and
