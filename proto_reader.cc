@@ -329,6 +329,8 @@ stg::Special::Kind Transformer::Transform(Special::Kind x) {
       return stg::Special::Kind::VARIADIC;
     case Special::DECLTYPE_NULLPTR:
       return stg::Special::Kind::DECLTYPE_NULLPTR;
+    case Special::DECLTYPE_AUTO:
+      return stg::Special::Kind::DECLTYPE_AUTO;
     default:
       Die() << "unknown Special::Kind " << x;
   }

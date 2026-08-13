@@ -52,6 +52,8 @@ struct Hasher {
         return hash('V');
       case Special::Kind::DECLTYPE_NULLPTR:
         return hash('L');
+      case Special::Kind::DECLTYPE_AUTO:
+        return hash('C');
     }
   }
 
