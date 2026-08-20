@@ -1,0 +1,43 @@
+version: 0x00000002
+root_id: 0x84ea5130  # interface
+primitive {
+  id: 0x6720d32f
+  name: "int"
+  encoding: SIGNED_INTEGER
+  bytesize: 0x00000004
+}
+elf_symbol {
+  id: 0x1c9d2712
+  name: "__ksymtab_my_symbol"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f  # int
+}
+elf_symbol {
+  id: 0xa45cdb44
+  name: "__ksymtab_voidptr_symbol"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f  # int
+}
+elf_symbol {
+  id: 0x667ed13e
+  name: "my_symbol"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f  # int
+}
+elf_symbol {
+  id: 0x1aea73c8
+  name: "voidptr_symbol"
+  is_defined: true
+  symbol_type: OBJECT
+  type_id: 0x6720d32f  # int
+}
+interface {
+  id: 0x84ea5130
+  symbol_id: 0x1c9d2712  # int __ksymtab_my_symbol
+  symbol_id: 0xa45cdb44  # int __ksymtab_voidptr_symbol
+  symbol_id: 0x667ed13e  # int my_symbol
+  symbol_id: 0x1aea73c8  # int voidptr_symbol
+}
