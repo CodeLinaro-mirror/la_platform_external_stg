@@ -377,9 +377,21 @@ class Processor {
         ProcessReference<Qualified>(entry, Qualifier::ATOMIC);
         break;
       case DW_TAG_variable:
-        // Process only variables visible externally
         if (entry.GetFlag(DW_AT_external)) {
+          // Process variables visible externally
           ProcessVariable(entry);
+        } else {
+          // Process variables output by __GENDWARFKSYMS_EXPORT
+          constexpr std::string_view kGendwarfksymsPtrPrefix =
+              "__gendwarfksyms_ptr_";
+
+          const auto linkage_name = GetLinkageName(version_, entry);
+          if (linkage_name.starts_with(kGendwarfksymsPtrPrefix)) {
+            const auto symbol_name =
+                std::string_view(linkage_name)
+                    .substr(kGendwarfksymsPtrPrefix.size());
+            ProcessGendwarfksymsVariable(entry, symbol_name);
+          }
         }
         break;
       case DW_TAG_subroutine_type:
@@ -927,6 +939,31 @@ class Processor {
     }
   }
 
+  void ProcessGendwarfksymsVariable(Entry& entry,
+                                    std::string_view symbol_name) {
+    auto referred_type = MaybeGetReferredType(entry);
+    // The gendwarfksyms variable's type is a pointer to the type of the
+    // exported symbol.
+    if (!referred_type || referred_type->GetTag() != DW_TAG_pointer_type) {
+      Die() << "Expected pointer type for variable created by "
+               "__GENDWARFKSYMS_EXPORT: "
+            << EntryToString(entry);
+    }
+    const Id referred_type_id =
+        GetReferredTypeId(MaybeGetReferredType(*referred_type));
+
+    if (!result_.ksym_typing_symbols_by_name
+             .emplace(symbol_name,
+                      Types::Symbol{
+                          .scoped_name = std::string(symbol_name),
+                          .linkage_name = std::string(symbol_name),
+                          .locations = {},
+                          .type_id = referred_type_id,
+                      })
+             .second) {
+      Die() << "Duplicate gendwarfksyms symbol '" << symbol_name << '\'';
+    }
+  }
   void ProcessFunction(Entry& entry) {
     Subprogram subprogram = GetSubprogram(entry);
     const Id id = AddProcessedNode<Function>(entry, std::move(subprogram.node));
