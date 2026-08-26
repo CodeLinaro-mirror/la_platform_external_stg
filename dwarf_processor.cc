@@ -463,9 +463,11 @@ class Processor {
 
   void ProcessUnspecifiedType(Entry& entry) {
     const std::string type_name =  GetName(entry);
-    Check(type_name == "decltype(nullptr)")
-        << "Unsupported DW_TAG_unspecified_type: " << type_name;
-    AddProcessedNode<Special>(entry, Special::Kind::NULLPTR);
+    if (type_name == "decltype(nullptr)") {
+      AddProcessedNode<Special>(entry, Special::Kind::DECLTYPE_NULLPTR);
+    } else {
+      Die() << "Unsupported DW_TAG_unspecified_type: " << type_name;
+    }
   }
 
   bool ShouldKeepDefinition(Entry& entry, const std::string& name) const {

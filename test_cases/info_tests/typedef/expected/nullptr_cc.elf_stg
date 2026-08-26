@@ -5,13 +5,13 @@ special {
   kind: VOID
 }
 special {
-  id: 0x0bbde79e
-  kind: NULLPTR
+  id: 0xfe2be6ab
+  kind: DECLTYPE_NULLPTR
 }
 typedef {
   id: 0xb19fc2d0
   name: "nullptr_t"
-  referred_type_id: 0x0bbde79e  # decltype(nullptr)
+  referred_type_id: 0xfe2be6ab  # decltype(nullptr)
 }
 function {
   id: 0x3cffa127

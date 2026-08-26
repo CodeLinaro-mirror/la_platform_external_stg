@@ -57,7 +57,7 @@ message Special {
     KIND_UNSPECIFIED = 0;
     VOID = 1;
     VARIADIC = 2;
-    NULLPTR = 3;
+    DECLTYPE_NULLPTR = 3;
   }
 
   fixed32 id = 1;

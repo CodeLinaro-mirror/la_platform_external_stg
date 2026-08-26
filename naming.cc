@@ -127,7 +127,7 @@ struct DescribeWorker {
         return Name{"void"};
       case Special::Kind::VARIADIC:
         return Name{"..."};
-      case Special::Kind::NULLPTR:
+      case Special::Kind::DECLTYPE_NULLPTR:
         return Name{"decltype(nullptr)"};
     }
   }
