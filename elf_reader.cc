@@ -334,12 +334,23 @@ class Reader {
     }
 
     std::map<std::string, Id> symbols_map;
+    const auto& remap = types.ksym_typing_symbols_by_name;
+    const auto remap_end = remap.end();
     for (auto [symbol, address] : symbols) {
       // TODO: add VersionInfoToString to SymbolKey name
       // TODO: check for uniqueness of SymbolKey in map after
       // support for version info
-      MaybeAddTypeInfo(location_and_name_to_index, types.symbols, address,
-                       graph_, unifying_graph, symbol);
+      const auto it = elf_.IsLinuxKernelBinary()
+                          ? remap.find(symbol.symbol_name)
+                          : remap_end;
+      if (it != remap_end) {
+        symbol.type_id = it->second.type_id;
+        symbol.full_name = it->second.scoped_name;
+      } else {
+        MaybeAddTypeInfo(location_and_name_to_index, types.symbols, address,
+                         graph_, unifying_graph, symbol);
+      }
+
       symbols_map.emplace(VersionedSymbolName(symbol),
                           graph_.Add<ElfSymbol>(symbol));
     }

@@ -1,17 +1,40 @@
 version: 0x00000002
 root_id: 0x84ea5130  # interface
+special {
+  id: 0x48b5725f
+  kind: VOID
+}
+pointer_reference {
+  id: 0x18bd6530
+  kind: POINTER
+  pointee_type_id: 0x48b5725f  # void
+}
 primitive {
   id: 0x6720d32f
   name: "int"
   encoding: SIGNED_INTEGER
   bytesize: 0x00000004
 }
+member {
+  id: 0xfa699919
+  name: "foo"
+  type_id: 0x6720d32f  # int
+}
+struct_union {
+  id: 0xe4a02d2e
+  kind: STRUCT
+  name: "my_struct"
+  definition {
+    bytesize: 4
+    member_id: 0xfa699919  # int foo
+  }
+}
 elf_symbol {
   id: 0x667ed13e
   name: "my_symbol"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f  # int
+  type_id: 0xe4a02d2e  # struct my_struct
   full_name: "my_symbol"
 }
 elf_symbol {
@@ -19,11 +42,11 @@ elf_symbol {
   name: "voidptr_symbol"
   is_defined: true
   symbol_type: OBJECT
-  type_id: 0x6720d32f  # int
+  type_id: 0x18bd6530  # void*
   full_name: "voidptr_symbol"
 }
 interface {
   id: 0x84ea5130
-  symbol_id: 0x667ed13e  # int my_symbol
-  symbol_id: 0x1aea73c8  # int voidptr_symbol
+  symbol_id: 0x667ed13e  # struct my_struct my_symbol
+  symbol_id: 0x1aea73c8  # void* voidptr_symbol
 }
