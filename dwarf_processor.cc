@@ -465,6 +465,8 @@ class Processor {
     const std::string type_name =  GetName(entry);
     if (type_name == "decltype(nullptr)") {
       AddProcessedNode<Special>(entry, Special::Kind::DECLTYPE_NULLPTR);
+    } else if (type_name == "decltype(auto)") {
+      AddProcessedNode<Special>(entry, Special::Kind::DECLTYPE_AUTO);
     } else {
       Die() << "Unsupported DW_TAG_unspecified_type: " << type_name;
     }
