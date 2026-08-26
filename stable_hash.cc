@@ -79,6 +79,8 @@ struct StableHashWorker {
         return hash("variadic");
       case Special::Kind::DECLTYPE_NULLPTR:
         return hash("decltype_nullptr");
+      case Special::Kind::DECLTYPE_AUTO:
+        return hash("decltype_auto");
     }
   }
 
