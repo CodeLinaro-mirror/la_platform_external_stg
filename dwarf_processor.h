@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -47,6 +48,9 @@ struct Types {
   // Container for all named type IDs allocated during DWARF processing.
   std::vector<Id> named_type_ids;
   std::vector<Symbol> symbols;
+  // Symbols exported by __GENDWARFKSYMS_EXPORT.
+  std::unordered_map<std::string, dwarf::Types::Symbol>
+      ksym_typing_symbols_by_name;
   std::vector<std::pair<Id, Id>> incomplete_to_full_types;
 };
 
