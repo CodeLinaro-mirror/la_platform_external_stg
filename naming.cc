@@ -131,6 +131,8 @@ struct DescribeWorker {
         return Name{"decltype(nullptr)"};
       case Special::Kind::DECLTYPE_AUTO:
         return Name{"decltype(auto)"};
+      case Special::Kind::AUTO:
+        return Name{"auto"};
     }
   }
 

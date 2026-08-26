@@ -81,6 +81,8 @@ struct StableHashWorker {
         return hash("decltype_nullptr");
       case Special::Kind::DECLTYPE_AUTO:
         return hash("decltype_auto");
+      case Special::Kind::AUTO:
+        return hash("auto");
     }
   }
 

@@ -89,6 +89,7 @@ struct Special {
     VARIADIC,
     DECLTYPE_NULLPTR,
     DECLTYPE_AUTO,
+    AUTO,
   };
   explicit Special(Kind kind)
       : kind(kind) {}
